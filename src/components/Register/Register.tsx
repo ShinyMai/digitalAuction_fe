@@ -21,26 +21,6 @@ const Register = ({ open, onClose }: RegisterProps) => {
         <div className="text-[16px] mb-14 mt-0.5">
           Nhập thông tin đăng ký hồ sơ để tham gia đấu giá
         </div>
-        <div className="flex flex-col gap-4">
-          <button
-            className="w-2sm px-6 py-8 bg-gray-400 text-white text-2xl rounded-3xl hover:bg-sky-600 transition-colors w-96"
-            onClick={() => {
-              console.log("Register as Individual");
-              onClose();
-            }}
-          >
-            Cá nhân
-          </button>
-          {/* <button
-            className="px-6 py-8 bg-gray-400 text-white text-2xl rounded-3xl hover:bg-sky-600 transition-colors w-96"
-            onClick={() => {
-              console.log("Register as Organization");
-              onClose();
-            }}
-          >
-            Tổ chức
-          </button> */}
-        </div>
       </div>
     </Modal>
   );

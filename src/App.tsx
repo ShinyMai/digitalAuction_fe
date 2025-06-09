@@ -1,10 +1,12 @@
-import HomePage from "./pages/Anonymous/HomePage/HomePage";
+import { Provider } from "react-redux";
+import AppRouter from "./routers/app.routes";
+import store from "./store/store";
 
 function App() {
   return (
-    <>
-      <HomePage />
-    </>
+    <Provider store={store}>
+      <AppRouter />
+    </Provider>
   );
 }
 
