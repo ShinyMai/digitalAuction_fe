@@ -96,7 +96,7 @@ const Header = memo(() => {
   );
 
   return (
-    <div className="min-h-18 border-2 rounded-t-lg bg-gradient-to-r from-sky-600 to-sky-400 text-white flex justify-between sticky top-0 z-10">
+    <div className="min-h-18 border-2 rounded-t-lg bg-gradient-to-r from-sky-600 to-sky-400 text-white flex justify- sticky top-0 z-10">
       <div className="flex items-center justify-between w-full px-4 md:px-12">
         <img
           src={assets.logo}
