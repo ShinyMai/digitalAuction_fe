@@ -1,5 +1,11 @@
+import EkycSDK from "../../../components/Ekyc/EkycSDK";
+
 const News = () => {
-  return <div>News</div>;
+  return (
+    <div>
+      <EkycSDK />
+    </div>
+  );
 };
 
 export default News;
