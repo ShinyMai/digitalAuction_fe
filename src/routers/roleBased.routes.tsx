@@ -11,7 +11,7 @@ const News = React.lazy(
 );
 
 const PostAuction = React.lazy(
-  () => import("../pages/Anonymous/PostAuction/index")
+  () => import("../pages/Company/PostAuction/index")
 )
 
 export const guestRoutes = [
