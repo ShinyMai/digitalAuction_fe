@@ -1,5 +1,5 @@
 export const ROUTERS = {
-  PATH: 'app',
+  PATH: 'user',
   SUB: {
     HOME: "",
     TIN_TUC: "tin-tuc",
