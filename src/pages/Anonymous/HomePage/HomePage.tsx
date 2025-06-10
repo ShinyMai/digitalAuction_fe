@@ -79,7 +79,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <div className="mx-auto px-4 md:py-8 flex flex-col md:flex-row items-center justify-evenly bg-sky-100">
         <div className="w-full md:w-2xl text-center mb-6 md:mb-0">
           <div>
@@ -114,10 +114,9 @@ const HomePage = () => {
               className={`
                 absolute inset-0 w-full h-full object-cover
                 transition-all duration-700 ease-in-out 
-                ${
-                  isAnimating
-                    ? "opacity-0 scale-90"
-                    : "opacity-100 scale-100"
+                ${isAnimating
+                  ? "opacity-0 scale-90"
+                  : "opacity-100 scale-100"
                 }
               `}
             />
@@ -129,10 +128,9 @@ const HomePage = () => {
               className={`
                 absolute inset-0 w-full h-full object-cover
                 transition-all duration-700 ease-in-out
-                ${
-                  isAnimating
-                    ? "opacity-100 scale-100"
-                    : "opacity-0 scale-90"
+                ${isAnimating
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-90"
                 }
               `}
             />
@@ -228,7 +226,7 @@ const HomePage = () => {
         </div>
       </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

@@ -2,12 +2,13 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { guestRoutes } from "./roleBased.routes";
 import AuthLoader from "../store/authReduxs/authLoader";
 import { ToastContainer } from "react-toastify";
+import PrivateRoutes from "../layouts";
 const AppRouter = () => {
   return (
     <>
       <AuthLoader />
       <Routes>
-        <Route path="/*">
+        <Route path="/" element={<PrivateRoutes />}>
           {guestRoutes.map((route, index) => (
             <Route
               key={index}
