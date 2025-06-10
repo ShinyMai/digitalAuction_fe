@@ -1,8 +1,9 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { guestRoutes } from "./roleBased.routes";
+import { companyRoutes, guestRoutes } from "./roleBased.routes";
 import AuthLoader from "../store/authReduxs/authLoader";
 import { ToastContainer } from "react-toastify";
-import PrivateRoutes from "../layouts";
+import PrivateRoutes from "../layouts/AnonymousLayout";
+import PrivateRoutesCompany from "../layouts/CompanyLayout";
 const AppRouter = () => {
   return (
     <>
@@ -20,6 +21,15 @@ const AppRouter = () => {
             path="*"
             element={<Navigate to="/not-found" />}
           />
+        </Route>
+        <Route path='/admin' element={<PrivateRoutesCompany />}>
+          {companyRoutes.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              element={<route.element />}
+            />
+          ))}
         </Route>
       </Routes>
 
