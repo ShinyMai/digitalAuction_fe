@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { guestRoutes } from "./roleBased.routes";
 import AuthLoader from "../store/authReduxs/authLoader";
 import { ToastContainer } from "react-toastify";
+
 const AppRouter = () => {
   return (
     <>
