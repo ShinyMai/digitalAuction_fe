@@ -2,9 +2,9 @@ import React from "react";
 
 const PostAuction = () => {
     return (
-        <>
+        <div className="text-blue-800 font-bold">
             ạhjdjdajws
-        </>
+        </div>
     )
 }
 
