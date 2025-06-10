@@ -6,7 +6,7 @@ import {
 } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
 import { useState, useMemo, memo } from "react";
-import { assets } from "../../assets";
+import { assets } from "../../../assets";
 import Register from "./Register";
 
 const Header = memo(() => {

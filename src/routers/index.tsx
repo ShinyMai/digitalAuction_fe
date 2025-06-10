@@ -1,8 +1,17 @@
-const ROUTERS = {
-  // Guest
-  HOME: "",
-  TIN_TUC: "tin-tuc",
-  POST_AUCTION: 'post-auction',
+export const ROUTERS = {
+  PATH: 'app',
+  SUB: {
+    HOME: "",
+    TIN_TUC: "tin-tuc",
+
+  }
 };
 
-export default ROUTERS;
+export const ROUTERCOMPANY = {
+  PATH: 'admin',
+  SUB: {
+    DASHBOARD: 'dash-boad',
+    POST_AUCTION: 'post-auction',
+  }
+
+}
