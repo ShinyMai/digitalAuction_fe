@@ -1,11 +1,9 @@
-import React from "react";
-
 const PostAuction = () => {
-    return (
-        <div className="text-blue-800 font-bold">
-            ạhjdjdajws
-        </div>
-    )
-}
+  return (
+    <div className="text-blue-800 font-bold">
+      ạhjdjdajws
+    </div>
+  );
+};
 
-export default PostAuction
+export default PostAuction;
