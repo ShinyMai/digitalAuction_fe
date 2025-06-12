@@ -147,7 +147,7 @@ const RegisterAccountForm: React.FC<
 
             <Col xs={24} sm={8}>
               <Form.Item
-                name="PhoneNumber "
+                name="phoneNumber"
                 label="Số điện thoại"
                 rules={[
                   {
