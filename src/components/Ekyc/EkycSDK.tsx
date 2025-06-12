@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { loadEkycScripts } from "./loadEkycScripts";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
 
 declare global {
   interface Window {
@@ -19,28 +21,38 @@ interface EkycSDKProps {
 
 interface EkycResult {
   ocr: {
-    id?: string;
-    name?: string;
-    birth_day?: string;
-    nationality?: string;
-    gender?: string;
-    valid_date?: string;
-    origin_location?: string;
-    recent_location?: string;
-    issue_date?: string;
-    issue_place?: string;
+    object: {
+      id?: string;
+      name?: string;
+      birth_day?: string;
+      nationality?: string;
+      gender?: string;
+      valid_date?: string;
+      origin_location?: string;
+      recent_location?: string;
+      issue_date?: string;
+      issue_place?: string;
+    };
   };
   compare: {
-    msg: string;
+    object: {
+      msg: string;
+    };
   };
   liveness_face: {
-    liveness: string;
+    object: {
+      liveness: string;
+    };
   };
   liveness_card_front: {
-    liveness: string;
+    object: {
+      liveness: string;
+    };
   };
   liveness_card_back: {
-    liveness: string;
+    object: {
+      liveness: string;
+    };
   };
 }
 
@@ -88,32 +100,43 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
       }
 
       setAccount({
-        citizenIdentification: result.ocr.id || "",
-        name: result.ocr.name || "",
-        birthDay: result.ocr.birth_day
-          ? dayjs(result.ocr.birth_day)
+        citizenIdentification: result.ocr.object.id || "",
+        name: result.ocr.object.name || "",
+        birthDay: result.ocr.object.birth_day
+          ? dayjs(result.ocr.object.birth_day, "DD/MM/YYYY")
           : null,
-        issueDate: result.ocr.issue_date
-          ? dayjs(result.ocr.issue_date)
+        issueDate: result.ocr.object.issue_date
+          ? dayjs(
+              result.ocr.object.issue_date,
+              "DD/MM/YYYY"
+            )
           : null,
-        validDate: result.ocr.valid_date
-          ? dayjs(result.ocr.valid_date)
+        validDate: result.ocr.object.valid_date
+          ? dayjs(
+              result.ocr.object.valid_date,
+              "DD/MM/YYYY"
+            )
           : null,
-        nationality: result.ocr.nationality || "",
-        gender: result.ocr.gender || "",
-        originLocation: result.ocr.origin_location || "",
-        recentLocation: result.ocr.recent_location || "",
-        issueBy: result.ocr.issue_place || "",
+        nationality: result.ocr.object.nationality || "",
+        gender:
+          result.ocr.object.gender === "Nam" ? true : false,
+        originLocation:
+          result.ocr.object.origin_location || "",
+        recentLocation:
+          result.ocr.object.recent_location || "",
+        issueBy: result.ocr.object.issue_place || "",
       });
 
-      if (result.compare?.msg === "NOMATCH") {
+      if (result.compare?.object.msg === "NOMATCH") {
         toast.error(
           "Khuôn mặt không khớp với giấy tờ, vui lòng thử lại."
         );
         return;
       }
 
-      if (result.liveness_face?.liveness === "failure") {
+      if (
+        result.liveness_face?.object.liveness === "failure"
+      ) {
         toast.error(
           "Khuôn mặt không phải người thật, vui lòng thử lại."
         );
@@ -121,7 +144,8 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
       }
 
       if (
-        result.liveness_card_front?.liveness === "failure"
+        result.liveness_card_front?.object.liveness ===
+        "failure"
       ) {
         toast.error(
           "Giấy tờ mặt trước không hợp lệ, vui lòng thử lại."
@@ -130,7 +154,8 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
       }
 
       if (
-        result.liveness_card_back?.liveness === "failure"
+        result.liveness_card_back?.object.liveness ===
+        "failure"
       ) {
         toast.error(
           "Giấy tờ mặt sau không hợp lệ, vui lòng thử lại."
@@ -161,8 +186,8 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
       ENABLE_API_COMPARE_FACE: true,
       CUSTOM_THEME: {
         PRIMARY_COLOR: "#0084D1",
-        TEXT_COLOR_DEFAULT: "#000000",
-        BACKGROUND_COLOR: "#ffffff",
+        TEXT_COLOR_DEFAULT: "#ffffff",
+        BACKGROUND_COLOR: "#0F2B3B",
       },
       CHALLENGE_CODE: "9999999",
       SHOW_STEP: true,
@@ -184,8 +209,7 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
   return (
     <div
       id="ekyc_sdk_intergrated"
-      className="rounded-lg px-12 py-6 mx-8 mt-4"
-      style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}
+      className="rounded-lg mx-8 mt-4"
     />
   );
 };

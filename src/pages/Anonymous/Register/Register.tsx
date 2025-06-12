@@ -5,7 +5,7 @@ import { UserOutlined } from "@ant-design/icons";
 import RegisterAccountForm from "./components/RegisterAccountForm";
 
 const Register = () => {
-  const [current, setCurrent] = useState(1);
+  const [current, setCurrent] = useState(0);
   const [account, setAccount] = useState({});
 
   console.log("acc", account);
