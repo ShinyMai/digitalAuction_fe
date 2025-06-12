@@ -5,13 +5,12 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
-import { useState, useMemo, memo } from "react";
+import { useMemo, memo } from "react";
 import { assets } from "../../../assets";
-import Register from "./Register";
+import { useNavigate } from "react-router-dom";
 
 const Header = memo(() => {
-  const [register, setRegister] = useState<boolean>(false);
-  console.log(register);
+  const navigate = useNavigate();
 
   const items = useMemo(
     () => [
@@ -97,14 +96,17 @@ const Header = memo(() => {
 
   return (
     <div className="min-h-18 border-2 rounded-t-lg bg-gradient-to-r from-sky-600 to-sky-400 text-white flex justify- sticky top-0 z-10">
-      <div className="flex items-center justify-between w-full px-4 md:px-12">
+      <div className="flex items-center justify-between w-full px-4 lg:px-12">
         <img
           src={assets.logo}
           alt="Logo"
-          className="w-12 md:w-16 h-12 md:h-16 rounded-2xl"
+          className="w-12 sm:w-16 h-12 md:h-16 rounded-2xl"
         />
-        <div className="hidden md:flex flex-row items-center justify-center gap-5 mt-2 md:mt-0 ml-0 md:ml-8">
-          <div className="cursor-pointer hover:scale-105">
+        <div className="hidden lg:flex flex-row items-center justify-center gap-5 mt-2 md:mt-0 ml-0 md:ml-8">
+          <div
+            className="cursor-pointer hover:scale-105"
+            onClick={() => navigate("/")}
+          >
             Trang chủ
           </div>
           <Dropdown menu={{ items }}>
@@ -141,9 +143,7 @@ const Header = memo(() => {
           </div>
           <div
             className="text-sm md:text-base font-bold bg-white text-black hover:bg-blue-100 px-2 py-1 rounded-lg cursor-pointer text-center hover:scale-105"
-            onClick={() => {
-              setRegister(true);
-            }}
+            onClick={() => navigate("/register")}
           >
             <UserAddOutlined className="mr-2" />
             Đăng ký
@@ -166,13 +166,6 @@ const Header = memo(() => {
           </Dropdown>
         </div>
       </div>
-
-      <Register
-        open={register}
-        onClose={() => {
-          setRegister(false);
-        }}
-      />
     </div>
   );
 });

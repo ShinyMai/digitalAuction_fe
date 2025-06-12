@@ -1,17 +1,17 @@
 export const ROUTERS = {
-  PATH: 'user',
+  PATH: "user",
   SUB: {
     HOME: "",
+    LOGIN: "login",
+    REGISTER: "register",
     TIN_TUC: "tin-tuc",
-
-  }
+  },
 };
 
 export const ROUTERCOMPANY = {
-  PATH: 'admin',
+  PATH: "admin",
   SUB: {
-    DASHBOARD: 'dash-boad',
-    POST_AUCTION: 'post-auction',
-  }
-
-}
+    DASHBOARD: "dash-boad",
+    POST_AUCTION: "post-auction",
+  },
+};

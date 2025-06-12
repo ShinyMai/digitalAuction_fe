@@ -1,9 +1,8 @@
-// src/utils/loadEkycScripts.ts
 const loadedScripts = new Set<string>();
 
 export const loadEkycScripts = async (): Promise<void> => {
   const scripts = [
-     "./lib/VNPTQRBrowserApp.js",
+    "./lib/VNPTQRBrowserApp.js",
     "./lib/VNPTBrowserSDKAppV4.0.0.js",
     "/web-sdk-version-3.2.0.0.js",
   ];
