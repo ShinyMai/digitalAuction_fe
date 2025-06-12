@@ -2,10 +2,11 @@ import { assets } from "../../../assets";
 
 const Footer = () => {
   return (
-    <div className="min-h-28 border-2 mt-2 rounded-b-lg bg-gradient-to-r from-sky-600 to-sky-400 text-white flex flex-col md:flex-row gap-4 md:gap-18 items-center justify-around p-5 text-center md:text-left">
+    <div className="min-h-20 border-2 mt-2 rounded-b-lg bg-gradient-to-r from-sky-600 to-sky-400 text-white flex flex-col
+    md:flex-row gap-4 md:gap-18 items-center justify-around p-5 text-center md:text-left">
       <img
         src={assets.logo}
-        className="w-20 md:w-3xs rounded-2xl mb-4 md:mb-0"
+        className="w-20 md:w-36 rounded-2xl mb-4 md:mb-0"
         alt="Logo"
       />
       <div className="text-sm md:text-base">
