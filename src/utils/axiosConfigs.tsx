@@ -3,8 +3,7 @@ import axios, {
 } from "axios";
 import store from "../store/store";
 
-const API_BASE_URL = import.meta.env
-  .VITE_REACT_APP_API_URL as string;
+const API_BASE_URL = import.meta.env.VITE_BE_URL as string;
 
 const http = axios.create({
   baseURL: API_BASE_URL,
