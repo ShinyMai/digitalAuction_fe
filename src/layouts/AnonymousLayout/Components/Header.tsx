@@ -5,12 +5,14 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
-import { useMemo, memo } from "react";
+import { useMemo, memo, useState } from "react";
 import { assets } from "../../../assets";
 import { useNavigate } from "react-router-dom";
+import Login from "../../../pages/Anonymous/Login/Login";
 
 const Header = memo(() => {
   const navigate = useNavigate();
+  const [login, setLogin] = useState(false);
 
   const items = useMemo(
     () => [
@@ -109,6 +111,9 @@ const Header = memo(() => {
           >
             Trang chủ
           </div>
+          <div className="cursor-pointer hover:scale-105">
+            Giới thiệu
+          </div>
           <Dropdown menu={{ items }}>
             <a
               onClick={(e) => e.preventDefault()}
@@ -121,23 +126,23 @@ const Header = memo(() => {
             </a>
           </Dropdown>
           <div className="cursor-pointer hover:scale-105">
-            Tài sản Bộ Công an
-          </div>
-          <div className="cursor-pointer hover:scale-105">
             Tài sản nhà đất
           </div>
           <div className="cursor-pointer hover:scale-105">
-            Phòng đấu giá
+            Kết quả đấu giả
           </div>
           <div className="cursor-pointer hover:scale-105">
-            Kết quả đấu giả
+            Tin tức
           </div>
           <div className="cursor-pointer hover:scale-105">
             Hướng dẫn
           </div>
         </div>
         <div className="flex items-center gap-2 ">
-          <div className="text-sm md:text-base font-bold text-black bg-white hover:bg-blue-100 px-2 py-1 rounded-lg cursor-pointer text-center hover:scale-105">
+          <div
+            className="text-sm md:text-base font-bold text-black bg-white hover:bg-blue-100 px-2 py-1 rounded-lg cursor-pointer text-center hover:scale-105"
+            onClick={() => setLogin(true)}
+          >
             <UserOutlined className="mr-2" />
             Đăng nhập
           </div>
@@ -166,6 +171,12 @@ const Header = memo(() => {
           </Dropdown>
         </div>
       </div>
+      {login && (
+        <Login
+          open={login}
+          onCancel={() => setLogin(false)}
+        />
+      )}
     </div>
   );
 });

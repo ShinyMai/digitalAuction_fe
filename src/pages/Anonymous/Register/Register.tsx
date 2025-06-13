@@ -1,7 +1,6 @@
 import { useState } from "react";
 import EkycSDK from "../../../components/Ekyc/EkycSDK";
 import { ConfigProvider, Steps } from "antd";
-import { UserOutlined } from "@ant-design/icons";
 import RegisterAccountForm from "./components/RegisterAccountForm";
 
 const Register = () => {
@@ -10,40 +9,33 @@ const Register = () => {
 
   console.log("acc", account);
   return (
-    <div className="px-32 py-4 w-3/4 mx-auto mt-4 bg-white rounded-lg">
+    <div className="lg:px-32 lg:py-4 lg:w-3/4 sm:px-6 w-full mx-auto mt-4 bg-white rounded-lg">
       <ConfigProvider
         theme={{
           components: {
             Steps: {
-              colorPrimary: "#1ab2c9",
+              colorPrimary: "#0093DE",
             },
           },
         }}
       >
-        <Steps
-          current={current}
-          items={[
-            {
-              title: "Xác thực danh tính",
-              icon: (
-                <UserOutlined
-                  style={{ color: "#1ab2c9" }}
-                />
-              ),
-            },
-            {
-              title: "Thông tin tài khoản",
-              icon: (
-                <UserOutlined
-                  style={{ color: "#1ab2c9" }}
-                />
-              ),
-            },
-          ]}
-          style={{
-            fontWeight: "bold",
-          }}
-        />
+        <div className="hidden sm:block">
+          <Steps
+            current={current}
+            items={[
+              {
+                title: "Xác thực danh tính",
+              },
+              {
+                title: "Thông tin tài khoản",
+              },
+            ]}
+            style={{
+              fontWeight: "bold",
+            }}
+            className="hidden sm:block"
+          />
+        </div>
       </ConfigProvider>
       {current === 0 && (
         <EkycSDK
