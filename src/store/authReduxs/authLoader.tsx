@@ -1,30 +1,31 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setTokens, setUser } from "./authSlice";
-import { useNavigate } from "react-router-dom";
+import { setUser, logout } from "./authSlice";
 import type { AppDispatch } from "../store";
+import AuthServices from "../../services/AuthServices";
 
 const AuthLoader = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    const userData = localStorage.getItem("user");
-    const user = userData ? JSON.parse(userData) : null;
+    const loadUserFromServer = async () => {
+      try {
+        const res = await AuthServices.verify();
 
-    if (accessToken && user) {
-      dispatch(setTokens({ accessToken }));
-      dispatch(setUser(user));
-      if (user.role) {
-        if (user.role === "patient") {
-          // navigate("/");
+        if (res.status === 200) {
+          const user = await res.data;
+          dispatch(setUser(user));
         } else {
-          navigate(`/${user.role}`);
+          dispatch(logout());
         }
+      } catch (error) {
+        console.error("Failed to load user:", error);
+        dispatch(logout());
       }
-    }
-  }, [dispatch, navigate]);
+    };
+
+    loadUserFromServer();
+  }, [dispatch]);
 
   return null;
 };
