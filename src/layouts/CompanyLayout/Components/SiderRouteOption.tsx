@@ -7,6 +7,7 @@ import {
 import { Menu, type MenuProps } from 'antd';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ROUTERCOMPANY } from '../../../routers';
 
 const items: MenuProps['items'] = [
     {
@@ -19,7 +20,7 @@ const items: MenuProps['items'] = [
         key: '2',
         icon: <ScheduleOutlined />,
         label: 'Danh sách các buổi đấu giá',
-        url: '/auctions',
+        url: '/auction-list',
     },
     {
         key: '3',
@@ -43,7 +44,8 @@ const SiderRouteOption = () => {
     const onClick: MenuProps['onClick'] = (e) => {
         const item = items.find((i) => i?.key === e.key);
         if (item && 'url' in item) {
-            navigate(`/admin/post-auction`);
+            console.log(ROUTERCOMPANY.PATH + item.url)
+            navigate(ROUTERCOMPANY.PATH + item.url);
         }
     };
 

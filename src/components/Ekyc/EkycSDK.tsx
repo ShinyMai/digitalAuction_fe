@@ -107,15 +107,15 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
           : null,
         issueDate: result.ocr.object.issue_date
           ? dayjs(
-              result.ocr.object.issue_date,
-              "DD/MM/YYYY"
-            )
+            result.ocr.object.issue_date,
+            "DD/MM/YYYY"
+          )
           : null,
         validDate: result.ocr.object.valid_date
           ? dayjs(
-              result.ocr.object.valid_date,
-              "DD/MM/YYYY"
-            )
+            result.ocr.object.valid_date,
+            "DD/MM/YYYY"
+          )
           : null,
         nationality: result.ocr.object.nationality || "",
         gender:
