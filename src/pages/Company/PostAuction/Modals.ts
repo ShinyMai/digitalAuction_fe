@@ -13,3 +13,8 @@ export type AuctionAdd = {
     RegisterOpenDate: Date;
     Status: string;
 }
+
+export type AuctionCategory = {
+    categoryId: number,
+    categoryName: string,
+}

@@ -5,17 +5,22 @@ import MapComponent from "./MapComponent";
 import { AuctionCategories } from "../../DataConst";
 import { useState } from "react";
 import UploadFile from "./Upload";
-import http from "../../../../utils/axiosConfigs";
 import AuctionServices from "../../../../services/AuctionServices";
 import dayjs from "dayjs";
+import type { AuctionCategory } from "../Modals";
+import TinyMCEEditor from "./TinyMCEEditor";
 
-const AuctionCreateForm = () => {
+interface props {
+    auctionCategoryList: AuctionCategory[]
+}
+
+const AuctionCreateForm = ({ auctionCategoryList }: props) => {
     const [form] = useForm();
     const [isRealEstate, setIsRealEstate] = useState(false);
     const [loading, setLoading] = useState(false);
-    const auctionCategoryList = AuctionCategories.map((val) => ({
-        value: val.CategoryId,
-        label: val.CategoryName,
+    const dataAuctionCategoryList = auctionCategoryList.map((val) => ({
+        value: val.categoryId,
+        label: val.categoryName,
     }));
 
     // Hàm upload file lên server
@@ -59,11 +64,11 @@ const AuctionCreateForm = () => {
             //     auctionPlanningMap && uploadFileToServer(auctionPlanningMap),
             // ].filter(Boolean));
 
-            console.log("Form submitted successfully:", values);
+            console.log("Form submitted successfully:", values); // Kiểm tra giá trị
             message.success("Tạo đấu giá thành công!");
-            await AuctionServices.addAcution(appendFormData(values))
-                .then(res => console.log(res))
-                .catch(err => console.log(err))
+            // await AuctionServices.addAcution(appendFormData(values))
+            //     .then(res => console.log(res))
+            //     .catch(err => console.log(err))
         } catch (error: any) {
             console.error("Error uploading files:", error);
             message.error(`Tạo đấu giá thất bại: ${error.message}`);
@@ -138,17 +143,10 @@ const AuctionCreateForm = () => {
                                 <Select
                                     className="custom-input"
                                     placeholder="Chọn danh mục"
-                                    options={auctionCategoryList}
-                                    onSelect={(val) => setIsRealEstate(val === 2)}
+                                    options={dataAuctionCategoryList}
+                                    onSelect={(val) => setIsRealEstate(val === 1)}
                                 />
                             </Form.Item>
-                            {/* <Form.Item
-                                label="Trạng thái"
-                                name="Status"
-                                rules={[{ required: true, message: "Vui lòng nhập trạng thái!" }]}
-                            >
-                                <Input className="custom-input" placeholder="Nhập trạng thái" />
-                            </Form.Item> */}
                             <Form.Item
                                 label="Số vòng tối đa"
                                 name="NumberRoundMax"
@@ -161,13 +159,6 @@ const AuctionCreateForm = () => {
                                     max={5}
                                     min={1}
                                 />
-                            </Form.Item>
-                            <Form.Item
-                                label="Mô tả đấu giá"
-                                name="AuctionDescription"
-                                rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
-                            >
-                                <TextArea rows={4} placeholder="Mô tả chi tiết về đấu giá" />
                             </Form.Item>
                         </Card>
                     </Col>
@@ -204,6 +195,7 @@ const AuctionCreateForm = () => {
                             </Form.Item>
                         </Card>
                     </Col>
+
                     <Col xs={24} md={12} lg={8}>
                         <Card title="Tệp và Bản Đồ" className="form-card">
                             <Form.Item
@@ -239,6 +231,20 @@ const AuctionCreateForm = () => {
                         </Card>
                     </Col>
                 </Row>
+
+                <Row gutter={[16, 16]} className="w-full mt-4">
+                    <Col span={24}>
+                        <Card title="Mô tả đấu giá" className="form-card">
+                            <Form.Item
+                                name="AuctionDescription"
+                                rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
+                            >
+                                <TinyMCEEditor />
+                            </Form.Item>
+                        </Card>
+                    </Col>
+                </Row>
+
                 <Form.Item className="text-center mt-6">
                     <Button htmlType="submit" type="primary" loading={loading}>
                         Tạo Đấu Giá
