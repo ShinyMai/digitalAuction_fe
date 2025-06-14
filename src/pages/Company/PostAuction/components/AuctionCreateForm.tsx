@@ -5,6 +5,9 @@ import MapComponent from "./MapComponent";
 import { AuctionCategories } from "../../DataConst";
 import { useState } from "react";
 import UploadFile from "./Upload";
+import http from "../../../../utils/axiosConfigs";
+import AuctionServices from "../../../../services/AuctionServices";
+import dayjs from "dayjs";
 
 const AuctionCreateForm = () => {
     const [form] = useForm();
@@ -58,12 +61,51 @@ const AuctionCreateForm = () => {
 
             console.log("Form submitted successfully:", values);
             message.success("Tạo đấu giá thành công!");
+            await AuctionServices.addAcution(appendFormData(values))
+                .then(res => console.log(res))
+                .catch(err => console.log(err))
         } catch (error: any) {
             console.error("Error uploading files:", error);
             message.error(`Tạo đấu giá thất bại: ${error.message}`);
         } finally {
             setLoading(false);
         }
+    };
+
+    const appendFormData = (val: any) => {
+        const formData = new FormData();
+
+        // Append simple fields
+        formData.append('AuctionName', val.AuctionName);
+        formData.append('CategoryId', val.CategoryId.toString());
+        formData.append('Status', (false).toString());
+        formData.append('NumberRoundMax', val.NumberRoundMax.toString());
+        formData.append('AuctionDescription', val.AuctionDescription);
+        formData.append('RegisterOpenDate', dayjs(val.RegisterOpenDate).format('YYYY-MM-DDTHH:mm:ss'));
+        formData.append('RegisterEndDate', dayjs(val.RegisterEndDate).format('YYYY-MM-DDTHH:mm:ss'));
+        formData.append('AuctionStartDate', dayjs(val.AuctionStartDate).format('YYYY-MM-DDTHH:mm:ss'));
+        formData.append('AuctionEndDate', dayjs(val.AuctionEndDate).format('YYYY-MM-DDTHH:mm:ss'));
+        formData.append('WinnerData', "");
+        // Append AuctionAssetFile array
+        if (val.AuctionAssetFile && Array.isArray(val.AuctionAssetFile)) {
+            val.AuctionAssetFile.forEach((file: any, index: number) => {
+                if (file.originFileObj) {
+                    formData.append(`AuctionAssetFile`, file.originFileObj, file.name);
+                }
+            });
+        }
+
+        // Append AuctionRulesFile array
+        if (val.AuctionRulesFile && Array.isArray(val.AuctionRulesFile)) {
+            val.AuctionRulesFile.forEach((file: any, index: number) => {
+                if (file.originFileObj) {
+                    formData.append(`AuctionRulesFile`, file.originFileObj, file.name);
+                    formData.append(`AuctionPlanningMap`, file.originFileObj, file.name);
+                }
+            });
+        }
+
+        return formData;
     };
 
     return (
@@ -100,13 +142,13 @@ const AuctionCreateForm = () => {
                                     onSelect={(val) => setIsRealEstate(val === 2)}
                                 />
                             </Form.Item>
-                            <Form.Item
+                            {/* <Form.Item
                                 label="Trạng thái"
                                 name="Status"
                                 rules={[{ required: true, message: "Vui lòng nhập trạng thái!" }]}
                             >
                                 <Input className="custom-input" placeholder="Nhập trạng thái" />
-                            </Form.Item>
+                            </Form.Item> */}
                             <Form.Item
                                 label="Số vòng tối đa"
                                 name="NumberRoundMax"
