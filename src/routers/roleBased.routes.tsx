@@ -18,15 +18,15 @@ const News = React.lazy(
 
 export const guestRoutes = [
   {
-    path: GUESTROUTERS.SUB.HOME,
+    path: GUESTROUTERS.HOME,
     element: wrapWithLazy(HomePage),
   },
   {
-    path: GUESTROUTERS.SUB.REGISTER,
+    path: GUESTROUTERS.REGISTER,
     element: wrapWithLazy(Register),
   },
   {
-    path: GUESTROUTERS.SUB.TIN_TUC,
+    path: GUESTROUTERS.TIN_TUC,
     element: wrapWithLazy(News),
   },
 ];
@@ -48,9 +48,15 @@ const PostAuction = React.lazy(
 
 const AuctionList = React.lazy(
   () => import("../pages/Company/AuctionList/index")
-)
+);
 
 export const companyRoutes = [
-  { path: ROUTERCOMPANY.SUB.POST_AUCTION, element: wrapWithLazy(PostAuction) },
-  { path: ROUTERCOMPANY.SUB.AUCTION_LIST, element: wrapWithLazy(AuctionList) }
-]
+  {
+    path: ROUTERCOMPANY.SUB.POST_AUCTION,
+    element: wrapWithLazy(PostAuction),
+  },
+  {
+    path: ROUTERCOMPANY.SUB.AUCTION_LIST,
+    element: wrapWithLazy(AuctionList),
+  },
+];
