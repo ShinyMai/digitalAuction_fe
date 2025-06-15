@@ -1,8 +1,11 @@
-import { ROUTERCOMPANY, ROUTERS } from ".";
+import {
+  GUESTROUTERS,
+  ROUTERCOMPANY,
+  USERROUTERS,
+} from ".";
 import wrapWithLazy from "../utils/wrapWithLazy";
 import React from "react";
 
-// Import các component khác
 const HomePage = React.lazy(
   () => import("../pages/Anonymous/HomePage/HomePage")
 );
@@ -15,16 +18,25 @@ const News = React.lazy(
 
 export const guestRoutes = [
   {
-    path: ROUTERS.SUB.HOME,
+    path: GUESTROUTERS.SUB.HOME,
     element: wrapWithLazy(HomePage),
   },
   {
-    path: ROUTERS.SUB.REGISTER,
+    path: GUESTROUTERS.SUB.REGISTER,
     element: wrapWithLazy(Register),
   },
   {
-    path: ROUTERS.SUB.TIN_TUC,
+    path: GUESTROUTERS.SUB.TIN_TUC,
     element: wrapWithLazy(News),
+  },
+];
+
+// Router site User
+
+export const userRoutes = [
+  {
+    path: USERROUTERS.SUB.HOME,
+    element: wrapWithLazy(HomePage),
   },
 ];
 
