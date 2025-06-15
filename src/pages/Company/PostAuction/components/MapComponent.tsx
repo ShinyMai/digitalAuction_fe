@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Input, Tooltip } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
@@ -17,8 +17,9 @@ L.Icon.Default.mergeOptions({
 interface MapComponentProps {
     isSearchMode: boolean;
     defaultPosition?: [number, number];
-    value?: string; // Chỉ chấp nhận chuỗi
-    onChange?: (value: [number, number]) => void;
+    value?: string; // Giá trị form sẽ là display_name
+    onChange?: (value: string) => void; // Thay đổi type của onChange để nhận string
+    onPositionNameChange?: (name: string) => void;
     name?: string;
     popupText?: string;
 }
@@ -37,17 +38,27 @@ const MapComponent: React.FC<MapComponentProps> = ({
     defaultPosition = [21.0285, 105.8542], // Default: Hà Nội
     value,
     onChange,
+    onPositionNameChange,
     name,
     popupText = 'Vị trí đấu giá',
 }) => {
-    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [searchQuery, setSearchQuery] = useState<string>(value || '');
     const [position, setPosition] = useState<[number, number]>(defaultPosition);
+    const [positionName, setPositionName] = useState<string>(value || ''); // Đồng bộ với value ban đầu
     const [loading, setLoading] = useState<boolean>(false);
     const [inputError, setInputError] = useState<boolean>(false);
+    const prevValueRef = useRef<string | undefined>(value); // Theo dõi giá trị trước đó
 
     // Hàm chuyển đổi địa chỉ thành tọa độ
-    const fetchCoordinatesFromAddress = async (address: string) => {
-        if (!address.trim()) return;
+    const fetchCoordinatesFromAddress = useCallback(async (address: string) => {
+        if (!address.trim()) {
+            setPosition(defaultPosition);
+            setPositionName('');
+            setSearchQuery('');
+            onPositionNameChange?.('');
+            onChange?.('');
+            return;
+        }
         setLoading(true);
         try {
             const response = await axios.get('https://nominatim.openstreetmap.org/search', {
@@ -62,32 +73,44 @@ const MapComponent: React.FC<MapComponentProps> = ({
             });
 
             if (response.data.length > 0) {
-                const { lat, lon } = response.data[0];
+                const { lat, lon, display_name } = response.data[0];
                 const newPosition: [number, number] = [parseFloat(lat), parseFloat(lon)];
-                setPosition(newPosition);
-                onChange?.(newPosition);
+                if (newPosition[0] !== position[0] || newPosition[1] !== position[1]) {
+                    setPosition(newPosition);
+                    setPositionName(display_name);
+                    setSearchQuery(display_name); // Cập nhật ô input với display_name
+                    onChange?.(display_name); // Truyền display_name ra form
+                    onPositionNameChange?.(display_name);
+                }
                 setInputError(false);
             } else {
                 setInputError(true);
-                onChange?.(defaultPosition); // Quay về vị trí mặc định nếu không tìm thấy
+                setPosition(defaultPosition);
+                setPositionName('');
+                setSearchQuery('');
+                onPositionNameChange?.('');
+                onChange?.('');
             }
         } catch (error) {
             console.error('Error fetching coordinates:', error);
             setInputError(true);
-            onChange?.(defaultPosition); // Quay về vị trí mặc định nếu có lỗi
+            setPosition(defaultPosition);
+            setPositionName('');
+            setSearchQuery('');
+            onPositionNameChange?.('');
+            onChange?.('');
         } finally {
             setLoading(false);
         }
-    };
+    }, [defaultPosition, onChange, onPositionNameChange, position]);
 
-    // Đồng bộ position với value từ Form
+    // Đồng bộ position với value từ Form, tránh vòng lặp
     useEffect(() => {
-        if (value) {
-            fetchCoordinatesFromAddress(value);
-        } else {
-            setPosition(defaultPosition);
+        if (value !== prevValueRef.current) {
+            fetchCoordinatesFromAddress(value || '');
+            prevValueRef.current = value; // Cập nhật giá trị trước đó
         }
-    }, [value, defaultPosition]);
+    }, [value, fetchCoordinatesFromAddress]);
 
     // Hàm tìm kiếm tọa độ từ địa điểm sử dụng Nominatim API
     const handleSearch = async () => {
@@ -97,7 +120,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
         }
 
         setLoading(true);
-        setInputError(false); // Reset trạng thái lỗi trước khi tìm kiếm
+        setInputError(false);
         try {
             const response = await axios.get('https://nominatim.openstreetmap.org/search', {
                 params: {
@@ -106,23 +129,34 @@ const MapComponent: React.FC<MapComponentProps> = ({
                     limit: 1,
                 },
                 headers: {
-                    'User-Agent': 'AuctionApp/1.0', // Thêm User-Agent theo yêu cầu Nominatim
+                    'User-Agent': 'AuctionApp/1.0',
                 },
             });
 
             if (response.data.length > 0) {
-                const { lat, lon } = response.data[0];
+                const { lat, lon, display_name } = response.data[0];
                 const newPosition: [number, number] = [parseFloat(lat), parseFloat(lon)];
-                setPosition(newPosition); // Cập nhật vị trí marker
-                onChange?.(newPosition); // Cập nhật giá trị cho Form
+                if (newPosition[0] !== position[0] || newPosition[1] !== position[1]) {
+                    setPosition(newPosition);
+                    setPositionName(display_name);
+                    setSearchQuery(display_name); // Cập nhật ô input với display_name
+                    onChange?.(display_name); // Truyền display_name ra form
+                    onPositionNameChange?.(display_name);
+                }
             } else {
-                setInputError(true); // Đặt trạng thái lỗi để hiển thị tooltip
-                onChange?.(position); // Giữ nguyên giá trị hiện tại trong form
+                setInputError(true);
+                onChange?.(positionName || '');
+                setPositionName('');
+                setSearchQuery('');
+                onPositionNameChange?.('');
             }
         } catch (error) {
             console.error('Error fetching coordinates:', error);
-            setInputError(true); // Đặt trạng thái lỗi
-            onChange?.(position); // Giữ nguyên giá trị hiện tại trong form
+            setInputError(true);
+            onChange?.(positionName || '');
+            setPositionName('');
+            setSearchQuery('');
+            onPositionNameChange?.('');
         } finally {
             setLoading(false);
         }
@@ -148,7 +182,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                         value={searchQuery}
                         onChange={(e) => {
                             setSearchQuery(e.target.value);
-                            setInputError(false); // Reset trạng thái lỗi khi người dùng nhập lại
+                            setInputError(false);
                         }}
                         onKeyPress={handleKeyPress}
                         suffix={
@@ -173,7 +207,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 />
                 <MapUpdater center={position} />
                 <Marker position={position}>
-                    <Popup>{popupText}</Popup>
+                    <Popup>{popupText} - {positionName || 'Chưa xác định'}</Popup>
                 </Marker>
             </MapContainer>
         </div>
