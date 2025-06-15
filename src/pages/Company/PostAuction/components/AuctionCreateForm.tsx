@@ -105,7 +105,18 @@ const AuctionCreateForm = ({ auctionCategoryList }: props) => {
             val.AuctionRulesFile.forEach((file: any, index: number) => {
                 if (file.originFileObj) {
                     formData.append(`AuctionRulesFile`, file.originFileObj, file.name);
+
+                }
+            });
+        }
+
+
+        // Append AuctionPlanningMap array
+        if (val.AuctionPlanningMap && Array.isArray(val.AuctionPlanningMap)) {
+            val.AuctionPlanningMap.forEach((file: any, index: number) => {
+                if (file.originFileObj) {
                     formData.append(`AuctionPlanningMap`, file.originFileObj, file.name);
+
                 }
             });
         }
