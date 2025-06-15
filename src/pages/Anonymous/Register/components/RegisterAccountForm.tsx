@@ -5,14 +5,30 @@ import {
   Form,
   Input,
   Row,
+  Select,
   Spin,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import AuthServices from "../../../../services/AuthServices";
 
+interface Account {
+  email?: string;
+  password?: string;
+  citizenIdentification?: string;
+  phoneNumber?: string;
+  birthDay?: Date;
+  issueDate?: Date;
+  validDate?: Date;
+  nationality?: string;
+  gender?: boolean;
+  originLocation?: string;
+  recentLocation?: string;
+  issueBy?: string;
+}
+
 interface RegisterAccountFormProps {
   setAccount: (account: object) => void;
-  account: any;
+  account: Account;
 }
 
 const RegisterAccountForm: React.FC<
@@ -171,7 +187,14 @@ const RegisterAccountForm: React.FC<
                 label="Giới tính"
                 rules={[{ required: true }]}
               >
-                <Input placeholder="Giới tính" readOnly />
+                <Select placeholder="Chọn giới tính">
+                  <Select.Option value={true}>
+                    Nam
+                  </Select.Option>
+                  <Select.Option value={false}>
+                    Nữ
+                  </Select.Option>
+                </Select>
               </Form.Item>
             </Col>
 
@@ -184,6 +207,7 @@ const RegisterAccountForm: React.FC<
                 <DatePicker
                   format="YYYY/MM/DD"
                   placeholder="Chọn ngày sinh"
+                  allowClear={false}
                   readOnly
                 />
               </Form.Item>
@@ -258,6 +282,7 @@ const RegisterAccountForm: React.FC<
                 <DatePicker
                   format="YYYY/MM/DD"
                   placeholder="Ngày cấp CCCD"
+                  allowClear={false}
                   readOnly
                 />
               </Form.Item>
@@ -282,6 +307,7 @@ const RegisterAccountForm: React.FC<
                 <DatePicker
                   format="YYYY/MM/DD"
                   placeholder="Ngày hết hạn CCCD"
+                  allowClear={false}
                   readOnly
                 />
               </Form.Item>

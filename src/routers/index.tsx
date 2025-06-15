@@ -1,5 +1,12 @@
-export const ROUTERS = {
-  PATH: '/user',
+export const GUESTROUTERS = {
+  HOME: "",
+  LOGIN: "login",
+  REGISTER: "register",
+  TIN_TUC: "tin-tuc",
+};
+
+export const USERROUTERS = {
+  PATH: "user",
   SUB: {
     HOME: "",
     LOGIN: "login",
@@ -9,11 +16,10 @@ export const ROUTERS = {
 };
 
 export const ROUTERCOMPANY = {
-  PATH: '/admin',
+  PATH: "admin",
   SUB: {
-    DASHBOARD: 'dash-boad',
-    POST_AUCTION: 'auction-post',
-    AUCTION_LIST: 'auction-list'
-  }
-
-}
+    DASHBOARD: "dash-boad",
+    POST_AUCTION: "auction-post",
+    AUCTION_LIST: "auction-list",
+  },
+};
