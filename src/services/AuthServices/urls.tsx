@@ -1,6 +1,8 @@
 export const AccountAPI = {
-  login: "account/login",
+  login: "/LoginUser/Login",
   register: "/SignUp",
+  forgotPassword: "account/forgot-password",
+  verify: "/verify",
 } as const;
 
 export type AccountAPIKey = keyof typeof AccountAPI;

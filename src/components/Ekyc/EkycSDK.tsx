@@ -209,7 +209,7 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
   return (
     <div
       id="ekyc_sdk_intergrated"
-      className="sm:rounded-lg sm:mx-8 sm:mt-4"
+      className="sm:rounded-lg lg:mx-8 sm:mt-4"
     />
   );
 };

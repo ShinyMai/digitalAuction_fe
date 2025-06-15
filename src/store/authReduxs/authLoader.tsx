@@ -1,30 +1,37 @@
+import { useSelector } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { setTokens, setUser } from "./authSlice";
-import { useNavigate } from "react-router-dom";
-import type { AppDispatch } from "../store";
+import type { RootState } from "../store";
 
 const AuthLoader = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    const userData = localStorage.getItem("user");
-    const user = userData ? JSON.parse(userData) : null;
-
-    if (accessToken && user) {
-      dispatch(setTokens({ accessToken }));
-      dispatch(setUser(user));
-      if (user.role) {
-        if (user.role === "patient") {
-          // navigate("/");
-        } else {
-          navigate(`/${user.role}`);
+    if (user?.roleName) {
+      const currentPath = location.pathname;
+      console.log(
+        "Current path:",
+        currentPath,
+        "User role:",
+        user.roleName
+      );
+      if (user.roleName === "Admin") {
+        if (!currentPath.startsWith("/admin")) {
+          navigate("/admin/post-auction", {
+            replace: true,
+          });
+        }
+      } else if (user.roleName === "User") {
+        if (currentPath.startsWith("/admin")) {
+          navigate("/", { replace: true });
         }
       }
     }
-  }, [dispatch, navigate]);
+  }, [user, navigate, location.pathname]);
 
   return null;
 };
