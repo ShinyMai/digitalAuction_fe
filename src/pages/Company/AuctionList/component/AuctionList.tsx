@@ -3,127 +3,55 @@ import { Button, Form, Input, Table, type TableProps } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useNavigate } from "react-router-dom";
 import { ROUTERCOMPANY } from "../../../../routers";
+import type { AuctionDataList } from "../Modals";
 
 interface props {
-    AuctionData: any[],
+    AuctionData?: AuctionDataList[],
     onSearch: (searchvalue: any) => void,
-}
-
-interface AuctionDataType {
-    id: string;
-    Auction_Name: string;
-    //Auction_Category_id: number;
-    //Auction_description: string;
-    //Auction_Rules: string;
-    //Auction_Planning_Map: string;
-    Register_open_date: string;
-    Register_end_date: string;
-    Auction_start_date: string;
-    Auction_end_date: string;
-    //CreateBy: string;
-    // CreateAt: string;
-    //UpdateBy: string;
-    //UpdateAt: string;
-    //Or_link: string;
-    Number_round_max: number;
-    Status: string;
-    //Winner_data: string;
 }
 
 const AcutionList = ({ AuctionData, onSearch }: props) => {
     const [form] = useForm()
     const navigate = useNavigate()
-    const columns: TableProps<AuctionDataType>['columns'] = [
+    const columns: TableProps<AuctionDataList>['columns'] = [
         {
             title: 'ID',
-            dataIndex: 'id',
-            key: 'id',
+            dataIndex: 'auctionId',
+            key: 'auctionId',
         },
         {
             title: 'Tên Đấu Giá',
-            dataIndex: 'Auction_Name',
-            key: 'Auction_Name',
+            dataIndex: 'auctionName',
+            key: 'auctionName',
         },
-        // {
-        //     title: 'Danh Mục ID',
-        //     dataIndex: 'Auction_Category_id',
-        //     key: 'Auction_Category_id',
-        // },
-        // {
-        //     title: 'Mô Tả',
-        //     dataIndex: 'Auction_description',
-        //     key: 'Auction_description',
-        // },
-        // {
-        //     title: 'Quy Tắc',
-        //     dataIndex: 'Auction_Rules',
-        //     key: 'Auction_Rules',
-        // },
-        // {
-        //     title: 'Kế Hoạch',
-        //     dataIndex: 'Auction_Planning_Map',
-        //     key: 'Auction_Planning_Map',
-        // },
         {
             title: 'Ngày ĐK Mở',
-            dataIndex: 'Register_open_date',
-            key: 'Register_open_date',
+            dataIndex: 'registerOpenDate',
+            key: 'registerOpenDate',
             render: (text: string) => new Date(text).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
         },
         {
             title: 'Ngày ĐK Kết Thúc',
-            dataIndex: 'Register_end_date',
-            key: 'Register_end_date',
+            dataIndex: 'registerEndDate',
+            key: 'registerEndDate',
             render: (text: string) => new Date(text).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
         },
         {
             title: 'Ngày Bắt Đầu',
-            dataIndex: 'Auction_start_date',
-            key: 'Auction_start_date',
+            dataIndex: 'auctionStartDate',
+            key: 'auctionStartDate',
             render: (text: string) => new Date(text).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
         },
         {
             title: 'Ngày Kết Thúc',
-            dataIndex: 'Auction_end_date',
-            key: 'Auction_end_date',
+            dataIndex: 'auctionEndDate',
+            key: 'auctionEndDate',
             render: (text: string) => new Date(text).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
         },
-        // {
-        //     title: 'Người Tạo',
-        //     dataIndex: 'CreateBy',
-        //     key: 'CreateBy',
-        // },
-        // {
-        //     title: 'Thời Gian Tạo',
-        //     dataIndex: 'CreateAt',
-        //     key: 'CreateAt',
-        //     render: (text: string) => new Date(text).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
-        // },
-        // {
-        //     title: 'Người Cập Nhật',
-        //     dataIndex: 'UpdateBy',
-        //     key: 'UpdateBy',
-        // },
-        // {
-        //     title: 'Thời Gian Cập Nhật',
-        //     dataIndex: 'UpdateAt',
-        //     key: 'UpdateAt',
-        //     render: (text: string) => new Date(text).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
-        // },
-        // {
-        //     title: 'Liên Kết',
-        //     dataIndex: 'Or_link',
-        //     key: 'Or_link',
-        // },
         {
-            title: 'Số Vòng Tối Đa',
-            dataIndex: 'Number_round_max',
-            key: 'Number_round_max',
-        },
-        {
-            title: 'Trạng Thái',
-            dataIndex: 'Status',
-            key: 'Status',
+            title: 'Người tạo',
+            dataIndex: 'createdByUserName',
+            key: 'createdByUserName',
         },
         // {
         //     title: 'Dữ Liệu Người Thắng',
@@ -195,7 +123,7 @@ const AcutionList = ({ AuctionData, onSearch }: props) => {
                 </Form>
             </div>
             <div>
-                <Table<AuctionDataType>
+                <Table<AuctionDataList>
                     columns={columns}
                     dataSource={AuctionData}
                 />
