@@ -4,8 +4,7 @@ import axios, {
 import { logout } from "../store/authReduxs/authSlice";
 import store from "../store/store";
 
-const API_BASE_URL = import.meta.env
-  .VITE_REACT_APP_API_URL as string;
+const API_BASE_URL = import.meta.env.VITE_BE_URL;
 
 const http = axios.create({
   baseURL: API_BASE_URL,
@@ -15,12 +14,6 @@ const http = axios.create({
 
 http.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const { accessToken } = store.getState().auth;
-
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-
     return config;
   },
   (error) => Promise.reject(error)
