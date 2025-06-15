@@ -1,31 +1,37 @@
+import { useSelector } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { setUser, logout } from "./authSlice";
-import type { AppDispatch } from "../store";
-import AuthServices from "../../services/AuthServices";
+import type { RootState } from "../store";
 
 const AuthLoader = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   useEffect(() => {
-    const loadUserFromServer = async () => {
-      try {
-        const res = await AuthServices.verify();
-
-        if (res.status === 200) {
-          const user = await res.data;
-          dispatch(setUser(user));
-        } else {
-          dispatch(logout());
+    if (user?.roleName) {
+      const currentPath = location.pathname;
+      console.log(
+        "Current path:",
+        currentPath,
+        "User role:",
+        user.roleName
+      );
+      if (user.roleName === "Admin") {
+        if (!currentPath.startsWith("/admin")) {
+          navigate("/admin/post-auction", {
+            replace: true,
+          });
         }
-      } catch (error) {
-        console.error("Failed to load user:", error);
-        dispatch(logout());
+      } else if (user.roleName === "User") {
+        if (currentPath.startsWith("/admin")) {
+          navigate("/", { replace: true });
+        }
       }
-    };
-
-    loadUserFromServer();
-  }, [dispatch]);
+    }
+  }, [user, navigate, location.pathname]);
 
   return null;
 };
