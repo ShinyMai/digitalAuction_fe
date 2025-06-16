@@ -10,11 +10,16 @@ const getListAuctionCategory = () =>
 const getListAuction = (params?: any) =>
     http.get(AuctionAPI.AUCTIONLIST, { params: params })
 
+const getAuctionDetail = (params?: string) =>
+    http.get(`${AuctionAPI.AUCTIONDETAIL}/${params}`)
+
+
 
 const AuctionServices = {
     addAcution,
     getListAuctionCategory,
     getListAuction,
+    getAuctionDetail
 };
 
 export default AuctionServices;

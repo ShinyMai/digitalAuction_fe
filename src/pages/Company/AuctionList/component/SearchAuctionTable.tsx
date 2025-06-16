@@ -19,7 +19,7 @@ const SearchAuctionTable = ({ auctionCategory, onSearch }: Props) => {
     }));
 
     const onClickAddnew = () => {
-        navigate(`${ROUTERCOMPANY.PATH}/${ROUTERCOMPANY.SUB.POST_AUCTION}`);
+        navigate(`/${ROUTERCOMPANY.SUB.POST_AUCTION}`);
     };
 
     const handleSearch = () => {
