@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Form, Input, Button, Spin } from "antd";
 import {
   UserOutlined,
@@ -6,64 +7,84 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import CustomModal from "../../../components/Common/CustomModal";
+import AuthServices from "../../../services/AuthServices";
+import ResetPassword from "./ResetPassword";
 
 interface VerifyOTPProps {
   open?: boolean;
   onCancel: () => void;
 }
 
-interface FormValues {
-  email: string;
-  otp: string;
-}
-
 const VerifyOTP: React.FC<VerifyOTPProps> = ({
   open,
   onCancel,
 }) => {
-  const [email, setEmail] = useState("");
+  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [sendOTP, setSendOTP] = useState(false);
-  const [isOTPVerified, setIsOTPVerified] = useState(true);
+  const [isOTPVerified, setIsOTPVerified] = useState(false);
+  const [resetGuid, setResetGuid] = useState("");
 
-  const [formLogin] = Form.useForm<FormValues>();
+  const email = Form.useWatch("email", form);
+
+  const extractErrorMessage = (error: unknown): string => {
+    return (
+      (error as any)?.response?.data?.Message ||
+      (error as any)?.response?.data?.message ||
+      "Đã xảy ra lỗi."
+    );
+  };
+
   const handleSendOTP = async () => {
-    if (email === "") {
+    if (!email) {
       toast.error("Vui lòng nhập Email!");
       return;
     }
     try {
       setLoading(true);
-      //   const res = await AuthServices.sendOTP({ email });
-      //   if (res.success) {
-      //     toast.success("Gửi mã OTP thành công!");
-      //     setSendOTP(true);
-      //     setSeconds(60);
-      //   } else {
-      //     toast.error("Vui lòng thử lại!");
-      //   }
-    } catch (error) {
-      console.error("Send OTP Failed:", error);
+      const res = await AuthServices.forgotPassword({
+        contact: email,
+        channel: 0,
+      });
+
+      if (res.code === 200) {
+        toast.success(res.message);
+        setSendOTP(true);
+        setSeconds(60);
+      } else {
+        toast.error("Vui lòng thử lại!");
+      }
+    } catch (error: unknown) {
+      const errorMessage = extractErrorMessage(error);
+      toast.error(errorMessage);
+      console.error("Send OTP Failed:", errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   const verifyOTP = async () => {
-    const values = await formLogin.validateFields();
     try {
+      const values = await form.validateFields();
       setLoading(true);
-      // const res = await AuthServices.verifyOTP(values);
-      // if (res.success) {
-      //   setIsOTPVerified(true);
-      // }
-    } catch (error: any) {
-      console.error("Verify OTP Failed:", error);
-      const errorMessage =
-        error?.response?.data?.message ||
-        "Đã có lỗi xảy ra. Vui lòng thử lại.";
+      const res = await AuthServices.verifyOTP({
+        contact: values.email,
+        otpCode: values.otp,
+        channel: 0,
+      });
+
+      if (res.code === 200) {
+        toast.success("Xác thực OTP thành công!");
+        setIsOTPVerified(true);
+        setResetGuid(res.data?.resetGuid || "");
+      } else {
+        toast.error(res.message || "OTP không chính xác!");
+      }
+    } catch (error: unknown) {
+      const errorMessage = extractErrorMessage(error);
       toast.error(errorMessage);
+      console.error("Verify OTP Failed:", errorMessage);
     } finally {
       setLoading(false);
     }
@@ -71,117 +92,32 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
 
   useEffect(() => {
     if (seconds <= 0) return;
-    const intervalId = setInterval(() => {
-      setSeconds((prev) => prev - 1);
-    }, 1000);
-    return () => clearInterval(intervalId);
+    const interval = setInterval(
+      () => setSeconds((prev) => prev - 1),
+      1000
+    );
+    return () => clearInterval(interval);
   }, [seconds]);
 
   return (
-    <Spin spinning={loading}>
-      <CustomModal
-        title={
-          isOTPVerified
-            ? "Nhập mật khẩu mới"
-            : "Xác thực OTP"
-        }
-        open={open}
-        onCancel={onCancel}
-        footer={null}
-        width={600}
-      >
-        {sendOTP && (
-          <div className="error">
-            Gửi lại mã OTP sau {seconds} giây
-          </div>
-        )}
-        {isOTPVerified ? (
+    <>
+      <Spin spinning={loading}>
+        <CustomModal
+          title="Xác thực OTP"
+          open={open && !isOTPVerified}
+          onCancel={onCancel}
+          footer={null}
+          width={600}
+        >
+          {sendOTP && (
+            <div className="error">
+              Gửi lại mã OTP sau {seconds} giây
+            </div>
+          )}
+
           <Form
-            form={formLogin}
-            name="normal_login"
-            className="login-form"
-            style={{ width: "70%", margin: "auto" }}
-          >
-            <Form.Item
-              name="newPassword"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập mật khẩu mới!",
-                },
-                {
-                  min: 6,
-                  message:
-                    "Mật khẩu phải có ít nhất 6 ký tự!",
-                },
-              ]}
-            >
-              <Input.Password
-                prefix={
-                  <LockOutlined
-                    className="site-form-item-icon"
-                    style={{ paddingRight: "10px" }}
-                  />
-                }
-                placeholder="Vui lòng nhập mật khẩu mới"
-              />
-            </Form.Item>
-            <Form.Item
-              name="re-newPassword"
-              rules={[
-                {
-                  required: true,
-                  message: "Nhập lại mật khẩu!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (
-                      !value ||
-                      getFieldValue("newPassword") === value
-                    ) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      "Mật khẩu không khớp"
-                    );
-                  },
-                }),
-              ]}
-            >
-              <Input.Password
-                prefix={
-                  <LockOutlined
-                    className="site-form-item-icon"
-                    style={{ paddingRight: "10px" }}
-                  />
-                }
-                placeholder="Mật khẩu"
-                // onPressEnter={loginAccout}
-                // onKeyDown={(e) => {
-                //   if (e.key === "Enter") {
-                //     loginAccout();
-                //   }
-                // }}
-              />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                className="login-form-button"
-                // onClick={loginAccout}
-                style={{
-                  backgroundColor: "#3e70a7",
-                  color: "white",
-                  transform: "translateX(150px)",
-                }}
-              >
-                Đăng nhập
-              </Button>
-            </Form.Item>
-          </Form>
-        ) : (
-          <Form
-            form={formLogin}
-            name="patient_login"
+            form={form}
+            name="verify_otp"
             className="login-form"
             style={{ width: "70%", margin: "auto" }}
           >
@@ -198,16 +134,10 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
                 },
               ]}
             >
-              <div
-                className="otp"
-                style={{ display: "flex" }}
-              >
+              <div style={{ display: "flex", gap: "8px" }}>
                 <Input
-                  prefix={
-                    <UserOutlined className="site-form-item-icon" />
-                  }
+                  prefix={<UserOutlined />}
                   placeholder="Vui lòng nhập Email"
-                  onChange={(e) => setEmail(e.target.value)}
                 />
                 <Button
                   style={{
@@ -232,31 +162,39 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
               ]}
             >
               <Input
-                prefix={
-                  <LockOutlined className="site-form-item-icon" />
-                }
+                prefix={<LockOutlined />}
                 placeholder="Nhập mã OTP"
-                type="text" // ✅ dùng "text" thay vì "otp"
+                type="text"
               />
             </Form.Item>
 
             <Form.Item>
               <Button
-                className="login-form-button"
                 onClick={verifyOTP}
                 style={{
                   backgroundColor: "#3e70a7",
                   color: "white",
-                  transform: "translateX(150px)",
+                  display: "block",
+                  margin: "0 auto",
                 }}
               >
                 Xác nhận OTP
               </Button>
             </Form.Item>
           </Form>
-        )}
-      </CustomModal>
-    </Spin>
+        </CustomModal>
+      </Spin>
+
+      <ResetPassword
+        open={isOTPVerified}
+        onCancel={() => {
+          setIsOTPVerified(false);
+          onCancel();
+        }}
+        email={email}
+        resetGuid={resetGuid}
+      />
+    </>
   );
 };
 
