@@ -50,6 +50,25 @@ const AuctionList = React.lazy(
   () => import("../pages/Company/AuctionList/index")
 );
 
+// Placeholder components for missing routes
+const Statistics = React.lazy(() =>
+  Promise.resolve({
+    default: () => <div>Statistics Page - Coming Soon</div>,
+  })
+);
+
+const Properties = React.lazy(() =>
+  Promise.resolve({
+    default: () => <div>Properties Page - Coming Soon</div>,
+  })
+);
+
+const Personnel = React.lazy(() =>
+  Promise.resolve({
+    default: () => <div>Personnel Page - Coming Soon</div>,
+  })
+);
+
 export const companyRoutes = [
   {
     path: ROUTERCOMPANY.SUB.POST_AUCTION,
@@ -58,5 +77,17 @@ export const companyRoutes = [
   {
     path: ROUTERCOMPANY.SUB.AUCTION_LIST,
     element: wrapWithLazy(AuctionList),
+  },
+  {
+    path: ROUTERCOMPANY.SUB.STATISTICS,
+    element: wrapWithLazy(Statistics),
+  },
+  {
+    path: ROUTERCOMPANY.SUB.PROPERTIES,
+    element: wrapWithLazy(Properties),
+  },
+  {
+    path: ROUTERCOMPANY.SUB.PERSONNEL,
+    element: wrapWithLazy(Personnel),
   },
 ];

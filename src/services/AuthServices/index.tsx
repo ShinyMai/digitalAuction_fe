@@ -15,24 +15,47 @@ interface User {
   roleName: string;
 }
 
+interface OTPVerifyResponse {
+  resetGuid: string;
+}
+
 const login = (
   body: LoginBody
 ): Promise<ApiResponse<User>> =>
   http.post(AccountAPI.login, body);
 
-const register = (body: RegisterAccount) =>
-  http.post<ApiResponse<RegisterAccount>>(
-    AccountAPI.register,
-    body
-  );
+const register = (
+  body: RegisterAccount
+): Promise<ApiResponse<RegisterAccount>> =>
+  http.post(AccountAPI.register, body);
 
-const verify = () =>
-  http.get<ApiResponse<unknown>>(AccountAPI.verify);
+const forgotPassword = (body: {
+  contact: string;
+  channel: number;
+}): Promise<ApiResponse<unknown>> =>
+  http.post(AccountAPI.forgotPassword, body);
+
+const verifyOTP = (body: {
+  contact: string;
+  otpCode: string;
+  channel: number;
+}): Promise<ApiResponse<OTPVerifyResponse>> =>
+  http.post(AccountAPI.verifyOTP, body);
+
+const resetPassword = (body: {
+  contact: string;
+  channel: number;
+  newPassword: string;
+  resetGuid: string;
+}): Promise<ApiResponse<unknown>> =>
+  http.post(AccountAPI.resetPassword, body);
 
 const AuthServices = {
   login,
   register,
-  verify,
+  forgotPassword,
+  verifyOTP,
+  resetPassword,
 };
 
 export default AuthServices;
