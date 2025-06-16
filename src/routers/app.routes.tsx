@@ -45,12 +45,9 @@ const AppRouter = () => {
                   element={<route.element />}
                 />
               ))}
-
             <Route
               index
-              element={
-                <Navigate to="post-auction" replace />
-              }
+              element={<Navigate to="statistics" replace />}
             />
           </Route>
         )}
@@ -60,7 +57,6 @@ const AppRouter = () => {
             element={<Navigate to="/" replace />}
           />
         )}
-        {/* Route cho 404 */}
         <Route
           path="/not-found"
           element={<div>Page Not Found</div>}

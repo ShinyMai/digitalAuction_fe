@@ -24,7 +24,9 @@ http.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const status = error.response?.status;
-    const message = error.response?.data?.message;
+    const message =
+      error.response?.data?.message ||
+      error.response?.data?.Message;
 
     if (!status || status !== 401) {
       return Promise.reject(error);
