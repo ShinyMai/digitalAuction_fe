@@ -16,10 +16,10 @@ const PostAuction = () => {
 
     try {
       const res = await AuctionServices.getListAuctionCategory()
-      if (res.data.data.length == 0) {
+      if (res.data.length == 0) {
         toast.error("Không có dữ liệu lớp tài sản !")
       } else {
-        setListAuctionCategory(res.data.data)
+        setListAuctionCategory(res.data)
       }
     } catch (error: any) {
       toast.error(error.message)

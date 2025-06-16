@@ -1,7 +1,8 @@
-import AcutionList from "./component/AuctionList"
-import { AuctionAssets, Auctions } from "../../Company/DataConst"
+import { AuctionAssets, Auctions } from "../../Company/DataConst";
 import AuctionServices from "../../../services/AuctionServices";
 import { useEffect, useState } from "react";
+import type { AuctionDataList } from "./Modals";
+import AcutionTable from "./component/AuctionTable";
 
 interface AuctionParams {
     AuctionName: string;
@@ -17,41 +18,63 @@ interface AuctionParams {
 }
 
 const AuctionList = () => {
-
-    const DataAuction = [...Auctions]
-    const DataAcutionAssets = [...AuctionAssets]
-    const [totalData, setTotalData] = useState()
-    const [auctionList, setAuctionList] = useState()
+    const DataAuction = [...Auctions];
+    const DataAcutionAssets = [...AuctionAssets];
+    const [totalData, setTotalData] = useState<number>(0);
+    const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
+    const [sortParams, setSortParams] = useState<{ SortBy: string; IsAscending: boolean }>({
+        SortBy: "",
+        IsAscending: true,
+    });
 
     const onSearch = (searchValue: any) => {
-        console.log("abww", searchValue)
-    }
+        console.log("Tìm kiếm:", searchValue);
+    };
 
     useEffect(() => {
-        getListAuction()
-    }, [])
+        getListAuction();
+    }, [sortParams]);
 
     const getListAuction = async () => {
         try {
-            const response = await AuctionServices.getListAuction()
-            console.log(response.data.data)
-            setTotalData(response.data.data.totalCount)
-            setAuctionList(response.data.data.auctions)
+            const params: AuctionParams = {
+                AuctionName: "",
+                CategoryId: 0,
+                RegisterOpenDate: "",
+                RegisterEndDate: "",
+                AuctionStartDate: "",
+                AuctionEndDate: "",
+                SortBy: sortParams.SortBy,
+                IsAscending: sortParams.IsAscending,
+                PageNumber: 1,
+                PageSize: 10,
+            };
+            const response = await AuctionServices.getListAuction();
+            console.log(response.data);
+            setTotalData(response.data.totalCount);
+            setAuctionList(response.data.auctions);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
+
+    const onSort = (column: string, order: "ascend" | "descend" | undefined) => {
+        console.log("Sắp xếp:", { column, order });
+        setSortParams({
+            SortBy: column || "",
+            IsAscending: order === "ascend" ? true : false,
+        });
+    };
 
     return (
         <section className="w-full h-full">
             <div className="w-full h-full">
-
                 <div className="w-full h-full" id="table-list">
-                    <AcutionList AuctionData={auctionList} onSearch={onSearch} />
+                    <AcutionTable AuctionData={auctionList} onSearch={onSearch} onSort={onSort} />
                 </div>
             </div>
         </section>
-    )
-}
+    );
+};
 
-export default AuctionList
+export default AuctionList;
