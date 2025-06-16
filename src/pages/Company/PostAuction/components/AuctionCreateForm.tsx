@@ -1,11 +1,8 @@
 import { Col, Form, Input, Row, Select, DatePicker, Card, Button, message } from "antd";
 import { useForm } from "antd/es/form/Form";
-import TextArea from "antd/es/input/TextArea";
 import MapComponent from "./MapComponent";
-import { AuctionCategories } from "../../DataConst";
 import { useState } from "react";
 import UploadFile from "./Upload";
-import AuctionServices from "../../../../services/AuctionServices";
 import dayjs from "dayjs";
 import type { AuctionCategory } from "../Modals";
 import TinyMCEEditor from "./TinyMCEEditor";
@@ -24,23 +21,23 @@ const AuctionCreateForm = ({ auctionCategoryList }: props) => {
     }));
 
     // Hàm upload file lên server
-    const uploadFileToServer = async (file: File) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        try {
-            const response = await fetch("https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload", {
-                method: "POST",
-                headers: {
-                    authorization: "authorization-text",
-                },
-                body: formData,
-            });
-            if (!response.ok) throw new Error("Upload failed");
-            return await response.json();
-        } catch (error: any) {
-            throw new Error(`Upload failed: ${error.message}`);
-        }
-    };
+    // const uploadFileToServer = async (file: File) => {
+    //     const formData = new FormData();
+    //     formData.append("file", file);
+    //     try {
+    //         const response = await fetch("https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload", {
+    //             method: "POST",
+    //             headers: {
+    //                 authorization: "authorization-text",
+    //             },
+    //             body: formData,
+    //         });
+    //         if (!response.ok) throw new Error("Upload failed");
+    //         return await response.json();
+    //     } catch (error: any) {
+    //         throw new Error(`Upload failed: ${error.message}`);
+    //     }
+    // };
 
     // Hàm xử lý submit form
     const onFinish = async (values: any) => {

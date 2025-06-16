@@ -24,5 +24,6 @@ export const ROUTERCOMPANY = {
     STATISTICS: "statistics",
     PROPERTIES: "properties",
     PERSONNEL: "personnel",
+    AUCTION_DETAIL: "auction-detail"
   },
 };
