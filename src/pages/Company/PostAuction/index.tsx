@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import AuctionCreateForm from "./components/AuctionCreateForm";
 import AuctionServices from "../../../services/AuctionServices";
-import type { AuctionCategory } from "./Modals";
 import { toast } from "react-toastify";
+import type { AuctionCategory } from "../Modals";
 
 const PostAuction = () => {
   const [listAuctionCategory, setListAuctionCategory] =

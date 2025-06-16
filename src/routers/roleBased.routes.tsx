@@ -95,7 +95,7 @@ export const companyRoutes = [
     element: wrapWithLazy(Personnel),
   },
   {
-    path: ROUTERCOMPANY.SUB.AUCTION_DETAIL,
+    path: ROUTERCOMPANY.SUB.AUCTION_LIST + '/' + ROUTERCOMPANY.SUB.AUCTION_DETAIL,
     element: wrapWithLazy(AuctionDetail),
   },
 ];

@@ -1,8 +1,8 @@
 import { Table, type TableProps } from "antd";
-import type { AuctionDataList } from "../Modals";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { ROUTERCOMPANY } from "../../../../routers";
+import type { AuctionDataList } from "../../Modals";
 
 interface Props {
     auctionData?: AuctionDataList[];
@@ -82,7 +82,7 @@ const AuctionTable = ({ auctionData, headerTable, onChange, total, loading, page
                 className="w-full"
                 onRow={(record) => ({
                     onClick: () => {
-                        navigate(ROUTERCOMPANY.PATH + "/" + ROUTERCOMPANY.SUB.AUCTION_DETAIL)
+                        navigate(ROUTERCOMPANY.SUB.AUCTION_DETAIL, { state: { key: record.auctionId }, replace: true })
                     }
                 })}
                 rowClassName="cursor-pointer"
