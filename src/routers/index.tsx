@@ -18,8 +18,11 @@ export const USERROUTERS = {
 export const ROUTERCOMPANY = {
   PATH: "admin",
   SUB: {
-    DASHBOARD: "dash-boad",
-    POST_AUCTION: "auction-post",
+    DASHBOARD: "dashboard",
+    POST_AUCTION: "post-auction",
     AUCTION_LIST: "auction-list",
+    STATISTICS: "statistics",
+    PROPERTIES: "properties",
+    PERSONNEL: "personnel",
   },
 };
