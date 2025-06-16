@@ -7,8 +7,8 @@ const addAcution = (body: any) =>
 const getListAuctionCategory = () =>
     http.get(AuctionAPI.AUCTIONCATEGORY)
 
-const getListAuction = () =>
-    http.get(AuctionAPI.AUCTIONLIST)
+const getListAuction = (params?: any) =>
+    http.get(AuctionAPI.AUCTIONLIST, { params: params })
 
 
 const AuctionServices = {
