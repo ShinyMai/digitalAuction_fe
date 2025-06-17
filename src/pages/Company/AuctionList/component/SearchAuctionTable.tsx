@@ -1,9 +1,9 @@
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, DatePicker, Form, Input, Select } from "antd";
-import type { AuctionCategory } from "../../PostAuction/Modals";
 import { useForm } from "antd/es/form/Form";
 import { useNavigate } from "react-router-dom";
 import { ROUTERCOMPANY } from "../../../../routers";
+import type { AuctionCategory } from "../../Modals";
 
 interface Props {
     auctionCategory?: AuctionCategory[];
@@ -12,15 +12,10 @@ interface Props {
 
 const SearchAuctionTable = ({ auctionCategory, onSearch }: Props) => {
     const [form] = useForm();
-    const navigate = useNavigate();
     const dataAuctionCategoryList = auctionCategory?.map((val) => ({
         value: val.categoryId,
         label: val.categoryName,
     }));
-
-    const onClickAddnew = () => {
-        navigate(`/${ROUTERCOMPANY.SUB.POST_AUCTION}`);
-    };
 
     const handleSearch = () => {
         form.validateFields().then((values) => {
@@ -30,15 +25,6 @@ const SearchAuctionTable = ({ auctionCategory, onSearch }: Props) => {
 
     return (
         <div className="w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <Button
-                type="primary"
-                htmlType="button"
-                icon={<PlusOutlined />}
-                className="w-full md:w-auto h-10 px-5 rounded-lg flex items-center justify-center"
-                onClick={onClickAddnew}
-            >
-                Tạo mới
-            </Button>
             <Form
                 className="w-full md:w-2/3 flex flex-col md:flex-row justify-between gap-4"
                 layout="vertical"

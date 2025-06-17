@@ -3,6 +3,7 @@ export const GUESTROUTERS = {
   LOGIN: "login",
   REGISTER: "register",
   TIN_TUC: "tin-tuc",
+  AUCTION_LIST: 'auction-list'
 };
 
 export const USERROUTERS = {
@@ -16,7 +17,7 @@ export const USERROUTERS = {
 };
 
 export const ROUTERCOMPANY = {
-  PATH: "admin",
+  PATH: "company",
   SUB: {
     DASHBOARD: "dashboard",
     POST_AUCTION: "post-auction",
