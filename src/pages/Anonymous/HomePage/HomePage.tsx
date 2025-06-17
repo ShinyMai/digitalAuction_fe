@@ -1,19 +1,7 @@
-import { useEffect, useState } from "react";
+import { Carousel, Card, Typography, Space } from "antd";
+import { DollarOutlined, FieldTimeOutlined } from "@ant-design/icons";
 import { assets } from "../../../assets";
-import {
-  DollarOutlined,
-  FieldTimeOutlined,
-} from "@ant-design/icons";
-
-interface ImageItem {
-  id: number;
-  url: string;
-}
-
-const images: ImageItem[] = [
-  { id: 0, url: assets.banner },
-  { id: 1, url: assets.banner2 },
-];
+import { useNavigate } from "react-router-dom";
 
 interface PropertyInfor {
   id: number;
@@ -50,177 +38,127 @@ const properties: PropertyInfor[] = [
   },
 ];
 
+const categories = [
+  { id: 1, name: "Tài sản đảm bảo", image: assets.ts1 },
+  { id: 2, name: "Quyền sử dụng đất", image: assets.ts2 },
+  { id: 3, name: "Tài sản vi phạm hành chính", image: assets.ts3 },
+  { id: 4, name: "Tài sản nhà nước", image: assets.ts4 },
+  { id: 5, name: "Tài sản khác", image: assets.ts5 },
+];
+
 const HomePage = () => {
-  const [currentIndex, setCurrentIndex] =
-    useState<number>(0);
-
-  const [isAnimating, setIsAnimating] =
-    useState<boolean>(false);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsAnimating(true);
-
-      setTimeout(() => {
-        setCurrentIndex(
-          (prevIndex) => (prevIndex + 1) % images.length
-        );
-        setIsAnimating(false);
-      }, 700);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const currentImageItem = images[currentIndex];
-  const nextImageItem =
-    images[(currentIndex + 1) % images.length];
+  const navigate = useNavigate();
+  const { Title, Paragraph } = Typography;
 
   return (
-    <div>
-      <div className="mx-auto px-4 md:py-8 flex flex-col md:flex-row items-center justify-evenly bg-sky-100">
-        <div className="w-full md:w-2xl text-center mb-6 md:mb-0">
-          <div>
+    <div className="bg-gray-50">
+      {/* Banner Section */}
+      <div className="bg-sky-100 py-8 px-4 md:px-12 flex flex-col md:flex-row items-center justify-between">
+        <div className="w-full md:w-1/2 text-center mb-8 md:mb-0">
+          <div className="flex flex-col items-center">
             <img
               src={assets.logoNo}
               alt="VDA Logo"
-              className="w-32 md:w-40 rounded-2xl m-auto"
+              className="w-32 md:w-40 rounded-2xl mb-2"
             />
-            <div className="-mt-4 text-[#0A3A58] font-bold text-lg md:text-xl">
+            <Title level={4} className="text-[#0A3A58] !mb-0">
               CÔNG TY HỢP DANH ĐẤU GIÁ TÀI SẢN SỐ
-            </div>
+            </Title>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold mt-4 mb-2">
+          <Title level={2} className="mt-4 mb-2 !text-2xl md:!text-3xl">
             Nền tảng đấu giá trực tuyến của Việt Nam
-          </h1>
-          <div className="text-sm md:text-base mb-6">
-            CÔNG TY HỢP DANH ĐẤU GIÁ TÀI SẢN SỐ VDA (Vietnam
-            Digital Auction) - là một Tổ chức hoạt động
-            chuyên nghiệp trong lĩnh vực dịch vụ tư vấn, tổ
-            chức đấu giá tài sản, quyền tài sản, vật tư,
-            thiết bị, hàng hóa và các dịch vụ khác liên quan
-            đến đấu giá tài sản.
-          </div>
+          </Title>
+          <Paragraph className="text-sm md:text-base mb-6 max-w-2xl mx-auto">
+            CÔNG TY HỢP DANH ĐẤU GIÁ TÀI SẢN SỐ VDA (Vietnam Digital Auction) - là một Tổ chức hoạt động
+            chuyên nghiệp trong lĩnh vực dịch vụ tư vấn, tổ chức đấu giá tài sản, quyền tài sản, vật tư,
+            thiết bị, hàng hóa và các dịch vụ khác liên quan đến đấu giá tài sản.
+          </Paragraph>
         </div>
-
         <div className="w-full md:w-1/2">
-          <div className="relative w-full h-48 md:h-[350px] overflow-hidden rounded-lg shadow-xl mx-auto my-5 border border-gray-200">
-            <img
-              key={currentImageItem.id}
-              src={currentImageItem.url}
-              alt="Banner hiện tại"
-              className={`
-                absolute inset-0 w-full h-full object-cover
-                transition-all duration-700 ease-in-out 
-                ${
-                  isAnimating
-                    ? "opacity-0 scale-90"
-                    : "opacity-100 scale-100"
-                }
-              `}
-            />
-
-            <img
-              key={nextImageItem.id}
-              src={nextImageItem.url}
-              alt="Banner kế tiếp"
-              className={`
-                absolute inset-0 w-full h-full object-cover
-                transition-all duration-700 ease-in-out
-                ${
-                  isAnimating
-                    ? "opacity-100 scale-100"
-                    : "opacity-0 scale-90"
-                }
-              `}
-            />
-          </div>
+          <Carousel autoplay autoplaySpeed={3000} effect="fade" className="rounded-lg shadow-xl border border-gray-200">
+            <div>
+              <img
+                src={assets.banner}
+                alt="Banner 1"
+                className="w-full h-48 md:h-[350px] object-cover rounded-lg"
+              />
+            </div>
+            <div>
+              <img
+                src={assets.banner2}
+                alt="Banner 2"
+                className="w-full h-48 md:h-[350px] object-cover rounded-lg"
+              />
+            </div>
+          </Carousel>
         </div>
       </div>
 
-      <div className="mx-auto px-4 py-8">
-        <div className="text-4xl font-bold text-center mb-6">
+      {/* Categories Section */}
+      <div className="px-4 md:px-12 py-8">
+        <Title level={2} className="text-center mb-6 !text-3xl md:!text-4xl">
           Danh mục tài sản
-        </div>
-        <div className="flex justify-center flex-wrap gap-4">
-          <div className="w-[300px] h-[200px] bg-white shadow-lg rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-2xl">
-            <img
-              src={assets.ts1}
-              alt="Tài sản 1"
-              className="w-16 h-16 mb-2"
-            />
-            Tài sản đảm bảo
-          </div>
-          <div className="w-[300px] h-[200px] bg-white shadow-lg rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-2xl">
-            <img
-              src={assets.ts2}
-              alt="Tài sản 1"
-              className="w-16 h-16 mb-2"
-            />
-            Quyền sử dụng đất
-          </div>
-          <div className="w-[300px] h-[200px] bg-white shadow-lg rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-2xl">
-            <img
-              src={assets.ts3}
-              alt="Tài sản 1"
-              className="w-16 h-16 mb-2"
-            />
-            Tài sản vi phạm hành chính
-          </div>
-          <div className="w-[300px] h-[200px] bg-white shadow-lg rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-2xl">
-            <img
-              src={assets.ts4}
-              alt="Tài sản 1"
-              className="w-16 h-16 mb-2"
-            />
-            Tài sản nhà nước
-          </div>
-          <div className="w-[300px] h-[200px] bg-white shadow-lg rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-2xl">
-            <img
-              src={assets.ts5}
-              alt="Tài sản 1"
-              className="w-16 h-16 mb-2"
-            />
-            Tài sản khác
-          </div>
+        </Title>
+        <div className="flex flex-wrap justify-center gap-4">
+          {categories.map((category) => (
+            <Card
+              key={category.id}
+              hoverable
+              className="w-[300px] h-[200px] flex flex-col items-center justify-center"
+              onClick={() => navigate("/auction-list")}
+            >
+              <img src={category.image} alt={category.name} className="w-16 h-16 mb-2" />
+              <Paragraph className="text-center font-semibold">{category.name}</Paragraph>
+            </Card>
+          ))}
         </div>
       </div>
 
-      <div className="mx-auto px-4 md:px-18 py-8 bg-sky-100">
-        <div className="text-2xl md:text-4xl font-bold text-center mb-6">
+      {/* Upcoming Auctions Section */}
+      <div className="bg-sky-100 px-4 md:px-12 py-8">
+        <Title level={2} className="text-center mb-6 !text-3xl md:!text-4xl">
           Tài sản sắp được đấu giá
-        </div>
+        </Title>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {properties.map((property) => (
-            <div
+            <Card
               key={property.id}
-              className="bg-white shadow-lg shadow-blue-400 rounded-lg p-4 mb-4 cursor-pointer hover:shadow-2xl transition-shadow duration-300 hover:scale-105"
+              hoverable
+              cover={
+                <img
+                  alt={property.name}
+                  src={property.imageUrl}
+                  className="w-full h-48 object-cover rounded-t-lg"
+                />
+              }
+              className="shadow-lg"
+              onClick={() => navigate("/auction-list")}
             >
-              <img
-                src={property.imageUrl}
-                alt={property.name}
-                className="w-full h-48 object-cover rounded-t-lg"
+              <Card.Meta
+                title={<div className="text-center text-lg font-semibold">{property.name}</div>}
+                description={
+                  <Space direction="vertical" className="w-full">
+                    <div className="flex items-center text-gray-800">
+                      <FieldTimeOutlined className="mr-2" />
+                      Ngày đấu giá:{" "}
+                      <span className="font-bold text-lg ml-2">
+                        {property.auctionDay.toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center text-gray-800">
+                      <DollarOutlined className="mr-2" />
+                      Giá khởi điểm:{" "}
+                      <span className="font-bold text-lg text-green-500 ml-2">
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(property.startingPrice)}
+                      </span>
+                    </div>
+                  </Space>
+                }
               />
-              <h2 className="text-lg md:text-xl font-semibold my-4 text-center">
-                {property.name}
-              </h2>
-              <p className="text-gray-800 text-sm md:text-base">
-                <FieldTimeOutlined className="mr-2" />
-                Ngày đấu giá:
-                <span className="ml-2 font-bold text-lg">
-                  {property.auctionDay.toLocaleDateString()}
-                </span>
-              </p>
-              <p className="text-gray-800 text-sm md:text-base">
-                <DollarOutlined className="mr-2" />
-                Giá khởi điểm:
-                <span className="ml-2 font-bold text-green-500 text-lg">
-                  {new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }).format(property.startingPrice)}
-                </span>
-              </p>
-            </div>
+            </Card>
           ))}
         </div>
       </div>
