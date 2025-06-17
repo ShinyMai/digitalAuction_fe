@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import type { AuctionCategory } from "../PostAuction/Modals";
-import type { AuctionDataList } from "./Modals";
 import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
 import dayjs from "dayjs";
+import type { AuctionCategory, AuctionDataList } from "../Modals";
 
 interface SearchParams {
     AuctionName?: string;
