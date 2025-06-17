@@ -19,14 +19,14 @@ const AuthLoader = () => {
         "User role:",
         user.roleName
       );
-      if (user.roleName === "Admin") {
-        if (!currentPath.startsWith("/admin")) {
-          navigate("/admin/post-auction", {
+      if (user.roleName !== "User") {
+        if (!currentPath.startsWith("/company")) {
+          navigate("/company/auction-list", {
             replace: true,
           });
         }
       } else if (user.roleName === "User") {
-        if (currentPath.startsWith("/admin")) {
+        if (currentPath.startsWith("/company")) {
           navigate("/", { replace: true });
         }
       }

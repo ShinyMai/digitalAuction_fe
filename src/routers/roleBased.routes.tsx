@@ -16,6 +16,10 @@ const News = React.lazy(
   () => import("../pages/Anonymous/News/News")
 );
 
+const AuctionListAnonyMous = React.lazy(
+  () => import("../pages/Anonymous/AuctionList/index")
+);
+
 export const guestRoutes = [
   {
     path: GUESTROUTERS.HOME,
@@ -28,6 +32,10 @@ export const guestRoutes = [
   {
     path: GUESTROUTERS.TIN_TUC,
     element: wrapWithLazy(News),
+  },
+  {
+    path: GUESTROUTERS.AUCTION_LIST,
+    element: wrapWithLazy(AuctionListAnonyMous),
   },
 ];
 
@@ -95,7 +103,7 @@ export const companyRoutes = [
     element: wrapWithLazy(Personnel),
   },
   {
-    path: ROUTERCOMPANY.SUB.AUCTION_LIST + '/' + ROUTERCOMPANY.SUB.AUCTION_DETAIL,
+    path: ROUTERCOMPANY.SUB.AUCTION_LIST + "/" + ROUTERCOMPANY.SUB.AUCTION_DETAIL,
     element: wrapWithLazy(AuctionDetail),
   },
 ];

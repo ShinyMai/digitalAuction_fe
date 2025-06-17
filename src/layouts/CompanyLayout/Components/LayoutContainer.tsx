@@ -3,6 +3,7 @@ import Footers from '../../AnonymousLayout/Components/Footer';
 import type React from "react";
 import HeaderCompany from "./HeaderCompany";
 import SiderRouteOption from "./SiderRouteOption";
+import HeaderAnonymous from "../../AnonymousLayout/Components/Header";
 
 interface Props {
     children?: string | React.JSX.Element | React.JSX.Element[];
@@ -25,11 +26,11 @@ const LayoutContainer = ({ children }: Props) => {
     return (
         <Layout style={{ minHeight: '100vh', backgroundColor: '#f1f5f9' }}>
             <Header style={{ position: 'fixed', top: 0, width: '100%', zIndex: 1000, padding: 0, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                <HeaderCompany />
+                <HeaderAnonymous />
             </Header>
             <Layout style={{ marginTop: 64 }}>
                 <Layout>
-                    <Sider style={siderStyle} theme="light" width={250}>
+                    <Sider style={siderStyle} theme="light" width={300}>
                         <SiderRouteOption />
                     </Sider>
                     <Content style={{ padding: '24px', minHeight: 'calc(100vh - 128px)', backgroundColor: '#ffffff', borderRadius: '8px', margin: '0 16px 0 16px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
