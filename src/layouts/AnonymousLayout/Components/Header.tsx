@@ -1,43 +1,45 @@
-import {DownOutlined, LogoutOutlined, MenuOutlined, UserAddOutlined, UserOutlined,} from "@ant-design/icons";
-import {Dropdown, Space} from "antd";
-import {memo, useMemo, useState} from "react";
-import {assets} from "../../../assets";
-import {useNavigate} from "react-router-dom";
+import { DownOutlined, LogoutOutlined, MenuOutlined, UserAddOutlined, UserOutlined } from "@ant-design/icons";
+import { Dropdown, Space } from "antd";
+import { memo, useMemo, useState } from "react";
+import { assets } from "../../../assets";
+import { useNavigate } from "react-router-dom";
 import Login from "../../../pages/Anonymous/Login/Login";
-import {useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 
-const Header = memo(() => {
+const HeaderAnonymous = memo(() => {
     const navigate = useNavigate();
     const [login, setLogin] = useState(false);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const {user} = useSelector((state: any) => state.auth);
-    console.log("User Info:", !user);
+    const { user } = useSelector((state: any) => state.auth);
 
     const items = useMemo(
         () => [
             {
                 key: "1",
-                label: <a href="#">Tài sản đảm bảo</a>,
+                label: "Tài sản đảm bảo",
+                onClick: () => navigate("/auction-list"),
             },
             {
                 key: "2",
-                label: <a href="#">Quyền sử dụng đất</a>,
+                label: "Quyền sử dụng đất",
+                onClick: () => navigate("/auction-list"),
             },
             {
                 key: "3",
-                label: <a href="#">Tài sản vi phạm hành chính</a>,
+                label: "Tài sản vi phạm hành chính",
+                onClick: () => navigate("/auction-list"),
             },
             {
                 key: "4",
-                label: <a href="#">Tài sản nhà nước</a>,
+                label: "Tài sản nhà nước",
+                onClick: () => navigate("/auction-list"),
             },
             {
                 key: "5",
-                label: <a href="#">Tài sản khác</a>,
+                label: "Tài sản khác",
+                onClick: () => navigate("/auction-list"),
             },
         ],
-        []
+        [navigate]
     );
 
     const items2 = useMemo(
@@ -45,6 +47,7 @@ const Header = memo(() => {
             {
                 key: "1",
                 label: "Trang chủ",
+                onClick: () => navigate("/"),
             },
             {
                 key: "2",
@@ -53,52 +56,61 @@ const Header = memo(() => {
                     {
                         key: "2-1",
                         label: "Tài sản đảm bảo",
+                        onClick: () => navigate("/auction-list"),
                     },
                     {
                         key: "2-2",
                         label: "Quyền sử dụng đất",
+                        onClick: () => navigate("/auction-list"),
                     },
                     {
                         key: "2-3",
                         label: "Tài sản vi phạm hành chính",
+                        onClick: () => navigate("/auction-list"),
                     },
                     {
                         key: "2-4",
                         label: "Tài sản nhà nước",
+                        onClick: () => navigate("/auction-list"),
                     },
                     {
                         key: "2-5",
                         label: "Tài sản khác",
+                        onClick: () => navigate("/auction-list"),
                     },
                 ],
             },
             {
                 key: "3",
                 label: "Tài sản Bộ Công an",
+                onClick: () => navigate("/auction-list"),
             },
             {
                 key: "4",
                 label: "Tài sản nhà đất",
+                onClick: () => navigate("/auction-list"),
             },
             {
                 key: "5",
                 label: "Phòng đấu giá",
+                onClick: () => navigate("/auction-list"),
             },
             {
                 key: "6",
-                label: "Kết quả đấu giả",
+                label: "Kết quả đấu giá",
+                onClick: () => navigate("/auction-list"),
             },
             {
                 key: "7",
                 label: "Hướng dẫn",
+                onClick: () => navigate("/auction-list"),
             },
         ],
-        []
+        [navigate]
     );
 
     return (
-        <div
-            className="min-h-18 border-2 rounded-t-lg bg-gradient-to-r from-sky-600 to-sky-400 text-white flex justify- sticky top-0 z-10">
+        <div className="min-h-18 border-2 rounded-t-lg bg-gradient-to-r from-sky-600 to-sky-400 text-white flex justify-center sticky top-0 z-10">
             <div className="flex items-center justify-between w-full px-4 lg:px-12">
                 <img
                     src={assets.logo}
@@ -115,39 +127,47 @@ const Header = memo(() => {
                     <div className="cursor-pointer hover:scale-105">
                         Giới thiệu
                     </div>
-                    <Dropdown menu={{items}}>
-                        <a
+                    <Dropdown menu={{ items }}>
+                        <div
                             onClick={(e) => e.preventDefault()}
                             className="cursor-pointer hover:scale-105"
                         >
                             <Space>
                                 Danh sách tài sản
-                                <DownOutlined/>
+                                <DownOutlined />
                             </Space>
-                        </a>
+                        </div>
                     </Dropdown>
-                    <div className="cursor-pointer hover:scale-105">
+                    <div
+                        className="cursor-pointer hover:scale-105"
+                        onClick={() => navigate("/auction-list")}
+                    >
                         Tài sản nhà đất
                     </div>
-                    <div className="cursor-pointer hover:scale-105">
-                        Kết quả đấu giả
+                    <div
+                        className="cursor-pointer hover:scale-105"
+                        onClick={() => navigate("/auction-list")}
+                    >
+                        Kết quả đấu giá
                     </div>
                     <div className="cursor-pointer hover:scale-105">
                         Tin tức
                     </div>
-                    <div className="cursor-pointer hover:scale-105">
+                    <div
+                        className="cursor-pointer hover:scale-105"
+                        onClick={() => navigate("/auction-list")}
+                    >
                         Hướng dẫn
                     </div>
                 </div>
-                <div className="flex items-center gap-2 ">
+                <div className="flex items-center gap-2">
                     {!!user ? (
                         <div className="relative cursor-pointer group text-[#0085D2]">
                             <div className="flex items-center gap-5">
                                 <div className="text-lg font-medium">
                                     {user?.name}
                                 </div>
-                                <div
-                                    className="w-10 h-10 rounded-full border-2 border-sky-500 bg-sky-100 flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-full border-2 border-sky-500 bg-sky-100 flex items-center justify-center">
                                     <UserOutlined
                                         style={{
                                             fontSize: "1.6rem",
@@ -158,80 +178,18 @@ const Header = memo(() => {
                             </div>
                             <ul className="absolute right-0 z-10 hidden flex-col gap-2 bg-[#f2f8fa] p-3 border rounded border-[#bce6f7] outline-white group-hover:flex list-none">
                                 <li
-                                    // onClick={() => setShowInfo(true)}
                                     className="flex items-center gap-2 cursor-pointer hover:text-sky-500"
+                                    onClick={() => navigate("/profile")}
                                 >
-                                    <UserOutlined/>
+                                    <UserOutlined />
                                     <p className="w-max">Thông tin cá nhân</p>
                                 </li>
-                                <hr/>
-                                {/* {user?.role === "patient" && (
-                  <>
-                    <li className="flex items-center gap-2 hover:text-sky-500">
-                      <ScheduleOutlined />
-                      <Link
-                        to="/lich-su-kham"
-                        className="text-inherit no-underline"
-                      >
-                        <p className="w-max">
-                          Lịch sử đặt khám
-                        </p>
-                      </Link>
-                    </li>
-                    <hr />
-                    <li className="flex items-center gap-2 hover:text-sky-500">
-                      <BookOutlined />
-                      <Link
-                        to="/ho-so-benh-an"
-                        className="text-inherit no-underline"
-                      >
-                        <p className="w-max">
-                          Hồ sơ bệnh án
-                        </p>
-                      </Link>
-                    </li>
-                    <hr />
-                    <li className="flex items-center gap-2 hover:text-sky-500">
-                      <QuestionCircleOutlined />
-                      <Link
-                        to="/hoi-dap"
-                        className="text-inherit no-underline"
-                      >
-                        <p className="w-max">
-                          Câu hỏi của tôi
-                        </p>
-                      </Link>
-                    </li>
-                    <hr />
-                    <li className="flex items-center gap-2 hover:text-sky-500">
-                      <ShopOutlined />
-                      <Link
-                        to="/san-pham"
-                        className="text-inherit no-underline"
-                      >
-                        <p className="w-max">Hiệu thuốc</p>
-                      </Link>
-                    </li>
-                    <hr />
-                    <li className="flex items-center gap-2 hover:text-sky-500">
-                      <ShoppingCartOutlined />
-                      <Link
-                        to="/lich-su-mua-hang"
-                        className="text-inherit no-underline"
-                      >
-                        <p className="w-max">
-                          Lịch sử mua hàng
-                        </p>
-                      </Link>
-                    </li>
-                    <hr />
-                  </>
-                )} */}
+                                <hr />
                                 <li
-                                    // onClick={() => handleLogout()}
                                     className="flex items-center gap-2 cursor-pointer hover:text-sky-500"
+                                    onClick={() => navigate("/logout")}
                                 >
-                                    <LogoutOutlined/>
+                                    <LogoutOutlined />
                                     <p className="w-max">Đăng xuất</p>
                                 </li>
                             </ul>
@@ -242,19 +200,18 @@ const Header = memo(() => {
                                 className="text-sm md:text-base font-bold text-black bg-white hover:bg-blue-100 px-2 py-1 rounded-lg cursor-pointer text-center hover:scale-105"
                                 onClick={() => setLogin(true)}
                             >
-                                <UserOutlined className="mr-2"/>
+                                <UserOutlined className="mr-2" />
                                 Đăng nhập
                             </div>
                             <div
                                 className="text-sm md:text-base font-bold bg-white text-black hover:bg-blue-100 px-2 py-1 rounded-lg cursor-pointer text-center hover:scale-105"
                                 onClick={() => navigate("/register")}
                             >
-                                <UserAddOutlined className="mr-2"/>
+                                <UserAddOutlined className="mr-2" />
                                 Đăng ký
                             </div>
                         </div>
                     )}
-
                     <Dropdown
                         menu={{
                             items: items2,
@@ -262,14 +219,14 @@ const Header = memo(() => {
                         trigger={["click"]}
                         className="lg:hidden"
                     >
-                        <a
+                        <div
                             onClick={(e) => e.preventDefault()}
                             className="text-white"
                         >
                             <Space>
-                                <MenuOutlined/>
+                                <MenuOutlined />
                             </Space>
-                        </a>
+                        </div>
                     </Dropdown>
                 </div>
             </div>
@@ -283,4 +240,4 @@ const Header = memo(() => {
     );
 });
 
-export default Header;
+export default HeaderAnonymous;
