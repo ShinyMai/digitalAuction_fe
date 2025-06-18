@@ -62,14 +62,14 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({
   };
 
   return (
-    <Spin spinning={loading}>
-      <CustomModal
-        title="Nhập mật khẩu mới"
-        open={open}
-        onCancel={onCancel}
-        footer={null}
-        width={600}
-      >
+    <CustomModal
+      title="Nhập mật khẩu mới"
+      open={open}
+      onCancel={onCancel}
+      footer={null}
+      width={600}
+    >
+      <Spin spinning={loading}>
         <Form
           form={form}
           name="reset_password"
@@ -146,8 +146,8 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({
             </Button>
           </Form.Item>
         </Form>
-      </CustomModal>
-    </Spin>
+      </Spin>
+    </CustomModal>
   );
 };
 

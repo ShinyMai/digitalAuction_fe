@@ -1,17 +1,17 @@
-import { Col, Form, Input, Row, Select, DatePicker, Card, Button, message } from "antd";
-import { useForm } from "antd/es/form/Form";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {Button, Card, Col, DatePicker, Form, Input, message, Row, Select} from "antd";
+import {useForm} from "antd/es/form/Form";
 import MapComponent from "./MapComponent";
-import { useState } from "react";
+import {useState} from "react";
 import UploadFile from "./Upload";
-import dayjs from "dayjs";
-import type { AuctionCategory } from "../Modals";
 import TinyMCEEditor from "./TinyMCEEditor";
+import type {AuctionCategory} from "../../Modals.ts";
 
 interface props {
     auctionCategoryList: AuctionCategory[]
 }
 
-const AuctionCreateForm = ({ auctionCategoryList }: props) => {
+const AuctionCreateForm = ({auctionCategoryList}: props) => {
     const [form] = useForm();
     const [isRealEstate, setIsRealEstate] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -46,7 +46,6 @@ const AuctionCreateForm = ({ auctionCategoryList }: props) => {
             // Kiểm tra fileList
             const auctionAssetFile = values.AuctionAssetFile?.[0]?.originFileObj;
             const auctionRulesFile = values.AuctionRulesFile?.[0]?.originFileObj;
-            const auctionPlanningMap = values.AuctionPlanningMap?.[0]?.originFileObj;
 
             if (!auctionAssetFile || !auctionRulesFile) {
                 message.error("Vui lòng tải lên đầy đủ các tệp bắt buộc!");
@@ -74,52 +73,52 @@ const AuctionCreateForm = ({ auctionCategoryList }: props) => {
         }
     };
 
-    const appendFormData = (val: any) => {
-        const formData = new FormData();
-
-        // Append simple fields
-        formData.append('AuctionName', val.AuctionName);
-        formData.append('CategoryId', val.CategoryId.toString());
-        formData.append('Status', (false).toString());
-        formData.append('NumberRoundMax', val.NumberRoundMax.toString());
-        formData.append('AuctionDescription', val.AuctionDescription);
-        formData.append('RegisterOpenDate', dayjs(val.RegisterOpenDate).format('YYYY-MM-DDTHH:mm:ss'));
-        formData.append('RegisterEndDate', dayjs(val.RegisterEndDate).format('YYYY-MM-DDTHH:mm:ss'));
-        formData.append('AuctionStartDate', dayjs(val.AuctionStartDate).format('YYYY-MM-DDTHH:mm:ss'));
-        formData.append('AuctionEndDate', dayjs(val.AuctionEndDate).format('YYYY-MM-DDTHH:mm:ss'));
-        formData.append('WinnerData', "");
-        // Append AuctionAssetFile array
-        if (val.AuctionAssetFile && Array.isArray(val.AuctionAssetFile)) {
-            val.AuctionAssetFile.forEach((file: any, index: number) => {
-                if (file.originFileObj) {
-                    formData.append(`AuctionAssetFile`, file.originFileObj, file.name);
-                }
-            });
-        }
-
-        // Append AuctionRulesFile array
-        if (val.AuctionRulesFile && Array.isArray(val.AuctionRulesFile)) {
-            val.AuctionRulesFile.forEach((file: any, index: number) => {
-                if (file.originFileObj) {
-                    formData.append(`AuctionRulesFile`, file.originFileObj, file.name);
-
-                }
-            });
-        }
-
-
-        // Append AuctionPlanningMap array
-        if (val.AuctionPlanningMap && Array.isArray(val.AuctionPlanningMap)) {
-            val.AuctionPlanningMap.forEach((file: any, index: number) => {
-                if (file.originFileObj) {
-                    formData.append(`AuctionPlanningMap`, file.originFileObj, file.name);
-
-                }
-            });
-        }
-
-        return formData;
-    };
+    // const appendFormData = (val: any) => {
+    //     const formData = new FormData();
+    //
+    //     // Append simple fields
+    //     formData.append('AuctionName', val.AuctionName);
+    //     formData.append('CategoryId', val.CategoryId.toString());
+    //     formData.append('Status', (false).toString());
+    //     formData.append('NumberRoundMax', val.NumberRoundMax.toString());
+    //     formData.append('AuctionDescription', val.AuctionDescription);
+    //     formData.append('RegisterOpenDate', dayjs(val.RegisterOpenDate).format('YYYY-MM-DDTHH:mm:ss'));
+    //     formData.append('RegisterEndDate', dayjs(val.RegisterEndDate).format('YYYY-MM-DDTHH:mm:ss'));
+    //     formData.append('AuctionStartDate', dayjs(val.AuctionStartDate).format('YYYY-MM-DDTHH:mm:ss'));
+    //     formData.append('AuctionEndDate', dayjs(val.AuctionEndDate).format('YYYY-MM-DDTHH:mm:ss'));
+    //     formData.append('WinnerData', "");
+    //     // Append AuctionAssetFile array
+    //     if (val.AuctionAssetFile && Array.isArray(val.AuctionAssetFile)) {
+    //         val.AuctionAssetFile.forEach((file: any, index: number) => {
+    //             if (file.originFileObj) {
+    //                 formData.append(`AuctionAssetFile`, file.originFileObj, file.name);
+    //             }
+    //         });
+    //     }
+    //
+    //     // Append AuctionRulesFile array
+    //     if (val.AuctionRulesFile && Array.isArray(val.AuctionRulesFile)) {
+    //         val.AuctionRulesFile.forEach((file: any, index: number) => {
+    //             if (file.originFileObj) {
+    //                 formData.append(`AuctionRulesFile`, file.originFileObj, file.name);
+    //
+    //             }
+    //         });
+    //     }
+    //
+    //
+    //     // Append AuctionPlanningMap array
+    //     if (val.AuctionPlanningMap && Array.isArray(val.AuctionPlanningMap)) {
+    //         val.AuctionPlanningMap.forEach((file: any, index: number) => {
+    //             if (file.originFileObj) {
+    //                 formData.append(`AuctionPlanningMap`, file.originFileObj, file.name);
+    //
+    //             }
+    //         });
+    //     }
+    //
+    //     return formData;
+    // };
 
     return (
         <div className="w-full">
@@ -139,14 +138,14 @@ const AuctionCreateForm = ({ auctionCategoryList }: props) => {
                             <Form.Item
                                 label="Tên đấu giá"
                                 name="AuctionName"
-                                rules={[{ required: true, message: "Vui lòng nhập tên đấu giá!" }]}
+                                rules={[{required: true, message: "Vui lòng nhập tên đấu giá!"}]}
                             >
-                                <Input className="custom-input" placeholder="Nhập tên đấu giá" />
+                                <Input className="custom-input" placeholder="Nhập tên đấu giá"/>
                             </Form.Item>
                             <Form.Item
                                 label="Danh mục tài sản"
                                 name="CategoryId"
-                                rules={[{ required: true, message: "Vui lòng chọn danh mục!" }]}
+                                rules={[{required: true, message: "Vui lòng chọn danh mục!"}]}
                             >
                                 <Select
                                     className="custom-input"
@@ -158,7 +157,7 @@ const AuctionCreateForm = ({ auctionCategoryList }: props) => {
                             <Form.Item
                                 label="Số vòng tối đa"
                                 name="NumberRoundMax"
-                                rules={[{ required: true, message: "Vui lòng nhập số vòng tối đa!" }]}
+                                rules={[{required: true, message: "Vui lòng nhập số vòng tối đa!"}]}
                             >
                                 <Input
                                     className="custom-input"
@@ -176,30 +175,34 @@ const AuctionCreateForm = ({ auctionCategoryList }: props) => {
                             <Form.Item
                                 label="Ngày mở đăng ký"
                                 name="RegisterOpenDate"
-                                rules={[{ required: true, message: "Vui lòng chọn ngày mở đăng ký!" }]}
+                                rules={[{required: true, message: "Vui lòng chọn ngày mở đăng ký!"}]}
                             >
-                                <DatePicker className="custom-input" format="DD/MM/YYYY" placeholder="Chọn ngày mở đăng ký" />
+                                <DatePicker className="custom-input" format="DD/MM/YYYY"
+                                            placeholder="Chọn ngày mở đăng ký"/>
                             </Form.Item>
                             <Form.Item
                                 label="Ngày kết thúc đăng ký"
                                 name="RegisterEndDate"
-                                rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc đăng ký!" }]}
+                                rules={[{required: true, message: "Vui lòng chọn ngày kết thúc đăng ký!"}]}
                             >
-                                <DatePicker className="custom-input" format="DD/MM/YYYY" placeholder="Chọn ngày kết thúc đăng ký" />
+                                <DatePicker className="custom-input" format="DD/MM/YYYY"
+                                            placeholder="Chọn ngày kết thúc đăng ký"/>
                             </Form.Item>
                             <Form.Item
                                 label="Ngày bắt đầu đấu giá"
                                 name="AuctionStartDate"
-                                rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu đấu giá!" }]}
+                                rules={[{required: true, message: "Vui lòng chọn ngày bắt đầu đấu giá!"}]}
                             >
-                                <DatePicker className="custom-input" format="DD/MM/YYYY" placeholder="Chọn ngày bắt đầu đấu giá" />
+                                <DatePicker className="custom-input" format="DD/MM/YYYY"
+                                            placeholder="Chọn ngày bắt đầu đấu giá"/>
                             </Form.Item>
                             <Form.Item
                                 label="Ngày kết thúc đấu giá"
                                 name="AuctionEndDate"
-                                rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc đấu giá!" }]}
+                                rules={[{required: true, message: "Vui lòng chọn ngày kết thúc đấu giá!"}]}
                             >
-                                <DatePicker className="custom-input" format="DD/MM/YYYY" placeholder="Chọn ngày kết thúc đấu giá" />
+                                <DatePicker className="custom-input" format="DD/MM/YYYY"
+                                            placeholder="Chọn ngày kết thúc đấu giá"/>
                             </Form.Item>
                         </Card>
                     </Col>
@@ -209,18 +212,18 @@ const AuctionCreateForm = ({ auctionCategoryList }: props) => {
                             <Form.Item
                                 label="Tệp tài sản đấu giá"
                                 name="AuctionAssetFile"
-                                rules={[{ required: true, message: "Vui lòng tải lên tệp tài sản!" }]}
+                                rules={[{required: true, message: "Vui lòng tải lên tệp tài sản!"}]}
                                 valuePropName="fileList"
                             >
-                                <UploadFile contentName="AuctionAssetFile" />
+                                <UploadFile contentName="AuctionAssetFile"/>
                             </Form.Item>
                             <Form.Item
                                 label="Tệp quy tắc đấu giá"
                                 name="AuctionRulesFile"
-                                rules={[{ required: true, message: "Vui lòng tải lên tệp quy tắc!" }]}
+                                rules={[{required: true, message: "Vui lòng tải lên tệp quy tắc!"}]}
                                 valuePropName="fileList"
                             >
-                                <UploadFile contentName="AuctionRulesFile" />
+                                <UploadFile contentName="AuctionRulesFile"/>
                             </Form.Item>
                             {isRealEstate && (
                                 <>
@@ -229,10 +232,11 @@ const AuctionCreateForm = ({ auctionCategoryList }: props) => {
                                         name="AuctionPlanningMap"
                                         valuePropName="fileList"
                                     >
-                                        <UploadFile contentName="AuctionPlanningMap" />
+                                        <UploadFile contentName="AuctionPlanningMap"/>
                                     </Form.Item>
                                     <Form.Item label="Vị trí trên bản đồ" name="AuctionMap">
-                                        <MapComponent isSearchMode={true} value="Hoa Lư, Ninh Bình, Việt Nam" name="AuctionMap" popupText="Vị trí đấu giá" />
+                                        <MapComponent isSearchMode={true} value="Hoa Lư, Ninh Bình, Việt Nam"
+                                                      name="AuctionMap" popupText="Vị trí đấu giá"/>
                                     </Form.Item>
                                 </>
                             )}
@@ -245,9 +249,9 @@ const AuctionCreateForm = ({ auctionCategoryList }: props) => {
                         <Card title="Mô tả đấu giá" className="form-card">
                             <Form.Item
                                 name="AuctionDescription"
-                                rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
+                                rules={[{required: true, message: "Vui lòng nhập mô tả!"}]}
                             >
-                                <TinyMCEEditor />
+                                <TinyMCEEditor/>
                             </Form.Item>
                         </Card>
                     </Col>
