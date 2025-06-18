@@ -25,8 +25,9 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
   const [sendOTP, setSendOTP] = useState(false);
   const [isOTPVerified, setIsOTPVerified] = useState(false);
   const [resetGuid, setResetGuid] = useState("");
+  const [emailValue, setEmailValue] = useState("");
 
-  const email = Form.useWatch("email", form);
+  const email = Form.useWatch("email", form) || emailValue;
 
   const extractErrorMessage = (error: unknown): string => {
     return (
@@ -35,7 +36,6 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
       "Đã xảy ra lỗi."
     );
   };
-
   const handleSendOTP = async () => {
     if (!email) {
       toast.error("Vui lòng nhập Email!");
@@ -52,6 +52,8 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
         toast.success(res.message);
         setSendOTP(true);
         setSeconds(60);
+        setEmailValue(email);
+        form.setFieldsValue({ email: email });
       } else {
         toast.error("Vui lòng thử lại!");
       }
@@ -77,7 +79,7 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
       if (res.code === 200) {
         toast.success("Xác thực OTP thành công!");
         setIsOTPVerified(true);
-        setResetGuid(res.data?.resetGuid || "");
+        setResetGuid(res?.data?.resetGuid || "");
       } else {
         toast.error(res.message || "OTP không chính xác!");
       }
@@ -89,7 +91,6 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
       setLoading(false);
     }
   };
-
   useEffect(() => {
     if (seconds <= 0) return;
     const interval = setInterval(
@@ -99,18 +100,28 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
     return () => clearInterval(interval);
   }, [seconds]);
 
+  // Reset form khi modal đóng và mở lại
+  useEffect(() => {
+    if (open && !isOTPVerified) {
+      // Reset các state khi mở modal mới
+      setSendOTP(false);
+      setSeconds(0);
+      setEmailValue("");
+      form.resetFields();
+    }
+  }, [open, isOTPVerified, form]);
   return (
     <>
-      <Spin spinning={loading}>
-        <CustomModal
-          title="Xác thực OTP"
-          open={open && !isOTPVerified}
-          onCancel={onCancel}
-          footer={null}
-          width={600}
-        >
+      <CustomModal
+        title="Xác thực OTP"
+        open={open && !isOTPVerified}
+        onCancel={onCancel}
+        footer={null}
+        width={600}
+      >
+        <Spin spinning={loading}>
           {sendOTP && (
-            <div className="error">
+            <div className="text-center mb-4 text-red-500">
               Gửi lại mã OTP sau {seconds} giây
             </div>
           )}
@@ -121,6 +132,7 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
             className="login-form"
             style={{ width: "70%", margin: "auto" }}
           >
+            {" "}
             <Form.Item
               name="email"
               rules={[
@@ -138,6 +150,13 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
                 <Input
                   prefix={<UserOutlined />}
                   placeholder="Vui lòng nhập Email"
+                  value={emailValue || undefined}
+                  onChange={(e) => {
+                    setEmailValue(e.target.value);
+                    form.setFieldsValue({
+                      email: e.target.value,
+                    });
+                  }}
                 />
                 <Button
                   style={{
@@ -151,7 +170,6 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
                 </Button>
               </div>
             </Form.Item>
-
             <Form.Item
               name="otp"
               rules={[
@@ -167,7 +185,6 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
                 type="text"
               />
             </Form.Item>
-
             <Form.Item>
               <Button
                 onClick={verifyOTP}
@@ -182,8 +199,8 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
               </Button>
             </Form.Item>
           </Form>
-        </CustomModal>
-      </Spin>
+        </Spin>
+      </CustomModal>
 
       <ResetPassword
         open={isOTPVerified}
