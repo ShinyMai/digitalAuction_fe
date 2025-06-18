@@ -9,24 +9,27 @@ const AuthLoader = () => {
   const { user } = useSelector(
     (state: RootState) => state.auth
   );
-
   useEffect(() => {
     if (user?.roleName) {
       const currentPath = location.pathname;
+      const rolePath = user.roleName.toLowerCase();
+
       console.log(
         "Current path:",
         currentPath,
         "User role:",
         user.roleName
       );
-      if (user.roleName === "Admin") {
-        if (!currentPath.startsWith("/admin")) {
-          navigate("/admin/post-auction", {
+
+      if (user.roleName !== "User") {
+        // For company staff (Admin, Staff, etc.)
+        if (!currentPath.startsWith(`/${rolePath}`)) {
+          navigate(`/${rolePath}/statistics`, {
             replace: true,
           });
         }
       } else if (user.roleName === "User") {
-        if (currentPath.startsWith("/admin")) {
+        if (currentPath.startsWith(`/${rolePath}`)) {
           navigate("/", { replace: true });
         }
       }

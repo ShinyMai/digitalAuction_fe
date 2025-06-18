@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import type { AuctionCategory } from "../PostAuction/Modals";
-import type { AuctionDataList } from "./Modals";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {useEffect, useState} from "react";
 import AuctionServices from "../../../services/AuctionServices";
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
 import dayjs from "dayjs";
+import type {AuctionCategory, AuctionDataList} from "../Modals.ts";
 
 interface SearchParams {
     AuctionName?: string;
@@ -155,7 +155,7 @@ const AuctionList = () => {
                 <div className="w-full h-full" id="table-list">
                     <AuctionTable
                         auctionData={auctionList}
-                        headerTable={<SearchAuctionTable onSearch={onSearch} auctionCategory={listAuctionCategory} />}
+                        headerTable={<SearchAuctionTable onSearch={onSearch} auctionCategory={listAuctionCategory}/>}
                         onChange={onChangeTable}
                         total={totalData}
                         loading={loading}

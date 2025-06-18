@@ -50,12 +50,17 @@ const resetPassword = (body: {
 }): Promise<ApiResponse<unknown>> =>
   http.post(AccountAPI.resetPassword, body);
 
+const getRole = (): Promise<
+  ApiResponse<{ roles: string[] }>
+> => http.get(AccountAPI.getRole);
+
 const AuthServices = {
   login,
   register,
   forgotPassword,
   verifyOTP,
   resetPassword,
+  getRole,
 };
 
 export default AuthServices;
