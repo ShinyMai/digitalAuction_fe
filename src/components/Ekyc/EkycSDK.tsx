@@ -17,6 +17,7 @@ declare global {
 interface EkycSDKProps {
   setCurrent: (current: number) => void;
   setAccount: (account: object) => void;
+  face: boolean;
 }
 
 interface EkycResult {
@@ -59,6 +60,7 @@ interface EkycResult {
 const EkycSDK: React.FC<EkycSDKProps> = ({
   setCurrent,
   setAccount,
+  face,
 }) => {
   const tokenKey = import.meta.env.VITE_EKYC_TOKEN_KEY;
   const tokenId = import.meta.env.VITE_EKYC_TOKEN_ID;
@@ -107,15 +109,15 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
           : null,
         issueDate: result.ocr.object.issue_date
           ? dayjs(
-            result.ocr.object.issue_date,
-            "DD/MM/YYYY"
-          )
+              result.ocr.object.issue_date,
+              "DD/MM/YYYY"
+            )
           : null,
         validDate: result.ocr.object.valid_date
           ? dayjs(
-            result.ocr.object.valid_date,
-            "DD/MM/YYYY"
-          )
+              result.ocr.object.valid_date,
+              "DD/MM/YYYY"
+            )
           : null,
         nationality: result.ocr.object.nationality || "",
         gender:
@@ -177,7 +179,7 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
       TOKEN_ID: tokenId,
       ACCESS_TOKEN: accessToken,
       HAS_RESULT_SCREEN: true,
-      SDK_FLOW: "DOCUMENT_TO_FACE",
+      SDK_FLOW: face ? "DOCUMENT_TO_FACE" : "DOCUMENT",
       LIST_TYPE_DOCUMENT: [-1],
       DOCUMENT_TYPE_START: 999,
       ENABLE_API_LIVENESS_DOCUMENT: true,

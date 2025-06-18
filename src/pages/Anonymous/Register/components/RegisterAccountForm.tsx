@@ -10,6 +10,7 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import AuthServices from "../../../../services/AuthServices";
+import { toast } from "react-toastify";
 
 interface Account {
   email?: string;
@@ -24,18 +25,45 @@ interface Account {
   originLocation?: string;
   recentLocation?: string;
   issueBy?: string;
+  role?: string;
 }
 
 interface RegisterAccountFormProps {
-  setAccount: (account: object) => void;
   account: Account;
+  user: boolean;
+}
+
+interface Role {
+  roleId: number;
+  roleName: string;
 }
 
 const RegisterAccountForm: React.FC<
   RegisterAccountFormProps
-> = ({ account }) => {
+> = ({ account, user }) => {
   const [formRegister] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [roles, setRoles] = useState<Role[]>([]);
+
+  const getRoles = async () => {
+    try {
+      setLoading(true);
+      const res = await AuthServices.getRole();
+      if (res.code === 200) {
+        setRoles(res?.data);
+      } else {
+        throw new Error("Không thể lấy danh sách chức vụ");
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getRoles();
+  }, []);
 
   useEffect(() => {
     if (account) {
@@ -47,16 +75,17 @@ const RegisterAccountForm: React.FC<
   const signUpAccount = async (values: object) => {
     try {
       setLoading(true);
-      const response = await AuthServices.register(values);
-      console.log("Response:", response);
-      // if (response.status === 200) {
-      //   setAccount(response.data);
-      //   formRegister.resetFields();
-      //   setLoading(false);
-      //   return true;
-      // } else {
-      //   throw new Error("Đăng ký không thành công");
-      // }
+      const res = await AuthServices.register({
+        ...(user ? { role: "1" } : {}),
+        ...values,
+      });
+      if (res.code === 200) {
+        formRegister.resetFields();
+        toast.success("Đăng ký thành công");
+        setLoading(false);
+      } else {
+        throw new Error("Đăng ký không thành công");
+      }
     } catch (error) {
       console.error("Error signing up:", error);
       setLoading(false);
@@ -134,31 +163,50 @@ const RegisterAccountForm: React.FC<
             </Col>
 
             <Col xs={24} sm={8}>
-              <Form.Item
-                name="re-password"
-                label="Nhập lại Mật khẩu"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập lại mật khẩu",
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (
-                        !value ||
-                        getFieldValue("password") === value
-                      ) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        "Mật khẩu không khớp"
-                      );
+              {user ? (
+                <Form.Item
+                  name="re-password"
+                  label="Nhập lại Mật khẩu"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập lại mật khẩu",
                     },
-                  }),
-                ]}
-              >
-                <Input.Password placeholder="Nhập lại Mật khẩu" />
-              </Form.Item>
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (
+                          !value ||
+                          getFieldValue("password") ===
+                            value
+                        ) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          "Mật khẩu không khớp"
+                        );
+                      },
+                    }),
+                  ]}
+                >
+                  <Input.Password placeholder="Nhập lại Mật khẩu" />
+                </Form.Item>
+              ) : (
+                <Form.Item name="role" label="Chức vụ">
+                  <Select
+                    placeholder="Chọn chức vụ"
+                    allowClear
+                  >
+                    {roles.map((role) => (
+                      <Select.Option
+                        key={role.roleId}
+                        value={role.roleId}
+                      >
+                        {role.roleName}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              )}
             </Col>
 
             <Col xs={24} sm={8}>
