@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { AuctionCategory, AuctionDataList } from "../../Company/Modals";
 import AuctionCard from "./components/AuctionCard";
 import dayjs from "dayjs";
+import { useLocation } from "react-router-dom";
 
 const { Content, Sider } = Layout;
 const { Title } = Typography;
@@ -45,9 +46,11 @@ const AuctionListAnonyMous = () => {
     });
     const [totalData, setTotalData] = useState<number>(0);
     const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
+    const location = useLocation()
 
     useEffect(() => {
         getListAuctionCategory();
+        console.log("Key: ", location.state.key)
     }, []);
 
     useEffect(() => {
