@@ -105,7 +105,7 @@ const HomePage = () => {
               key={category.id}
               hoverable
               className="w-[300px] h-[200px] flex flex-col items-center justify-center"
-              onClick={() => navigate("/auction-list")}
+              onClick={() => navigate("/auction-list", { state: { key: category.id } })}
             >
               <img src={category.image} alt={category.name} className="w-16 h-16 mb-2" />
               <Paragraph className="text-center font-semibold">{category.name}</Paragraph>
