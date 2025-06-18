@@ -4,12 +4,16 @@ import {
   ScheduleOutlined,
   HomeOutlined,
   TeamOutlined,
+  UsergroupDeleteOutlined,
 } from "@ant-design/icons";
 import { Menu, type MenuProps } from "antd";
 import React from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { STAFF_ROUTES } from "../../../routers";
+import {
+  ADMIN_ROUTES,
+  STAFF_ROUTES,
+} from "../../../routers";
 
 interface MenuItem {
   key: string;
@@ -37,7 +41,6 @@ const items: MenuItem[] = [
       "Auctioneer",
       "Director",
       "Manager",
-      "Admin",
     ],
   },
   {
@@ -45,21 +48,28 @@ const items: MenuItem[] = [
     icon: <ScheduleOutlined />,
     label: "Tạo buổi đấu giá",
     url: STAFF_ROUTES.SUB.POST_AUCTION,
-    roleView: ["Staff", "Admin"],
+    roleView: ["Staff"],
   },
   {
     key: "4",
     icon: <HomeOutlined />,
     label: "Hỗ trợ đăng ký tham gia đấu giá",
     url: STAFF_ROUTES.SUB.DASHBOARD,
-    roleView: ["Staff", "Admin"],
+    roleView: ["Staff"],
   },
   {
     key: "5",
     icon: <TeamOutlined />,
     label: "Danh sách nhân lực",
     url: STAFF_ROUTES.SUB.PROPERTIES,
-    roleView: ["Director", "Manager", "Admin"],
+    roleView: ["Director", "Manager"],
+  },
+  {
+    key: "6",
+    icon: <UsergroupDeleteOutlined />,
+    label: "Quản lý tài khoản",
+    url: ADMIN_ROUTES.SUB.MANAGER_ACCOUNT,
+    roleView: ["Admin"],
   },
 ].map((item) => ({
   ...item,

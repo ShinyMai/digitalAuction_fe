@@ -1,9 +1,9 @@
-import { useState } from "react";
-import EkycSDK from "../../../components/Ekyc/EkycSDK";
 import { ConfigProvider, Steps } from "antd";
-import RegisterAccountForm from "./components/RegisterAccountForm";
+import { useState } from "react";
+import EkycSDK from "../../../../components/Ekyc/EkycSDK";
+import RegisterAccountForm from "../../../Anonymous/Register/components/RegisterAccountForm";
 
-const Register = () => {
+const AddEmployees = () => {
   const [current, setCurrent] = useState(0);
   const [account, setAccount] = useState({});
 
@@ -40,7 +40,7 @@ const Register = () => {
         <EkycSDK
           setCurrent={setCurrent}
           setAccount={setAccount}
-          face={true}
+          face={false}
         />
       )}
       {current === 1 && (
@@ -53,4 +53,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default AddEmployees;

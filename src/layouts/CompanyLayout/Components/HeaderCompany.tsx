@@ -11,8 +11,6 @@ const HeaderCompany = memo(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { user } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
-
-  console.log("User Info:", user);
   return (
     <div className="min-h-[64px] bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between px-4 md:px-8">
       <div className="flex items-center space-x-4">
@@ -37,13 +35,13 @@ const HeaderCompany = memo(() => {
             />
           </div>
         </div>
-        <ul className="absolute right-0 z-10 hidden flex-col gap-2 bg-[#f2f8fa] p-3 border rounded border-[#bce6f7] outline-white group-hover:flex list-none">
+        <ul className="absolute right-0 z-10 bg-[#f2f8fa] p-3 border rounded border-[#bce6f7] outline-white">
           <li
             // onClick={() => setShowInfo(true)}
-            className="flex items-center gap-2 cursor-pointer hover:text-sky-500"
+            className="flex items-center gap-2 cursor-pointer hover:text-sky-500 h-10"
           >
             <UserOutlined />
-            <p className="w-max">Thông tin cá nhân</p>
+            <p className="">Thông tin cá nhân</p>
           </li>
           <hr />
           <li
@@ -52,7 +50,7 @@ const HeaderCompany = memo(() => {
               window.location.reload();
               navigate("/");
             }}
-            className="flex items-center gap-2 cursor-pointer hover:text-sky-500"
+            className="flex items-center gap-2 cursor-pointer hover:text-sky-500 h-10"
           >
             <LogoutOutlined />
             <p className="w-max">Đăng xuất</p>
