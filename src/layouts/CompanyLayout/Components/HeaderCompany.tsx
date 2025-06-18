@@ -1,7 +1,18 @@
 import { memo } from "react";
 import { assets } from "../../../assets";
+import { useSelector } from "react-redux";
+import {
+  LogoutOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const HeaderCompany = memo(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { user } = useSelector((state: any) => state.auth);
+  const navigate = useNavigate();
+
+  console.log("User Info:", user);
   return (
     <div className="min-h-[64px] bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between px-4 md:px-8">
       <div className="flex items-center space-x-4">
@@ -10,50 +21,44 @@ const HeaderCompany = memo(() => {
           alt="Logo"
           className="w-12 h-12 rounded-xl border-2 border-white/20"
         />
-        {/* <div className="hidden lg:flex items-center space-x-6">
-                    <a href="/statistics" className="text-white hover:text-blue-200 transition-transform hover:scale-105">
-                        Thống kê
-                    </a>
-                    <a href="/auctions" className="text-white hover:text-blue-200 transition-transform hover:scale-105">
-                        Danh sách các buổi đấu giá
-                    </a>
-                    <a href="/properties" className="text-white hover:text-blue-200 transition-transform hover:scale-105">
-                        Danh sách bất động sản đấu giá
-                    </a>
-                    <a href="/personnel" className="text-white hover:text-blue-200 transition-transform hover:scale-105">
-                        Danh sách nhân lực
-                    </a>
-                </div> */}
       </div>
-      {/* <div className="flex items-center space-x-3">
-                <Button
-                    type="primary"
-                    icon={<UserOutlined />}
-                    className="bg-white text-blue-600 hover:bg-blue-100 font-semibold"
-                    onClick={() => console.log("Login clicked")}
-                >
-                    Đăng nhập
-                </Button>
-                <Button
-                    type="primary"
-                    icon={<UserAddOutlined />}
-                    className="bg-white text-blue-600 hover:bg-blue-100 font-semibold"
-                    onClick={() => setRegister(true)}
-                >
-                    Đăng ký
-                </Button>
-                <Dropdown
-                    menu={{ items }}
-                    trigger={["click"]}
-                    className="lg:hidden"
-                >
-                    <a onClick={(e) => e.preventDefault()}>
-                        <Space>
-                            <MenuOutlined className="text-white text-lg" />
-                        </Space>
-                    </a>
-                </Dropdown>
-            </div> */}
+
+      <div className="relative cursor-pointer group text-[#0085D2]">
+        <div className="flex items-center gap-5">
+          <div className="text-lg font-medium text-white">
+            {user?.name}
+          </div>
+          <div className="w-10 h-10 rounded-full border-2 border-sky-500 bg-sky-100 flex items-center justify-center">
+            <UserOutlined
+              style={{
+                fontSize: "1.6rem",
+                color: "#0085D2",
+              }}
+            />
+          </div>
+        </div>
+        <ul className="absolute right-0 z-10 hidden flex-col gap-2 bg-[#f2f8fa] p-3 border rounded border-[#bce6f7] outline-white group-hover:flex list-none">
+          <li
+            // onClick={() => setShowInfo(true)}
+            className="flex items-center gap-2 cursor-pointer hover:text-sky-500"
+          >
+            <UserOutlined />
+            <p className="w-max">Thông tin cá nhân</p>
+          </li>
+          <hr />
+          <li
+            onClick={() => {
+              localStorage.removeItem("user");
+              window.location.reload();
+              navigate("/");
+            }}
+            className="flex items-center gap-2 cursor-pointer hover:text-sky-500"
+          >
+            <LogoutOutlined />
+            <p className="w-max">Đăng xuất</p>
+          </li>
+        </ul>
+      </div>
     </div>
   );
 });

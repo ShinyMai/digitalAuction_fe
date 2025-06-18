@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
 import dayjs from "dayjs";
-import type { AuctionCategory, AuctionDataList } from "../Modals";
+import type { AuctionCategory, AuctionDataList } from "../Modals.ts";
 
 interface SearchParams {
     AuctionName?: string;
