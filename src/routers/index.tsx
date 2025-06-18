@@ -1,25 +1,36 @@
-export const GUESTROUTERS = {
+export const GUEST_ROUTERS = {
   HOME: "",
   LOGIN: "login",
   REGISTER: "register",
   TIN_TUC: "tin-tuc",
+  NOT_FOUND: "not-found",
 };
 
-export const USERROUTERS = {
+export const USER_ROUTERS = {
   PATH: "user",
   SUB: {
-    HOME: "",
-    LOGIN: "login",
-    REGISTER: "register",
-    TIN_TUC: "tin-tuc",
+    ...GUEST_ROUTERS,
   },
 };
 
-export const ROUTERCOMPANY = {
+export const STAFF_ROUTES = {
+  PATH: "staff",
+  SUB: {
+    DASHBOARD: "dashboard",
+    POST_AUCTION: "post-auction",
+    AUCTION_LIST: "auction-list",
+    STATISTICS: "statistics",
+    PROPERTIES: "properties",
+    PERSONNEL: "personnel",
+    AUCTION_DETAIL: "auction-detail",
+    NOT_FOUND: "not-found",
+  },
+};
+
+export const ADMIN_ROUTES = {
   PATH: "admin",
   SUB: {
-    DASHBOARD: "dash-boad",
-    POST_AUCTION: "auction-post",
-    AUCTION_LIST: "auction-list",
+    DASHBOARD: "dashboard",
+    MANAGER_ACCOUNT: "manager-account",
   },
 };
