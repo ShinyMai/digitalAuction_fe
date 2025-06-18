@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../../../store/authReduxs/authSlice";
 import CustomModal from "../../../components/Common/CustomModal";
 import VerifyOTP from "../ForgotPassword/VerifyOTP";
+import { useNavigate } from "react-router-dom";
 
 interface LoginProps {
   onCancel: () => void;
@@ -26,20 +27,21 @@ const Login: React.FC<LoginProps> = ({
     useState(false);
   const [formLogin] = Form.useForm();
   const dispatch = useDispatch();
-
-  console.log(forgotPassword);
+  const navigate = useNavigate();
 
   const loginAccout = async () => {
     const values = await formLogin.validateFields();
     try {
       setLoading(true);
       const res = await AuthServices.login(values);
-      console.log("Login Response:", res);
       if (res.code === 200) {
-        dispatch(setUser(res.data));
+        dispatch(setUser(res?.data));
         onCancel();
         toast.success(
           res.message || "Đăng nhập thành công!"
+        );
+        navigate(
+          `/${(res.data?.roleName || "").toLowerCase()}`
         );
       } else {
         setLoginError(true);
@@ -57,14 +59,14 @@ const Login: React.FC<LoginProps> = ({
   };
 
   return (
-    <Spin spinning={loading}>
-      <CustomModal
-        title={"Đăng nhập"}
-        open={open}
-        onCancel={onCancel}
-        footer={null}
-        width={600}
-      >
+    <CustomModal
+      title={"Đăng nhập"}
+      open={open}
+      onCancel={onCancel}
+      footer={null}
+      width={600}
+    >
+      <Spin spinning={loading}>
         <div className="text-center">
           {loginError ? (
             <div className="text-red-500 mb-2">
@@ -149,14 +151,14 @@ const Login: React.FC<LoginProps> = ({
             Quên mật khẩu?
           </div>
         </div>
-      </CustomModal>
+      </Spin>
       {forgotPassword && (
         <VerifyOTP
           open={forgotPassword}
           onCancel={() => setForgotPassword(false)}
         />
       )}
-    </Spin>
+    </CustomModal>
   );
 };
 

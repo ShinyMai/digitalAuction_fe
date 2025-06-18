@@ -10,19 +10,15 @@ interface TinyMCEEditorProps {
 }
 
 const TinyMCEEditor: React.FC<TinyMCEEditorProps> = ({
-  value,
   onChange,
-  initialValue = "<p></p>",
   apiKey = "7ykxq88baf5mse27hk2euqeg32tfzab7gger66mshxjxtd62",
   height = 500,
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const editorRef = useRef<any>(null);
 
   // Cập nhật giá trị khi nội dung thay đổi
-  const handleEditorChange = (
-    content: string,
-    editor: any
-  ) => {
+  const handleEditorChange = (content: string) => {
     if (onChange) {
       onChange(content);
     }
@@ -31,7 +27,7 @@ const TinyMCEEditor: React.FC<TinyMCEEditorProps> = ({
   return (
     <Editor
       apiKey={apiKey}
-      onInit={(evt, editor) => (editorRef.current = editor)}
+      onInit={(editor) => (editorRef.current = editor)}
       onEditorChange={handleEditorChange}
       init={{
         height,

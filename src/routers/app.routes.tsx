@@ -1,56 +1,55 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import {
-  companyRoutes,
-  guestRoutes,
-  userRoutes,
-} from "./roleBased.routes";
 import AuthLoader from "../store/authReduxs/authLoader";
 import { ToastContainer } from "react-toastify";
 import PrivateRoutes from "../layouts/AnonymousLayout";
 import PrivateRoutesCompany from "../layouts/CompanyLayout";
-import { useSelector } from "react-redux";
+import { useAppRouting } from "../hooks/useAppRouting";
 
 const AppRouter = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { user } = useSelector((state: any) => state.auth);
-  const role = user?.roleName;
+  const {
+    role,
+    userAndGuestRoutes,
+    staffRoutes,
+    isUserOrGuest,
+    isCompanyStaff,
+    // isAdmin,
+    isStaff,
+    // isAuctioneer,
+    // isManager,
+    // isDirector,
+  } = useAppRouting();
 
   return (
     <>
       <AuthLoader />
       <Routes>
-        {(role === "User" || !role) && (
+        {isUserOrGuest && (
           <Route path="/" element={<PrivateRoutes />}>
-            {[...userRoutes, ...guestRoutes].map(
-              (route, index) => (
-                <Route
-                  key={index}
-                  path={route.path}
-                  element={<route.element />}
-                />
-              )
-            )}
+            {userAndGuestRoutes.map((route, index) => (
+              <Route
+                key={index}
+                path={route.path}
+                element={<route.element />}
+              />
+            ))}
           </Route>
         )}
-        {role && role !== "User" && (
+        {isCompanyStaff && (
           <Route
-            path={`/${role.toLowerCase()}/*`}
+            path={`/${role?.toLowerCase()}/*`}
             element={<PrivateRoutesCompany />}
           >
-            {role === "Admin" &&
-              companyRoutes.map((route, index) => (
+            {isStaff &&
+              staffRoutes.map((route, index) => (
                 <Route
                   key={index}
                   path={route.path}
                   element={<route.element />}
                 />
               ))}
-
             <Route
               index
-              element={
-                <Navigate to="post-auction" replace />
-              }
+              element={<Navigate to="statistics" replace />}
             />
           </Route>
         )}
@@ -60,7 +59,6 @@ const AppRouter = () => {
             element={<Navigate to="/" replace />}
           />
         )}
-        {/* Route cho 404 */}
         <Route
           path="/not-found"
           element={<div>Page Not Found</div>}
