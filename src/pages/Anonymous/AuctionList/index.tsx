@@ -3,10 +3,10 @@ import { SearchOutlined } from "@ant-design/icons";
 import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import type { AuctionCategory, AuctionDataList } from "../../Company/Modals";
 import AuctionCard from "./components/AuctionCard";
 import dayjs from "dayjs";
 import { useLocation } from "react-router-dom";
+import type { AuctionCategory, AuctionDataList } from "../Modals";
 
 const { Content, Sider } = Layout;
 const { Title } = Typography;
