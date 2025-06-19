@@ -67,8 +67,8 @@ const items: MenuItem[] = [
   {
     key: "6",
     icon: <UsergroupDeleteOutlined />,
-    label: "Quản lý tài khoản",
-    url: ADMIN_ROUTES.SUB.MANAGER_ACCOUNT,
+    label: "Tạo tài khoản mới",
+    url: ADMIN_ROUTES.SUB.ADD_EMPLOYEES,
     roleView: ["Admin"],
   },
 ].map((item) => ({

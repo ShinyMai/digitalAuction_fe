@@ -126,14 +126,14 @@ export const staffRoutes = [
 ];
 
 // Router site Admin
-const ManagerAccount = React.lazy(
-  () => import("../pages/Admin/ManagerAccount/index")
+const AddAccountStaff = React.lazy(
+  () => import("../pages/Admin/ManagerAccount/AddEmployees")
 );
 
 export const adminRoutes = [
   {
-    path: ADMIN_ROUTES.SUB.MANAGER_ACCOUNT,
-    element: wrapWithLazy(ManagerAccount),
+    path: ADMIN_ROUTES.SUB.ADD_EMPLOYEES,
+    element: wrapWithLazy(AddAccountStaff),
   },
   {
     path: ADMIN_ROUTES.SUB.DASHBOARD,

@@ -41,6 +41,7 @@ const Register = () => {
           setCurrent={setCurrent}
           setAccount={setAccount}
           face={true}
+          className="rounded-md p-4 bg-gray-100"
         />
       )}
       {current === 1 && (

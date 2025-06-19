@@ -25,7 +25,7 @@ interface Account {
   originLocation?: string;
   recentLocation?: string;
   issueBy?: string;
-  role?: string;
+  roleId?: string;
 }
 
 interface RegisterAccountFormProps {
@@ -76,7 +76,7 @@ const RegisterAccountForm: React.FC<
     try {
       setLoading(true);
       const res = await AuthServices.register({
-        ...(user ? { role: "1" } : {}),
+        ...(user ? { roleId: "2" } : {}),
         ...values,
       });
       if (res.code === 200) {
@@ -191,7 +191,7 @@ const RegisterAccountForm: React.FC<
                   <Input.Password placeholder="Nhập lại Mật khẩu" />
                 </Form.Item>
               ) : (
-                <Form.Item name="role" label="Chức vụ">
+                <Form.Item name="roleId" label="Chức vụ">
                   <Select
                     placeholder="Chọn chức vụ"
                     allowClear
