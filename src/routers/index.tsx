@@ -34,5 +34,6 @@ export const ADMIN_ROUTES = {
   SUB: {
     DASHBOARD: "dashboard",
     MANAGER_ACCOUNT: "manager-account",
+    ADD_EMPLOYEES: "add-employees",
   },
 };

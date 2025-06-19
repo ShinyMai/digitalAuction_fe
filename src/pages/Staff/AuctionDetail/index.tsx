@@ -8,7 +8,7 @@ import { Button, Image, Typography, Card } from "antd";
 import MINPHAPLOGO from "../../../assets/LOGO-MINH-PHAP.jpg";
 import dayjs from "dayjs";
 
-const AuctionDetailCompany = () => {
+const AuctionDetailAnonymous = () => {
     const location = useLocation();
     const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
 
@@ -43,7 +43,7 @@ const AuctionDetailCompany = () => {
                                         preview={false}
                                     />
                                 </div>
-                                {/* <h2 className="text-xl font-semibold text-teal-600 mt-2 text-center">VẬN THÁNH AN</h2> */}
+                                <h2 className="text-xl font-semibold text-teal-600 mt-2 text-center">VẬN THÁNH AN</h2>
                             </div>
                             <div className="w-full md:w-2/3 pl-0 md:pl-4">
                                 <h1 className="text-2xl md:text-3xl font-bold text-blue-800 mb-2">
@@ -203,4 +203,4 @@ const AuctionDetailCompany = () => {
     );
 };
 
-export default AuctionDetailCompany;
+export default AuctionDetailAnonymous;
