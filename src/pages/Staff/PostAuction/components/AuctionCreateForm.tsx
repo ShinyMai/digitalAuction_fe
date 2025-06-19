@@ -2,7 +2,7 @@
 import { Button, Card, Col, DatePicker, Form, Input, message, Row, Select } from "antd";
 import { useForm } from "antd/es/form/Form";
 import MapComponent from "./MapComponent";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import UploadFile from "./Upload";
 import TinyMCEEditor from "./TinyMCEEditor";
 import type { AuctionCategory } from "../../Modals.ts";
@@ -22,6 +22,30 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
         value: val.categoryId,
         label: val.categoryName,
     }));
+
+    // Lấy ngày hiện tại (19/06/2025 19:08 +07)
+    const currentDate = dayjs();
+
+    // State để lưu giá trị thời gian đăng ký
+    const [registerRange, setRegisterRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null);
+
+    // Hàm disable ngày cho RangePicker thời gian đăng ký
+    const disabledRegisterDate = (current: dayjs.Dayjs) => {
+        return current.isBefore(currentDate.startOf('day'));
+    };
+
+    // Hàm disable ngày cho RangePicker thời gian đấu giá
+    const disabledAuctionDate = (current: dayjs.Dayjs) => {
+        if (!registerRange || !registerRange[1]) return false; // Chỉ disable khi có ngày kết thúc đăng ký
+        const registerEndDate = registerRange[1];
+        const minAuctionStart = registerEndDate.add(1, 'day'); // Ngày bắt đầu tối thiểu (1 ngày sau)
+        const maxAuctionStart = registerEndDate.add(3, 'day'); // Ngày bắt đầu tối đa (3 ngày sau)
+        return current.isBefore(minAuctionStart);
+    };
+
+    useEffect(() => {
+        form.setFieldsValue({ AuctionTimeRange: null }); // Reset thời gian đấu giá khi thay đổi đăng ký
+    }, [registerRange, form]);
 
     const onFinish = async (values: any) => {
         setLoading(true);
@@ -45,6 +69,18 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
             const [auctionStartDate, auctionEndDate] = values.AuctionTimeRange || [];
             if (!auctionStartDate || !auctionEndDate) {
                 message.error("Vui lòng chọn thời gian đấu giá!");
+                setLoading(false);
+                return;
+            }
+
+            // Chuyển đổi sang dayjs để tính toán
+            const registerEnd = dayjs(registerEndDate);
+            const auctionStart = dayjs(auctionStartDate);
+
+            // Kiểm tra khoảng cách từ 1 đến 3 ngày giữa registerEndDate và auctionStartDate
+            const daysDifference = auctionStart.diff(registerEnd, 'day');
+            if (daysDifference < 1 || daysDifference > 3) {
+                message.error("Thời gian bắt đầu đấu giá phải sau thời gian kết thúc đăng ký từ 1 đến 3 ngày!");
                 setLoading(false);
                 return;
             }
@@ -79,6 +115,11 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
             onFinishFailed={(err) => {
                 console.log("Validation failed:", err);
                 message.error("Vui lòng kiểm tra các trường bắt buộc!");
+            }}
+            onValuesChange={(changedValues, allValues) => {
+                if (changedValues.RegisterTimeRange) {
+                    setRegisterRange(changedValues.RegisterTimeRange);
+                }
             }}
         >
             <Row gutter={[24, 24]}>
@@ -139,6 +180,7 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
                                 className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
                                 format="DD/MM/YYYY"
                                 placeholder={["Ngày mở đăng ký", "Ngày kết thúc đăng ký"]}
+                                disabledDate={disabledRegisterDate}
                             />
                         </Form.Item>
                         <Form.Item
@@ -150,6 +192,7 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
                                 className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
                                 format="DD/MM/YYYY"
                                 placeholder={["Ngày bắt đầu đấu giá", "Ngày kết thúc đấu giá"]}
+                                disabledDate={disabledAuctionDate}
                             />
                         </Form.Item>
                     </Card>
@@ -190,7 +233,7 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
                             name="AuctionDescription"
                             rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
                         >
-                            <TinyMCEEditor height={470} />
+                            <TinyMCEEditor height={300} />
                         </Form.Item>
                     </Card>
                 </Col>
