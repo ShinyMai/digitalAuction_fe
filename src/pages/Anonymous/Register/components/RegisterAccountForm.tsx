@@ -98,7 +98,6 @@ const RegisterAccountForm: React.FC<
     formRegister
       .validateFields()
       .then((values) => {
-        console.log("Form Values:", values);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { ["re-password"]: _, ...filterData } =
           values;

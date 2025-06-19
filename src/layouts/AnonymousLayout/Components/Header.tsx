@@ -19,7 +19,6 @@ const Header = memo(() => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { user } = useSelector((state: any) => state.auth);
-  console.log("User Info:", !user);
 
   const items = useMemo(
     () => [
