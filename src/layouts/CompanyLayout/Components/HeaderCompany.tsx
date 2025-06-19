@@ -35,7 +35,7 @@ const HeaderCompany = memo(() => {
             />
           </div>
         </div>
-        <ul className="absolute right-0 z-10 bg-[#f2f8fa] p-3 border rounded border-[#bce6f7] outline-white">
+        <ul className="absolute right-0 z-10 hidden flex-col gap-2 bg-[#f2f8fa] p-3 border rounded border-[#bce6f7] outline-white group-hover:flex list-none">
           <li
             // onClick={() => setShowInfo(true)}
             className="flex items-center gap-2 cursor-pointer hover:text-sky-500 h-10"

@@ -12,5 +12,5 @@ export type RegisterAccount = {
   email?: string;
   phone?: string;
   password?: string;
-  role?: string;
+  roleId?: string;
 };

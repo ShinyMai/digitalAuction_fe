@@ -18,6 +18,7 @@ interface EkycSDKProps {
   setCurrent: (current: number) => void;
   setAccount: (account: object) => void;
   face: boolean;
+  className?: string;
 }
 
 interface EkycResult {
@@ -61,34 +62,59 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
   setCurrent,
   setAccount,
   face,
+  className = "",
 }) => {
   const tokenKey = import.meta.env.VITE_EKYC_TOKEN_KEY;
   const tokenId = import.meta.env.VITE_EKYC_TOKEN_ID;
   const accessToken = import.meta.env
     .VITE_EKYC_ACCESS_TOKEN;
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
-    loadEkycScripts()
-      .then(() => {
+    const initializeSDK = async () => {
+      try {
+        await loadEkycScripts();
         if (isMounted) {
           setIsSdkLoaded(true);
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Lỗi tải script eKYC:", error);
-      });
+      }
+    };
+
+    initializeSDK();
 
     return () => {
       isMounted = false;
     };
   }, []);
+  useEffect(() => {
+    if (!isSdkLoaded) return;
+
+    const timer = setTimeout(() => {
+      if (
+        window.SDK &&
+        typeof window.SDK.launch === "function" &&
+        !isInitialized
+      ) {
+        setIsInitialized(true);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isSdkLoaded, isInitialized]);
 
   useEffect(() => {
-    if (!isSdkLoaded || !window.SDK) {
-      return;
+    if (!isInitialized || !window.SDK?.launch) return;
+
+    const container = document.getElementById(
+      "ekyc_sdk_intergrated"
+    );
+    if (container) {
+      container.innerHTML = "";
     }
 
     const CALL_BACK_END_FLOW = async (
@@ -120,30 +146,13 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
             )
           : null,
         nationality: result.ocr.object.nationality || "",
-        gender:
-          result.ocr.object.gender === "Nam" ? true : false,
+        gender: result.ocr.object.gender === "Nam",
         originLocation:
           result.ocr.object.origin_location || "",
         recentLocation:
           result.ocr.object.recent_location || "",
         issueBy: result.ocr.object.issue_place || "",
       });
-
-      if (result.compare?.object.msg === "NOMATCH") {
-        toast.error(
-          "Khuôn mặt không khớp với giấy tờ, vui lòng thử lại."
-        );
-        return;
-      }
-
-      if (
-        result.liveness_face?.object.liveness === "failure"
-      ) {
-        toast.error(
-          "Khuôn mặt không phải người thật, vui lòng thử lại."
-        );
-        return;
-      }
 
       if (
         result.liveness_card_front?.object.liveness ===
@@ -165,7 +174,6 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
         return;
       }
 
-      // Nếu qua hết các bước kiểm tra
       setCurrent(1);
       toast.success(
         "Xác thực thành công, sang bước tiếp theo."
@@ -198,21 +206,28 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
       CALL_BACK_END_FLOW,
     };
 
-    if (window.SDK && window.SDK.launch) {
+    if (window.SDK?.launch) {
+      console.log("Initializing EKYC SDK...");
       window.SDK.launch(dataConfig);
     } else {
       console.error(
         "SDK không được tải hoặc không có phương thức launch."
       );
     }
+
+    return () => {
+      const container = document.getElementById(
+        "ekyc_sdk_intergrated"
+      );
+      if (container) {
+        container.innerHTML = "";
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSdkLoaded]);
+  }, [isInitialized, face]);
 
   return (
-    <div
-      id="ekyc_sdk_intergrated"
-      className="sm:rounded-lg lg:mx-8 sm:mt-4"
-    />
+    <div id="ekyc_sdk_intergrated" className={className} />
   );
 };
 
