@@ -1,14 +1,15 @@
+import { ConfigProvider, Steps } from "antd";
 import { useState } from "react";
 import EkycSDK from "../../../components/Ekyc/EkycSDK";
-import { ConfigProvider, Steps } from "antd";
-import RegisterAccountForm from "./components/RegisterAccountForm";
+import RegisterAccountForm from "../../Anonymous/Register/components/RegisterAccountForm";
 
-const Register = () => {
+const AddEmployees = () => {
   const [current, setCurrent] = useState(0);
   const [account, setAccount] = useState({});
+  // const [loading, setLoading] = useState(false);
 
   return (
-    <div className="lg:px-32 lg:py-4 lg:w-3/4 sm:px-6 w-full mx-auto mt-4 bg-white rounded-lg">
+    <div className="lg:w-3/4 sm:px-6 w-full mx-auto bg-white rounded-lg ">
       <ConfigProvider
         theme={{
           components: {
@@ -18,7 +19,7 @@ const Register = () => {
           },
         }}
       >
-        <div className="hidden sm:block">
+        <div className="hidden sm:block pb-5">
           <Steps
             current={current}
             items={[
@@ -40,18 +41,17 @@ const Register = () => {
         <EkycSDK
           setCurrent={setCurrent}
           setAccount={setAccount}
-          face={true}
-          className="rounded-md p-4 bg-gray-100"
+          face={false}
         />
       )}
       {current === 1 && (
         <RegisterAccountForm
           account={account}
-          user={true}
+          user={false}
         />
       )}
     </div>
   );
 };
 
-export default Register;
+export default AddEmployees;

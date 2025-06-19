@@ -51,7 +51,7 @@ const resetPassword = (body: {
   http.post(AccountAPI.resetPassword, body);
 
 const getRole = (): Promise<
-  ApiResponse<{ roles: string[] }>
+  ApiResponse<{ roleId: number; roleName: string }[]>
 > => http.get(AccountAPI.getRole);
 
 const AuthServices = {
