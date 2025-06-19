@@ -1,7 +1,7 @@
 import http from "../../utils/axiosConfigs";
 import { AuctionAPI } from "./urls";
 
-const addAcution = (body: any) =>
+const addAuction = (body: any) =>
     http.post(AuctionAPI.ADDAUCTION, body);
 
 const getListAuctionCategory = () =>
@@ -16,7 +16,7 @@ const getAuctionDetail = (params?: string) =>
 
 
 const AuctionServices = {
-    addAcution,
+    addAuction,
     getListAuctionCategory,
     getListAuction,
     getAuctionDetail

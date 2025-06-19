@@ -45,8 +45,8 @@ http.interceptors.response.use(
 
     originalRequest._retry = true;
 
-    store.dispatch(logout());
-    window.location.href = "/login";
+    // store.dispatch(logout());
+    // window.location.href = "/login";
 
     return Promise.reject(error);
   }
