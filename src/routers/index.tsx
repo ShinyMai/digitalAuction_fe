@@ -4,6 +4,8 @@ export const GUEST_ROUTERS = {
   REGISTER: "register",
   TIN_TUC: "tin-tuc",
   NOT_FOUND: "not-found",
+  AUCITON_LIST: 'auction-list',
+  AUCTION_DETAIL: 'auction-detail'
 };
 
 export const USER_ROUTERS = {

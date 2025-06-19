@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ts2 from "../../../../assets/icon/tsvphc.svg";
 import dayjs from "dayjs";
 import type { AuctionDataList } from "../../Modals";
+import { STAFF_ROUTES } from "../../../../routers";
 
 interface Props {
     dataCard: AuctionDataList;
@@ -24,7 +25,7 @@ const AuctionCard = ({ dataCard }: Props) => {
                 />
             }
             className="shadow-lg mb-4"
-            onClick={() => navigate(`/auction-list`)}
+            onClick={() => navigate(STAFF_ROUTES.SUB.AUCTION_DETAIL, { state: { key: dataCard.auctionId }, replace: true })}
         >
             <Card.Meta
                 title={

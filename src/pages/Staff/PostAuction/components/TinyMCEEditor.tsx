@@ -12,7 +12,7 @@ interface TinyMCEEditorProps {
 const TinyMCEEditor: React.FC<TinyMCEEditorProps> = ({
   onChange,
   apiKey = "7ykxq88baf5mse27hk2euqeg32tfzab7gger66mshxjxtd62",
-  height = 500,
+  height,
 }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const editorRef = useRef<any>(null);

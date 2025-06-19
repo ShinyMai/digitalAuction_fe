@@ -33,9 +33,7 @@ const AuctionTable = ({
       title: "Số thứ tự",
       key: "index",
       render: (_: any, __: any, index: number) =>
-        ((currentPage || 1) - 1) * (pageSize || 10) +
-        index +
-        1,
+        ((currentPage || 1) - 1) * (pageSize || 10) + index + 1,
     },
     {
       title: "Tên Đấu Giá",
@@ -48,32 +46,28 @@ const AuctionTable = ({
       dataIndex: "registerOpenDate",
       key: "registerOpenDate",
       sorter: true,
-      render: (text: string) =>
-        text ? dayjs(text).format("DD/MM/YYYY") : "-",
+      render: (text: string) => (text ? dayjs(text).format("DD/MM/YYYY") : "-"),
     },
     {
       title: "Ngày ĐK Kết Thúc",
       dataIndex: "registerEndDate",
       key: "registerEndDate",
       sorter: true,
-      render: (text: string) =>
-        text ? dayjs(text).format("DD/MM/YYYY") : "-",
+      render: (text: string) => (text ? dayjs(text).format("DD/MM/YYYY") : "-"),
     },
     {
       title: "Ngày Bắt Đầu",
       dataIndex: "auctionStartDate",
       key: "auctionStartDate",
       sorter: true,
-      render: (text: string) =>
-        text ? dayjs(text).format("DD/MM/YYYY") : "-",
+      render: (text: string) => (text ? dayjs(text).format("DD/MM/YYYY") : "-"),
     },
     {
       title: "Ngày Kết Thúc",
       dataIndex: "auctionEndDate",
       key: "auctionEndDate",
       sorter: true,
-      render: (text: string) =>
-        text ? dayjs(text).format("DD/MM/YYYY") : "-",
+      render: (text: string) => (text ? dayjs(text).format("DD/MM/YYYY") : "-"),
     },
     {
       title: "Người tạo",
@@ -85,7 +79,7 @@ const AuctionTable = ({
   ];
 
   return (
-    <div className="w-full h-full flex flex-col gap-4">
+    <div className="w-full h-full flex flex-col gap-4 bg-white rounded-xl p-4 sm:p-6">
       <div className="w-full">{headerTable}</div>
       <Table<AuctionDataList>
         columns={columns}
@@ -95,10 +89,13 @@ const AuctionTable = ({
           total,
           pageSize,
           current: currentPage,
+          // showSizeChanger: true,
+          // pageSizeOptions: ["10", "20", "50"],
+          className: "bg-white rounded-b-lg",
         }}
         loading={loading}
         locale={{ emptyText: "Không có dữ liệu" }}
-        className="w-full"
+        className="w-full border border-white rounded-lg overflow-hidden"
         onRow={(record) => ({
           onClick: () => {
             const rolePath = role?.toLowerCase();
@@ -111,7 +108,7 @@ const AuctionTable = ({
             );
           },
         })}
-        rowClassName="cursor-pointer"
+        rowClassName="cursor-pointer hover:bg-blue-50 transition-colors duration-200"
       />
     </div>
   );

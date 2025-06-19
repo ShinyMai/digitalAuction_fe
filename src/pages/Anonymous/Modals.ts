@@ -50,4 +50,21 @@ export type AuctionDataDetail = {
     numberRoundMax: number;
     status: string;
     winnerData: string;
+    listAuctionAssets?: AuctionAsset[];
+}
+
+export type AuctionAsset = {
+  auctionAssetsId: string;
+  tagName: string;
+  startingPrice: string;
+  unit: string;
+  deposit: string;
+  registrationFee:string;
+  description?: string;
+  createdAt: string;
+  createdBy: string;
+  updatedAt: string;
+  updatedBy: string;
+  auctionId: string;
+  auction?: string;
 }
