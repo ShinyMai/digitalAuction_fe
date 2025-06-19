@@ -114,7 +114,7 @@ const AuctionDetailAnonymous = () => {
                                     size="large"
                                     className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
                                 >
-                                    Hủy buổi đấu giá
+                                    Đăng ký tham gia
                                 </Button>
                             </div>
                         </TabPane>

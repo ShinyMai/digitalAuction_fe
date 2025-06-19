@@ -1,4 +1,4 @@
-import {GUEST_ROUTERS, STAFF_ROUTES, USER_ROUTERS,} from ".";
+import { GUEST_ROUTERS, STAFF_ROUTES, USER_ROUTERS, } from ".";
 import wrapWithLazy from "../utils/wrapWithLazy";
 import React from "react";
 
@@ -13,6 +13,13 @@ const News = React.lazy(
 );
 const NotFound = React.lazy(
     () => import("../components/Common/NotFound/index")
+);
+const AuctionListAnonymous = React.lazy(
+    () => import("../pages/Anonymous/AuctionList/index")
+);
+
+const AuctionDetailAnonymous = React.lazy(
+    () => import("../pages/Anonymous/AcutionDetail/index")
 );
 
 export const guestRoutes = [
@@ -31,6 +38,14 @@ export const guestRoutes = [
     {
         path: GUEST_ROUTERS.NOT_FOUND,
         element: wrapWithLazy(NotFound),
+    },
+    {
+        path: GUEST_ROUTERS.AUCITON_LIST,
+        element: wrapWithLazy(AuctionListAnonymous),
+    },
+    {
+        path: GUEST_ROUTERS.AUCITON_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL,
+        element: wrapWithLazy(AuctionDetailAnonymous),
     },
 ];
 

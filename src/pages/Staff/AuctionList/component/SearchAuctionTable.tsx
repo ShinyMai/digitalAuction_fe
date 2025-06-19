@@ -37,13 +37,6 @@ const SearchAuctionTable = ({
     })
   );
 
-  const onClickAddnew = () => {
-    const rolePath = role?.toLowerCase();
-    navigate(
-      `/${rolePath}/${STAFF_ROUTES.SUB.POST_AUCTION}`
-    );
-  };
-
   const handleSearch = () => {
     form.validateFields().then((values) => {
       onSearch(values);
@@ -51,16 +44,7 @@ const SearchAuctionTable = ({
   };
 
   return (
-    <div className="w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <Button
-        type="primary"
-        htmlType="button"
-        icon={<PlusOutlined />}
-        className="w-full md:w-auto h-10 px-5 rounded-lg flex items-center justify-center"
-        onClick={onClickAddnew}
-      >
-        Tạo mới
-      </Button>
+    <div className="w-full flex flex-col md:flex-row justify-center items-start md:items-center gap-4">
       <Form
         className="w-full md:w-2/3 flex flex-col md:flex-row justify-between gap-4"
         layout="vertical"
