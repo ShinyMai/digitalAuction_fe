@@ -13,19 +13,19 @@ interface Props {
 }
 
 const siderStyle: React.CSSProperties = {
-  overflow: "auto",
-  position: "sticky",
-  insetInlineEnd: 0,
-  top: 0,
-  bottom: 0,
-
-  //   overflow: 'auto',
-  height: 'screen',
-  // position: 'sticky',
-  // insetInlineStart: 0,
+  // overflow: "auto",
+  // position: "sticky",
+  // insetInlineEnd: 0,
   // top: 0,
   // bottom: 0,
-  // scrollbarWidth: 'thin',
+
+  overflow: 'auto',
+  height: '100vh',
+  position: 'sticky',
+  insetInlineStart: 0,
+  top: 0,
+  bottom: 0,
+  scrollbarWidth: 'thin',
   // scrollbarGutter: 'stable',
 };
 

@@ -55,6 +55,11 @@ export const guestRoutes = [
 ];
 
 // Router site User
+
+const AuctionRegister = React.lazy(
+  () => import("../pages/Anonymous/AuctionRegister/index")
+);
+
 export const userRoutes = [
   {
     path: USER_ROUTERS.SUB.HOME,
@@ -63,6 +68,10 @@ export const userRoutes = [
   {
     path: GUEST_ROUTERS.NOT_FOUND,
     element: wrapWithLazy(NotFound),
+  },
+  {
+    path: GUEST_ROUTERS.AUCITON_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL + "/" + USER_ROUTERS.SUB.AUCTION_REGISTER,
+    element: wrapWithLazy(AuctionRegister),
   },
 ];
 
