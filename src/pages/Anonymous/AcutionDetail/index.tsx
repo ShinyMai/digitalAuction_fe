@@ -32,7 +32,7 @@ const AuctionDetailAnonymous = () => {
 
     return (
         <section className="p-6 bg-gradient-to-b from-blue-50 to-teal-50 min-h-screen">
-            <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6">
+            <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
                 {auctionDetailData ? (
                     <Tabs
                         defaultActiveKey="1"
@@ -126,9 +126,10 @@ const AuctionDetailAnonymous = () => {
                         <TabPane tab="Mô tả tài sản" key="2">
                             <div className="p-4">
                                 <h3 className="text-lg font-semibold text-blue-800 mb-2">Mô tả chung</h3>
-                                <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg">
-                                    {auctionDetailData.auctionDescription || "Không có mô tả."}
-                                </p>
+                                <div
+                                    className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg"
+                                    dangerouslySetInnerHTML={{ __html: auctionDetailData.auctionDescription || "Không có mô tả." }}
+                                />
 
                                 <h3 className="text-lg font-semibold text-blue-800 mb-4">Danh sách tài sản đấu giá</h3>
                                 {auctionDetailData.listAuctionAssets && auctionDetailData.listAuctionAssets.length > 0 ? (

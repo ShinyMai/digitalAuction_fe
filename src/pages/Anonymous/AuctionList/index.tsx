@@ -1,5 +1,5 @@
 import { Layout, Select, DatePicker, Button, Pagination, Spin, Typography } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, FrownOutlined } from "@ant-design/icons";
 import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
@@ -40,35 +40,19 @@ const siderStyle: React.CSSProperties = {
 const AuctionListAnonyMous = () => {
     const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const location = useLocation();
     const [searchParams, setSearchParams] = useState<SearchParams>({
         PageNumber: 1,
         PageSize: 9,
+        CategoryId: location.state?.key
     });
     const [totalData, setTotalData] = useState<number>(0);
     const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
-    const location = useLocation();
-
-    useEffect(() => {
-        getListAuctionCategory();
-        console.log("Key: ", location.state.key);
-    }, []);
 
     useEffect(() => {
         getListAuction();
     }, [searchParams]);
 
-    const getListAuctionCategory = async () => {
-        try {
-            const res = await AuctionServices.getListAuctionCategory();
-            if (res.data.length === 0) {
-                toast.error("Không có dữ liệu danh mục tài sản!");
-            } else {
-                setListAuctionCategory(res.data);
-            }
-        } catch (error: any) {
-            toast.error(error.message);
-        }
-    };
 
     const getListAuction = async () => {
         try {
@@ -76,33 +60,27 @@ const AuctionListAnonyMous = () => {
             const params: SearchParams = {
                 PageNumber: searchParams.PageNumber || 1,
                 PageSize: searchParams.PageSize || 9,
+                CategoryId: location.state?.key, // Luôn bao gồm CategoryId từ location.state.key
             };
             if (searchParams.AuctionName) params.AuctionName = searchParams.AuctionName;
-            if (searchParams.CategoryId) params.CategoryId = searchParams.CategoryId;
             if (searchParams.RegisterOpenDate) params.RegisterOpenDate = searchParams.RegisterOpenDate;
-            if (searchParams.RegisterEndDate) params.RegisterEndDate = searchParams.RegisterEndDate;
+            if (searchParams.RegisterEndDate) params.RegisterEndDate;
             if (searchParams.AuctionStartDate) params.AuctionStartDate = searchParams.AuctionStartDate;
             if (searchParams.AuctionEndDate) params.AuctionEndDate = searchParams.AuctionEndDate;
             if (searchParams.SortBy) params.SortBy = searchParams.SortBy.replace("auctionName", "auction_name");
             if (searchParams.IsAscending !== undefined) params.IsAscending = false;
 
             const response = await AuctionServices.getListAuction(params);
-            setTotalData(response.data.totalCount);
-            setAuctionList(response.data.auctions);
+            setTotalData(response.data.totalCount || 0);
+            setAuctionList(response.data.auctions || []);
         } catch (error) {
             toast.error("Lỗi khi tải danh sách đấu giá!");
             console.error(error);
+            setAuctionList([]); // Đảm bảo danh sách rỗng khi có lỗi
+            setTotalData(0);
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleCategoryChange = (value: number | undefined) => {
-        setSearchParams((prev) => ({
-            ...prev,
-            CategoryId: value,
-            PageNumber: 1,
-        }));
     };
 
     const handleDateRangeChange = (dates: any, dateStrings: [string, string]) => {
@@ -129,16 +107,6 @@ const AuctionListAnonyMous = () => {
                     Tìm kiếm phiên đấu giá
                 </Title>
                 <div className="flex flex-col gap-4">
-                    <Select
-                        placeholder="Chọn danh mục tài sản"
-                        allowClear
-                        onChange={handleCategoryChange}
-                        options={listAuctionCategory.map((category) => ({
-                            value: category.categoryId,
-                            label: category.categoryName,
-                        }))}
-                        className="w-full [&_.ant-select-selector]:border-teal-200 [&_.ant-select-selector]:bg-blue-50"
-                    />
                     <RangePicker
                         placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
                         onChange={handleDateRangeChange}
@@ -155,7 +123,7 @@ const AuctionListAnonyMous = () => {
                     </Button>
                 </div>
             </Sider>
-            <Content className="p-4 md:p-8">
+            <Content className="p-4 md:p-8 min-h-screen">
                 <Title level={2} className="text-center mb-6 text-3xl md:text-4xl text-blue-800">
                     Danh sách phiên đấu giá
                 </Title>
@@ -177,8 +145,9 @@ const AuctionListAnonyMous = () => {
                             {auctionList.length > 0 ? (
                                 auctionList.map((item) => <AuctionCard key={item.auctionId} dataCard={item} />)
                             ) : (
-                                <div className="col-span-full text-center text-teal-600 bg-blue-50 p-6 rounded-lg">
-                                    Không có phiên đấu giá nào phù hợp.
+                                <div className="col-span-full text-center text-teal-600 bg-blue-50 p-6 rounded-lg flex flex-col items-center justify-center">
+                                    <FrownOutlined style={{ fontSize: '48px', color: '#08979c', marginBottom: '16px' }} />
+                                    <span className="text-lg">Không có dữ liệu phiên đấu giá</span>
                                 </div>
                             )}
                         </div>
