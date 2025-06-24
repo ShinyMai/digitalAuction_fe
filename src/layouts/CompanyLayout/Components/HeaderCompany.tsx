@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { assets } from "../../../assets";
+
 import { useSelector } from "react-redux";
 import {
   KeyOutlined,
@@ -16,18 +16,10 @@ const HeaderCompany = memo(() => {
   const [showInfo, setShowInfo] = useState(false);
 
   return (
-    <div className="min-h-[64px] bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between px-4 md:px-8">
-      <div className="flex items-center space-x-4">
-        <img
-          src={assets.logo}
-          alt="Logo"
-          className="w-12 h-12 rounded-xl border-2 border-white/20"
-        />
-      </div>
-
+    <div className="min-h-[64px] w-full flex items-center justify-end bg-stone-300/30 px-4 md:px-8">
       <div className="relative cursor-pointer group text-[#0085D2]">
         <div className="flex items-center gap-5">
-          <div className="text-lg font-medium text-white">
+          <div className="text-lg font-medium text-[#0085D2]">
             {user?.name}
           </div>
           <div className="w-10 h-10 rounded-full border-2 border-sky-500 bg-sky-100 flex items-center justify-center">

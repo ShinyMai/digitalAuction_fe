@@ -26,12 +26,12 @@ const PostAuction = () => {
     };
 
     return (
-        <div className="w-full min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-teal-50 p-4 sm:p-6 md:p-8">
+        <div className="w-full min-h-screen flex items-center justify-center bg-white py-4 sm:py-6 md:py-8">
             <div className="w-full max-w-5xl">
                 <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text mb-8 text-center">
                     Tạo Đấu Giá Mới
                 </h1>
-                <div className="w-full bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div className="w-full   p-6 sm:p-8  hover:shadow-xl transition-shadow duration-300">
                     {listAuctionCategory && <AuctionCreateForm auctionCategoryList={listAuctionCategory} />}
                 </div>
             </div>

@@ -22,7 +22,7 @@ const SepayComponent = ({
     <>
       <div className={`flex gap-5 ${className}`}>
         <img
-          src={`https://qr.sepay.vn/img?acc=67808082002&bank=TPBank&amount=${amount}&des=TKPDA ${userName} ${citizenIdentification} ${message} ${description}`}
+          src={`https://qr.sepay.vn/img?acc=24059992699&bank=Agribank&amount=5000000&des=Chuyen%20tien%20dat%20coc%20DH8180c21b-72cf-4f06-96ac-931b0fa3ee4b&template=compact&download=false`}
           className="w-[40vh] h-[40vh] rounded-lg border border-gray-300"
         />
         <div className="flex flex-col justify-center items-start">
