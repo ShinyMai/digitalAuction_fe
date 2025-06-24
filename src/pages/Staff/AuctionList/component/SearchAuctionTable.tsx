@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   PlusOutlined,
   SearchOutlined,
@@ -46,48 +45,55 @@ const SearchAuctionTable = ({
   return (
     <div className="w-full flex flex-col md:flex-row justify-center items-start md:items-center gap-4">
       <Form
-        className="w-full md:w-2/3 flex flex-col md:flex-row justify-between gap-4"
+        className="w-full flex flex-row flex-wrap gap-4"
         layout="vertical"
         onFinish={handleSearch}
         form={form}
       >
-        <div className="w-full md:w-1/2 flex flex-col gap-4">
-          <Form.Item
-            label="Thời gian đăng ký"
-            name="registerRangeDate"
-          >
-            <DatePicker.RangePicker className="w-full h-10 rounded-lg" />
-          </Form.Item>
-          <Form.Item name="auctionName">
-            <Input
-              placeholder="Tên buổi đấu giá"
-              className="w-full h-10 rounded-lg"
-            />
-          </Form.Item>
-        </div>
-        <div className="w-full md:w-1/2 flex flex-col gap-4">
-          <Form.Item
-            label="Thời gian đấu giá"
-            name="auctionRangeDate"
-          >
-            <DatePicker.RangePicker className="w-full h-10 rounded-lg" />
-          </Form.Item>
-          <Form.Item name="CategoryId">
-            <Select
-              className="w-full h-10 rounded-lg"
-              placeholder="Danh mục tài sản"
-              options={dataAuctionCategoryList}
-              onSelect={(val) => console.log(val)}
-              allowClear
-            />
-          </Form.Item>
-        </div>
-        <Form.Item label=" " className="self-end">
+        <Form.Item
+          label="Thời gian đăng ký"
+          name="registerRangeDate"
+          className="flex-1 min-w-[200px]"
+        >
+          <DatePicker.RangePicker className="w-full h-10 rounded-lg" />
+        </Form.Item>
+        <Form.Item
+          name="auctionName"
+          className="flex-1 min-w-[200px]"
+          label="Tên buổi đấu giá"
+        >
+          <Input
+            placeholder="Tên buổi đấu giá"
+            className="w-full h-10 rounded-lg"
+          />
+        </Form.Item>
+        <Form.Item
+          label="Thời gian đấu giá"
+          name="auctionRangeDate"
+          className="flex-1 min-w-[200px]"
+        >
+          <DatePicker.RangePicker className="w-full h-10 rounded-lg" />
+        </Form.Item>
+        <Form.Item
+          name="CategoryId"
+          className="flex-1 min-w-[200px]"
+          label='Loại tài sản'
+        >
+          <Select
+            className="w-full rounded-lg"
+            style={{ height: "40px" }}
+            placeholder="Danh mục tài sản"
+            options={dataAuctionCategoryList}
+            onSelect={(val) => console.log(val)}
+            allowClear
+          />
+        </Form.Item>
+        <Form.Item className="flex-1 min-w-[200px] self-end">
           <Button
             type="primary"
             htmlType="submit"
             icon={<SearchOutlined />}
-            className="w-full md:w-auto h-10 px-5 rounded-lg flex items-center justify-center"
+            className=" h-40 rounded-lg flex items-center justify-center"
           >
             Tìm kiếm
           </Button>
