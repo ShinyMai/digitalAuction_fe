@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
@@ -6,12 +6,14 @@ import type { AuctionDataDetail } from "../Modals";
 import { Button, Image, Tabs, Typography, Card } from "antd";
 import MINPHAPLOGO from "../../../assets/LOGO-MINH-PHAP.jpg";
 import dayjs from "dayjs";
+import { USER_ROUTERS } from "../../../routers";
 
 const { TabPane } = Tabs;
 
 const AuctionDetailAnonymous = () => {
     const location = useLocation();
     const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
+    const navigate = useNavigate()
 
     useEffect(() => {
         console.log(location.state.key);
@@ -113,6 +115,7 @@ const AuctionDetailAnonymous = () => {
                                     type="primary"
                                     size="large"
                                     className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
+                                    onClick={() => navigate(USER_ROUTERS.SUB.AUCTION_REGISTER, { state: { key: auctionDetailData }, replace: true })}
                                 >
                                     Đăng ký tham gia
                                 </Button>

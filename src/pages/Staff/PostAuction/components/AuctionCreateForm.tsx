@@ -7,6 +7,7 @@ import UploadFile from "./Upload";
 import TinyMCEEditor from "./TinyMCEEditor";
 import type { AuctionCategory } from "../../Modals.ts";
 import dayjs from "dayjs";
+import AuctionServices from "../../../../services/AuctionServices/index.tsx";
 
 const { RangePicker } = DatePicker;
 
@@ -23,7 +24,7 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
         label: val.categoryName,
     }));
 
-    // Lấy ngày hiện tại (19/06/2025 19:08 +07)
+    // Lấy ngày hiện tại (23/06/2025 22:25 +07)
     const currentDate = dayjs();
 
     // State để lưu giá trị thời gian đăng ký
@@ -39,8 +40,61 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
         if (!registerRange || !registerRange[1]) return false; // Chỉ disable khi có ngày kết thúc đăng ký
         const registerEndDate = registerRange[1];
         const minAuctionStart = registerEndDate.add(1, 'day'); // Ngày bắt đầu tối thiểu (1 ngày sau)
-        const maxAuctionStart = registerEndDate.add(3, 'day'); // Ngày bắt đầu tối đa (3 ngày sau)
         return current.isBefore(minAuctionStart);
+    };
+
+    // Hàm tạo FormData từ form values và các file
+    const createFormData = (
+        formValues: {
+            AuctionName?: string;
+            CategoryId?: number;
+            RegisterOpenDate?: string;
+            RegisterEndDate?: string;
+            AuctionStartDate?: string;
+            AuctionEndDate?: string;
+            NumberRoundMax?: string;
+            AuctionDescription?: string;
+            AuctionAssetFile: File;
+            AuctionRulesFile: File;
+            AuctionPlanningMap?: any[];
+            AuctionMap?: any;
+            auctionPlanningMapFile?: File
+        },
+
+    ): FormData => {
+        const formData = new FormData();
+
+        // Define the fields to include in FormData
+        const fields = {
+            AuctionName: formValues.AuctionName,
+            CategoryId: formValues.CategoryId,
+            RegisterOpenDate: formValues.RegisterOpenDate,
+            RegisterEndDate: formValues.RegisterEndDate,
+            AuctionStartDate: formValues.AuctionStartDate,
+            AuctionEndDate: formValues.AuctionEndDate,
+            NumberRoundMax: formValues.NumberRoundMax,
+            AuctionDescription: formValues.AuctionDescription,
+            AuctionMap: formValues.AuctionMap,
+        };
+
+        // Append non-file fields to FormData
+        Object.entries(fields).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                // Stringify objects (e.g., AuctionMap or AuctionDescription if they are objects)
+                formData.append(key, typeof value === 'object' ? JSON.stringify(value) : value.toString());
+            }
+        });
+
+        // Append required files
+        formData.append('AuctionAssetFile', formValues.AuctionAssetFile);
+        formData.append('AuctionRulesFile', formValues.AuctionRulesFile);
+
+        // Append optional file if it exists
+        if (formValues.auctionPlanningMapFile) {
+            formData.append('AuctionPlanningMap', formValues.auctionPlanningMapFile);
+        }
+
+        return formData;
     };
 
     useEffect(() => {
@@ -52,6 +106,7 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
         try {
             const auctionAssetFile = values.AuctionAssetFile?.[0]?.originFileObj;
             const auctionRulesFile = values.AuctionRulesFile?.[0]?.originFileObj;
+            const auctionPlanningMapFile = values.AuctionPlanningMap?.[0]?.originFileObj; // Optional file
 
             if (!auctionAssetFile || !auctionRulesFile) {
                 message.error("Vui lòng tải lên đầy đủ các tệp bắt buộc!");
@@ -78,15 +133,24 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
             const auctionStart = dayjs(auctionStartDate);
 
             // Kiểm tra khoảng cách từ 1 đến 3 ngày giữa registerEndDate và auctionStartDate
-            const daysDifference = auctionStart.diff(registerEnd, 'day');
-            if (daysDifference < 1 || daysDifference > 3) {
-                message.error("Thời gian bắt đầu đấu giá phải sau thời gian kết thúc đăng ký từ 1 đến 3 ngày!");
+            //const daysDifference = auctionStart.diff(registerEnd, 'day');
+            // if (daysDifference < 1 || daysDifference > 3) {
+            //     message.error("Thời gian bắt đầu đấu giá phải sau thời gian kết thúc đăng ký từ 1 đến 3 ngày!");
+            //     setLoading(false);
+            //     return;
+            // }
+            const registerStart = dayjs(registerOpenDate);
+            const dayDifferStart = auctionStart.diff(registerStart, 'day')
+            if (dayDifferStart < 7) {
+                message.error("Thời gian bắt đầu đấu giá phải trước thời gian bắt đầu đăng ký tham gia ít nhất 7 ngày!");
                 setLoading(false);
                 return;
             }
-
+            //console.log("Form submitted successfully:", auctionAssetFile);
             const formattedValues = {
                 ...values,
+                AuctionAssetFile: auctionAssetFile,
+                AuctionRulesFile: auctionRulesFile,
                 RegisterOpenDate: dayjs(registerOpenDate).format("YYYY-MM-DD"),
                 RegisterEndDate: dayjs(registerEndDate).format("YYYY-MM-DD"),
                 AuctionStartDate: dayjs(auctionStartDate).format("YYYY-MM-DD"),
@@ -96,7 +160,12 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
             delete formattedValues.RegisterTimeRange;
             delete formattedValues.AuctionTimeRange;
 
-            console.log("Form submitted successfully:", formattedValues);
+            // Create FormData using the separate function
+            const formData = createFormData(formattedValues);
+
+            // Call the API with FormData
+            await AuctionServices.addAcution(formData);
+
             message.success("Tạo đấu giá thành công!");
         } catch (error: any) {
             console.error("Error submitting form:", error);
