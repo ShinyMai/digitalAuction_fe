@@ -9,9 +9,10 @@ export const GUEST_ROUTERS = {
 };
 
 export const USER_ROUTERS = {
-  PATH: "user",
+  PATH: "customer",
   SUB: {
     ...GUEST_ROUTERS,
+    AUCTION_REGISTER: 'auction-register'
   },
 };
 
