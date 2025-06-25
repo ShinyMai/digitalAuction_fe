@@ -1,5 +1,6 @@
 export const AccountAPI = {
   login: "/LoginUser/Login",
+  logout: "/Logout",
   register: "/SignUp",
   forgotPassword: "/Forgotpassword/forgot-password",
   verifyOTP: "/Forgotpassword/verify-otp",

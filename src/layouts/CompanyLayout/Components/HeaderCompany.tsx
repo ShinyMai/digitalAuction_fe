@@ -8,12 +8,26 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import UserProfile from "../../components/UserProfile";
+import AuthServices from "../../../services/AuthServices";
 
 const HeaderCompany = memo(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { user } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
   const [showInfo, setShowInfo] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      const res = await AuthServices.logout();
+      if (res?.code === 200) {
+        localStorage.removeItem("user");
+        window.location.reload();
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
     <div className="min-h-[64px] bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between px-4 md:px-8">
@@ -58,9 +72,7 @@ const HeaderCompany = memo(() => {
           <hr />
           <li
             onClick={() => {
-              localStorage.removeItem("user");
-              window.location.reload();
-              navigate("/");
+              handleLogout();
             }}
             className="flex items-center gap-2 cursor-pointer hover:text-sky-500 h-5"
           >

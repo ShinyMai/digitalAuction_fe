@@ -12,6 +12,7 @@ import { assets } from "../../../assets";
 import { useNavigate } from "react-router-dom";
 import Login from "../../../pages/Anonymous/Login/Login";
 import { useSelector } from "react-redux";
+import AuthServices from "../../../services/AuthServices";
 
 const Header = memo(() => {
   const navigate = useNavigate();
@@ -19,6 +20,18 @@ const Header = memo(() => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { user } = useSelector((state: any) => state.auth);
+  const handleLogout = async () => {
+    try {
+      const res = await AuthServices.logout();
+      if (res?.code === 200) {
+        localStorage.removeItem("user");
+        window.location.reload();
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   const items = useMemo(
     () => [
@@ -233,9 +246,7 @@ const Header = memo(() => {
                 )} */}
                 <li
                   onClick={() => {
-                    localStorage.removeItem("user");
-                    window.location.reload();
-                    navigate("/");
+                    handleLogout();
                   }}
                   className="flex items-center gap-2 cursor-pointer hover:text-sky-500"
                 >

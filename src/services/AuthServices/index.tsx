@@ -24,6 +24,9 @@ const login = (
 ): Promise<ApiResponse<User>> =>
   http.post(AccountAPI.login, body);
 
+const logout = (): Promise<ApiResponse<unknown>> =>
+  http.post(AccountAPI.logout);
+
 const register = (
   body: RegisterAccount
 ): Promise<ApiResponse<RegisterAccount>> =>
@@ -61,6 +64,7 @@ const AuthServices = {
   verifyOTP,
   resetPassword,
   getRole,
+  logout,
 };
 
 export default AuthServices;
