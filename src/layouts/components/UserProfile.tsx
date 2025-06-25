@@ -8,6 +8,7 @@ import UserServices from "../../services/UserServices";
 import { InfoRow } from "../../components/InfoRow";
 import { convertToVietnamTime } from "../../utils/timeConfig";
 import { EditOutlined } from "@ant-design/icons";
+// import SepayComponent from "../../components/Sepay";
 
 interface UserProfileProps {
   open: boolean;
@@ -142,6 +143,13 @@ const UserProfile = ({
           </div>
         </div>
       </Spin>
+      {/* <SepayComponent
+        amount="1000000"
+        description="Thanh toán phí dịch vụ"
+        userName="Quang"
+        citizenIdentification="123456678"
+        isDeposit={true}
+      /> */}
     </CustomModal>
   );
 };

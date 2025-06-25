@@ -43,7 +43,7 @@ const SepayComponent = ({
             </span>
           </div>
           <div className="text-xl font-semibold mb-2">
-            Nội dung: TKPDA {userName}
+            Nội dung: TKPDA {userName}{" "}
             {citizenIdentification} {message} {description}
           </div>
         </div>
