@@ -52,6 +52,7 @@ const HeaderCompany = memo(() => {
             onClick={() => {
               localStorage.removeItem("user");
               window.location.reload();
+              window.location.pathname = "/"
               navigate("/");
             }}
             className="flex items-center gap-2 cursor-pointer hover:text-sky-500 h-5"

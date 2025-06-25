@@ -82,7 +82,7 @@ const AuctionRegister = () => {
           }
         `}
             </style>
-            <div className="sticky top-0 z-10 bg-white shadow-lg py-4">
+            <div className=" top-0 bg-white shadow-lg py-4">
                 <div className="container mx-auto px-4">
                     <div className="w-full mx-auto">
                         <Steps
