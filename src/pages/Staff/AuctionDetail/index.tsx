@@ -43,7 +43,6 @@ const AuctionDetailAnonymous = () => {
                                         preview={false}
                                     />
                                 </div>
-                                <h2 className="text-xl font-semibold text-teal-600 mt-2 text-center">VẬN THÁNH AN</h2>
                             </div>
                             <div className="w-full md:w-2/3 pl-0 md:pl-4">
                                 <h1 className="text-2xl md:text-3xl font-bold text-blue-800 mb-2">
@@ -115,9 +114,10 @@ const AuctionDetailAnonymous = () => {
                         {/* Mô tả tài sản và danh sách tài sản */}
                         <div>
                             <h3 className="text-lg font-semibold text-blue-800 mb-4">Mô tả chung</h3>
-                            <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg">
-                                {auctionDetailData.auctionDescription || "Không có mô tả."}
-                            </p>
+                            <div
+                                className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg"
+                                dangerouslySetInnerHTML={{ __html: auctionDetailData.auctionDescription || "Không có mô tả." }}
+                            />
 
                             <h3 className="text-lg font-semibold text-blue-800 mb-4">Danh sách tài sản đấu giá</h3>
                             {auctionDetailData.listAuctionAssets && auctionDetailData.listAuctionAssets.length > 0 ? (

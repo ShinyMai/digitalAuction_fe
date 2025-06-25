@@ -8,7 +8,7 @@ import {
 } from "../routers/roleBased.routes";
 
 const USER_ROLES = {
-  USER: "User",
+  USER: "Customer",
   ADMIN: "Admin",
   STAFF: "Staff",
   AUCTIONEER: "Auctioneer",

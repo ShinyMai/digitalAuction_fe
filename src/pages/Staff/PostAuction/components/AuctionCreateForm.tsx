@@ -7,6 +7,7 @@ import TinyMCEEditor from "./TinyMCEEditor";
 import type { AuctionCategory } from "../../Modals.ts";
 import dayjs, { Dayjs } from "dayjs";
 import AuctionServices from "../../../../services/AuctionServices/index.tsx";
+import { toast } from "react-toastify";
 
 const { RangePicker } = DatePicker;
 
@@ -126,13 +127,13 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
     // Hàm xử lý submit form
     const onFinish = async (values: AuctionFormValues) => {
         setLoading(true);
+
         try {
             const auctionAssetFile = values.AuctionAssetFile?.[0]?.originFileObj;
             const auctionRulesFile = values.AuctionRulesFile?.[0]?.originFileObj;
             const auctionPlanningMapFile = values.AuctionPlanningMap?.[0]?.originFileObj; // Optional file
-
             if (!auctionAssetFile || !auctionRulesFile) {
-                message.error("Vui lòng tải lên đầy đủ các tệp bắt buộc!");
+                toast.error("Vui lòng tải lên đầy đủ các tệp bắt buộc!");
                 setLoading(false);
                 return;
             }
@@ -141,10 +142,9 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
             const [registerOpenDate, registerEndDate] = values.RegisterTimeRange || [];
             const [auctionStartDate, auctionEndDate] = values.AuctionTimeRange || [];
             if (!registerOpenDate || !registerEndDate || !auctionStartDate || !auctionEndDate) {
-                message.error("Vui lòng chọn đầy đủ thời gian đăng ký và đấu giá!");
+                toast.error("Vui lòng chọn đầy đủ thời gian đăng ký và đấu giá!");
                 return;
             }
-
             // Chuyển đổi sang dayjs để tính toán
             const registerEnd = dayjs(registerEndDate);
             const auctionStart = dayjs(auctionStartDate);
@@ -159,10 +159,13 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
             const registerStart = dayjs(registerOpenDate);
             const dayDifferStart = auctionStart.diff(registerStart, 'day')
             if (dayDifferStart < 7) {
-                message.error("Thời gian bắt đầu đấu giá phải trước thời gian bắt đầu đăng ký tham gia ít nhất 7 ngày!");
+                toast.error("Thời gian bắt đầu đấu giá phải trước thời gian bắt đầu đăng ký tham gia ít nhất 7 ngày!");
+                console.log("check: ")
                 setLoading(false);
                 return;
             }
+
+
             //console.log("Form submitted successfully:", auctionAssetFile);
             const formattedValues = {
                 ...values,
@@ -183,10 +186,10 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
             // Call the API with FormData
             await AuctionServices.addAuction(formData);
 
-            message.success("Tạo đấu giá thành công!");
+            toast.success("Tạo đấu giá thành công!");
             // form.resetFields(); // Reset form sau khi thành công
         } catch (error: any) {
-            console.error("Lỗi khi tạo đấu giá:", error);
+            toast.error("Lỗi khi tạo đấu giá:", error);
             let errorMessage = "Lỗi hệ thống, vui lòng thử lại!";
             if (error.response?.status === 401) {
                 errorMessage = "Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!";
@@ -197,7 +200,7 @@ const AuctionCreateForm = ({ auctionCategoryList }: Props) => {
             } else if (error.message === "Network Error") {
                 errorMessage = "Lỗi kết nối mạng, vui lòng kiểm tra kết nối!";
             }
-            message.error(`Tạo đấu giá thất bại: ${errorMessage}`);
+            toast.error(`Tạo đấu giá thất bại: ${errorMessage}`);
         } finally {
             setLoading(false);
         }

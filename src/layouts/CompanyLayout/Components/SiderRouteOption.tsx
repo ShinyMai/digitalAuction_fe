@@ -19,8 +19,9 @@ interface MenuItem {
   key: string;
   icon: React.ReactElement;
   label: string;
-  url: string;
+  url?: string;
   roleView: string[];
+  children?: MenuItem[];
 }
 
 const items: MenuItem[] = [
@@ -35,8 +36,38 @@ const items: MenuItem[] = [
     key: "2",
     icon: <ScheduleOutlined />,
     label: "Danh sách các buổi đấu giá",
-    url: STAFF_ROUTES.SUB.AUCTION_LIST,
     roleView: ["Staff", "Auctioneer", "Director", "Manager"],
+    children: [
+      // Thêm subitem
+      {
+        key: "21",
+        icon: <TeamOutlined />,
+        label: "Đang mở đăng ký",
+        url: STAFF_ROUTES.SUB.AUCTION_LIST,
+        roleView: ["Director", "Manager"],
+      },
+      {
+        key: "22",
+        icon: <TeamOutlined />,
+        url: STAFF_ROUTES.SUB.AUCTION_LIST,
+        label: "Đang chuẩn bị diễn ra",
+        roleView: ["Director"],
+      },
+      {
+        key: "23",
+        icon: <TeamOutlined />,
+        url: STAFF_ROUTES.SUB.AUCTION_LIST,
+        label: "Buổi đấu giá đã hoàn thành",
+        roleView: ["Director"],
+      },
+      {
+        key: "23",
+        icon: <TeamOutlined />,
+        url: STAFF_ROUTES.SUB.AUCTION_LIST,
+        label: "Buổi đấu giá bị hủy",
+        roleView: ["Director"],
+      },
+    ],
 
   },
   {
@@ -104,7 +135,7 @@ const SiderRouteOption = () => {
     const currentItem = filteredItems.find(
       (item) =>
         routeWithoutRole === item.url ||
-        routeWithoutRole.startsWith(item.url)
+        routeWithoutRole.startsWith(item.url || "/")
     );
     return currentItem
       ? currentItem.key
@@ -112,12 +143,23 @@ const SiderRouteOption = () => {
   };
 
   const onClick: MenuProps["onClick"] = (e) => {
-    const item = filteredItems.find((i) => i.key === e.key);
-    if (item) {
-      const rolePath = role?.toLowerCase();
-      navigate(`/${rolePath}/${item.url}`, {
-        replace: true,
-      });
+    if (e.keyPath.length == 1) {
+      const item = filteredItems.find((i) => i.key === e.key);
+      if (item) {
+        const rolePath = role?.toLowerCase();
+        navigate(`/${rolePath}/${item.url}`, {
+          replace: true,
+        });
+      }
+    } else if (e.keyPath.length == 2) {
+      const item = filteredItems.find((i) => i.key == e.keyPath[1])
+      const subItem = item?.children?.find((is) => is.key == e.key)
+      if (subItem) {
+        const rolePath = role?.toLowerCase();
+        navigate(`/${rolePath}/${subItem.url}`, {
+          replace: true,
+        });
+      }
     }
   };
 
