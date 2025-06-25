@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
@@ -6,12 +6,14 @@ import type { AuctionDataDetail } from "../Modals";
 import { Button, Image, Tabs, Typography, Card } from "antd";
 import MINPHAPLOGO from "../../../assets/LOGO-MINH-PHAP.jpg";
 import dayjs from "dayjs";
+import { USER_ROUTERS } from "../../../routers";
 
 const { TabPane } = Tabs;
 
 const AuctionDetailAnonymous = () => {
     const location = useLocation();
     const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
+    const navigate = useNavigate()
 
     useEffect(() => {
         console.log(location.state.key);
@@ -30,7 +32,7 @@ const AuctionDetailAnonymous = () => {
 
     return (
         <section className="p-6 bg-gradient-to-b from-blue-50 to-teal-50 min-h-screen">
-            <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6">
+            <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
                 {auctionDetailData ? (
                     <Tabs
                         defaultActiveKey="1"
@@ -113,6 +115,7 @@ const AuctionDetailAnonymous = () => {
                                     type="primary"
                                     size="large"
                                     className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
+                                    onClick={() => navigate(USER_ROUTERS.SUB.AUCTION_REGISTER, { state: { key: auctionDetailData }, replace: true })}
                                 >
                                     Đăng ký tham gia
                                 </Button>
@@ -123,9 +126,10 @@ const AuctionDetailAnonymous = () => {
                         <TabPane tab="Mô tả tài sản" key="2">
                             <div className="p-4">
                                 <h3 className="text-lg font-semibold text-blue-800 mb-2">Mô tả chung</h3>
-                                <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg">
-                                    {auctionDetailData.auctionDescription || "Không có mô tả."}
-                                </p>
+                                <div
+                                    className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg"
+                                    dangerouslySetInnerHTML={{ __html: auctionDetailData.auctionDescription || "Không có mô tả." }}
+                                />
 
                                 <h3 className="text-lg font-semibold text-blue-800 mb-4">Danh sách tài sản đấu giá</h3>
                                 {auctionDetailData.listAuctionAssets && auctionDetailData.listAuctionAssets.length > 0 ? (

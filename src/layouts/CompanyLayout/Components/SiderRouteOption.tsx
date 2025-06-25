@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   BarChartOutlined,
   ScheduleOutlined,
@@ -7,13 +6,14 @@ import {
   UsergroupDeleteOutlined,
 } from "@ant-design/icons";
 import { Menu, type MenuProps } from "antd";
-import React from "react";
+import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ADMIN_ROUTES,
   STAFF_ROUTES,
 } from "../../../routers";
+import { assets } from "../../../assets";
 
 interface MenuItem {
   key: string;
@@ -36,12 +36,8 @@ const items: MenuItem[] = [
     icon: <ScheduleOutlined />,
     label: "Danh sách các buổi đấu giá",
     url: STAFF_ROUTES.SUB.AUCTION_LIST,
-    roleView: [
-      "Staff",
-      "Auctioneer",
-      "Director",
-      "Manager",
-    ],
+    roleView: ["Staff", "Auctioneer", "Director", "Manager"],
+
   },
   {
     key: "3",
@@ -56,6 +52,7 @@ const items: MenuItem[] = [
     label: "Hỗ trợ đăng ký tham gia đấu giá",
     url: STAFF_ROUTES.SUB.DASHBOARD,
     roleView: ["Staff"],
+
   },
   {
     key: "5",
@@ -83,9 +80,17 @@ const SiderRouteOption = () => {
   const role = user?.roleName;
 
   // Filter items based on user's role
-  const filteredItems = items.filter(
-    (item) => role && item.roleView.includes(role)
+  const filteredItems = useMemo(
+    () =>
+      items
+        .filter((item) => role && item.roleView.includes(role))
+        .map((item) => ({
+          ...item,
+          className: "bg-stone-300/30",
+        })),
+    [role]
   );
+
   const getCurrentKey = () => {
     const pathname = location.pathname;
     const rolePath = role?.toLowerCase();
@@ -105,6 +110,7 @@ const SiderRouteOption = () => {
       ? currentItem.key
       : filteredItems[0]?.key || "1";
   };
+
   const onClick: MenuProps["onClick"] = (e) => {
     const item = filteredItems.find((i) => i.key === e.key);
     if (item) {
@@ -116,20 +122,22 @@ const SiderRouteOption = () => {
   };
 
   return (
-    <div className="w-full h-full flex justify-center pt-6 bg-slate-50">
-      <div className="w-full">
+    <div className="w-full h-full bg-gradient-to-r bg-stone-300/30 text-white">
+      <div className="w-full h-28 flex items-center justify-center">
+        <img
+          src={assets.logo}
+          alt="Logo"
+          className="w-full h-auto max-h-20 object-contain border-2 border-white/20 rounded-xl"
+        />
+      </div>
+      <div className="w-full ">
         <Menu
           onClick={onClick}
           theme="light"
           mode="inline"
           selectedKeys={[getCurrentKey()]}
           items={filteredItems as MenuProps["items"]}
-          style={{
-            width: "100%",
-            border: "none",
-            fontSize: "16px",
-          }}
-          className="rounded-lg"
+          className="w-full"
         />
       </div>
     </div>
