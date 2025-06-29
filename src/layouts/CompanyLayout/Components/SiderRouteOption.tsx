@@ -36,8 +36,12 @@ const items: MenuItem[] = [
     icon: <ScheduleOutlined />,
     label: "Danh sách các buổi đấu giá",
     url: STAFF_ROUTES.SUB.AUCTION_LIST,
-    roleView: ["Staff", "Auctioneer", "Director", "Manager"],
-
+    roleView: [
+      "Staff",
+      "Auctioneer",
+      "Director",
+      "Manager",
+    ],
   },
   {
     key: "3",
@@ -52,7 +56,6 @@ const items: MenuItem[] = [
     label: "Hỗ trợ đăng ký tham gia đấu giá",
     url: STAFF_ROUTES.SUB.DASHBOARD,
     roleView: ["Staff"],
-
   },
   {
     key: "5",
@@ -83,7 +86,9 @@ const SiderRouteOption = () => {
   const filteredItems = useMemo(
     () =>
       items
-        .filter((item) => role && item.roleView.includes(role))
+        .filter(
+          (item) => role && item.roleView.includes(role)
+        )
         .map((item) => ({
           ...item,
           className: "bg-stone-300/30",

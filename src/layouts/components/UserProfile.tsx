@@ -8,7 +8,7 @@ import UserServices from "../../services/UserServices";
 import { InfoRow } from "../../components/InfoRow";
 import { convertToVietnamTime } from "../../utils/timeConfig";
 import { EditOutlined } from "@ant-design/icons";
-// import SepayComponent from "../../components/Sepay";
+import EditProfile from "./EditProfile";
 
 interface UserProfileProps {
   open: boolean;
@@ -20,6 +20,8 @@ const UserProfile = ({
   onCancel,
 }: UserProfileProps) => {
   const [loading, setLoading] = useState(false);
+  const [editProfileOpen, setEditProfileOpen] =
+    useState(false);
   const { user } = useSelector((state: any) => state.auth);
   const [userInfo, setUserInfo] = useState<any>();
 
@@ -44,10 +46,8 @@ const UserProfile = ({
   };
 
   useEffect(() => {
-    if (open) {
-      getUserInfo();
-    }
-  }, [open]);
+    getUserInfo();
+  }, [open, editProfileOpen]);
 
   return (
     <CustomModal
@@ -70,7 +70,9 @@ const UserProfile = ({
                 className="text-white"
               >
                 <Tooltip title="Chỉnh sửa thông tin liên lạc">
-                  <EditOutlined />
+                  <EditOutlined
+                    onClick={() => setEditProfileOpen(true)}
+                  />
                 </Tooltip>
               </Button>
             </div>
@@ -143,13 +145,10 @@ const UserProfile = ({
           </div>
         </div>
       </Spin>
-      {/* <SepayComponent
-        amount="1000000"
-        description="Thanh toán phí dịch vụ"
-        userName="Quang"
-        citizenIdentification="123456678"
-        isDeposit={true}
-      /> */}
+      <EditProfile
+        open={editProfileOpen}
+        onCancel={() => setEditProfileOpen(false)}
+      />
     </CustomModal>
   );
 };
