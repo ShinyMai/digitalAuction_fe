@@ -7,14 +7,20 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import UserProfile from "../../components/UserProfile";
+import UserProfile from "../../../pages/Anonymous/UserProfile/UserProfile";
 import AuthServices from "../../../services/AuthServices";
+import ChangePassword from "../../../pages/Anonymous/UserProfile/EditAccount/ChangePassword";
+import EditProfile from "../../../pages/Anonymous/UserProfile/EditProfile/EditProfile";
 
 const HeaderCompany = memo(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { user } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
   const [showInfo, setShowInfo] = useState(false);
+  const [changePassword, setChangePassword] =
+    useState(false);
+  const [isUpdateProfile, setIsUpdateProfile] =
+    useState(true);
 
   const handleLogout = async () => {
     try {
@@ -28,6 +34,9 @@ const HeaderCompany = memo(() => {
       console.error("Logout error:", error);
     }
   };
+
+  console.log("user", user?.isExpired);
+  const isExpired = user?.isExpired || true;
 
   return (
     <div className="min-h-[64px] w-full flex items-center justify-end bg-stone-300/30 px-4 md:px-8">
@@ -55,7 +64,7 @@ const HeaderCompany = memo(() => {
           </li>
           <hr />
           <li
-            onClick={() => setShowInfo(true)}
+            onClick={() => setChangePassword(true)}
             className="flex items-center gap-2 cursor-pointer hover:text-sky-500 h-5"
           >
             <KeyOutlined />
@@ -77,6 +86,18 @@ const HeaderCompany = memo(() => {
         <UserProfile
           open={showInfo}
           onCancel={() => setShowInfo(false)}
+        />
+      )}
+      {changePassword && (
+        <ChangePassword
+          open={changePassword}
+          onCancel={() => setChangePassword(false)}
+        />
+      )}
+      {isExpired && (
+        <EditProfile
+          open={isUpdateProfile}
+          onCancel={() => setIsUpdateProfile(false)}
         />
       )}
     </div>

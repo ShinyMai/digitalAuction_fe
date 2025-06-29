@@ -5,6 +5,8 @@ interface User {
   id: string;
   name: string;
   roleName: string;
+  email: string;
+  isExpired: boolean;
 }
 
 interface AuthState {

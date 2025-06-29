@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import CustomModal from "../../components/Common/CustomModal";
+import CustomModal from "../../../components/Common/CustomModal";
 import { useSelector } from "react-redux";
 import { Button, Spin, Tooltip } from "antd";
-import UserServices from "../../services/UserServices";
-import { InfoRow } from "../../components/InfoRow";
-import { convertToVietnamTime } from "../../utils/timeConfig";
+import UserServices from "../../../services/UserServices";
+import { InfoRow } from "../../../components/InfoRow";
+import { convertToVietnamTime } from "../../../utils/timeConfig";
 import { EditOutlined } from "@ant-design/icons";
-// import SepayComponent from "../../components/Sepay";
+import EditAccount from "./EditAccount/EditAccount";
 
 interface UserProfileProps {
   open: boolean;
@@ -20,6 +20,8 @@ const UserProfile = ({
   onCancel,
 }: UserProfileProps) => {
   const [loading, setLoading] = useState(false);
+  const [editAccountOpen, setEditAccountOpen] =
+    useState(false);
   const { user } = useSelector((state: any) => state.auth);
   const [userInfo, setUserInfo] = useState<any>();
 
@@ -44,10 +46,8 @@ const UserProfile = ({
   };
 
   useEffect(() => {
-    if (open) {
-      getUserInfo();
-    }
-  }, [open]);
+    getUserInfo();
+  }, [open, editAccountOpen]);
 
   return (
     <CustomModal
@@ -70,7 +70,9 @@ const UserProfile = ({
                 className="text-white"
               >
                 <Tooltip title="Chỉnh sửa thông tin liên lạc">
-                  <EditOutlined />
+                  <EditOutlined
+                    onClick={() => setEditAccountOpen(true)}
+                  />
                 </Tooltip>
               </Button>
             </div>
@@ -143,13 +145,10 @@ const UserProfile = ({
           </div>
         </div>
       </Spin>
-      {/* <SepayComponent
-        amount="1000000"
-        description="Thanh toán phí dịch vụ"
-        userName="Quang"
-        citizenIdentification="123456678"
-        isDeposit={true}
-      /> */}
+      <EditAccount
+        open={editAccountOpen}
+        onCancel={() => setEditAccountOpen(false)}
+      />
     </CustomModal>
   );
 };
