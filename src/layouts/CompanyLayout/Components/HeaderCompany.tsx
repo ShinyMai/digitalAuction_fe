@@ -9,12 +9,15 @@ import {
 import { useNavigate } from "react-router-dom";
 import UserProfile from "../../components/UserProfile";
 import AuthServices from "../../../services/AuthServices";
+import ChangePassword from "../../components/ChangePassword";
 
 const HeaderCompany = memo(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { user } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
   const [showInfo, setShowInfo] = useState(false);
+  const [changePassword, setChangePassword] =
+    useState(false);
 
   const handleLogout = async () => {
     try {
@@ -55,7 +58,7 @@ const HeaderCompany = memo(() => {
           </li>
           <hr />
           <li
-            onClick={() => setShowInfo(true)}
+            onClick={() => setChangePassword(true)}
             className="flex items-center gap-2 cursor-pointer hover:text-sky-500 h-5"
           >
             <KeyOutlined />
@@ -77,6 +80,12 @@ const HeaderCompany = memo(() => {
         <UserProfile
           open={showInfo}
           onCancel={() => setShowInfo(false)}
+        />
+      )}
+      {changePassword && (
+        <ChangePassword
+          open={changePassword}
+          onCancel={() => setChangePassword(false)}
         />
       )}
     </div>

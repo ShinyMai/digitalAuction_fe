@@ -28,7 +28,6 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
   const [emailValue, setEmailValue] = useState("");
 
   const email = Form.useWatch("email", form) || emailValue;
-
   const extractErrorMessage = (error: unknown): string => {
     return (
       (error as any)?.response?.data?.Message ||
@@ -79,7 +78,7 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
       if (res.code === 200) {
         toast.success("Xác thực OTP thành công!");
         setIsOTPVerified(true);
-        setResetGuid(res?.data?.resetGuid || "");
+        setResetGuid(res?.data?.resetToken || "");
       } else {
         toast.error(res.message || "OTP không chính xác!");
       }
@@ -206,7 +205,6 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({
         open={isOTPVerified}
         onCancel={() => {
           setIsOTPVerified(false);
-          onCancel();
         }}
         email={email}
         resetGuid={resetGuid}
