@@ -1,17 +1,28 @@
-import type { dataPayment } from "../../pages/Anonymous/Modals";
-
 interface SepayProps {
-  dataQrPayment: dataPayment;
+  amount?: string;
+  description?: string;
+  userName?: string;
+  citizenIdentification?: string;
+  isDeposit?: boolean;
+  className?: string;
 }
 
 const SepayComponent = ({
-  dataQrPayment
+  amount,
+  description,
+  userName,
+  citizenIdentification,
+  isDeposit,
+  className,
 }: SepayProps) => {
+  const message = isDeposit
+    ? "dat truoc"
+    : "chuyen tien mua ho so";
   return (
     <>
-      <div className={`flex gap-5 `}>
+      <div className={`flex gap-5 ${className}`}>
         <img
-          src={qrUrl}
+          src={`https://qr.sepay.vn/img?acc=24059992699&bank=Agribank&amount=5000000&des=Chuyen%20tien%20dat%20coc%20DH8180c21b-72cf-4f06-96ac-931b0fa3ee4b&template=compact&download=false`}
           className="w-[40vh] h-[40vh] rounded-lg border border-gray-300"
         />
         <div className="flex flex-col justify-center items-start">
@@ -28,17 +39,12 @@ const SepayComponent = ({
           <div className="text-xl font-semibold mb-2">
             Số tiền:
             <span className="font-bold text-green-500">
-              {amountTicket} VND
+              {amount} VND
             </span>
           </div>
           <div className="text-xl font-semibold mb-2">
-<<<<<<< HEAD
-            Nội dung: TKPDA {accountNumber}
-            {description}
-=======
-            Nội dung: TKPDA {userName}{" "}
+            Nội dung: TKPDA {userName}
             {citizenIdentification} {message} {description}
->>>>>>> dev
           </div>
         </div>
       </div>
