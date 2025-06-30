@@ -49,7 +49,7 @@ export const guestRoutes = [
     element: wrapWithLazy(AuctionListAnonymous),
   },
   {
-    path: GUEST_ROUTERS.AUCITON_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL,
+    path: GUEST_ROUTERS.AUCITON_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL || GUEST_ROUTERS.AUCTION_DETAIL,
     element: wrapWithLazy(AuctionDetailAnonymous),
   },
 ];
@@ -164,3 +164,8 @@ export const adminRoutes = [
     element: wrapWithLazy(Dashboard),
   },
 ];
+
+
+export const managerRoutes = [
+  ...staffRoutes
+]

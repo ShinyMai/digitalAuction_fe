@@ -12,14 +12,15 @@ const getListAuction = (params?: any) =>
 
 const getAuctionDetail = (params?: string) =>
     http.get(`${AuctionAPI.AUCTIONDETAIL}/${params}`)
-
-
+const registerAuctionAsset = (body: any) =>
+    http.post(AuctionAPI.AUCTIONREGISTERASSET, body);
 
 const AuctionServices = {
     addAuction,
     getListAuctionCategory,
     getListAuction,
-    getAuctionDetail
+    getAuctionDetail,
+    registerAuctionAsset
 };
 
 export default AuctionServices;

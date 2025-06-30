@@ -1,22 +1,48 @@
 import React, { useEffect, useState } from "react";
 import { Button, message, Steps, theme } from "antd";
 import AssetSelect from "./components/AssetSelect";
-import type { AuctionAsset, AuctionDataDetail } from "../Modals";
-import { useLocation } from "react-router-dom";
+import type { AuctionAsset, AuctionDataDetail, dataPayment } from "../Modals";
+import { useLocation, useNavigate } from "react-router-dom";
 import SepayComponent from "../../../components/Sepay";
 import AuctionServices from "../../../services/AuctionServices";
 import InfomationRegisterAsset from "./components/InfomationRegisterAssest";
+import SepayAuctionregister from "./components/SepayAuctionRegister";
+import { useSelector } from "react-redux";
+import UserServices from "../../../services/UserServices";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const AuctionRegister = () => {
     const { token } = theme.useToken();
     const [current, setCurrent] = useState(0);
     const location = useLocation();
     const [auctionDetail, setAuctionDetail] = useState<AuctionDataDetail>(location.state?.key);
-    const [selectedAssets, setSelectedAssets] = useState<AuctionAsset[]>([]);
+    const [selectedAssets, setSelectedAssets] = useState<AuctionAsset>();
+    const [dataPayment, setDatapayment] = useState<dataPayment>()
+    const { user } = useSelector((state: any) => state.auth);
+    const [userInfo, setUserInfo] = useState<any>();
+    const navigate = useNavigate()
 
-    const onGetListSelectAsset = (value: string[]) => {
+    const getUserInfo = async () => {
+        try {
+            const res = await UserServices.getUserInfo({
+                user_id: user.id,
+            });
+
+            if (res.code === 200) {
+                setUserInfo(res.data);
+            }
+        } catch (error) {
+            console.error("Lỗi khi lấy thông tin người dùng:", error);
+        }
+    };
+
+    useEffect(() => {
+        getUserInfo();
+    }, [user]);
+
+    const onGetSelectAsset = (value: string) => {
         if (auctionDetail?.listAuctionAssets) {
-            const dataAuctionAssetsSelected = auctionDetail.listAuctionAssets.filter((item) =>
+            const dataAuctionAssetsSelected = auctionDetail.listAuctionAssets.find((item) =>
                 value.includes(item.auctionAssetsId)
             );
             setSelectedAssets(dataAuctionAssetsSelected);
@@ -29,7 +55,7 @@ const AuctionRegister = () => {
             content: (
                 <AssetSelect
                     listAsset={auctionDetail?.listAuctionAssets || []}
-                    onValueAssetSelect={onGetListSelectAsset}
+                    onGetAssetSelect={onGetSelectAsset}
                     onNext={() => setCurrent(current + 1)}
                     onPrev={() => current > 0 && setCurrent(current - 1)}
                 />
@@ -39,15 +65,17 @@ const AuctionRegister = () => {
             title: "Thông Tin Đăng Ký",
             content: (
                 <InfomationRegisterAsset
-                    listAuctionAssetsSelected={selectedAssets}
+                    auctionAssetsSelected={selectedAssets}
                     onNext={() => setCurrent(current + 1)}
                     onPrev={() => current > 0 && setCurrent(current - 1)}
+                    onSetDataPayment={setDatapayment}
+                    userInfo={userInfo}
                 />
             ),
         },
         {
             title: "Thanh Toán",
-            content: <SepayComponent />,
+            content: <SepayAuctionregister dataAutionAsset={selectedAssets} dataQrSepay={dataPayment} dataUser={userInfo} />,
         },
     ];
 
@@ -83,6 +111,12 @@ const AuctionRegister = () => {
         `}
             </style>
             <div className=" top-0 bg-white shadow-lg py-4">
+                <div> <Button
+                    type="text"
+                    icon={<ArrowLeftOutlined className="text-blue-800 text-lg" />}
+                    onClick={() => navigate(-1)}
+                    className="p-0 hover:bg-blue-100"
+                /></div>
                 <div className="container mx-auto px-4">
                     <div className="w-full mx-auto">
                         <Steps
@@ -94,7 +128,7 @@ const AuctionRegister = () => {
                     </div>
                 </div>
             </div>
-            <div className="flex-grow container mx-auto bg-white mt-6 rounded-lg ">
+            <div className="flex-grow container mx-auto bg-white mt-6 rounded-lg">
                 <div>{steps[current].content}</div>
             </div>
         </section>

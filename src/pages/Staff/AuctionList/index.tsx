@@ -6,6 +6,7 @@ import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
 import dayjs from "dayjs";
 import type { AuctionCategory, AuctionDataList } from "../Modals.ts";
+import { useLocation } from "react-router-dom";
 
 interface SearchParams {
     AuctionName?: string;
@@ -29,16 +30,25 @@ const AuctionList = () => {
         PageNumber: 1,
         PageSize: 8,
     });
+    const location = useLocation();
 
     useEffect(() => {
         getListAuctionCategory();
-    }, []);
+        const queryParams = new URLSearchParams(location.search);
+        const status = queryParams.get("status");
+        if (status) {
+            setSearchParams((prev) => ({
+                ...prev,
+                PageNumber: 1,
+                Status: status,
+            }));
+        }
+    }, [location.search]);
 
     useEffect(() => {
         getListAuction();
     }, [searchParams]);
 
-    // Log searchParams mỗi khi thay đổi
     useEffect(() => {
         console.log("Search Params:", searchParams);
     }, [searchParams]);
@@ -46,53 +56,44 @@ const AuctionList = () => {
     const onSearch = (searchValue: any) => {
         const newParams: SearchParams = {
             ...searchParams,
-            PageNumber: 1, // Reset về trang 1 khi tìm kiếm
+            PageNumber: 1,
         };
-
-        // Chỉ thêm các trường có giá trị
         if (searchValue.auctionName) {
             newParams.AuctionName = searchValue.auctionName;
         } else {
             delete newParams.AuctionName;
         }
-
         if (searchValue.CategoryId) {
             newParams.CategoryId = searchValue.CategoryId;
         } else {
             delete newParams.CategoryId;
         }
-
         if (searchValue.registerRangeDate?.[0]) {
             newParams.RegisterOpenDate = dayjs(searchValue.registerRangeDate[0]).format("YYYY-MM-DD");
         } else {
             delete newParams.RegisterOpenDate;
         }
-
         if (searchValue.registerRangeDate?.[1]) {
             newParams.RegisterEndDate = dayjs(searchValue.registerRangeDate[1]).format("YYYY-MM-DD");
         } else {
             delete newParams.RegisterEndDate;
         }
-
         if (searchValue.auctionRangeDate?.[0]) {
             newParams.AuctionStartDate = dayjs(searchValue.auctionRangeDate[0]).format("YYYY-MM-DD");
         } else {
             delete newParams.AuctionStartDate;
         }
-
         if (searchValue.auctionRangeDate?.[1]) {
             newParams.AuctionEndDate = dayjs(searchValue.auctionRangeDate[1]).format("YYYY-MM-DD");
         } else {
             delete newParams.AuctionEndDate;
         }
-
         setSearchParams(newParams);
     };
 
     const getListAuction = async () => {
         try {
             setLoading(true);
-            // Xây dựng params chỉ với các trường có giá trị
             const params: SearchParams = {
                 PageNumber: searchParams.PageNumber || 1,
                 PageSize: searchParams.PageSize || 8,
@@ -103,7 +104,7 @@ const AuctionList = () => {
             if (searchParams.RegisterEndDate) params.RegisterEndDate = searchParams.RegisterEndDate;
             if (searchParams.AuctionStartDate) params.AuctionStartDate = searchParams.AuctionStartDate;
             if (searchParams.AuctionEndDate) params.AuctionEndDate = searchParams.AuctionEndDate;
-            if (searchParams.SortBy) params.SortBy = searchParams.SortBy.replace("auctionName", "auction_name"); // Chuyển auctionName thành auction_name
+            if (searchParams.SortBy) params.SortBy = searchParams.SortBy.replace("auctionName", "auction_name");
             if (searchParams.IsAscending !== undefined) params.IsAscending = searchParams.IsAscending;
 
             const response = await AuctionServices.getListAuction(params);
@@ -136,8 +137,6 @@ const AuctionList = () => {
             PageNumber: pagination.current,
             PageSize: pagination.pageSize,
         };
-
-        // Chỉ thêm SortBy và IsAscending nếu có sắp xếp
         if (sorter.field && sorter.order) {
             newParams.SortBy = sorter.field;
             newParams.IsAscending = sorter.order === "ascend";
@@ -145,7 +144,6 @@ const AuctionList = () => {
             delete newParams.SortBy;
             delete newParams.IsAscending;
         }
-
         setSearchParams(newParams);
     };
 

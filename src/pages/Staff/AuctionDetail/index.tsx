@@ -7,13 +7,17 @@ import type { AuctionDataDetail } from "../Modals";
 import { Button, Image, Typography, Card } from "antd";
 import MINPHAPLOGO from "../../../assets/LOGO-MINH-PHAP.jpg";
 import dayjs from "dayjs";
+import { useAppRouting } from "../../../hooks/useAppRouting";
+import PopupVerifyCancelAuction from "./components/PopupVerifyCancelAuction";
 
 const AuctionDetailAnonymous = () => {
     const location = useLocation();
     const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
+    const { role } = useAppRouting();
+    const [isOpentPopupVerifyCancel, setIsOpenPopupVerifyCancel] = useState<boolean>(false)
 
     useEffect(() => {
-        console.log(location.state.key);
+        console.log("role: ", role);
         getAuctionDetailById(location.state.key);
     }, []);
 
@@ -99,15 +103,24 @@ const AuctionDetailAnonymous = () => {
                                         <span className="text-teal-800">{auctionDetailData.qrLink ? "500,000 VND" : "-"}</span>
                                     </div>
                                 </div>
-                                <div className="text-center mt-6">
-                                    <Button
-                                        type="primary"
-                                        size="large"
-                                        className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
-                                    >
-                                        Hủy buổi đấu giá
-                                    </Button>
-                                </div>
+                                {
+                                    role == "Manager" &&
+                                    <div className="text-center mt-6">
+                                        <Button
+                                            type="primary"
+                                            size="large"
+                                            className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
+                                            onClick={() => setIsOpenPopupVerifyCancel(true)}
+                                        >
+                                            Hủy buổi đấu giá
+                                        </Button>
+                                    </div>
+                                }
+                                <PopupVerifyCancelAuction
+                                    isOpen={isOpentPopupVerifyCancel}
+                                    onCancel={() => setIsOpenPopupVerifyCancel(false)}
+                                    onConfirm={() => console.log("confirm")}
+                                />
                             </div>
                         </div>
 
