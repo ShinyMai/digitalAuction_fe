@@ -1,8 +1,8 @@
 import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
-import { logout } from "../store/authReduxs/authSlice";
-import store from "../store/store";
+// import { logout } from "../store/authReduxs/authSlice";
+// import store from "../store/store";
 
 const API_BASE_URL = import.meta.env.VITE_BE_URL;
 

@@ -1,6 +1,7 @@
 /* eslint-disable no-extra-boolean-cast */
 import {
   DownOutlined,
+  KeyOutlined,
   LogoutOutlined,
   MenuOutlined,
   UserAddOutlined,
@@ -12,13 +13,31 @@ import { assets } from "../../../assets";
 import { useNavigate } from "react-router-dom";
 import Login from "../../../pages/Anonymous/Login/Login";
 import { useSelector } from "react-redux";
+import AuthServices from "../../../services/AuthServices";
+import UserProfile from "../../components/UserProfile";
+import ChangePassword from "../../components/ChangePassword";
 
 const Header = memo(() => {
   const navigate = useNavigate();
   const [login, setLogin] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+  const [changePassword, setChangePassword] =
+    useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { user } = useSelector((state: any) => state.auth);
+  const handleLogout = async () => {
+    try {
+      const res = await AuthServices.logout();
+      if (res?.code === 200) {
+        localStorage.removeItem("user");
+        window.location.reload();
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   const items = useMemo(
     () => [
@@ -162,11 +181,19 @@ const Header = memo(() => {
               </div>
               <ul className="absolute right-0 z-10 hidden flex-col gap-2 bg-[#f2f8fa] p-3 border rounded border-[#bce6f7] outline-white group-hover:flex list-none">
                 <li
-                  // onClick={() => setShowInfo(true)}
+                  onClick={() => setShowInfo(true)}
                   className="flex items-center gap-2 cursor-pointer hover:text-sky-500"
                 >
                   <UserOutlined />
                   <p className="w-max">Thông tin cá nhân</p>
+                </li>
+                <hr />
+                <li
+                  onClick={() => setChangePassword(true)}
+                  className="flex items-center gap-2 cursor-pointer hover:text-sky-500 h-5"
+                >
+                  <KeyOutlined />
+                  <p className="">Đổi mật khẩu</p>
                 </li>
                 <hr />
                 {/* {user?.role === "patient" && (
@@ -233,9 +260,7 @@ const Header = memo(() => {
                 )} */}
                 <li
                   onClick={() => {
-                    localStorage.removeItem("user");
-                    window.location.reload();
-                    navigate("/");
+                    handleLogout();
                   }}
                   className="flex items-center gap-2 cursor-pointer hover:text-sky-500"
                 >
@@ -285,6 +310,18 @@ const Header = memo(() => {
         <Login
           open={login}
           onCancel={() => setLogin(false)}
+        />
+      )}
+      {showInfo && (
+        <UserProfile
+          open={showInfo}
+          onCancel={() => setShowInfo(false)}
+        />
+      )}
+      {changePassword && (
+        <ChangePassword
+          open={changePassword}
+          onCancel={() => setChangePassword(false)}
         />
       )}
     </div>
