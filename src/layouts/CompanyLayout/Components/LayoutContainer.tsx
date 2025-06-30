@@ -1,15 +1,13 @@
 import { Layout } from "antd";
-import Footers from "../../AnonymousLayout/Components/Footer";
 import type React from "react";
 import HeaderCompany from "./HeaderCompany";
 import SiderRouteOption from "./SiderRouteOption";
-import FooterCompany from "./FoooterCompany";
 
 interface Props {
   children?:
-  | string
-  | React.JSX.Element
-  | React.JSX.Element[];
+    | string
+    | React.JSX.Element
+    | React.JSX.Element[];
 }
 
 const siderStyle: React.CSSProperties = {
@@ -19,13 +17,13 @@ const siderStyle: React.CSSProperties = {
   // top: 0,
   // bottom: 0,
 
-  overflow: 'auto',
-  height: '100vh',
-  position: 'sticky',
+  overflow: "auto",
+  height: "100vh",
+  position: "sticky",
   insetInlineStart: 0,
   top: 0,
   bottom: 0,
-  scrollbarWidth: 'thin',
+  scrollbarWidth: "thin",
   // scrollbarGutter: 'stable',
 };
 
@@ -47,7 +45,9 @@ const LayoutContainer = ({ children }: Props) => {
       >
         <SiderRouteOption />
       </Sider>
-      <Layout style={{ marginTop: 64, padding: "0px 10px" }}>
+      <Layout
+        style={{ marginTop: 64, padding: "0px 10px" }}
+      >
         <Header
           style={{
             position: "fixed",
@@ -76,11 +76,8 @@ const LayoutContainer = ({ children }: Props) => {
             backgroundColor: "#f8fafc",
             borderTop: "1px solid #e2e8f0",
           }}
-        >
-          <FooterCompany />
-        </Footer>
+        ></Footer>
       </Layout>
-
     </Layout>
   );
 };

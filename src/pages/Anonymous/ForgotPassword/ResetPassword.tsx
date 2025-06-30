@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import CustomModal from "../../../components/Common/CustomModal";
 import AuthServices from "../../../services/AuthServices";
+import { useNavigate } from "react-router-dom";
 
 interface ResetPasswordProps {
   open?: boolean;
@@ -21,6 +22,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   const extractErrorMessage = (error: unknown): string => {
     return (
@@ -40,13 +42,14 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({
         contact: email,
         channel: 0,
         newPassword: values.newPassword,
-        resetGuid,
+        resetGuid: resetGuid,
       });
 
       if (res.code === 200) {
         toast.success("Đặt lại mật khẩu thành công!");
         form.resetFields();
         onCancel();
+        navigate("/");
       } else {
         toast.error(
           res.message || "Có lỗi xảy ra, vui lòng thử lại!"

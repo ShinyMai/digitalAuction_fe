@@ -16,13 +16,16 @@ interface User {
 }
 
 interface OTPVerifyResponse {
-  resetGuid: string;
+  resetToken: string;
 }
 
 const login = (
   body: LoginBody
 ): Promise<ApiResponse<User>> =>
   http.post(AccountAPI.login, body);
+
+const logout = (): Promise<ApiResponse<unknown>> =>
+  http.post(AccountAPI.logout);
 
 const register = (
   body: RegisterAccount
@@ -54,6 +57,33 @@ const getRole = (): Promise<
   ApiResponse<{ roleId: number; roleName: string }[]>
 > => http.get(AccountAPI.getRole);
 
+const updateAccount = (body: {
+  email: string;
+  phoneNumber: string;
+  passwordOld: string;
+  passwordNew: string;
+}): Promise<ApiResponse<unknown>> =>
+  http.post(AccountAPI.updateAccount, body);
+
+const verifyUpdateAccountOTP = (body: {
+  otpCode: string;
+}): Promise<ApiResponse<unknown>> =>
+  http.post(AccountAPI.verifyUpdateAccountOTP, body);
+
+const updateExpiredProfile = (body: {
+  citizenIdentification: string;
+  name: string;
+  birthDay: string;
+  nationality: string;
+  gender: string;
+  validDate: string;
+  originLocation: string;
+  recentLocation: string;
+  issueDate: string;
+  issueBy: string;
+}): Promise<ApiResponse<unknown>> =>
+  http.post(AccountAPI.updateExpiredProfile, body);
+
 const AuthServices = {
   login,
   register,
@@ -61,6 +91,10 @@ const AuthServices = {
   verifyOTP,
   resetPassword,
   getRole,
+  logout,
+  updateAccount,
+  verifyUpdateAccountOTP,
+  updateExpiredProfile,
 };
 
 export default AuthServices;
