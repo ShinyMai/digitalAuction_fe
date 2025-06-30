@@ -2,6 +2,12 @@ import { Carousel, Card, Typography, Space } from "antd";
 import { DollarOutlined, FieldTimeOutlined } from "@ant-design/icons";
 import { assets } from "../../../assets";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import AuctionServices from "../../../services/AuctionServices";
+import { toast } from "react-toastify";
+import type { AuctionDataList } from "../Modals";
+import dayjs from "dayjs";
+import { STAFF_ROUTES } from "../../../routers";
 
 interface PropertyInfor {
   id: number;
@@ -9,6 +15,19 @@ interface PropertyInfor {
   imageUrl: string;
   auctionDay: Date;
   startingPrice: number;
+}
+
+interface SearchParams {
+  AuctionName?: string;
+  CategoryId?: number;
+  RegisterOpenDate?: string;
+  RegisterEndDate?: string;
+  AuctionStartDate?: string;
+  AuctionEndDate?: string;
+  SortBy?: string;
+  IsAscending?: boolean;
+  PageNumber?: number;
+  PageSize?: number;
 }
 
 const properties: PropertyInfor[] = [
@@ -49,6 +68,28 @@ const categories = [
 const HomePage = () => {
   const navigate = useNavigate();
   const { Title, Paragraph } = Typography;
+  const [searchParams, setSearchParams] = useState<SearchParams>({
+    PageNumber: 1,
+    PageSize: 3,
+  });
+  const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
+
+  const getListAuction = async () => {
+    try {
+      const params: SearchParams = {
+        PageNumber: searchParams.PageNumber || 1,
+        PageSize: searchParams.PageSize || 3,
+        AuctionStartDate: dayjs().add(3, 'day').format("YYYY-MM-DD")
+      };
+
+      const response = await AuctionServices.getListAuction(params);
+      setAuctionList(response.data.auctions || []);
+    } catch (error) {
+      toast.error("Lỗi khi tải danh sách đấu giá!");
+      console.error(error);
+      setAuctionList([]); // Đảm bảo danh sách rỗng khi có lỗi
+    }
+  };
 
   return (
     <div className="bg-gray-50">
@@ -115,53 +156,54 @@ const HomePage = () => {
       </div>
 
       {/* Upcoming Auctions Section */}
-      <div className="bg-sky-100 px-4 md:px-12 py-8">
-        <Title level={2} className="text-center mb-6 !text-3xl md:!text-4xl">
-          Tài sản sắp được đấu giá
-        </Title>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {properties.map((property) => (
-            <Card
-              key={property.id}
-              hoverable
-              cover={
-                <img
-                  alt={property.name}
-                  src={property.imageUrl}
-                  className="w-full h-48 object-cover rounded-t-lg"
-                />
-              }
-              className="shadow-lg"
-              onClick={() => navigate("/auction-list")}
-            >
-              <Card.Meta
-                title={<div className="text-center text-lg font-semibold">{property.name}</div>}
-                description={
-                  <Space direction="vertical" className="w-full">
-                    <div className="flex items-center text-gray-800">
-                      <FieldTimeOutlined className="mr-2" />
-                      Ngày đấu giá:{" "}
-                      <span className="font-bold text-lg ml-2">
-                        {property.auctionDay.toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center text-gray-800">
-                      <DollarOutlined className="mr-2" />
-                      Giá khởi điểm:{" "}
-                      <span className="font-bold text-lg text-green-500 ml-2">
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(property.startingPrice)}
-                      </span>
-                    </div>
-                  </Space>
+      {
+        auctionList.length > 0 &&
+        <div className="bg-sky-100 px-4 md:px-12 py-8">
+          <Title level={2} className="text-center mb-6 !text-3xl md:!text-4xl">
+            Tài sản sắp được đấu giá
+          </Title>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {auctionList.map((property) => (
+              <Card
+                key={property.auctionId}
+                hoverable
+                cover={
+                  <img
+                    alt={property.auctionName}
+                    src={'https://tse1.mm.bing.net/th/id/OIP.-IAlyndSbk_ZpEILNowpGQHaGK?cb=iwc2&rs=1&pid=ImgDetMain'}
+                    className="w-full h-48 object-cover rounded-t-lg"
+                  />
                 }
-              />
-            </Card>
-          ))}
+                className="shadow-lg"
+                onClick={() => navigate(STAFF_ROUTES.SUB.AUCTION_DETAIL, { state: { key: property.auctionId }, replace: true })}
+              >
+                <Card.Meta
+                  title={<div className="text-center text-lg font-semibold">{property.auctionName}</div>}
+                  description={
+                    <Space direction="vertical" className="w-full">
+                      <div className="flex items-center text-gray-800">
+                        <FieldTimeOutlined className="mr-2" />
+                        Ngày kết thúc đăng kí:{" "}
+                        <span className="font-bold text-lg ml-2">
+                          {property.registerEndDate}
+                        </span>
+                      </div>
+                      <div className="flex items-center text-gray-800">
+                        <FieldTimeOutlined className="mr-2" />
+                        Ngày đấu giá:{" "}
+                        <span className="font-bold text-lg ml-2">
+                          {property.auctionStartDate}
+                        </span>
+                      </div>
+                    </Space>
+                  }
+                />
+              </Card>
+            ))}
+          </div>
         </div>
-      </div>
+      }
+
     </div>
   );
 };

@@ -12,8 +12,8 @@ import {
 
 interface Props {
     listAsset?: DataType[];
-    onValueAssetSelect: (value: string[]) => void;
-    onNext: () => void;
+    onGetAssetSelect: (value: string) => void;
+    onNext: (assetId: string) => void;
     onPrev: () => void;
 }
 
@@ -40,18 +40,9 @@ const formatVND = (value: string) => {
     return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(number);
 };
 
-const AssetSelect = ({ listAsset, onValueAssetSelect, onNext, onPrev }: Props) => {
-    const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
+const AssetSelect = ({ listAsset, onGetAssetSelect, onNext, onPrev }: Props) => {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 8;
-
-    const rowSelection = {
-        selectedRowKeys: selectedAssets,
-        onChange: (selectedRowKeys: React.Key[]) => {
-            setSelectedAssets(selectedRowKeys as string[]);
-            onValueAssetSelect(selectedRowKeys as string[]);
-        },
-    };
 
     const truncateDescription = (text?: string, maxLength: number = 100) => {
         if (!text) return "";
@@ -154,6 +145,19 @@ const AssetSelect = ({ listAsset, onValueAssetSelect, onNext, onPrev }: Props) =
                 <span className="text-teal-600 font-medium">{formatVND(text)}</span>
             ),
         },
+        {
+            title: "Hành động",
+            key: "action",
+            render: (_: any, record: DataType) => (
+                <Button
+                    type="primary"
+                    className="bg-teal-500 hover:bg-teal-600"
+                    onClick={() => handleGetValueAssetAndNext(record.auctionAssetsId)}
+                >
+                    Mua hồ sơ
+                </Button>
+            ),
+        },
     ];
 
     const paginatedData = listAsset?.slice(
@@ -161,13 +165,10 @@ const AssetSelect = ({ listAsset, onValueAssetSelect, onNext, onPrev }: Props) =
         currentPage * pageSize
     );
 
-    const handleNext = () => {
-        if (selectedAssets.length === 0) {
-            message.warning("Vui lòng chọn ít nhất một tài sản!");
-            return;
-        }
-        onNext();
-    };
+    const handleGetValueAssetAndNext = (value: string) => {
+        onGetAssetSelect(value)
+        onNext(value)
+    }
 
     return (
         <div className="w-full h-full pt-6 px-4 bg-gradient-to-b from-blue-50 to-teal-50">
@@ -176,10 +177,6 @@ const AssetSelect = ({ listAsset, onValueAssetSelect, onNext, onPrev }: Props) =
             </h2>
             <div className="bg-white p-4 rounded-lg shadow-lg">
                 <Table
-                    rowSelection={{
-                        type: "checkbox",
-                        ...rowSelection,
-                    }}
                     columns={columns}
                     dataSource={paginatedData}
                     rowKey="auctionAssetsId"
@@ -204,9 +201,6 @@ const AssetSelect = ({ listAsset, onValueAssetSelect, onNext, onPrev }: Props) =
                 {/* <Button className="bg-gray-200 hover:bg-gray-300" onClick={onPrev}>
                     Quay Lại
                 </Button> */}
-                <Button type="primary" className="bg-teal-500 hover:bg-teal-600" onClick={handleNext}>
-                    Tiếp Theo
-                </Button>
             </div>
         </div>
     );
