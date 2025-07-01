@@ -51,6 +51,8 @@ const InfomationRegisterAsset = ({ auctionAssetsSelected, onNext, onPrev, onSetD
             if (response.data) {
                 onSetDataPayment(response.data)
                 onNext()
+            } else {
+                toast.error("Bạn đã đăng ký tham gia đấu giá với tài sản này !")
             }
         } catch (error) {
             toast.error("Vui lòng điền đầy đủ thông tin!");
