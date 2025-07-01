@@ -77,3 +77,20 @@ export type UserInfomation = {
   phoneNumber: string;
   originLocation: string;
 }
+
+export type RegistrationAuctionModals = {
+    fullName?: string;
+    dob?: string;
+    idNumber?: string;
+    idDate?: string;
+    place?: string;
+    phone?: string;
+    address?: string;
+    auctionInfo?: string;
+    assetsInfo?: string;
+    priceStart?: string;
+    bankAccount?: string;
+    bankAccountNumber?: string;
+    bankBranch?: string;
+    locationDate?: string;
+}

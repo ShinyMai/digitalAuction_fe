@@ -1,8 +1,9 @@
 // src/components/SepayAuctionregister.tsx
 import { Image, Row, Col, Typography, Button, message } from "antd";
-import type { AuctionAsset, dataPayment, UserInfomation } from "../../Modals";
+import type { AuctionAsset, dataPayment, RegistrationAuctionModals, UserInfomation } from "../../Modals";
 import { useEffect, useCallback, useState } from "react";
 import useSignalR from "../../../../hooks/useSignalR";
+import ExportDocx from "../../../../components/Common/ExportDocs";
 
 interface Props {
     dataQrSepay?: dataPayment;
@@ -11,7 +12,7 @@ interface Props {
 }
 
 const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAutionAsset }) => {
-    const { connection, isConnected } = useSignalR("https://your-server.com/paymenthub"); // Thay bằng URL thực tế
+    const { connection, isConnected } = useSignalR("https://digitalauction.mooo.com/api/RegisterAuctionDocument/Update-Status-Ticket"); // Thay bằng URL thực tế
     const [ticketStatus, setTicketStatus] = useState<string | null>(null);
 
     useEffect(() => {
@@ -62,6 +63,25 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
         };
     }, [connection, handleReceiveTicketStatus]);
 
+    const getDataExport = () => {
+        const valueReturn: RegistrationAuctionModals = {
+            address: dataUser?.originLocation,
+            fullName: dataUser?.name,
+            phone: dataUser?.phoneNumber,
+            dob: dataUser?.birthDay,
+            idNumber: dataUser?.citizenIdentification,
+            idDate: dataUser?.issueDate,
+            place: dataUser?.issueBy,
+            assetsInfo: dataAutionAsset?.tagName,
+            priceStart: dataAutionAsset?.startingPrice,
+            auctionInfo: dataAutionAsset?.description,
+            bankAccount: dataQrSepay?.beneficiaryBank,
+            bankAccountNumber: dataQrSepay?.accountNumber,
+            bankBranch: dataQrSepay?.accountNumber,
+        }
+        return valueReturn
+    }
+
     return (
         <section className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
             <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-4 sm:p-6">
@@ -81,14 +101,7 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         height={200}
                         className="mx-auto"
                     />
-                    <Button
-                        type="primary"
-                        onClick={handlePayment}
-                        disabled={!isConnected || !dataQrSepay?.accountNumber}
-                        className="mt-4"
-                    >
-                        Xác nhận Thanh Toán
-                    </Button>
+                    <ExportDocx data={getDataExport()} />
                 </div>
 
                 {/* Payment Information */}
