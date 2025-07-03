@@ -59,3 +59,38 @@ export type auctionDocument = {
   bankBranch: string;
   // tiền chuyển.
 }
+
+export type dataPayment = {
+  qrUrl: string,
+  accountNumber: string;
+  beneficiaryBank: string;
+  amountTicket: number;
+  description: string;
+}
+
+export type UserInfomation = {
+  name: string;
+  birthDay: string;
+  citizenIdentification: string;
+  issueDate: string;
+  issueBy: string;
+  phoneNumber: string;
+  originLocation: string;
+}
+
+export type RegistrationAuctionModals = {
+    fullName?: string;
+    dob?: string;
+    idNumber?: string;
+    idDate?: string;
+    place?: string;
+    phone?: string;
+    address?: string;
+    auctionInfo?: string;
+    assetsInfo?: string;
+    priceStart?: string;
+    bankAccount?: string;
+    bankAccountNumber?: string;
+    bankBranch?: string;
+    locationDate?: string;
+}

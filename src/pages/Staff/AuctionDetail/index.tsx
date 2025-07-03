@@ -5,16 +5,18 @@ import type { AuctionDataDetail } from "../Modals";
 import { Button, Image, Typography, Card } from "antd";
 import MINPHAPLOGO from "../../../assets/LOGO-MINH-PHAP.jpg";
 import dayjs from "dayjs";
+import { useAppRouting } from "../../../hooks/useAppRouting";
+import PopupVerifyCancelAuction from "./components/PopupVerifyCancelAuction";
 
 const AuctionDetailAnonymous = () => {
   const location = useLocation();
-  const [auctionDetailData, setAuctionDetailData] =
-    useState<AuctionDataDetail>();
+  const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
+  const { role } = useAppRouting();
+  const [isOpentPopupVerifyCancel, setIsOpenPopupVerifyCancel] = useState<boolean>(false)
 
   useEffect(() => {
-    console.log(location.state.key);
+    console.log("role: ", role);
     getAuctionDetailById(location.state.key);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getAuctionDetailById = async (
@@ -66,8 +68,8 @@ const AuctionDetailAnonymous = () => {
                     <span className="text-teal-800">
                       {auctionDetailData.registerOpenDate
                         ? dayjs(
-                            auctionDetailData.registerOpenDate
-                          ).format("DD/MM/YYYY")
+                          auctionDetailData.registerOpenDate
+                        ).format("DD/MM/YYYY")
                         : "-"}
                     </span>
                   </div>
@@ -78,8 +80,8 @@ const AuctionDetailAnonymous = () => {
                     <span className="text-teal-800">
                       {auctionDetailData.registerEndDate
                         ? dayjs(
-                            auctionDetailData.registerEndDate
-                          ).format("DD/MM/YYYY")
+                          auctionDetailData.registerEndDate
+                        ).format("DD/MM/YYYY")
                         : "-"}
                     </span>
                   </div>
@@ -90,8 +92,8 @@ const AuctionDetailAnonymous = () => {
                     <span className="text-teal-800">
                       {auctionDetailData.auctionStartDate
                         ? dayjs(
-                            auctionDetailData.auctionStartDate
-                          ).format("DD/MM/YYYY")
+                          auctionDetailData.auctionStartDate
+                        ).format("DD/MM/YYYY")
                         : "-"}
                     </span>
                   </div>
@@ -102,8 +104,8 @@ const AuctionDetailAnonymous = () => {
                     <span className="text-teal-800">
                       {auctionDetailData.auctionEndDate
                         ? dayjs(
-                            auctionDetailData.auctionEndDate
-                          ).format("DD/MM/YYYY")
+                          auctionDetailData.auctionEndDate
+                        ).format("DD/MM/YYYY")
                         : "-"}
                     </span>
                   </div>
@@ -163,7 +165,7 @@ const AuctionDetailAnonymous = () => {
                 Danh sách tài sản đấu giá
               </h3>
               {auctionDetailData.listAuctionAssets &&
-              auctionDetailData.listAuctionAssets.length >
+                auctionDetailData.listAuctionAssets.length >
                 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {auctionDetailData.listAuctionAssets.map(
@@ -193,10 +195,10 @@ const AuctionDetailAnonymous = () => {
                             <span className="text-teal-800">
                               {asset.startingPrice
                                 ? `${parseFloat(
-                                    asset.startingPrice
-                                  ).toLocaleString(
-                                    "vi-VN"
-                                  )} VND`
+                                  asset.startingPrice
+                                ).toLocaleString(
+                                  "vi-VN"
+                                )} VND`
                                 : "-"}
                             </span>
                           </div>
@@ -207,10 +209,10 @@ const AuctionDetailAnonymous = () => {
                             <span className="text-teal-800">
                               {asset.deposit
                                 ? `${parseFloat(
-                                    asset.deposit
-                                  ).toLocaleString(
-                                    "vi-VN"
-                                  )} VND`
+                                  asset.deposit
+                                ).toLocaleString(
+                                  "vi-VN"
+                                )} VND`
                                 : "-"}
                             </span>
                           </div>
@@ -221,10 +223,10 @@ const AuctionDetailAnonymous = () => {
                             <span className="text-teal-800">
                               {asset.registrationFee
                                 ? `${parseFloat(
-                                    asset.registrationFee
-                                  ).toLocaleString(
-                                    "vi-VN"
-                                  )} VND`
+                                  asset.registrationFee
+                                ).toLocaleString(
+                                  "vi-VN"
+                                )} VND`
                                 : "-"}
                             </span>
                           </div>
@@ -243,8 +245,8 @@ const AuctionDetailAnonymous = () => {
                             <span className="text-teal-800">
                               {asset.createdAt
                                 ? dayjs(
-                                    asset.createdAt
-                                  ).format("DD/MM/YYYY")
+                                  asset.createdAt
+                                ).format("DD/MM/YYYY")
                                 : "-"}
                             </span>
                           </div>

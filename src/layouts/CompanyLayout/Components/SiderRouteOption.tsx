@@ -19,7 +19,8 @@ interface MenuItem {
   key: string;
   icon: React.ReactElement;
   label: string;
-  url: string;
+  url?: string;
+  statusSubMenu?: string;
   roleView: string[];
 }
 
@@ -99,21 +100,21 @@ const SiderRouteOption = () => {
   const getCurrentKey = () => {
     const pathname = location.pathname;
     const rolePath = role?.toLowerCase();
-
-    // Remove the role prefix to get the actual route
     const routeWithoutRole = pathname.replace(
       `/${rolePath}/`,
       ""
     );
+    let currentKey = filteredItems[0]?.key || "1";
 
-    const currentItem = filteredItems.find(
-      (item) =>
+    for (const item of filteredItems) {
+      if (
         routeWithoutRole === item.url ||
-        routeWithoutRole.startsWith(item.url)
-    );
-    return currentItem
-      ? currentItem.key
-      : filteredItems[0]?.key || "1";
+        routeWithoutRole.startsWith(item.url || "/")
+      ) {
+        currentKey = item.key;
+      }
+    }
+    return currentKey;
   };
 
   const onClick: MenuProps["onClick"] = (e) => {
@@ -135,12 +136,13 @@ const SiderRouteOption = () => {
           className="w-full h-auto max-h-20 object-contain border-2 border-white/20 rounded-xl"
         />
       </div>
-      <div className="w-full ">
+      <div className="w-full">
         <Menu
           onClick={onClick}
           theme="light"
           mode="inline"
           selectedKeys={[getCurrentKey()]}
+          defaultOpenKeys={["2"]}
           items={filteredItems as MenuProps["items"]}
           className="w-full"
         />

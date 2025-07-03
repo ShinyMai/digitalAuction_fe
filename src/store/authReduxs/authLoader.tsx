@@ -14,14 +14,14 @@ const AuthLoader = () => {
       const currentPath = location.pathname;
       const rolePath = user.roleName.toLowerCase();
 
-      if (user.roleName !== "User") {
+      if (user.roleName !== "Customer") {
         // For company staff (Admin, Staff, etc.)
         if (!currentPath.startsWith(`/${rolePath}`)) {
           navigate(`/${rolePath}/statistics`, {
             replace: true,
           });
         }
-      } else if (user.roleName === "User") {
+      } else if (user.roleName === "Customer") {
         if (currentPath.startsWith(`/${rolePath}`)) {
           navigate("/", { replace: true });
         }
