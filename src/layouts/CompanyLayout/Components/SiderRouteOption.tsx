@@ -1,9 +1,19 @@
-import { BarChartOutlined, ScheduleOutlined, HomeOutlined, TeamOutlined, UsergroupDeleteOutlined } from "@ant-design/icons";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  BarChartOutlined,
+  ScheduleOutlined,
+  HomeOutlined,
+  TeamOutlined,
+  UsergroupDeleteOutlined,
+} from "@ant-design/icons";
 import { Menu, type MenuProps } from "antd";
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ADMIN_ROUTES, STAFF_ROUTES } from "../../../routers";
+import {
+  ADMIN_ROUTES,
+  STAFF_ROUTES,
+} from "../../../routers";
 import { assets } from "../../../assets";
 
 interface MenuItem {
@@ -28,38 +38,36 @@ const items: MenuItem[] = [
     icon: <ScheduleOutlined />,
     label: "Danh sách các buổi đấu giá",
     url: STAFF_ROUTES.SUB.AUCTION_LIST,
-    roleView: ["Staff", "Auctioneer", "Director", "Manager"],
+    roleView: [
+      "Staff",
+      "Auctioneer",
+      "Director",
+      "Manager",
+    ],
   },
   {
     key: "3",
-    icon: <ScheduleOutlined />,
-    label: "Bản nháp buổi đấu giá",
-    url: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF,
-    roleView: ["Staff", "Auctioneer", "Director", "Manager"],
-  },
-  {
-    key: "4",
     icon: <ScheduleOutlined />,
     label: "Tạo buổi đấu giá",
     url: STAFF_ROUTES.SUB.POST_AUCTION,
     roleView: ["Staff"],
   },
   {
-    key: "5",
+    key: "4",
     icon: <HomeOutlined />,
     label: "Hỗ trợ đăng ký tham gia đấu giá",
     url: STAFF_ROUTES.SUB.DASHBOARD,
     roleView: ["Staff"],
   },
   {
-    key: "6",
+    key: "5",
     icon: <TeamOutlined />,
     label: "Danh sách nhân lực",
     url: STAFF_ROUTES.SUB.PROPERTIES,
     roleView: ["Director", "Manager"],
   },
   {
-    key: "7",
+    key: "6",
     icon: <UsergroupDeleteOutlined />,
     label: "Tạo tài khoản mới",
     url: ADMIN_ROUTES.SUB.ADD_EMPLOYEES,
@@ -76,24 +84,34 @@ const SiderRouteOption = () => {
   const { user } = useSelector((state: any) => state.auth);
   const role = user?.roleName;
 
-  const filteredItems = useMemo(() => {
-    const filtered = items
-      .filter((item) => role && item.roleView.includes(role))
-      .map((item) => ({
-        ...item,
-        className: "bg-stone-300/30",
-      }));
-    return filtered;
-  }, [role]);
+  // Filter items based on user's role
+  const filteredItems = useMemo(
+    () =>
+      items
+        .filter(
+          (item) => role && item.roleView.includes(role)
+        )
+        .map((item) => ({
+          ...item,
+          className: "bg-stone-300/30",
+        })),
+    [role]
+  );
 
   const getCurrentKey = () => {
     const pathname = location.pathname;
     const rolePath = role?.toLowerCase();
-    const routeWithoutRole = pathname.replace(`/${rolePath}/`, "");
+    const routeWithoutRole = pathname.replace(
+      `/${rolePath}/`,
+      ""
+    );
     let currentKey = filteredItems[0]?.key || "1";
 
     for (const item of filteredItems) {
-      if (routeWithoutRole === item.url || routeWithoutRole.startsWith(item.url || "/")) {
+      if (
+        routeWithoutRole === item.url ||
+        routeWithoutRole.startsWith(item.url || "/")
+      ) {
         currentKey = item.key;
       }
     }
@@ -105,7 +123,7 @@ const SiderRouteOption = () => {
     if (item) {
       const rolePath = role?.toLowerCase();
       navigate(`/${rolePath}/${item.url}`, {
-        replace: true, state: { key: item.key }
+        replace: true,
       });
     }
   };

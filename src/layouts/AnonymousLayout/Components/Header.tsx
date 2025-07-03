@@ -14,8 +14,8 @@ import { useNavigate } from "react-router-dom";
 import Login from "../../../pages/Anonymous/Login/Login";
 import { useSelector } from "react-redux";
 import AuthServices from "../../../services/AuthServices";
-import UserProfile from "../../components/UserProfile";
-import ChangePassword from "../../components/ChangePassword";
+import UserProfile from "../../../pages/User/UserProfile/UserProfile";
+import ChangePassword from "../../../pages/User/UserProfile/EditAccount/ChangePassword";
 
 const Header = memo(() => {
   const navigate = useNavigate();

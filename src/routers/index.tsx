@@ -4,15 +4,15 @@ export const GUEST_ROUTERS = {
   REGISTER: "register",
   TIN_TUC: "tin-tuc",
   NOT_FOUND: "not-found",
-  AUCITON_LIST: 'auction-list',
-  AUCTION_DETAIL: 'auction-detail'
+  AUCITON_LIST: "auction-list",
+  AUCTION_DETAIL: "auction-detail",
 };
 
 export const USER_ROUTERS = {
   PATH: "customer",
   SUB: {
     ...GUEST_ROUTERS,
-    AUCTION_REGISTER: 'auction-register'
+    AUCTION_REGISTER: "auction-register",
   },
 };
 

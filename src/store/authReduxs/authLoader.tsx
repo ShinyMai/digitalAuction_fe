@@ -14,13 +14,6 @@ const AuthLoader = () => {
       const currentPath = location.pathname;
       const rolePath = user.roleName.toLowerCase();
 
-      console.log(
-        "Current path:",
-        currentPath,
-        "User role:",
-        user.roleName
-      );
-
       if (user.roleName !== "Customer") {
         // For company staff (Admin, Staff, etc.)
         if (!currentPath.startsWith(`/${rolePath}`)) {

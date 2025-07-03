@@ -60,13 +60,10 @@ const AuctionDetailAnonymous = () => {
                     <Image
                       src={MINPHAPLOGO}
                       alt="Logo Minh Pháp"
-                      className="w-full max-w-[200px] md:max-w-[250px] object-contain"
+                      className="w-full max-w-[200px] md:max-w-[250px]"
                       preview={false}
                     />
                   </div>
-                  <h2 className="text-xl font-semibold text-teal-600 mt-2 text-center">
-                    VẬN THÁNH AN
-                  </h2>
                 </div>
                 <div className="w-full md:w-2/3 pl-0 md:pl-4">
                   <h1 className="text-2xl md:text-3xl font-bold text-blue-800 mb-2">
@@ -155,25 +152,26 @@ const AuctionDetailAnonymous = () => {
                       </span>
                     </div>
                   </div>
+                  <Button
+                    type="primary"
+                    size="large"
+                    className="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 rounded-lg mt-8"
+                    onClick={() =>
+                      navigate(
+                        "/" + USER_ROUTERS.SUB.REGISTER,
+                        {
+                          replace: true,
+                        }
+                      )
+                    }
+                  >
+                    Đăng ký tham gia
+                  </Button>
+                  <div className="mt-2">
+                    Quý khách đăng ký tài khoản để có thể
+                    đăng ký tham gia đấu giá
+                  </div>
                 </div>
-              </div>
-              <div className="text-center mt-6">
-                <Button
-                  type="primary"
-                  size="large"
-                  className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
-                  onClick={() =>
-                    navigate(
-                      USER_ROUTERS.SUB.AUCTION_REGISTER,
-                      {
-                        state: { key: auctionDetailData },
-                        replace: true,
-                      }
-                    )
-                  }
-                >
-                  Đăng ký tham gia
-                </Button>
               </div>
             </TabPane>
 

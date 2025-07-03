@@ -1,18 +1,8 @@
-import {
-  PlusOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import {
-  Button,
-  Form,
-  Input,
-  Select,
-} from "antd";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { SearchOutlined } from "@ant-design/icons";
+import { Button, Form, Input, Select } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { useNavigate } from "react-router-dom";
-import { STAFF_ROUTES } from "../../../../routers";
 import type { AuctionCategory } from "../../Modals";
-import { useSelector } from "react-redux";
 
 interface Props {
   auctionCategory?: AuctionCategory[];
@@ -26,11 +16,11 @@ const SearchAuctionTable = ({
   const [form] = useForm();
 
   const optionSearchbyStatus = [
-    { label: 'Đang thu hồ sơ', value: '1' },
-    { label: 'Chuẩn bị đấu giá', value: '2' },
-    { label: 'Chưa hoàn cọc', value: '3' },
-    { label: 'Đã hoàn cọc', value: '4' },
-  ]
+    { label: "Đang thu hồ sơ", value: "1" },
+    { label: "Chuẩn bị đấu giá", value: "2" },
+    { label: "Chưa hoàn cọc", value: "3" },
+    { label: "Đã hoàn cọc", value: "4" },
+  ];
 
   const dataAuctionCategoryList = auctionCategory?.map(
     (val) => ({
