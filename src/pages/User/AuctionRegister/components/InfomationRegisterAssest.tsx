@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import type {
   AuctionAsset,
   UserInfomation,
-} from "../../Modals";
+} from "../../../Anonymous/Modals";
 import {
   Form,
   Input,
@@ -47,14 +47,14 @@ const InfomationRegisterAsset = ({
         name: userInfo.name,
         birthDay:
           userInfo.birthDay &&
-          dayjs(userInfo.birthDay).isValid()
+            dayjs(userInfo.birthDay).isValid()
             ? dayjs(userInfo.birthDay)
             : null,
         citizenIdentification:
           userInfo.citizenIdentification,
         issueDate:
           userInfo.issueDate &&
-          dayjs(userInfo.issueDate).isValid()
+            dayjs(userInfo.issueDate).isValid()
             ? dayjs(userInfo.issueDate)
             : null,
         issueBy: userInfo.issueBy,
@@ -361,7 +361,7 @@ const InfomationRegisterAsset = ({
                           </span>{" "}
                           {formatVND(
                             auctionAssetsSelected.startingPrice ||
-                              "0"
+                            "0"
                           )}
                         </p>
                         <p>
@@ -370,7 +370,7 @@ const InfomationRegisterAsset = ({
                           </span>{" "}
                           {formatVND(
                             auctionAssetsSelected.deposit ||
-                              "0"
+                            "0"
                           )}
                         </p>
                         <p>
@@ -379,7 +379,7 @@ const InfomationRegisterAsset = ({
                           </span>{" "}
                           {formatVND(
                             auctionAssetsSelected.registrationFee ||
-                              "0"
+                            "0"
                           )}
                         </p>
                         <p>

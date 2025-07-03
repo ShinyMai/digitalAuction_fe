@@ -6,7 +6,7 @@ import type {
   AuctionAsset,
   AuctionDataDetail,
   dataPayment,
-} from "../Modals";
+} from "../../Anonymous/Modals";
 import { useLocation, useNavigate } from "react-router-dom";
 import InfomationRegisterAsset from "./components/InfomationRegisterAssest";
 import SepayAuctionregister from "./components/SepayAuctionRegister";
