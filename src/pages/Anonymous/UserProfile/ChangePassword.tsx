@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import CustomModal from "../../components/Common/CustomModal";
 import { Col, Form, Input, Spin, Button } from "antd";
-import AuthServices from "../../services/AuthServices";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import AuthServices from "../../../services/AuthServices";
+import CustomModal from "../../../components/Common/CustomModal";
 
 interface ChangePasswordProps {
   open: boolean;
