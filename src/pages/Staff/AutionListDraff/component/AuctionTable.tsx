@@ -3,7 +3,7 @@ import { Table, type TableProps, Button } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
-import type { AuctionDataList, AuctioneerOptionModal } from "../../Modals";
+import type { AuctionDataList } from "../../Modals";
 import { STAFF_ROUTES } from "../../../../routers";
 import { useSelector } from "react-redux";
 
@@ -15,7 +15,6 @@ interface Props {
   loading: boolean;
   pageSize?: number;
   currentPage?: number;
-  listAuctioneers?: AuctioneerOptionModal[]
 }
 
 const AuctionTable = ({
@@ -26,7 +25,6 @@ const AuctionTable = ({
   loading,
   pageSize,
   currentPage,
-  listAuctioneers,
 }: Props) => {
   const navigate = useNavigate();
   const { user } = useSelector((state: any) => state.auth);

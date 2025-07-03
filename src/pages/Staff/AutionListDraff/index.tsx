@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
 import dayjs from "dayjs";
-import type { AuctionCategory, AuctionDataList, AuctioneerOptionModal } from "../Modals.ts";
+import type { AuctionCategory, AuctionDataList } from "../Modals.ts";
 import { useLocation } from "react-router-dom";
 
 interface SearchParams {
@@ -32,11 +32,9 @@ const AuctionListDraff = () => {
         PageSize: 8,
     });
     const location = useLocation();
-    const [listAuctioneers, setListAuctioneers] = useState<AuctioneerOptionModal[]>()
 
     useEffect(() => {
         getListAuctionCategory();
-        getListAuctioneers()
         console.log("hey hey", location.search)
         const queryParams = new URLSearchParams(location.search);
         const status = queryParams.get("status");
@@ -132,20 +130,6 @@ const AuctionListDraff = () => {
         }
     };
 
-    const getListAuctioneers = async () => {
-        try {
-            const res = await AuctionServices.getListAuctioneers()
-            if (res.data) {
-                setListAuctioneers(res.data)
-            } else {
-                toast.error("Danh sách đấu giá viên không có ai")
-            }
-
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     const onChangeTable = (pagination: any, sorter: any) => {
         const newParams: SearchParams = {
             ...searchParams,
@@ -174,7 +158,6 @@ const AuctionListDraff = () => {
                         loading={loading}
                         pageSize={searchParams.PageSize}
                         currentPage={searchParams.PageNumber}
-                        listAuctioneers={listAuctioneers}
                     />
                 </div>
             </div>

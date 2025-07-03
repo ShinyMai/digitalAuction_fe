@@ -5,8 +5,7 @@ export const AuctionAPI = {
     AUCTION_DETAIL: "/Detail",
     AUCTION_REGISTER_ASSET: '/RegisterAuctionDocument/Register-Auction-Document',
     AUCTION_DOCUMENT_LIST: '/GetListAuctionDocuments/ListDocuments',
-    AUCTION_PUBLIC_REGIST_AUCTIONEER: '/AssginAuctioneerAndPublicAuction/Assgin-Auctioneer-Public-Auction',
-    AUCATIONEERS_LIST: '/GetAuctioneers/Get-Auctioneers'
+    AUCTION_PUBLIC_REGIST_AUCTIONEER: '/AssginAuctioneerAndPublicAuction/Assgin-Auctioneer-Public-Auction'
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;
