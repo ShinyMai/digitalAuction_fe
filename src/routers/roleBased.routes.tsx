@@ -49,7 +49,11 @@ export const guestRoutes = [
     element: wrapWithLazy(AuctionListAnonymous),
   },
   {
-    path: GUEST_ROUTERS.AUCITON_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL || GUEST_ROUTERS.AUCTION_DETAIL,
+    path:
+      GUEST_ROUTERS.AUCITON_LIST +
+        "/" +
+        GUEST_ROUTERS.AUCTION_DETAIL ||
+      GUEST_ROUTERS.AUCTION_DETAIL,
     element: wrapWithLazy(AuctionDetailAnonymous),
   },
 ];
@@ -70,7 +74,12 @@ export const userRoutes = [
     element: wrapWithLazy(NotFound),
   },
   {
-    path: GUEST_ROUTERS.AUCITON_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL + "/" + USER_ROUTERS.SUB.AUCTION_REGISTER,
+    path:
+      GUEST_ROUTERS.AUCITON_LIST +
+      "/" +
+      GUEST_ROUTERS.AUCTION_DETAIL +
+      "/" +
+      USER_ROUTERS.SUB.AUCTION_REGISTER,
     element: wrapWithLazy(AuctionRegister),
   },
 ];
@@ -82,6 +91,10 @@ const PostAuction = React.lazy(
 
 const AuctionList = React.lazy(
   () => import("../pages/Staff/AuctionList/index")
+);
+
+const AuctionListDraff = React.lazy(
+  () => import("../pages/Staff/AutionListDraff/index")
 );
 
 const AuctionDetail = React.lazy(
@@ -121,6 +134,10 @@ export const staffRoutes = [
   {
     path: STAFF_ROUTES.SUB.AUCTION_LIST,
     element: wrapWithLazy(AuctionList),
+  },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF,
+    element: wrapWithLazy(AuctionListDraff),
   },
   {
     path: STAFF_ROUTES.SUB.DASHBOARD,
@@ -165,7 +182,4 @@ export const adminRoutes = [
   },
 ];
 
-
-export const managerRoutes = [
-  ...staffRoutes
-]
+export const managerRoutes = [...staffRoutes];

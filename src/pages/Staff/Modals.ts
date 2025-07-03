@@ -21,37 +21,37 @@ export type AuctionCategory = {
 };
 
 export type AuctionDataList = {
-    auctionId: string;
-    auctionName: string;
-    categoryId: number;
-    registerOpenDate: string;
-    registerEndDate: string;
-    auctionStartDate: string;
-    auctionEndDate: string;
-    createdByUserName: string;
-}
+  auctionId: string;
+  auctionName: string;
+  categoryId: number;
+  registerOpenDate: string;
+  registerEndDate: string;
+  auctionStartDate: string;
+  auctionEndDate: string;
+  createdByUserName: string;
+};
 
 export type AuctionDataDetail = {
-    id: string;
-    auctionName: string;
-    categoryName: string;
-    auctionDescription: string;
-    auctionRules: string;
-    auctionPlanningMap: string;
-    registerOpenDate: string;
-    registerEndDate: string;
-    auctionStartDate: string;
-    auctionEndDate: string;
-    createdByUserName: string;
-    createdAt: string;
-    updatedByUserName: string;
-    updatedAt: string;
-    qrLink: string;
-    numberRoundMax: number;
-    status: string;
-    winnerData: string;
-    listAuctionAssets?: AuctionAsset[];
-}
+  id: string;
+  auctionName: string;
+  categoryName: string;
+  auctionDescription: string;
+  auctionRules: string;
+  auctionPlanningMap: string;
+  registerOpenDate: string;
+  registerEndDate: string;
+  auctionStartDate: string;
+  auctionEndDate: string;
+  createdByUserName: string;
+  createdAt: string;
+  updatedByUserName: string;
+  updatedAt: string;
+  qrLink: string;
+  numberRoundMax: number;
+  status: string;
+  winnerData: string;
+  listAuctionAssets?: AuctionAsset[];
+};
 
 export type AuctionAsset = {
   auctionAssetsId: string;
@@ -59,7 +59,7 @@ export type AuctionAsset = {
   startingPrice: string;
   unit: string;
   deposit: string;
-  registrationFee:string;
+  registrationFee: string;
   description?: string;
   createdAt: string;
   createdBy: string;
@@ -67,4 +67,25 @@ export type AuctionAsset = {
   updatedBy: string;
   auctionId: string;
   auction?: string;
-}
+};
+
+export type AuctionDocument = {
+  auctionDocumentsId: string;
+  citizenIdentification: string;
+  deposit: number;
+  name: string;
+  note: string | null;
+  numericalOrder: number;
+  registrationFee: number;
+  statusDeposit: boolean;
+  statusRefundDeposit: boolean;
+  statusTicket: number;
+  tagName: string;
+};
+
+export type AuctionDateModal = {
+  registerOpenDate?: string;
+  registerEndDate?: string;
+  auctionStartDate?: string;
+  auctionEndDate?: string;
+};
