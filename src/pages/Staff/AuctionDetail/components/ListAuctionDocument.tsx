@@ -261,7 +261,7 @@ const ListAuctionDocument = ({ auctionId, auctionDateModals }: Props) => {
     ];
 
     return (
-        <section className="w-full min-h-screen p-6 bg-gradient-to-b from-blue-50 to-teal-50">
+        <section className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-teal-50">
             <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-xl p-6">
                 <h1 className="text-2xl font-bold text-blue-800 mb-6">Danh sách đăng ký tham gia</h1>
                 <div className="mb-6 p-4 bg-blue-50 rounded-lg">
@@ -323,7 +323,7 @@ const ListAuctionDocument = ({ auctionId, auctionDateModals }: Props) => {
                         onChange: (page, pageSize) =>
                             setSearchParams((prev) => ({ ...prev, PageNumber: page, PageSize: pageSize })),
                     }}
-                    scroll={{ x: "max-content" }}
+
                     className="border border-teal-100 rounded-lg"
                 />
             </div>

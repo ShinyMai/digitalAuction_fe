@@ -18,6 +18,8 @@ const getListAuctionDocument = (params?: any, auctionId?: string) =>
     http.get(AuctionAPI.AUCTION_DOCUMENT_LIST + `/${auctionId}`, { params: params })
 const assginAuctioneerAndPublicAuction = (body: any) =>
     http.post(AuctionAPI.AUCTION_PUBLIC_REGIST_AUCTIONEER, body);
+const getListAuctioneers = () =>
+    http.get(AuctionAPI.AUCATIONEERS_LIST)
 const AuctionServices = {
     addAuction,
     getListAuctionCategory,
@@ -25,7 +27,8 @@ const AuctionServices = {
     getAuctionDetail,
     registerAuctionAsset,
     getListAuctionDocument,
-    assginAuctioneerAndPublicAuction
+    assginAuctioneerAndPublicAuction,
+    getListAuctioneers
 };
 
 export default AuctionServices;

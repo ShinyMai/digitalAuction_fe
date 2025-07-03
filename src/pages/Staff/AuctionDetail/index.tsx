@@ -39,8 +39,8 @@ const AuctionDetailAnonymous = () => {
   };
 
   return (
-    <section className="p-6 bg-gradient-to-b from-blue-50 to-teal-50 min-h-screen">
-      <div className="w-fit mx-auto rounded-lg">
+    <section className="bg-gradient-to-b from-blue-50 to-teal-50 min-h-screen">
+      <div className="w-6xl mx-auto rounded-lg">
         <Tabs
           defaultActiveKey="1"
           className="w-full"

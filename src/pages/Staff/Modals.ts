@@ -89,3 +89,8 @@ export type AuctionDateModal = {
     auctionStartDate?: string;
     auctionEndDate?: string;
 }
+
+export type AuctioneerOptionModal = {
+  id: string;
+  name: string;
+}
