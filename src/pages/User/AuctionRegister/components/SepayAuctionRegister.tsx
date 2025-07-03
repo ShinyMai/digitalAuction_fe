@@ -5,7 +5,7 @@ import type {
   dataPayment,
   RegistrationAuctionModals,
   UserInfomation,
-} from "../../Modals";
+} from "../../../Anonymous/Modals";
 import ExportDocx from "../../../../components/Common/ExportDocs";
 import AuctionServices from "../../../../services/AuctionServices";
 import { useEffect, useState } from "react";
