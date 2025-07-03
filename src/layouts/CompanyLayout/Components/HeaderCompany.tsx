@@ -7,10 +7,10 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import UserProfile from "../../../pages/Anonymous/UserProfile/UserProfile";
+import UserProfile from "../../../pages/User/UserProfile/UserProfile";
 import AuthServices from "../../../services/AuthServices";
-import ChangePassword from "../../../pages/Anonymous/UserProfile/EditAccount/ChangePassword";
-import EditProfile from "../../../pages/Anonymous/UserProfile/EditProfile/EditProfile";
+import ChangePassword from "../../../pages/User/UserProfile/EditAccount/ChangePassword";
+import EditProfile from "../../../pages/User/UserProfile/EditProfile/EditProfile";
 
 const HeaderCompany = memo(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
