@@ -81,8 +81,8 @@ const AuctionDetailAnonymous = () => {
                       <span className="text-teal-800">
                         {auctionDetailData.registerOpenDate
                           ? dayjs(
-                              auctionDetailData.registerOpenDate
-                            ).format("DD/MM/YYYY")
+                            auctionDetailData.registerOpenDate
+                          ).format("DD/MM/YYYY")
                           : "-"}
                       </span>
                     </div>
@@ -93,8 +93,8 @@ const AuctionDetailAnonymous = () => {
                       <span className="text-teal-800">
                         {auctionDetailData.registerEndDate
                           ? dayjs(
-                              auctionDetailData.registerEndDate
-                            ).format("DD/MM/YYYY")
+                            auctionDetailData.registerEndDate
+                          ).format("DD/MM/YYYY")
                           : "-"}
                       </span>
                     </div>
@@ -105,8 +105,8 @@ const AuctionDetailAnonymous = () => {
                       <span className="text-teal-800">
                         {auctionDetailData.auctionStartDate
                           ? dayjs(
-                              auctionDetailData.auctionStartDate
-                            ).format("DD/MM/YYYY")
+                            auctionDetailData.auctionStartDate
+                          ).format("DD/MM/YYYY")
                           : "-"}
                       </span>
                     </div>
@@ -117,8 +117,8 @@ const AuctionDetailAnonymous = () => {
                       <span className="text-teal-800">
                         {auctionDetailData.auctionEndDate
                           ? dayjs(
-                              auctionDetailData.auctionEndDate
-                            ).format("DD/MM/YYYY")
+                            auctionDetailData.auctionEndDate
+                          ).format("DD/MM/YYYY")
                           : "-"}
                       </span>
                     </div>
@@ -158,9 +158,10 @@ const AuctionDetailAnonymous = () => {
                     className="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 rounded-lg mt-8"
                     onClick={() =>
                       navigate(
-                        "/" + USER_ROUTERS.SUB.REGISTER,
+                        USER_ROUTERS.SUB.AUCTION_REGISTER,
                         {
                           replace: true,
+                          state: { key: auctionDetailData }
                         }
                       )
                     }
@@ -194,7 +195,7 @@ const AuctionDetailAnonymous = () => {
                   Danh sách tài sản đấu giá
                 </h3>
                 {auctionDetailData.listAuctionAssets &&
-                auctionDetailData.listAuctionAssets.length >
+                  auctionDetailData.listAuctionAssets.length >
                   0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {auctionDetailData.listAuctionAssets.map(
@@ -224,10 +225,10 @@ const AuctionDetailAnonymous = () => {
                               <span className="text-teal-800">
                                 {asset.startingPrice
                                   ? `${parseFloat(
-                                      asset.startingPrice
-                                    ).toLocaleString(
-                                      "vi-VN"
-                                    )} VND`
+                                    asset.startingPrice
+                                  ).toLocaleString(
+                                    "vi-VN"
+                                  )} VND`
                                   : "-"}
                               </span>
                             </div>
@@ -238,10 +239,10 @@ const AuctionDetailAnonymous = () => {
                               <span className="text-teal-800">
                                 {asset.deposit
                                   ? `${parseFloat(
-                                      asset.deposit
-                                    ).toLocaleString(
-                                      "vi-VN"
-                                    )} VND`
+                                    asset.deposit
+                                  ).toLocaleString(
+                                    "vi-VN"
+                                  )} VND`
                                   : "-"}
                               </span>
                             </div>
@@ -252,10 +253,10 @@ const AuctionDetailAnonymous = () => {
                               <span className="text-teal-800">
                                 {asset.registrationFee
                                   ? `${parseFloat(
-                                      asset.registrationFee
-                                    ).toLocaleString(
-                                      "vi-VN"
-                                    )} VND`
+                                    asset.registrationFee
+                                  ).toLocaleString(
+                                    "vi-VN"
+                                  )} VND`
                                   : "-"}
                               </span>
                             </div>
@@ -274,8 +275,8 @@ const AuctionDetailAnonymous = () => {
                               <span className="text-teal-800">
                                 {asset.createdAt
                                   ? dayjs(
-                                      asset.createdAt
-                                    ).format("DD/MM/YYYY")
+                                    asset.createdAt
+                                  ).format("DD/MM/YYYY")
                                   : "-"}
                               </span>
                             </div>

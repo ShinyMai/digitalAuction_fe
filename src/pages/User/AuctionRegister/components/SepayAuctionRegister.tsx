@@ -20,7 +20,7 @@ const SepayAuctionregister: React.FC<Props> = ({
   dataUser,
   dataAutionAsset,
 }) => {
-  const [ticketStatus, setTicketStatus] = useState<
+  const [ticketStatus] = useState<
     string | null
   >(null);
 

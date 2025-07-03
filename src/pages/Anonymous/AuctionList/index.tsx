@@ -1,4 +1,4 @@
-import { Layout, Select, DatePicker, Button, Pagination, Spin, Typography } from "antd";
+import { Layout, DatePicker, Button, Pagination, Spin, Typography } from "antd";
 import { SearchOutlined, FrownOutlined } from "@ant-design/icons";
 import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import AuctionCard from "./components/AuctionCard";
 import dayjs from "dayjs";
 import { useLocation } from "react-router-dom";
-import type { AuctionCategory, AuctionDataList } from "../Modals";
+import type { AuctionDataList } from "../Modals";
 
 const { Content, Sider } = Layout;
 const { Title } = Typography;
@@ -38,7 +38,7 @@ const siderStyle: React.CSSProperties = {
 };
 
 const AuctionListAnonyMous = () => {
-    const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
+    // const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const location = useLocation();
     const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -51,7 +51,7 @@ const AuctionListAnonyMous = () => {
 
     useEffect(() => {
         getListAuction();
-    }, [searchParams]);
+    }, []);
 
 
     const getListAuction = async () => {
@@ -64,7 +64,7 @@ const AuctionListAnonyMous = () => {
             };
             if (searchParams.AuctionName) params.AuctionName = searchParams.AuctionName;
             if (searchParams.RegisterOpenDate) params.RegisterOpenDate = searchParams.RegisterOpenDate;
-            if (searchParams.RegisterEndDate) params.RegisterEndDate;
+            // if (searchParams.RegisterEndDate) params.RegisterEndDate;
             if (searchParams.AuctionStartDate) params.AuctionStartDate = searchParams.AuctionStartDate;
             if (searchParams.AuctionEndDate) params.AuctionEndDate = searchParams.AuctionEndDate;
             if (searchParams.SortBy) params.SortBy = searchParams.SortBy.replace("auctionName", "auction_name");
