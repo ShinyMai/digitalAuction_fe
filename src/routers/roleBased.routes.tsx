@@ -84,6 +84,10 @@ const AuctionList = React.lazy(
   () => import("../pages/Staff/AuctionList/index")
 );
 
+const AuctionListDraff = React.lazy(
+  () => import("../pages/Staff/AutionListDraff/index")
+);
+
 const AuctionDetail = React.lazy(
   () => import("../pages/Staff/AuctionDetail/index")
 );
@@ -121,6 +125,10 @@ export const staffRoutes = [
   {
     path: STAFF_ROUTES.SUB.AUCTION_LIST,
     element: wrapWithLazy(AuctionList),
+  },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF,
+    element: wrapWithLazy(AuctionListDraff),
   },
   {
     path: STAFF_ROUTES.SUB.DASHBOARD,

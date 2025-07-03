@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Table, type TableProps } from "antd";
+import { Table, type TableProps, Button } from "antd";
+import { CheckCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import type { AuctionDataList } from "../../Modals";
@@ -28,6 +29,13 @@ const AuctionTable = ({
   const navigate = useNavigate();
   const { user } = useSelector((state: any) => state.auth);
   const role = user?.roleName;
+
+  const handleApprove = (record: AuctionDataList) => {
+    console.log("Approve auction:", record);
+    // Thêm logic gọi API để duyệt thông tin tại đây
+    // Ví dụ: AuctionServices.approveAuction(record.auctionId)
+  };
+
   const columns: TableProps<AuctionDataList>["columns"] = [
     {
       title: "STT",
@@ -40,6 +48,23 @@ const AuctionTable = ({
       dataIndex: "auctionName",
       key: "auctionName",
       sorter: true,
+      render: (text: string, record: AuctionDataList) => (
+        <div
+          onClick={() => {
+            const rolePath = role?.toLowerCase();
+            navigate(
+              `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_DETAIL}`,
+              {
+                state: { key: record.auctionId },
+                replace: true,
+              }
+            );
+          }}
+          className="text-blue-600 hover:underline cursor-pointer"
+        >
+          {text}
+        </div>
+      ),
     },
     {
       title: "Ngày ĐK Mở",
@@ -76,6 +101,23 @@ const AuctionTable = ({
       sorter: true,
       render: (text: string) => text || "-",
     },
+    {
+      title: "Hành động",
+      key: "action",
+      render: (_: any, record: AuctionDataList) => (
+        <div className="w-full flex justify-center">
+          <Button
+            type="primary"
+            icon={<CheckCircleOutlined />}
+            onClick={() => handleApprove(record)}
+            className="bg-green-500 hover:bg-green-600"
+            disabled={!record.registerEndDate || !dayjs().isBefore(dayjs(record.registerEndDate))}
+          >
+            Duyệt thông tin
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -89,26 +131,12 @@ const AuctionTable = ({
           total,
           pageSize,
           current: currentPage,
-          // showSizeChanger: true,
-          // pageSizeOptions: ["10", "20", "50"],
           className: "bg-white rounded-b-lg",
         }}
         loading={loading}
         locale={{ emptyText: "Không có dữ liệu" }}
         className="w-full border border-white rounded-lg overflow-hidden"
-        onRow={(record) => ({
-          onClick: () => {
-            const rolePath = role?.toLowerCase();
-            navigate(
-              `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_DETAIL}`,
-              {
-                state: { key: record.auctionId },
-                replace: true,
-              }
-            );
-          },
-        })}
-        rowClassName="cursor-pointer hover:bg-blue-50 transition-colors duration-200"
+        rowClassName="hover:bg-blue-50 transition-colors duration-200"
       />
     </div>
   );

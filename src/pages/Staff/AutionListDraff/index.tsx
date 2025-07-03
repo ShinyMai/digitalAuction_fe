@@ -4,23 +4,25 @@ import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
+import dayjs from "dayjs";
 import type { AuctionCategory, AuctionDataList } from "../Modals.ts";
 import { useLocation } from "react-router-dom";
 
 interface SearchParams {
     AuctionName?: string;
     CategoryId?: number;
-    SortBy?: string;
-    IsAscending?: boolean;
-    PageNumber?: number;
-    PageSize?: number;
     RegisterOpenDate?: string;
     RegisterEndDate?: string;
     AuctionStartDate?: string;
     AuctionEndDate?: string;
+    SortBy?: string;
+    IsAscending?: boolean;
+    PageNumber?: number;
+    PageSize?: number;
+    status?: number;
 }
 
-const AuctionList = () => {
+const AuctionListDraff = () => {
     const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
     const [totalData, setTotalData] = useState<number>(0);
     const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
@@ -29,9 +31,11 @@ const AuctionList = () => {
         PageNumber: 1,
         PageSize: 8,
     });
+    const location = useLocation();
 
     useEffect(() => {
         getListAuctionCategory();
+        console.log("hey hey", location.search)
         const queryParams = new URLSearchParams(location.search);
         const status = queryParams.get("status");
         if (status) {
@@ -62,6 +66,26 @@ const AuctionList = () => {
         } else {
             delete newParams.CategoryId;
         }
+        if (searchValue.registerRangeDate?.[0]) {
+            newParams.RegisterOpenDate = dayjs(searchValue.registerRangeDate[0]).format("YYYY-MM-DD");
+        } else {
+            delete newParams.RegisterOpenDate;
+        }
+        if (searchValue.registerRangeDate?.[1]) {
+            newParams.RegisterEndDate = dayjs(searchValue.registerRangeDate[1]).format("YYYY-MM-DD");
+        } else {
+            delete newParams.RegisterEndDate;
+        }
+        if (searchValue.auctionRangeDate?.[0]) {
+            newParams.AuctionStartDate = dayjs(searchValue.auctionRangeDate[0]).format("YYYY-MM-DD");
+        } else {
+            delete newParams.AuctionStartDate;
+        }
+        if (searchValue.auctionRangeDate?.[1]) {
+            newParams.AuctionEndDate = dayjs(searchValue.auctionRangeDate[1]).format("YYYY-MM-DD");
+        } else {
+            delete newParams.AuctionEndDate;
+        }
         setSearchParams(newParams);
     };
 
@@ -71,9 +95,14 @@ const AuctionList = () => {
             const params: SearchParams = {
                 PageNumber: searchParams.PageNumber || 1,
                 PageSize: searchParams.PageSize || 8,
+                status: searchParams.status
             };
             if (searchParams.AuctionName) params.AuctionName = searchParams.AuctionName;
             if (searchParams.CategoryId) params.CategoryId = searchParams.CategoryId;
+            if (searchParams.RegisterOpenDate) params.RegisterOpenDate = searchParams.RegisterOpenDate;
+            if (searchParams.RegisterEndDate) params.RegisterEndDate = searchParams.RegisterEndDate;
+            if (searchParams.AuctionStartDate) params.AuctionStartDate = searchParams.AuctionStartDate;
+            if (searchParams.AuctionEndDate) params.AuctionEndDate = searchParams.AuctionEndDate;
             if (searchParams.SortBy) params.SortBy = searchParams.SortBy.replace("auctionName", "auction_name");
             if (searchParams.IsAscending !== undefined) params.IsAscending = searchParams.IsAscending;
 
@@ -136,4 +165,4 @@ const AuctionList = () => {
     );
 };
 
-export default AuctionList;
+export default AuctionListDraff;

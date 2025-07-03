@@ -27,6 +27,7 @@ export const STAFF_ROUTES = {
     PERSONNEL: "personnel",
     AUCTION_DETAIL: "auction-detail",
     NOT_FOUND: "not-found",
+    AUCTION_LIST_DRAFF: "auction-list-draff",
   },
 };
 

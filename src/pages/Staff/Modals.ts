@@ -68,3 +68,24 @@ export type AuctionAsset = {
   auctionId: string;
   auction?: string;
 }
+
+export type AuctionDocument = {
+  auctionDocumentsId: string;
+  citizenIdentification: string;
+  deposit: number;
+  name: string;
+  note: string | null;
+  numericalOrder: number;
+  registrationFee: number;
+  statusDeposit: boolean;
+  statusRefundDeposit: boolean;
+  statusTicket: number;
+  tagName: string;
+}
+
+export type AuctionDateModal = {
+   registerOpenDate?: string;
+    registerEndDate?: string;
+    auctionStartDate?: string;
+    auctionEndDate?: string;
+}
