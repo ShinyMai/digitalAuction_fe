@@ -4,37 +4,37 @@ export type AuctionCategory = {
 };
 
 export type AuctionDataList = {
-    auctionId: string;
-    auctionName: string;
-    categoryId: number;
-    registerOpenDate: string;
-    registerEndDate: string;
-    auctionStartDate: string;
-    auctionEndDate: string;
-    createdByUserName: string;
-}
+  auctionId: string;
+  auctionName: string;
+  categoryId: number;
+  registerOpenDate: string;
+  registerEndDate: string;
+  auctionStartDate: string;
+  auctionEndDate: string;
+  createdByUserName: string;
+};
 
 export type AuctionDataDetail = {
-    id: string;
-    auctionName: string;
-    categoryName: string;
-    auctionDescription: string;
-    auctionRules: string;
-    auctionPlanningMap: string;
-    registerOpenDate: string;
-    registerEndDate: string;
-    auctionStartDate: string;
-    auctionEndDate: string;
-    createdByUserName: string;
-    createdAt: string;
-    updatedByUserName: string;
-    updatedAt: string;
-    qrLink: string;
-    numberRoundMax: number;
-    status: string;
-    winnerData: string;
-    listAuctionAssets: AuctionAsset[] | [];
-}
+  id: string;
+  auctionName: string;
+  categoryName: string;
+  auctionDescription: string;
+  auctionRules: string;
+  auctionPlanningMap: string;
+  registerOpenDate: string;
+  registerEndDate: string;
+  auctionStartDate: string;
+  auctionEndDate: string;
+  createdByUserName: string;
+  createdAt: string;
+  updatedByUserName: string;
+  updatedAt: string;
+  qrLink: string;
+  numberRoundMax: number;
+  status: string;
+  winnerData: string;
+  listAuctionAssets: AuctionAsset[] | [];
+};
 
 export type AuctionAsset = {
   auctionAssetsId: string;
@@ -42,7 +42,7 @@ export type AuctionAsset = {
   startingPrice: string;
   unit: string;
   deposit: string;
-  registrationFee:string;
+  registrationFee: string;
   description?: string;
   createdAt: string;
   createdBy: string;
@@ -50,23 +50,24 @@ export type AuctionAsset = {
   updatedBy: string;
   auctionId: string;
   auction?: string;
-}
+};
 
 export type auctionDocument = {
-  auctionAssetsId: string[],
+  auctionAssetsId: string[];
   bankAccount: string; // tên loại ngân hàng
   bankAccountNubmer: string;
   bankBranch: string;
   // tiền chuyển.
-}
+};
 
 export type dataPayment = {
-  qrUrl: string,
+  qrUrl: string;
   accountNumber: string;
   beneficiaryBank: string;
   amountTicket: number;
   description: string;
-}
+  auctionDocumentsId: string;
+};
 
 export type UserInfomation = {
   name: string;
@@ -76,21 +77,21 @@ export type UserInfomation = {
   issueBy: string;
   phoneNumber: string;
   originLocation: string;
-}
+};
 
 export type RegistrationAuctionModals = {
-    fullName?: string;
-    dob?: string;
-    idNumber?: string;
-    idDate?: string;
-    place?: string;
-    phone?: string;
-    address?: string;
-    auctionInfo?: string;
-    assetsInfo?: string;
-    priceStart?: string;
-    bankAccount?: string;
-    bankAccountNumber?: string;
-    bankBranch?: string;
-    locationDate?: string;
-}
+  fullName?: string;
+  dob?: string;
+  idNumber?: string;
+  idDate?: string;
+  place?: string;
+  phone?: string;
+  address?: string;
+  auctionInfo?: string;
+  assetsInfo?: string;
+  priceStart?: string;
+  bankAccount?: string;
+  bankAccountNumber?: string;
+  bankBranch?: string;
+  locationDate?: string;
+};
