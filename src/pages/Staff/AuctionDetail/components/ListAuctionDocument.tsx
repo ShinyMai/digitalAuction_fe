@@ -133,23 +133,23 @@ const ListAuctionDocument = ({
       [key]: value || undefined,
     }));
   };
-
   const handleAction = async (
     action: string,
-    record: AuctionDocument
+    _record: AuctionDocument // eslint-disable-line @typescript-eslint/no-unused-vars
   ) => {
     try {
-      //   if (action === "receiveTicket") {
-      //     await AuctionServices.updateAuctionDocumentStatus(record.auctionDocumentsId, {
-      //       statusTicket: 1,
-      //     });
-      //     toast.success("Đã xác nhận nhận phiếu!");
-      //   } else if (action === "receiveDeposit") {
-      //     await AuctionServices.updateAuctionDocumentStatus(record.auctionDocumentsId, {
-      //       statusDeposit: true,
-      //     });
-      //     toast.success("Đã xác nhận nhận cọc!");
-      //   }
+      // TODO: Uncomment when updateAuctionDocumentStatus is implemented in AuctionServices
+      // if (action === "receiveTicket") {
+      //   await AuctionServices.updateAuctionDocumentStatus(record.auctionDocumentsId, {
+      //     statusTicket: 1,
+      //   });
+      //   toast.success("Đã xác nhận nhận phiếu!");
+      // } else if (action === "receiveDeposit") {
+      //   await AuctionServices.updateAuctionDocumentStatus(record.auctionDocumentsId, {
+      //     statusDeposit: true,
+      //   });
+      //   toast.success("Đã xác nhận nhận cọc!");
+      // }
       getListAuctionDocument();
     } catch (error) {
       toast.error(
