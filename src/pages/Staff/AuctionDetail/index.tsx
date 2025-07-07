@@ -26,7 +26,10 @@ const AuctionDetailAnonymous = () => {
   useEffect(() => {
     console.log("role: ", role);
     getAuctionDetailById(location.state.key);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  console.log(isOpentPopupVerifyCancel);
 
   const getAuctionDetailById = async (
     auctionId: string

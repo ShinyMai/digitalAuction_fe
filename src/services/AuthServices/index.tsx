@@ -13,6 +13,7 @@ interface User {
   name: string;
   email: string;
   roleName: string;
+  isExpired: boolean;
 }
 
 interface OTPVerifyResponse {

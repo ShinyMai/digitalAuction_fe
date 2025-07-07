@@ -1,5 +1,5 @@
 // src/components/SepayAuctionregister.tsx
-import { Image, Row, Col, Typography } from "antd";
+import { Image, Row, Col, Typography, message } from "antd";
 import type {
   AuctionAsset,
   dataPayment,
@@ -57,7 +57,6 @@ const SepayAuctionregister: React.FC<Props> = ({
       return false;
     }
   };
-
   useEffect(() => {
     if (dataQrSepay?.auctionDocumentsId) {
       let callCount = 0;
@@ -75,6 +74,9 @@ const SepayAuctionregister: React.FC<Props> = ({
 
           if (!isPaidResult && callCount >= maxCalls) {
             setIsPaid(false);
+            message.error(
+              "Thanh toán thất bại! Vui lòng thử lại hoặc liên hệ hỗ trợ."
+            );
           }
         }
       }, 3000);
@@ -107,7 +109,7 @@ const SepayAuctionregister: React.FC<Props> = ({
             height={200}
             className="mx-auto"
           />
-          {isPaid ?? (
+          {isPaid && (
             <ExportDocx
               open={isPaid}
               onCancel={() => setIsPaid(false)}

@@ -1,7 +1,4 @@
-import {
-  PlusOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 import {
   Button,
   DatePicker,
@@ -10,13 +7,11 @@ import {
   Select,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { useNavigate } from "react-router-dom";
-import { STAFF_ROUTES } from "../../../../routers";
 import type { AuctionCategory } from "../../Modals";
-import { useSelector } from "react-redux";
 
 interface Props {
   auctionCategory?: AuctionCategory[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSearch: (searchValue: any) => void;
 }
 
@@ -25,9 +20,6 @@ const SearchAuctionTable = ({
   onSearch,
 }: Props) => {
   const [form] = useForm();
-  const navigate = useNavigate();
-  const { user } = useSelector((state: any) => state.auth);
-  const role = user?.roleName;
 
   const dataAuctionCategoryList = auctionCategory?.map(
     (val) => ({
@@ -77,7 +69,7 @@ const SearchAuctionTable = ({
         <Form.Item
           name="CategoryId"
           className="flex-1 min-w-[200px]"
-          label='Loại tài sản'
+          label="Loại tài sản"
         >
           <Select
             className="w-full rounded-lg"
