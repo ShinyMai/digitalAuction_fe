@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useLocation, useNavigate } from "react-router-dom";
 import AuctionServices from "../../../services/AuctionServices";
 import { useEffect, useState } from "react";
@@ -12,6 +13,7 @@ import {
 import MINPHAPLOGO from "../../../assets/LOGO-MINH-PHAP.jpg";
 import dayjs from "dayjs";
 import { USER_ROUTERS } from "../../../routers";
+import { useSelector } from "react-redux";
 
 const { TabPane } = Tabs;
 
@@ -20,6 +22,10 @@ const AuctionDetailAnonymous = () => {
   const [auctionDetailData, setAuctionDetailData] =
     useState<AuctionDataDetail>();
   const navigate = useNavigate();
+  const { user } = useSelector(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (state: any) => state.auth
+  );
 
   useEffect(() => {
     console.log(location.state.key);
@@ -156,12 +162,13 @@ const AuctionDetailAnonymous = () => {
                     type="primary"
                     size="large"
                     className="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 rounded-lg mt-8"
+                    disabled={user ? false : true}
                     onClick={() =>
                       navigate(
                         USER_ROUTERS.SUB.AUCTION_REGISTER,
                         {
                           replace: true,
-                          state: { key: auctionDetailData }
+                          state: { key: auctionDetailData },
                         }
                       )
                     }

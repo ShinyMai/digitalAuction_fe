@@ -1,13 +1,15 @@
 // src/components/SepayAuctionregister.tsx
-import { Image, Row, Col, Typography } from "antd";
+import { Image, Row, Col, Typography, message } from "antd";
 import type {
   AuctionAsset,
   dataPayment,
   RegistrationAuctionModals,
   UserInfomation,
 } from "../../../Anonymous/Modals";
-import { useState } from "react";
 import ExportDocx from "../../../../components/Common/ExportDocs";
+import AuctionServices from "../../../../services/AuctionServices";
+import { useEffect, useState } from "react";
+import { formatNumber } from "../../../../utils/numberFormat";
 
 interface Props {
   dataQrSepay?: dataPayment;
@@ -20,23 +22,7 @@ const SepayAuctionregister: React.FC<Props> = ({
   dataUser,
   dataAutionAsset,
 }) => {
-  const [ticketStatus] = useState<
-    string | null
-  >(null);
-
-  // Hàm định dạng số với dấu chấm cách hàng nghìn
-  const formatNumber = (
-    num: number | string | undefined
-  ): string => {
-    if (!num) return "Chưa có";
-    const number =
-      typeof num === "string"
-        ? parseFloat(num.replace(/[^0-9.-]+/g, ""))
-        : num;
-    if (isNaN(number)) return "Chưa có";
-    return number.toLocaleString("vi-VN");
-  };
-
+  const [isPaid, setIsPaid] = useState<boolean>(false);
   const getDataExport = () => {
     const valueReturn: RegistrationAuctionModals = {
       address: dataUser?.originLocation,
@@ -55,6 +41,49 @@ const SepayAuctionregister: React.FC<Props> = ({
     };
     return valueReturn;
   };
+  const getaAuctionDocumentById = async (id: string) => {
+    try {
+      const res = await AuctionServices.getAuctionById(id);
+      console.log(res?.data?.status);
+      if (res?.data?.statusTicket === 1) {
+        setIsPaid(true);
+        return true;
+      } else {
+        setIsPaid(false);
+        return false;
+      }
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
+  useEffect(() => {
+    if (dataQrSepay?.auctionDocumentsId) {
+      let callCount = 0;
+      const maxCalls = 5;
+
+      const intervalId = setInterval(async () => {
+        callCount++;
+
+        const isPaidResult = await getaAuctionDocumentById(
+          dataQrSepay.auctionDocumentsId
+        );
+
+        if (isPaidResult || callCount >= maxCalls) {
+          clearInterval(intervalId);
+
+          if (!isPaidResult && callCount >= maxCalls) {
+            setIsPaid(false);
+            message.error(
+              "Thanh toán thất bại! Vui lòng thử lại hoặc liên hệ hỗ trợ."
+            );
+          }
+        }
+      }, 3000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [dataQrSepay]);
 
   return (
     <section className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
@@ -66,7 +95,6 @@ const SepayAuctionregister: React.FC<Props> = ({
           Thông Tin Đăng Ký Đấu Giá
         </Typography.Title>
 
-        {/* QR Code Section */}
         <div className="mb-6 text-center">
           <Typography.Title
             level={4}
@@ -81,7 +109,13 @@ const SepayAuctionregister: React.FC<Props> = ({
             height={200}
             className="mx-auto"
           />
-          <ExportDocx data={getDataExport()} />
+          {isPaid && (
+            <ExportDocx
+              open={isPaid}
+              onCancel={() => setIsPaid(false)}
+              data={getDataExport()}
+            />
+          )}
         </div>
 
         {/* Payment Information */}
@@ -237,17 +271,6 @@ const SepayAuctionregister: React.FC<Props> = ({
             </Col>
           </Row>
         </div>
-
-        {ticketStatus && (
-          <div className="mt-4 p-2 bg-gray-100 rounded">
-            <Typography.Text strong>
-              Trạng thái vé:
-            </Typography.Text>
-            <Typography.Text className="block mt-1">
-              {ticketStatus}
-            </Typography.Text>
-          </div>
-        )}
       </div>
     </section>
   );

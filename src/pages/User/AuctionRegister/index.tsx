@@ -15,7 +15,6 @@ import UserServices from "../../../services/UserServices";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const AuctionRegister = () => {
-  // const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
   const location = useLocation();
   const [auctionDetail] = useState<AuctionDataDetail>(
@@ -137,13 +136,12 @@ const AuctionRegister = () => {
       </style>
       <div className=" top-0 bg-white shadow-lg py-4">
         <div>
-          {" "}
           <Button
             type="text"
             icon={
               <ArrowLeftOutlined className="text-blue-800 text-lg" />
             }
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/auction-list")}
             className="p-0 hover:bg-blue-100"
           />
         </div>

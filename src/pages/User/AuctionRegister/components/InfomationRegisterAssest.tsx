@@ -85,9 +85,7 @@ const InfomationRegisterAsset = ({
         onSetDataPayment(response.data);
         onNext();
       } else {
-        toast.error(
-          "Bạn đã đăng ký tham gia đấu giá với tài sản này !"
-        );
+        toast.error(response?.message);
       }
     } catch (error) {
       console.error(
@@ -279,13 +277,6 @@ const InfomationRegisterAsset = ({
                   <Form.Item
                     label="Số tài khoản:"
                     name="accountNumber"
-                    rules={[
-                      {
-                        required: true,
-                        message:
-                          "Vui lòng nhập số tài khoản!",
-                      },
-                    ]}
                   >
                     <Input
                       placeholder="Nhập số tài khoản"
@@ -297,13 +288,6 @@ const InfomationRegisterAsset = ({
                   <Form.Item
                     label="Tên ngân hàng:"
                     name="bankAccount"
-                    rules={[
-                      {
-                        required: true,
-                        message:
-                          "Vui lòng nhập tên ngân hàng!",
-                      },
-                    ]}
                   >
                     <Input
                       placeholder="Nhập tên ngân hàng"
@@ -315,13 +299,6 @@ const InfomationRegisterAsset = ({
                   <Form.Item
                     label="Tên chi nhánh mở tài khoản:"
                     name="bankBranch"
-                    rules={[
-                      {
-                        required: true,
-                        message:
-                          "Vui lòng nhập tên chi nhánh!",
-                      },
-                    ]}
                   >
                     <Input
                       placeholder="Nhập tên chi nhánh mở tài khoản"
