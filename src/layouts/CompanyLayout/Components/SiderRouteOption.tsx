@@ -82,19 +82,12 @@ const SiderRouteOption = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSelector((state: any) => state.auth);
-  const role = user?.roleName;
-
-  // Filter items based on user's role
+  const role = user?.roleName; // Filter items based on user's role
   const filteredItems = useMemo(
     () =>
-      items
-        .filter(
-          (item) => role && item.roleView.includes(role)
-        )
-        .map((item) => ({
-          ...item,
-          className: "bg-stone-300/30",
-        })),
+      items.filter(
+        (item) => role && item.roleView.includes(role)
+      ),
     [role]
   );
 
@@ -127,14 +120,13 @@ const SiderRouteOption = () => {
       });
     }
   };
-
   return (
-    <div className="w-full h-full bg-gradient-to-r bg-stone-300/30 text-white">
-      <div className="w-full h-28 flex items-center justify-center">
+    <div className="w-full h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm">
+      <div className="w-full h-28 flex items-center justify-center bg-gradient-to-r from-sky-100 to-sky-50 border-b border-sky-200">
         <img
-          src={assets.logo}
+          src={assets.logoNo}
           alt="Logo"
-          className="w-full h-auto max-h-20 object-contain border-2 border-white/20 rounded-xl"
+          className="w-full h-auto max-h-20 object-contain border-2 border-sky-300 rounded-xl shadow-md"
         />
       </div>
       <div className="w-full">
@@ -145,7 +137,11 @@ const SiderRouteOption = () => {
           selectedKeys={[getCurrentKey()]}
           defaultOpenKeys={["2"]}
           items={filteredItems as MenuProps["items"]}
-          className="w-full"
+          className="w-full bg-transparent border-none [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3 [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900"
+          style={{
+            backgroundColor: "transparent",
+            border: "none",
+          }}
         />
       </div>
     </div>
