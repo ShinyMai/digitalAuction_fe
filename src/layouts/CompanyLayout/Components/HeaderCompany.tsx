@@ -1,21 +1,20 @@
 import { memo, useState } from "react";
-
 import { useSelector } from "react-redux";
-import {
-  KeyOutlined,
-  LogoutOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+
 import UserProfile from "../../../pages/User/UserProfile/UserProfile";
 import AuthServices from "../../../services/AuthServices";
 import ChangePassword from "../../../pages/User/UserProfile/EditAccount/ChangePassword";
 import EditProfile from "../../../pages/User/UserProfile/EditProfile/EditProfile";
 
+import UserDropdown from "../../../components/UserDropdown";
+import NotificationDropdown from "../../../components/Notification";
+
 const HeaderCompany = memo(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { user } = useSelector((state: any) => state.auth);
   const navigate = useNavigate();
+
   const [showInfo, setShowInfo] = useState(false);
   const [changePassword, setChangePassword] =
     useState(false);
@@ -35,53 +34,35 @@ const HeaderCompany = memo(() => {
     }
   };
 
-  console.log("user", user?.isExpired);
-  const isExpired = user?.isExpired || true;
+  const isExpired = user?.isExpired ?? true;
 
   return (
-    <div className="min-h-[64px] w-full flex items-center justify-end bg-stone-300/30 px-4 md:px-8">
-      <div className="relative cursor-pointer group text-[#0085D2]">
-        <div className="flex items-center gap-5">
-          <div className="text-lg font-medium text-[#0085D2]">
-            {user?.name}
+    <header className="sticky top-0 z-50 w-full bg-gradient-to-r from-sky-100 to-sky-50 shadow-md border-b border-sky-200">
+      <div className="flex items-center justify-between px-4 py-3 sm:px-6 md:px-10 lg:px-12">
+        <div className="text-xl font-bold text-sky-700">
+          DIGITAL AUCTION
+        </div>
+        <div className="flex items-center gap-3 text-sky-700">
+          <div className="text-sm font-normal">
+            <NotificationDropdown />
           </div>
-          <div className="w-10 h-10 rounded-full border-2 border-sky-500 bg-sky-100 flex items-center justify-center">
-            <UserOutlined
-              style={{
-                fontSize: "1.6rem",
-                color: "#0085D2",
-              }}
+          <div className="text-sm font-normal">
+            <UserDropdown
+              onShowInfo={() => setShowInfo(true)}
+              onChangePassword={() =>
+                setChangePassword(true)
+              }
+              onLogout={handleLogout}
             />
           </div>
+          {/* Tên người dùng (ẩn trên mobile) */}
+          <span className="hidden sm:inline-block font-medium text-sky-700">
+            {user?.name}
+          </span>
         </div>
-        <ul className="absolute right-0 z-10 hidden flex-col gap-2 bg-[#f2f8fa] p-3 border rounded border-[#bce6f7] outline-white group-hover:flex list-none">
-          <li
-            onClick={() => setShowInfo(true)}
-            className="flex items-center gap-2 cursor-pointer hover:text-sky-500 h-5"
-          >
-            <UserOutlined />
-            <p className="">Thông tin cá nhân</p>
-          </li>
-          <hr />
-          <li
-            onClick={() => setChangePassword(true)}
-            className="flex items-center gap-2 cursor-pointer hover:text-sky-500 h-5"
-          >
-            <KeyOutlined />
-            <p className="">Đổi mật khẩu</p>
-          </li>
-          <hr />
-          <li
-            onClick={() => {
-              handleLogout();
-            }}
-            className="flex items-center gap-2 cursor-pointer hover:text-sky-500 h-5"
-          >
-            <LogoutOutlined />
-            <p className="w-max">Đăng xuất</p>
-          </li>
-        </ul>
       </div>
+
+      {/* Popups */}
       {showInfo && (
         <UserProfile
           open={showInfo}
@@ -100,7 +81,7 @@ const HeaderCompany = memo(() => {
           onCancel={() => setIsUpdateProfile(false)}
         />
       )}
-    </div>
+    </header>
   );
 });
 
