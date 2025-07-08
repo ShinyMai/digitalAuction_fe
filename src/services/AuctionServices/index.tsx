@@ -24,12 +24,12 @@ const registerAuctionAsset = (
 ): Promise<ApiResponse<any>> =>
   http.post(AuctionAPI.AUCTION_REGISTER_ASSET, body);
 const getListAuctionDocument = (
-  params?: any,
+  body?: any,
   auctionId?: string
 ): Promise<ApiResponse<any>> =>
   http.get(
     AuctionAPI.AUCTION_DOCUMENT_LIST + `/${auctionId}`,
-    { params: params }
+    { params: body }
   );
 const assginAuctioneerAndPublicAuction = (
   body: any

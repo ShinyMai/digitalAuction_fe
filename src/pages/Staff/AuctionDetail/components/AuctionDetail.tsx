@@ -102,7 +102,7 @@ const AuctionDetail = ({ auctionDetailData, setIsOpenPopupVerifyCancel }: Auctio
                                     </div>
                                 </div>
                                 {
-                                    role == "Manager" &&
+                                    role == USER_ROLES.MANAGER &&
                                     <div className="text-center mt-6">
                                         <Button
                                             type="primary"

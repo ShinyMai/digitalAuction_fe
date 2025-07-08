@@ -37,6 +37,7 @@ interface SearchParams {
   IsAscending?: boolean;
   PageNumber?: number;
   PageSize?: number;
+  Status: number;
 }
 
 const siderStyle: React.CSSProperties = {
@@ -61,6 +62,7 @@ const AuctionListAnonyMous = () => {
       PageNumber: 1,
       PageSize: 9,
       CategoryId: location.state?.key,
+      Status: 1,
     });
   const [totalData, setTotalData] = useState<number>(0);
   const [auctionList, setAuctionList] = useState<
@@ -79,6 +81,7 @@ const AuctionListAnonyMous = () => {
         PageNumber: searchParams.PageNumber || 1,
         PageSize: searchParams.PageSize || 9,
         CategoryId: location.state?.key, // Luôn bao gồm CategoryId từ location.state.key
+        Status: searchParams.Status
       };
       if (searchParams.AuctionName)
         params.AuctionName = searchParams.AuctionName;

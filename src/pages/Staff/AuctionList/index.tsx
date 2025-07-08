@@ -21,6 +21,7 @@ interface SearchParams {
   RegisterEndDate?: string;
   AuctionStartDate?: string;
   AuctionEndDate?: string;
+  Status: number
 }
 
 const AuctionList = () => {
@@ -35,21 +36,11 @@ const AuctionList = () => {
     useState<SearchParams>({
       PageNumber: 1,
       PageSize: 8,
+      Status: 1,
     });
 
   useEffect(() => {
     getListAuctionCategory();
-    const queryParams = new URLSearchParams(
-      location.search
-    );
-    const status = queryParams.get("status");
-    if (status) {
-      setSearchParams((prev) => ({
-        ...prev,
-        PageNumber: 1,
-        Status: status,
-      }));
-    }
   }, [location.search]);
 
   useEffect(() => {
@@ -80,6 +71,7 @@ const AuctionList = () => {
       const params: SearchParams = {
         PageNumber: searchParams.PageNumber || 1,
         PageSize: searchParams.PageSize || 8,
+        Status: searchParams.Status
       };
       if (searchParams.AuctionName)
         params.AuctionName = searchParams.AuctionName;

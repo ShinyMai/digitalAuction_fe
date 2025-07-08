@@ -22,12 +22,13 @@ import {
 import dayjs from "dayjs";
 
 interface SearchParams {
-  name?: string;
+  Name?: string;
   PageNumber?: number;
   PageSize?: number;
   CitizenIdentification?: string;
   TagName?: string;
   SortBy?: string;
+  IsAscending?: boolean;
 }
 
 interface Props {
@@ -58,29 +59,29 @@ const ListAuctionDocument = ({
   // Kiểm tra nếu ngày hiện tại nằm trong khoảng registerOpenDate đến registerEndDate
   const isWithinRegistrationPeriod =
     auctionDateModals?.registerOpenDate &&
-    auctionDateModals?.registerEndDate
+      auctionDateModals?.registerEndDate
       ? dayjs().isAfter(
-          dayjs(auctionDateModals.registerOpenDate)
-        ) &&
-        dayjs().isBefore(
-          dayjs(auctionDateModals.registerEndDate)
-        )
+        dayjs(auctionDateModals.registerOpenDate)
+      ) &&
+      dayjs().isBefore(
+        dayjs(auctionDateModals.registerEndDate)
+      )
       : false;
 
   // Kiểm tra nếu ngày hiện tại lớn hơn auctionEndDate
   const isAfterAuctionEndDate =
     auctionDateModals?.auctionEndDate
       ? dayjs().isAfter(
-          dayjs(auctionDateModals.auctionEndDate)
-        )
+        dayjs(auctionDateModals.auctionEndDate)
+      )
       : false;
 
   // Kiểm tra nếu ngày hiện tại lớn hơn registerEndDate
   const isAfterRegisterEndDate =
     auctionDateModals?.registerEndDate
       ? dayjs().isAfter(
-          dayjs(auctionDateModals.registerEndDate)
-        )
+        dayjs(auctionDateModals.registerEndDate)
+      )
       : false;
 
   useEffect(() => {
@@ -93,7 +94,7 @@ const ListAuctionDocument = ({
       const params: SearchParams = {
         PageNumber: searchParams.PageNumber || 1,
         PageSize: searchParams.PageSize || 8,
-        name: searchParams.name,
+        Name: searchParams.Name,
         CitizenIdentification:
           searchParams.CitizenIdentification,
         TagName: searchParams.TagName,
@@ -153,10 +154,9 @@ const ListAuctionDocument = ({
       getListAuctionDocument();
     } catch (error) {
       toast.error(
-        `Lỗi khi thực hiện ${
-          action === "receiveTicket"
-            ? "nhận phiếu"
-            : "nhận cọc"
+        `Lỗi khi thực hiện ${action === "receiveTicket"
+          ? "nhận phiếu"
+          : "nhận cọc"
         }!`
       );
       console.error(error);
@@ -268,23 +268,23 @@ const ListAuctionDocument = ({
     },
     ...(isAfterAuctionEndDate
       ? [
-          {
-            title: "Trạng thái hoàn tiền",
-            dataIndex: "statusRefundDeposit",
-            key: "statusRefundDeposit",
-            render: (statusRefundDeposit: boolean) => (
-              <Tag
-                color={
-                  statusRefundDeposit ? "green" : "red"
-                }
-              >
-                {statusRefundDeposit
-                  ? "Đã hoàn"
-                  : "Chưa hoàn"}
-              </Tag>
-            ),
-          },
-        ]
+        {
+          title: "Trạng thái hoàn tiền",
+          dataIndex: "statusRefundDeposit",
+          key: "statusRefundDeposit",
+          render: (statusRefundDeposit: boolean) => (
+            <Tag
+              color={
+                statusRefundDeposit ? "green" : "red"
+              }
+            >
+              {statusRefundDeposit
+                ? "Đã hoàn"
+                : "Chưa hoàn"}
+            </Tag>
+          ),
+        },
+      ]
       : []),
     {
       title: "Trạng thái nhận đơn",
@@ -366,7 +366,7 @@ const ListAuctionDocument = ({
               allowClear
               value={searchValues.name}
               onChange={(e) =>
-                handleInputChange("name", e.target.value)
+                handleInputChange("Name", e.target.value)
               }
               className="w-full sm:w-1/4"
             />

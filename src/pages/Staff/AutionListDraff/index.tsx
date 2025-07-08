@@ -6,7 +6,6 @@ import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
 import dayjs from "dayjs";
 import type { AuctionCategory, AuctionDataList } from "../Modals.ts";
-import { useLocation } from "react-router-dom";
 
 interface SearchParams {
     AuctionName?: string;
@@ -19,7 +18,7 @@ interface SearchParams {
     IsAscending?: boolean;
     PageNumber?: number;
     PageSize?: number;
-    status?: number;
+    Status?: number;
 }
 
 const AuctionListDraff = () => {
@@ -30,22 +29,12 @@ const AuctionListDraff = () => {
     const [searchParams, setSearchParams] = useState<SearchParams>({
         PageNumber: 1,
         PageSize: 8,
+        Status: 0,
     });
-    const location = useLocation();
 
     useEffect(() => {
         getListAuctionCategory();
-        console.log("hey hey", location.search)
-        const queryParams = new URLSearchParams(location.search);
-        const status = queryParams.get("status");
-        if (status) {
-            setSearchParams((prev) => ({
-                ...prev,
-                PageNumber: 1,
-                Status: status,
-            }));
-        }
-    }, [location.search]);
+    }, []);
 
     useEffect(() => {
         getListAuction();
@@ -95,7 +84,7 @@ const AuctionListDraff = () => {
             const params: SearchParams = {
                 PageNumber: searchParams.PageNumber || 1,
                 PageSize: searchParams.PageSize || 8,
-                status: searchParams.status
+                Status: searchParams.Status
             };
             if (searchParams.AuctionName) params.AuctionName = searchParams.AuctionName;
             if (searchParams.CategoryId) params.CategoryId = searchParams.CategoryId;
