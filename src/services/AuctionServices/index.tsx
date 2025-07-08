@@ -48,6 +48,13 @@ const getListAuctioners = (): Promise<ApiResponse<any>> =>
   http.get(
     AuctionAPI.GET_LIST_AUCTIONERS
   );
+const supportRegisterAuction = (
+  body: any
+): Promise<ApiResponse<any>> =>
+  http.post(
+    AuctionAPI.SUPPORT_REGISTER_AUCTION,
+    body
+  )
 const AuctionServices = {
   addAuction,
   getListAuctionCategory,
@@ -58,6 +65,7 @@ const AuctionServices = {
   assginAuctioneerAndPublicAuction,
   getAuctionById,
   getListAuctioners,
+  supportRegisterAuction
 };
 
 export default AuctionServices;

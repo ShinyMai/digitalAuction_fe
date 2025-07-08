@@ -5,15 +5,17 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import type { AuctionDataDetail, AuctionAsset } from "../../../Staff/Modals";
+import { formatNumber } from "../../../../utils/numberFormat";
 
 const { Title, Text } = Typography;
 
 interface RegisterForm {
-    fullName: string;
-    phoneNumber: string;
-    idCard: string;
     bankAccount: string;
-    bankName: string;
+    citizenIdentification: string;
+    phoneNumber: string;
+    bankAccountNumber: string;
+    bankBranch: string;
+
 }
 
 const AuctionDetailView = ({
@@ -42,7 +44,7 @@ const AuctionDetailView = ({
             title: "Giá khởi điểm",
             dataIndex: "startingPrice",
             key: "startingPrice",
-            render: (price: number, record: AuctionAsset) => `${price} ${record.unit}`,
+            render: (price: number, record: AuctionAsset) => `${formatNumber(price)}/ ${record.unit}`,
         },
     ];
 
@@ -155,24 +157,14 @@ const AuctionDetailView = ({
                             className="w-full"
                         >
                             <Form.Item
-                                name="fullName"
-                                label="Họ và tên"
+                                name="bankAccount"
+                                label="Tên người thụ hưởng"
                                 rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
                             >
                                 <Input placeholder="Nhập họ và tên" size="large" />
                             </Form.Item>
                             <Form.Item
-                                name="phoneNumber"
-                                label="Số điện thoại"
-                                rules={[
-                                    { required: true, message: "Vui lòng nhập số điện thoại!" },
-                                    { pattern: /^[0-9]{10,11}$/, message: "Số điện thoại không hợp lệ!" },
-                                ]}
-                            >
-                                <Input placeholder="Nhập số điện thoại" size="large" />
-                            </Form.Item>
-                            <Form.Item
-                                name="idCard"
+                                name="citizenIdentification"
                                 label="Số căn cước"
                                 rules={[
                                     { required: true, message: "Vui lòng nhập số căn cước!" },
@@ -182,15 +174,15 @@ const AuctionDetailView = ({
                                 <Input placeholder="Nhập số căn cước" size="large" />
                             </Form.Item>
                             <Form.Item
-                                name="bankAccount"
+                                name="bankAccountNumber"
                                 label="Số tài khoản ngân hàng"
                                 rules={[{ required: true, message: "Vui lòng nhập số tài khoản ngân hàng!" }]}
                             >
                                 <Input placeholder="Nhập số tài khoản ngân hàng" size="large" />
                             </Form.Item>
                             <Form.Item
-                                name="bankName"
-                                label="Tên ngân hàng"
+                                name="bankBranch"
+                                label="Tên chi nhánh ngân hàng"
                                 rules={[{ required: true, message: "Vui lòng nhập tên ngân hàng!" }]}
                             >
                                 <Input placeholder="Nhập tên ngân hàng" size="large" />

@@ -32,7 +32,7 @@ export type AuctionDataList = {
 };
 
 export type AuctionDataDetail = {
-  id: string;
+  auctionId: string;
   auctionName: string;
   categoryName: string;
   auctionDescription: string;

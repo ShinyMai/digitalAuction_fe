@@ -13,13 +13,13 @@ import AuctionDetailView from "./components/AuctionDetailView.tsx";
 const { Title } = Typography;
 
 interface RegisterForm {
-    fullName: string;
-    phoneNumber: string;
-    idCard: string;
     bankAccount: string;
-    bankName: string;
-}
+    citizenIdentification: string;
+    phoneNumber: string;
+    bankAccountNumber: string;
+    bankBranch: string;
 
+}
 interface SearchParams {
     AuctionName?: string;
     CategoryId?: number;
@@ -116,16 +116,15 @@ const SupportRegisterAuction = () => {
         }
         try {
             setSubmitting(true);
-            for (const assetId of selectedAssetIds) {
-                const payload = {
-                    auctionId: auctionDetail.id,
-                    auctionAssetId: assetId,
-                    ...values,
-                };
-                // await AuctionServices.registerAuction(payload);
-            }
+
+            const payload = {
+                auctionId: selectedAuctionId,
+                auctionAssetsIds: selectedAssetIds,
+                ...values,
+            };
+            console.log("Check: ", payload)
+            await AuctionServices.supportRegisterAuction(payload);
             toast.success("Đăng ký tham gia đấu giá thành công!");
-            handleBack();
         } catch (error: any) {
             toast.error("Lỗi khi đăng ký tham gia đấu giá!");
             console.error(error);
@@ -135,9 +134,9 @@ const SupportRegisterAuction = () => {
     };
 
     return (
-        <div className="w-full max-h-screen p-4 sm:p-6 bg-gray-100">
+        <div className="w-full max-h-screen p-4 sm:p-6">
             <div className="max-w-full mx-auto">
-                <Title level={3} className="text-center mb-6 text-gray-800">
+                <Title level={4} className="text-center mb-6 text-gray-800">
                     Hỗ Trợ Đăng Ký Tham Gia Đấu Giá
                 </Title>
                 <AnimatePresence mode="wait">

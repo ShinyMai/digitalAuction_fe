@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Input, Button, Table, Card, Select } from "antd";
+import { Input, Button, Table, Card, Select, Tooltip } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import dayjs from "dayjs";
@@ -40,6 +40,7 @@ const AuctionSearchList = ({
         {
             title: "STT",
             key: "index",
+            width: 80,
             render: (_: any, __: any, index: number) =>
                 (searchParams.PageNumber! - 1) * searchParams.PageSize! + index + 1,
         },
@@ -47,22 +48,42 @@ const AuctionSearchList = ({
             title: "Tên Đấu Giá",
             dataIndex: "auctionName",
             key: "auctionName",
+            width: 200,
+            ellipsis: true,
+            render: (text: string) => (
+                <Tooltip title={text}>
+                    <span>{text}</span>
+                </Tooltip>
+            ),
         },
         {
             title: "Ngày ĐK Mở",
             dataIndex: "registerOpenDate",
             key: "registerOpenDate",
-            render: (text: string) => (text ? dayjs(text).format("DD/MM/YYYY") : "-"),
+            width: 120,
+            ellipsis: true,
+            render: (text: string) => (
+                <Tooltip title={text ? dayjs(text).format("DD/MM/YYYY") : "-"}>
+                    <span>{text ? dayjs(text).format("DD/MM/YYYY") : "-"}</span>
+                </Tooltip>
+            ),
         },
         {
             title: "Ngày ĐK Kết Thúc",
             dataIndex: "registerEndDate",
             key: "registerEndDate",
-            render: (text: string) => (text ? dayjs(text).format("DD/MM/YYYY") : "-"),
+            width: 120,
+            ellipsis: true,
+            render: (text: string) => (
+                <Tooltip title={text ? dayjs(text).format("DD/MM/YYYY") : "-"}>
+                    <span>{text ? dayjs(text).format("DD/MM/YYYY") : "-"}</span>
+                </Tooltip>
+            ),
         },
         {
             title: "Hành động",
             key: "action",
+            width: 150,
             render: (_: any, record: AuctionDataList) => (
                 <Button
                     type="primary"
@@ -101,15 +122,16 @@ const AuctionSearchList = ({
             exit={{ x: -300, opacity: 0 }}
             transition={{ duration: 0.3 }}
         >
-            <div className="mb-6 flex gap-2">
-                <Input
-                    placeholder="Nhập tên buổi đấu giá"
-                    value={searchParams.AuctionName}
-                    onChange={(e) => handleSearch(e.target.value, searchParams.CategoryId)}
-                    size="large"
-                    className="rounded-md"
-                    prefix={<SearchOutlined />}
-                />
+            <div className="mb-6 flex gap-2 justify-end">
+                <div className="w-60 rounded-md">
+                    <Input
+                        placeholder="Nhập tên buổi đấu giá"
+                        value={searchParams.AuctionName}
+                        onChange={(e) => handleSearch(e.target.value, searchParams.CategoryId)}
+                        size="large"
+                        suffix={<SearchOutlined />}
+                    />
+                </div>
                 <Select
                     placeholder="Chọn danh mục"
                     value={searchParams.CategoryId}
