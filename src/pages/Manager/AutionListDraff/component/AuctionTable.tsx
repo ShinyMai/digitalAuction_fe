@@ -3,7 +3,7 @@ import { Table, type TableProps, Button } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
-import type { AuctionDataList } from "../../Modals";
+import type { AuctionDataList } from "../../../Staff/Modals";
 import { STAFF_ROUTES } from "../../../../routers";
 import { useSelector } from "react-redux";
 

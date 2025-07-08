@@ -94,7 +94,7 @@ const AuctionList = React.lazy(
 );
 
 const AuctionListDraff = React.lazy(
-  () => import("../pages/Staff/AutionListDraff/index")
+  () => import("../pages/Manager/AutionListDraff/index")
 );
 
 const AuctionDetail = React.lazy(

@@ -45,7 +45,7 @@ const AuctionDetail = ({ auctionDetailData, setIsOpenPopupVerifyCancel }: Auctio
                                 </div>
                             </div>
                             <div className="w-full md:w-2/3 pl-0 md:pl-4">
-                                <h1 className="text-2xl md:text-3xl font-bold text-blue-800 mb-2">
+                                <h1 className="text-xl md:text-2xl font-bold text-blue-800 mb-2">
                                     XEM CHI TIẾT THÔNG BÁO ĐẤU GIÁ TÀI SẢN
                                 </h1>
                                 <p className="text-teal-700 mb-4">

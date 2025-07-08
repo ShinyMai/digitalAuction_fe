@@ -7,7 +7,7 @@ import {
   Select,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
-import type { AuctionCategory } from "../../Modals";
+import type { AuctionCategory } from "../../../Staff/Modals";
 
 interface Props {
   auctionCategory?: AuctionCategory[];
