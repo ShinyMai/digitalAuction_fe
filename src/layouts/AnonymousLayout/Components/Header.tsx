@@ -11,15 +11,17 @@ import { memo, useMemo, useState } from "react";
 import { assets } from "../../../assets";
 import { useNavigate } from "react-router-dom";
 import Login from "../../../pages/Anonymous/Login/Login";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import AuthServices from "../../../services/AuthServices";
 import UserProfile from "../../../pages/User/UserProfile/UserProfile";
 import ChangePassword from "../../../pages/User/UserProfile/EditAccount/ChangePassword";
 import NotificationDropdown from "../../../components/Notification";
 import UserDropdown from "../../../components/UserDropdown";
+import { logout } from "../../../store/authReduxs/authSlice";
 
 const Header = memo(() => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [login, setLogin] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [changePassword, setChangePassword] =
@@ -31,12 +33,13 @@ const Header = memo(() => {
     try {
       const res = await AuthServices.logout();
       if (res?.code === 200) {
-        localStorage.removeItem("user");
-        window.location.reload();
-        navigate("/");
+        dispatch(logout());
+        navigate("/", { replace: true });
       }
     } catch (error) {
       console.error("Logout error:", error);
+      dispatch(logout());
+      navigate("/", { replace: true });
     }
   };
 
