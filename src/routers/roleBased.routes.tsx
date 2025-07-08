@@ -126,6 +126,10 @@ const Dashboard = React.lazy(() =>
   })
 );
 
+const SupportRegisterAuction = React.lazy(
+  () => import("../pages/Staff/SupportRegisterAuction/index"),
+);
+
 export const staffRoutes = [
   {
     path: STAFF_ROUTES.SUB.POST_AUCTION,
@@ -159,7 +163,10 @@ export const staffRoutes = [
     path: STAFF_ROUTES.SUB.AUCTION_DETAIL,
     element: wrapWithLazy(AuctionDetail),
   },
-
+  {
+    path: STAFF_ROUTES.SUB.SUPPORT_REGISTER_AUCTION,
+    element: wrapWithLazy(SupportRegisterAuction),
+  },
   {
     path: GUEST_ROUTERS.NOT_FOUND,
     element: wrapWithLazy(NotFound),

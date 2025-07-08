@@ -28,6 +28,7 @@ export const STAFF_ROUTES = {
     AUCTION_DETAIL: "auction-detail",
     NOT_FOUND: "not-found",
     AUCTION_LIST_DRAFF: "auction-list-draff",
+    SUPPORT_REGISTER_AUCTION: "support-register-auction"
   },
 };
 

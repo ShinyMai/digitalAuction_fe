@@ -89,3 +89,8 @@ export type AuctionDateModal = {
   auctionStartDate?: string;
   auctionEndDate?: string;
 };
+
+export type ModalAuctioners = {
+  id: string;
+  name: string;
+}

@@ -15,6 +15,7 @@ interface Props {
   loading: boolean;
   pageSize?: number;
   currentPage?: number;
+  onApprove: (auctionId: string) => void; // Prop để xử lý duyệt thông tin
 }
 
 const AuctionTable = ({
@@ -25,16 +26,11 @@ const AuctionTable = ({
   loading,
   pageSize,
   currentPage,
+  onApprove,
 }: Props) => {
   const navigate = useNavigate();
   const { user } = useSelector((state: any) => state.auth);
   const role = user?.roleName;
-
-  const handleApprove = (record: AuctionDataList) => {
-    console.log("Approve auction:", record);
-    // Thêm logic gọi API để duyệt thông tin tại đây
-    // Ví dụ: AuctionServices.approveAuction(record.auctionId)
-  };
 
   const columns: TableProps<AuctionDataList>["columns"] = [
     {
@@ -109,7 +105,7 @@ const AuctionTable = ({
           <Button
             type="primary"
             icon={<CheckCircleOutlined />}
-            onClick={() => handleApprove(record)}
+            onClick={() => onApprove(record.auctionId)} // Gọi onApprove với auctionId
             className="bg-green-500 hover:bg-green-600"
             disabled={!record.registerEndDate || !dayjs().isBefore(dayjs(record.registerEndDate))}
           >

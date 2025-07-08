@@ -44,6 +44,10 @@ const getAuctionById = (
   http.get(
     `${AuctionAPI.GET_AUCTION_BYID}?AuctionDocumentsId=${id}`
   );
+const getListAuctioners = (): Promise<ApiResponse<any>> =>
+  http.get(
+    AuctionAPI.GET_LIST_AUCTIONERS
+  );
 const AuctionServices = {
   addAuction,
   getListAuctionCategory,
@@ -53,6 +57,7 @@ const AuctionServices = {
   getListAuctionDocument,
   assginAuctioneerAndPublicAuction,
   getAuctionById,
+  getListAuctioners,
 };
 
 export default AuctionServices;

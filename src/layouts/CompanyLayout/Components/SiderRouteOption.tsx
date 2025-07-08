@@ -68,7 +68,7 @@ const items: MenuItem[] = [
     key: "5",
     icon: <HomeOutlined />,
     label: "Hỗ trợ đăng ký tham gia đấu giá",
-    url: STAFF_ROUTES.SUB.DASHBOARD,
+    url: STAFF_ROUTES.SUB.SUPPORT_REGISTER_AUCTION,
     roleView: ["Staff"],
   },
   {
