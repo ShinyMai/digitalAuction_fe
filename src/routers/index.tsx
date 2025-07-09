@@ -28,7 +28,8 @@ export const STAFF_ROUTES = {
     AUCTION_DETAIL: "auction-detail",
     NOT_FOUND: "not-found",
     AUCTION_LIST_DRAFF: "auction-list-draff",
-    SUPPORT_REGISTER_AUCTION: "support-register-auction"
+    SUPPORT_REGISTER_AUCTION: "support-register-auction",
+    AUCTION_DETAIL_NOW: "auction-detail-now",
   },
 };
 
@@ -40,3 +41,12 @@ export const ADMIN_ROUTES = {
     ADD_EMPLOYEES: "add-employees",
   },
 };
+
+
+export const AUCTIONEER_ROUTES = {
+  PATH: "auctioneer",
+  SUB: {
+    AUCTION_NOW: "auction_now",
+    AUCTION_DETAIL_NOW: "auction-detail-now",
+  }
+}

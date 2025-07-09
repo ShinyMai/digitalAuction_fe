@@ -39,6 +39,8 @@ const SupportRegisterAuction = () => {
         PageNumber: 1,
         PageSize: 5,
         Status: 1,
+        SortBy: 'RegisterEndDate',
+        IsAscending: false
     });
     const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
     const [totalData, setTotalData] = useState<number>(0);
@@ -60,6 +62,8 @@ const SupportRegisterAuction = () => {
                 PageNumber: searchParams.PageNumber,
                 PageSize: searchParams.PageSize,
                 AuctionName: searchParams.AuctionName || undefined,
+                SortBy: searchParams.SortBy,
+                IsAscending: searchParams.IsAscending
             };
             const response = await AuctionServices.getListAuction(params);
             setAuctionList(response.data.auctions);

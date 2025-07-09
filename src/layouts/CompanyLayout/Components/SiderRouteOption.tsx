@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ADMIN_ROUTES,
+  AUCTIONEER_ROUTES,
   STAFF_ROUTES,
 } from "../../../routers";
 import { assets } from "../../../assets";
@@ -84,6 +85,13 @@ const items: MenuItem[] = [
     label: "Tạo tài khoản mới",
     url: ADMIN_ROUTES.SUB.ADD_EMPLOYEES,
     roleView: ["Admin"],
+  },
+  {
+    key: "8",
+    icon: <UsergroupDeleteOutlined />,
+    label: "Danh sách đấu giá hiện tại",
+    url: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
+    roleView: ["Manager", "Staff", "Auctioneer"],
   },
 ].map((item) => ({
   ...item,

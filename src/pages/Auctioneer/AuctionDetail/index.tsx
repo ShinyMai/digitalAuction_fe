@@ -12,7 +12,7 @@ import TabPane from "antd/es/tabs/TabPane";
 import ListAuctionDocument from "./components/ListAuctionDocument";
 import ListAuctionDocumentSuccesRegister from "./components/ListAuctionDocumentSuccessRegister";
 
-const AuctionDetailAnonymous = () => {
+const AuctionDetailAuctioneer = () => {
   const location = useLocation();
   const [auctionDetailData, setAuctionDetailData] =
     useState<AuctionDataDetail>();
@@ -90,4 +90,4 @@ const AuctionDetailAnonymous = () => {
   );
 };
 
-export default AuctionDetailAnonymous;
+export default AuctionDetailAuctioneer;
