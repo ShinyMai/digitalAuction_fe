@@ -3,7 +3,7 @@ import { Table, type TableProps } from "antd";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import type { AuctionDataList } from "../../Modals";
-import { STAFF_ROUTES } from "../../../../routers";
+import { AUCTIONEER_ROUTES, STAFF_ROUTES } from "../../../../routers";
 import { useSelector } from "react-redux";
 
 interface Props {
@@ -105,13 +105,24 @@ const AuctionTable = ({
         onRow={(record) => ({
           onClick: () => {
             const rolePath = role?.toLowerCase();
-            navigate(
-              `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_DETAIL}`,
-              {
-                state: { key: record.auctionId },
-                replace: true,
-              }
-            );
+            if (rolePath == STAFF_ROUTES.PATH) {
+              navigate(
+                `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_NOW}/${STAFF_ROUTES.SUB.AUCTION_DETAIL_NOW}`,
+                {
+                  state: { key: record.auctionId },
+                  replace: true,
+                }
+              );
+            } else if (rolePath == AUCTIONEER_ROUTES.SUB) {
+              navigate(
+                `/${rolePath}/${AUCTIONEER_ROUTES.SUB.AUCTION_NOW}/${AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW}`,
+                {
+                  state: { key: record.auctionId },
+                  replace: true,
+                }
+              );
+            }
+
           },
         })}
         rowClassName="cursor-pointer hover:bg-blue-50 transition-colors duration-200"

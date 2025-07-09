@@ -55,6 +55,13 @@ const supportRegisterAuction = (
     AuctionAPI.SUPPORT_REGISTER_AUCTION,
     body
   )
+const receiveAuctionRegistrationDocument = (
+  body: any
+): Promise<ApiResponse<any>> =>
+  http.post(
+    AuctionAPI.RECEIVE_AUCTION_REGISTRATION_DOCUMENT,
+    body
+  )
 const AuctionServices = {
   addAuction,
   getListAuctionCategory,
@@ -65,7 +72,8 @@ const AuctionServices = {
   assginAuctioneerAndPublicAuction,
   getAuctionById,
   getListAuctioners,
-  supportRegisterAuction
+  supportRegisterAuction,
+  receiveAuctionRegistrationDocument
 };
 
 export default AuctionServices;

@@ -44,7 +44,7 @@ const ListAuctionDocument = ({
     useState<SearchParams>({
       PageNumber: 1,
       PageSize: 8,
-      statusTicket: 1,
+
       SortBy: 'numericalorder',
       IsAscending: true,
     });

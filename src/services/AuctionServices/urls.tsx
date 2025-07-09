@@ -12,7 +12,8 @@ export const AuctionAPI = {
   GET_AUCTION_BYID:
     "/DetailAuctionDocument/Detail-Auction-Document",
   GET_LIST_AUCTIONERS: '/GetAuctioneers/Get-Auctioneers',
-  SUPPORT_REGISTER_AUCTION: '/AuctionDocuments/support-register'
+  SUPPORT_REGISTER_AUCTION: '/AuctionDocuments/support-register',
+  RECEIVE_AUCTION_REGISTRATION_DOCUMENT: '/ReceiveAuctionRegistrationForm/Receive-Auction-Registration-Form',
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;

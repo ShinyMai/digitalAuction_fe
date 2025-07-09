@@ -184,6 +184,10 @@ export const staffRoutes = [
     path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
     element: wrapWithLazy(listAcutionNow),
   },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_NOW + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_NOW,
+    element: wrapWithLazy(AuctionDetailAuctioneer),
+  },
 ];
 
 // Router site Admin
@@ -212,7 +216,7 @@ export const auctioneerRoutes = [
     element: wrapWithLazy(listAcutionNow),
   },
   {
-    path: AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL,
+    path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW + "/" + AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW,
     element: wrapWithLazy(AuctionDetailAuctioneer),
   },
 ]

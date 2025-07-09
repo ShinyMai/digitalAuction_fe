@@ -41,7 +41,7 @@ const AuctionList = () => {
 
   useEffect(() => {
     getListAuctionCategory();
-  }, [location.search]);
+  }, []);
 
   useEffect(() => {
     getListAuction();
@@ -112,13 +112,14 @@ const AuctionList = () => {
     }
   };
 
-  const onChangeTable = (pagination: any, sorter: any) => {
+  const onChangeTable = (pagination: any, filters: any, sorter: any) => {
+    console.log("Sorter:", sorter); // Debug sorter
     const newParams: SearchParams = {
       ...searchParams,
       PageNumber: pagination.current,
       PageSize: pagination.pageSize,
     };
-    if (sorter.field && sorter.order) {
+    if (sorter && sorter.field && sorter.order) {
       newParams.SortBy = sorter.field;
       newParams.IsAscending = sorter.order === "ascend";
     } else {

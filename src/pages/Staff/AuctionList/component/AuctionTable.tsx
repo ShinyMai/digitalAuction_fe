@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 interface Props {
   auctionData?: AuctionDataList[];
   headerTable: React.JSX.Element;
-  onChange: (pagination: any, sorter: any) => void;
+  onChange: (pagination: any, filters: any, sorter: any) => void;
   total: number;
   loading: boolean;
   pageSize?: number;
@@ -41,13 +41,13 @@ const AuctionTable = ({
       title: "Tên Đấu Giá",
       dataIndex: "auctionName",
       key: "auctionName",
-      sorter: true,
+      sorter: (a, b) => a.auctionName.localeCompare(b.auctionName),
     },
     {
       title: "Ngày ĐK Mở",
       dataIndex: "registerOpenDate",
       key: "registerOpenDate",
-      sorter: true,
+      sorter: (a, b) => dayjs(a.registerOpenDate).unix() - dayjs(b.registerOpenDate).unix(),
       render: (text: string) =>
         text ? dayjs(text).format("DD/MM/YYYY") : "-",
     },
@@ -55,7 +55,7 @@ const AuctionTable = ({
       title: "Ngày ĐK Kết Thúc",
       dataIndex: "registerEndDate",
       key: "registerEndDate",
-      sorter: true,
+      sorter: (a, b) => dayjs(a.registerEndDate).unix() - dayjs(b.registerEndDate).unix(),
       render: (text: string) =>
         text ? dayjs(text).format("DD/MM/YYYY") : "-",
     },
@@ -63,7 +63,7 @@ const AuctionTable = ({
       title: "Ngày Bắt Đầu",
       dataIndex: "auctionStartDate",
       key: "auctionStartDate",
-      sorter: true,
+      sorter: (a, b) => dayjs(a.auctionStartDate).unix() - dayjs(b.auctionStartDate).unix(),
       render: (text: string) =>
         text ? dayjs(text).format("DD/MM/YYYY") : "-",
     },
@@ -71,7 +71,7 @@ const AuctionTable = ({
       title: "Ngày Kết Thúc",
       dataIndex: "auctionEndDate",
       key: "auctionEndDate",
-      sorter: true,
+      sorter: (a, b) => dayjs(a.auctionEndDate).unix() - dayjs(b.auctionEndDate).unix(),
       render: (text: string) =>
         text ? dayjs(text).format("DD/MM/YYYY") : "-",
     },
@@ -79,7 +79,7 @@ const AuctionTable = ({
       title: "Người tạo",
       dataIndex: "createdByUserName",
       key: "createdByUserName",
-      sorter: true,
+      sorter: (a, b) => a.createdByUserName.localeCompare(b.createdByUserName),
       render: (text: string) => text || "-",
     },
   ];
