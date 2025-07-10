@@ -1,4 +1,4 @@
-import http from "../../utils/axiosConfigs";
+import { http } from "../../utils/axiosConfigs";
 import type { ApiResponse } from "../../types/responseAxios.ts";
 import { NotiAPI } from "./urls.tsx";
 

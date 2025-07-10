@@ -1,57 +1,51 @@
-import { useLocation } from "react-router-dom";
-import AuctionServices from "../../../services/AuctionServices";
 import { useEffect, useState } from "react";
-import type {
-  AuctionDataDetail,
-  AuctionDateModal,
-} from "../Modals";
-import { useAppRouting } from "../../../hooks/useAppRouting";
-import AuctionDetail from "./components/AuctionDetail";
+import { useLocation } from "react-router-dom";
 import { Tabs } from "antd";
-import TabPane from "antd/es/tabs/TabPane";
+import AuctionServices from "../../../services/AuctionServices";
+import AuctionDetail from "./components/AuctionDetail";
 import ListAuctionDocument from "./components/ListAuctionDocument";
-import ListAuctionDocumentSuccesRegister from "./components/ListAuctionDocumentSuccessRegister";
+import ListAuctionDocumentSuccessRegister from "./components/ListAuctionDocumentSuccessRegister";
+import type { AuctionDataDetail, AuctionDateModal } from "../Modals";
+
+const { TabPane } = Tabs;
 
 const AuctionDetailAnonymous = () => {
-  const location = useLocation();
-  const [auctionDetailData, setAuctionDetailData] =
-    useState<AuctionDataDetail>();
-  const { role } = useAppRouting();
-  const [
-    isOpentPopupVerifyCancel,
-    setIsOpenPopupVerifyCancel,
-  ] = useState<boolean>(false);
-  const [auctionDateModal, setAuctionDateModal] =
-    useState<AuctionDateModal>();
+  const { state } = useLocation();
+  const auctionId = state?.key;
+  const auctionType = state?.type;
+
+  const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
+  const [auctionDateModal, setAuctionDateModal] = useState<AuctionDateModal>();
+  const [isOpenPopupVerifyCancel, setIsOpenPopupVerifyCancel] = useState(false);
+
+  console.log(isOpenPopupVerifyCancel);
 
   useEffect(() => {
-    console.log("role: ", role);
-    getAuctionDetailById(location.state.key);
+    if (auctionId) {
+      fetchAuctionDetail(auctionId);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [auctionId]);
 
-  console.log(isOpentPopupVerifyCancel);
-
-  const getAuctionDetailById = async (
-    auctionId: string
-  ) => {
+  const fetchAuctionDetail = async (id: string) => {
     try {
-      const response =
-        await AuctionServices.getAuctionDetail(auctionId);
-      console.log(response.data);
-      const auctionDate: AuctionDateModal = {
-        auctionEndDate: response.data?.auctionEndDate,
-        auctionStartDate: response.data?.auctionStartDate,
-        registerOpenDate: response.data?.registerOpenDate,
-        registerEndDate: response.data?.registerEndDate,
+      const { data } =
+        auctionType === "NODE"
+          ? await AuctionServices.getAuctionDetailNode(id)
+          : await AuctionServices.getAuctionDetail(id);
+      const dateModal: AuctionDateModal = {
+        auctionStartDate: data?.auctionStartDate,
+        auctionEndDate: data?.auctionEndDate,
+        registerOpenDate: data?.registerOpenDate,
+        registerEndDate: data?.registerEndDate,
       };
-      setAuctionDateModal(auctionDate);
-      setAuctionDetailData(response.data);
+      setAuctionDateModal(dateModal);
+      setAuctionDetailData(data);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching auction detail:", error);
     }
   };
-
+  console.log("auctionDetailData", auctionDetailData);
   return (
     <section className="p-6 bg-gradient-to-b from-blue-50 to-teal-50 min-h-screen">
       <div className="w-full mx-auto rounded-lg">
@@ -59,7 +53,7 @@ const AuctionDetailAnonymous = () => {
           defaultActiveKey="1"
           className="w-full"
           tabBarStyle={{
-            background: "#ffff",
+            background: "#ffffff",
             borderRadius: "8px",
             padding: "18px",
           }}
@@ -67,20 +61,16 @@ const AuctionDetailAnonymous = () => {
           <TabPane tab="Thông tin đấu giá" key="1">
             <AuctionDetail
               auctionDetailData={auctionDetailData}
-              setIsOpenPopupVerifyCancel={
-                setIsOpenPopupVerifyCancel
-              }
+              setIsOpenPopupVerifyCancel={setIsOpenPopupVerifyCancel}
+              auctionType={auctionType}
             />
           </TabPane>
           <TabPane tab="Danh sách đơn đăng ký" key="2">
-            <ListAuctionDocument
-              auctionId={location.state.key}
-              auctionDateModals={auctionDateModal}
-            />
+            <ListAuctionDocument auctionId={auctionId} auctionDateModals={auctionDateModal} />
           </TabPane>
           <TabPane tab="Danh sách đơn đã cọc" key="3">
-            <ListAuctionDocumentSuccesRegister
-              auctionId={location.state.key}
+            <ListAuctionDocumentSuccessRegister
+              auctionId={auctionId}
               auctionDateModals={auctionDateModal}
             />
           </TabPane>

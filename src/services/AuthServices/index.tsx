@@ -1,4 +1,4 @@
-import http from "../../utils/axiosConfigs";
+import { http } from "../../utils/axiosConfigs";
 import { AccountAPI } from "./urls";
 import type { RegisterAccount } from "../../types/auth.ts";
 import type { ApiResponse } from "../../types/responseAxios.ts";

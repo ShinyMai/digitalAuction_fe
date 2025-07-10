@@ -1,15 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  message,
-  Row,
-  Select,
-} from "antd";
+import { Button, Card, Col, DatePicker, Form, Input, message, Row, Select } from "antd";
 import { useForm } from "antd/es/form/Form";
 import MapComponent from "./MapComponent";
 import { useState, useEffect } from "react";
@@ -47,27 +37,24 @@ interface AuctionFormValues {
 
 interface Props {
   auctionCategoryList: AuctionCategory[];
+  auctionType: "NODE" | "SQL";
 }
 
 const REAL_ESTATE_CATEGORY_ID = 1; // Hằng số cho danh mục bất động sản
 
-const AuctionCreateForm = ({
-  auctionCategoryList,
-}: Props) => {
+const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
   const [form] = useForm<AuctionFormValues>();
   const [isRealEstate, setIsRealEstate] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [registerRange, setRegisterRange] = useState<
-    [Dayjs, Dayjs] | null
-  >(null);
+  const [registerRange, setRegisterRange] = useState<[Dayjs, Dayjs] | null>(null);
+
+  console.log("auctionType: ", auctionType);
 
   // Chuyển danh sách danh mục thành options cho Select
-  const dataAuctionCategoryList = auctionCategoryList.map(
-    (val) => ({
-      value: val.categoryId,
-      label: val.categoryName,
-    })
-  );
+  const dataAuctionCategoryList = auctionCategoryList.map((val) => ({
+    value: val.categoryId,
+    label: val.categoryName,
+  }));
 
   // Lấy ngày hiện tại (23/06/2025 22:25 +07)
   const currentDate = dayjs();
@@ -120,48 +107,28 @@ const AuctionCreateForm = ({
     Object.entries(fields).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         // Stringify objects (e.g., AuctionMap or AuctionDescription if they are objects)
-        formData.append(
-          key,
-          typeof value === "object"
-            ? JSON.stringify(value)
-            : value.toString()
-        );
+        formData.append(key, typeof value === "object" ? JSON.stringify(value) : value.toString());
       }
     });
 
     // Append required files
-    formData.append(
-      "AuctionAssetFile",
-      formValues.AuctionAssetFile
-    );
-    formData.append(
-      "AuctionRulesFile",
-      formValues.AuctionRulesFile
-    );
+    formData.append("AuctionAssetFile", formValues.AuctionAssetFile);
+    formData.append("AuctionRulesFile", formValues.AuctionRulesFile);
 
     // Append optional file if it exists
     if (formValues.auctionPlanningMapFile) {
-      formData.append(
-        "AuctionPlanningMap",
-        formValues.auctionPlanningMapFile
-      );
+      formData.append("AuctionPlanningMap", formValues.auctionPlanningMapFile);
     }
 
     return formData;
   };
 
   useEffect(() => {
-    if (
-      registerRange &&
-      form.getFieldValue("AuctionTimeRange")
-    ) {
-      const [auctionStartDate] =
-        form.getFieldValue("AuctionTimeRange") || [];
+    if (registerRange && form.getFieldValue("AuctionTimeRange")) {
+      const [auctionStartDate] = form.getFieldValue("AuctionTimeRange") || [];
       const registerEndDate = registerRange[1];
       const minAuctionStart = registerEndDate.add(1, "day");
-      if (
-        dayjs(auctionStartDate).isBefore(minAuctionStart)
-      ) {
+      if (dayjs(auctionStartDate).isBefore(minAuctionStart)) {
         form.setFieldValue("AuctionTimeRange", null);
       }
     }
@@ -172,33 +139,20 @@ const AuctionCreateForm = ({
     setLoading(true);
 
     try {
-      const auctionAssetFile =
-        values.AuctionAssetFile?.[0]?.originFileObj;
-      const auctionRulesFile =
-        values.AuctionRulesFile?.[0]?.originFileObj;
+      const auctionAssetFile = values.AuctionAssetFile?.[0]?.originFileObj;
+      const auctionRulesFile = values.AuctionRulesFile?.[0]?.originFileObj;
       // const auctionPlanningMapFile = values.AuctionPlanningMap?.[0]?.originFileObj; // Optional file
       if (!auctionAssetFile || !auctionRulesFile) {
-        toast.error(
-          "Vui lòng tải lên đầy đủ các tệp bắt buộc!"
-        );
+        toast.error("Vui lòng tải lên đầy đủ các tệp bắt buộc!");
         setLoading(false);
         return;
       }
 
       // Kiểm tra thời gian
-      const [registerOpenDate, registerEndDate] =
-        values.RegisterTimeRange || [];
-      const [auctionStartDate, auctionEndDate] =
-        values.AuctionTimeRange || [];
-      if (
-        !registerOpenDate ||
-        !registerEndDate ||
-        !auctionStartDate ||
-        !auctionEndDate
-      ) {
-        toast.error(
-          "Vui lòng chọn đầy đủ thời gian đăng ký và đấu giá!"
-        );
+      const [registerOpenDate, registerEndDate] = values.RegisterTimeRange || [];
+      const [auctionStartDate, auctionEndDate] = values.AuctionTimeRange || [];
+      if (!registerOpenDate || !registerEndDate || !auctionStartDate || !auctionEndDate) {
+        toast.error("Vui lòng chọn đầy đủ thời gian đăng ký và đấu giá!");
         return;
       }
       // Chuyển đổi sang dayjs để tính toán
@@ -213,10 +167,7 @@ const AuctionCreateForm = ({
       //     return;
       // }
       const registerStart = dayjs(registerOpenDate);
-      const dayDifferStart = auctionStart.diff(
-        registerStart,
-        "day"
-      );
+      const dayDifferStart = auctionStart.diff(registerStart, "day");
       if (dayDifferStart < 7) {
         toast.error(
           "Thời gian bắt đầu đấu giá phải trước thời gian bắt đầu đăng ký tham gia ít nhất 7 ngày!"
@@ -231,16 +182,10 @@ const AuctionCreateForm = ({
         ...values,
         AuctionAssetFile: auctionAssetFile,
         AuctionRulesFile: auctionRulesFile,
-        RegisterOpenDate: dayjs(registerOpenDate).format(
-          "YYYY-MM-DD"
-        ),
-        RegisterEndDate:
-          dayjs(registerEndDate).format("YYYY-MM-DD"),
-        AuctionStartDate: dayjs(auctionStartDate).format(
-          "YYYY-MM-DD"
-        ),
-        AuctionEndDate:
-          dayjs(auctionEndDate).format("YYYY-MM-DD"),
+        RegisterOpenDate: dayjs(registerOpenDate).format("YYYY-MM-DD"),
+        RegisterEndDate: dayjs(registerEndDate).format("YYYY-MM-DD"),
+        AuctionStartDate: dayjs(auctionStartDate).format("YYYY-MM-DD"),
+        AuctionEndDate: dayjs(auctionEndDate).format("YYYY-MM-DD"),
       };
 
       delete formattedValues.RegisterTimeRange;
@@ -258,17 +203,13 @@ const AuctionCreateForm = ({
       toast.error("Lỗi khi tạo đấu giá:", error);
       let errorMessage = "Lỗi hệ thống, vui lòng thử lại!";
       if (error.response?.status === 401) {
-        errorMessage =
-          "Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!";
+        errorMessage = "Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!";
         // Có thể thêm logic redirect nếu cần
         // window.location.href = '/login';
       } else if (error.response?.status === 400) {
-        errorMessage =
-          error.response.data.message ||
-          "Dữ liệu không hợp lệ!";
+        errorMessage = error.response.data.message || "Dữ liệu không hợp lệ!";
       } else if (error.message === "Network Error") {
-        errorMessage =
-          "Lỗi kết nối mạng, vui lòng kiểm tra kết nối!";
+        errorMessage = "Lỗi kết nối mạng, vui lòng kiểm tra kết nối!";
       }
       toast.error(`Tạo đấu giá thất bại: ${errorMessage}`);
     } finally {
@@ -315,9 +256,7 @@ const AuctionCreateForm = ({
       layout="vertical"
       onFinish={onFinish}
       onFinishFailed={() => {
-        message.error(
-          "Vui lòng kiểm tra các trường bắt buộc!"
-        );
+        message.error("Vui lòng kiểm tra các trường bắt buộc!");
       }}
       onValuesChange={(changedValues) => {
         if (changedValues.RegisterTimeRange) {
@@ -360,11 +299,7 @@ const AuctionCreateForm = ({
                 className="w-full border-teal-200 bg-white rounded-lg"
                 placeholder="Chọn danh mục"
                 options={dataAuctionCategoryList}
-                onSelect={(val) =>
-                  setIsRealEstate(
-                    val === REAL_ESTATE_CATEGORY_ID
-                  )
-                }
+                onSelect={(val) => setIsRealEstate(val === REAL_ESTATE_CATEGORY_ID)}
               />
             </Form.Item>
             <Form.Item
@@ -399,18 +334,14 @@ const AuctionCreateForm = ({
               rules={[
                 {
                   required: true,
-                  message:
-                    "Vui lòng chọn thời gian đăng ký!",
+                  message: "Vui lòng chọn thời gian đăng ký!",
                 },
               ]}
             >
               <RangePicker
                 className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
                 format="DD/MM/YYYY"
-                placeholder={[
-                  "Ngày mở đăng ký",
-                  "Ngày kết thúc đăng ký",
-                ]}
+                placeholder={["Ngày mở đăng ký", "Ngày kết thúc đăng ký"]}
                 disabledDate={disabledRegisterDate}
               />
             </Form.Item>
@@ -420,18 +351,14 @@ const AuctionCreateForm = ({
               rules={[
                 {
                   required: true,
-                  message:
-                    "Vui lòng chọn thời gian đấu giá!",
+                  message: "Vui lòng chọn thời gian đấu giá!",
                 },
               ]}
             >
               <RangePicker
                 className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
                 format="DD/MM/YYYY"
-                placeholder={[
-                  "Ngày bắt đầu đấu giá",
-                  "Ngày kết thúc đấu giá",
-                ]}
+                placeholder={["Ngày bắt đầu đấu giá", "Ngày kết thúc đấu giá"]}
                 disabledDate={disabledAuctionDate}
                 disabled={!registerRange} // Vô hiệu hóa nếu chưa chọn thời gian đăng ký
               />
@@ -506,10 +433,7 @@ const AuctionCreateForm = ({
               >
                 <UploadFile contentName="AuctionPlanningMap" />
               </Form.Item>
-              <Form.Item
-                label="Vị trí trên bản đồ"
-                name="AuctionMap"
-              >
+              <Form.Item label="Vị trí trên bản đồ" name="AuctionMap">
                 <MapComponent
                   isSearchMode={true}
                   value="Hoa Lư, Ninh Bình, Việt Nam"

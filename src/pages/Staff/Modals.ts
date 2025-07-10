@@ -21,6 +21,7 @@ export type AuctionCategory = {
 };
 
 export type AuctionDataList = {
+  _id: string;
   auctionId: string;
   auctionName: string;
   categoryId: number;
@@ -28,7 +29,7 @@ export type AuctionDataList = {
   registerEndDate: string;
   auctionStartDate: string;
   auctionEndDate: string;
-  createdByUserName: string;
+  createdBy: string;
 };
 
 export type AuctionDataDetail = {
@@ -93,4 +94,4 @@ export type AuctionDateModal = {
 export type ModalAuctioners = {
   id: string;
   name: string;
-}
+};

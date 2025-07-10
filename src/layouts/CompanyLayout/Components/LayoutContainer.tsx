@@ -5,9 +5,9 @@ import SiderRouteOption from "./SiderRouteOption";
 
 interface Props {
   children?:
-  | string
-  | React.JSX.Element
-  | React.JSX.Element[];
+    | string
+    | React.JSX.Element
+    | React.JSX.Element[];
 }
 
 const siderStyle: React.CSSProperties = {
@@ -63,12 +63,13 @@ const LayoutContainer = ({ children }: Props) => {
         <Content
           style={{
             minHeight: "calc(100vh - 128px)",
-            backgroundColor: "#ffffff",
             boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
-            marginTop: '30px'
+            marginTop: "30px",
           }}
         >
-          {children}
+          <div className="h-full bg-gradient-to-b from-blue-50 to-teal-50">
+            {children}
+          </div>
         </Content>
         <Footer
           style={{
