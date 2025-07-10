@@ -10,6 +10,7 @@ import AuctionDetail from "./components/AuctionDetail";
 import { Tabs } from "antd";
 import TabPane from "antd/es/tabs/TabPane";
 import ListAuctionDocument from "./components/ListAuctionDocument";
+import InputAuctionPrice from "./components/InputAuctionPrice";
 
 const AuctionDetailAuctioneer = () => {
   const location = useLocation();
@@ -52,7 +53,7 @@ const AuctionDetailAuctioneer = () => {
   };
 
   return (
-    <section className="p-6 bg-gradient-to-b from-blue-50 to-teal-50 min-h-screen">
+    <section className="p-6 bg-gradient-to-b from-blue-50 to-teal-50 ">
       <div className="w-full mx-auto rounded-lg">
         <Tabs
           defaultActiveKey="1"
@@ -77,6 +78,14 @@ const AuctionDetailAuctioneer = () => {
               auctionDateModals={auctionDateModal}
             />
           </TabPane>
+          {
+            role == "Auctioneer" ? <TabPane tab="Tạo vòng đấu giá" key="3"></TabPane> :
+              <TabPane tab="Nhập giá" key="3">
+                <InputAuctionPrice
+                />
+              </TabPane>
+          }
+
         </Tabs>
       </div>
     </section>

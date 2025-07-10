@@ -28,7 +28,7 @@ const AuctionDetail = ({ auctionDetailData, setIsOpenPopupVerifyCancel }: Auctio
     );
     const role = user?.roleName as UserRole | undefined;
     return (
-        <section className="bg-gradient-to-b from-blue-50 to-teal-50 min-h-screen">
+        <section className="bg-gradient-to-b from-blue-50 to-teal-50 overflow-auto">
             <div className="w-full mx-auto bg-white shadow-lg rounded-xl p-6">
                 {auctionDetailData ? (
                     <div className="space-y-8">

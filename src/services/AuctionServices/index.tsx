@@ -62,6 +62,11 @@ const receiveAuctionRegistrationDocument = (
     AuctionAPI.RECEIVE_AUCTION_REGISTRATION_DOCUMENT,
     body
   )
+const acceptPaymentDeposit = (
+  auctionId: any, auctionDocumentId: any
+): Promise<ApiResponse<any>> =>
+  http.post(
+    AuctionAPI.ACCEPT_PAYMENT_DEPOSIT + `/${auctionId}` + `/${auctionDocumentId}`)
 const AuctionServices = {
   addAuction,
   getListAuctionCategory,
@@ -73,7 +78,8 @@ const AuctionServices = {
   getAuctionById,
   getListAuctioners,
   supportRegisterAuction,
-  receiveAuctionRegistrationDocument
+  receiveAuctionRegistrationDocument,
+  acceptPaymentDeposit
 };
 
 export default AuctionServices;

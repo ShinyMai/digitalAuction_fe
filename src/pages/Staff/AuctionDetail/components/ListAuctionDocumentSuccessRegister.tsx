@@ -28,7 +28,8 @@ interface SearchParams {
     TagName?: string;
     SortBy?: string;
     IsAscending?: boolean;
-    statusTicket?: number
+    StatusTicket?: number;
+    StatusDeposit?: number;
 }
 
 interface Props {
@@ -44,7 +45,7 @@ const ListAuctionDocumentSuccesRegister = ({
         useState<SearchParams>({
             PageNumber: 1,
             PageSize: 8,
-            statusTicket: 1,
+            StatusDeposit: 1,
         });
     const [auctionDocuments, setAuctionDocuments] = useState<
         AuctionDocument[]
@@ -86,7 +87,7 @@ const ListAuctionDocumentSuccesRegister = ({
                 CitizenIdentification: searchParams.CitizenIdentification,
                 TagName: searchParams.TagName,
                 SortBy: searchParams.SortBy,
-                statusTicket: searchParams.statusTicket
+                StatusDeposit: searchParams.StatusDeposit
             };
             const response = await AuctionServices.getListAuctionDocument(
                 params,

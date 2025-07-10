@@ -249,9 +249,6 @@ const ListAuctionDocument = ({
     <section className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-teal-50">
       <div className="w-full mx-auto bg-white shadow-lg rounded-xl p-6">
         <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-          <h2 className="text-lg font-semibold text-blue-800 mb-4">
-            Tìm kiếm
-          </h2>
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <Input
               placeholder="Tìm kiếm theo tên"

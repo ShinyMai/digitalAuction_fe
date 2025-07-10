@@ -94,3 +94,10 @@ export type ModalAuctioners = {
   id: string;
   name: string;
 }
+
+export type InputAuctionPriceModals = {
+  citizenIdentification?: string,
+  auctionAssetId?: string;
+  auctionAssetName?: string;
+  price: number;
+}

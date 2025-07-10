@@ -28,7 +28,8 @@ interface SearchParams {
   TagName?: string;
   SortBy?: string;
   IsAscending?: boolean;
-  statusTicket?: number
+  StatusTicket?: number;
+  StatusDeposit?: number;
 }
 
 interface Props {
@@ -44,7 +45,7 @@ const ListAuctionDocument = ({
     useState<SearchParams>({
       PageNumber: 1,
       PageSize: 8,
-      statusTicket: 1,
+      StatusDeposit: 0,
       SortBy: 'numericalorder',
       IsAscending: true,
     });
@@ -81,13 +82,12 @@ const ListAuctionDocument = ({
       const params: SearchParams = {
         PageNumber: searchParams.PageNumber || 1,
         PageSize: searchParams.PageSize || 8,
-        Name: searchParams.Name,
-        CitizenIdentification:
-          searchParams.CitizenIdentification,
-        TagName: searchParams.TagName,
         SortBy: searchParams.SortBy,
+        Name: searchParams.Name,
+        CitizenIdentification: searchParams.CitizenIdentification,
+        TagName: searchParams.TagName,
         IsAscending: searchParams.IsAscending,
-        statusTicket: searchParams.statusTicket
+        StatusDeposit: searchParams.StatusDeposit,
       };
       const response =
         await AuctionServices.getListAuctionDocument(
@@ -135,12 +135,10 @@ const ListAuctionDocument = ({
         });
         toast.success("Đã xác nhận nhận phiếu!");
       }
-      // else if (action === "receiveDeposit") {
-      //   await AuctionServices.updateAuctionDocumentStatus(record.auctionDocumentsId, {
-      //     statusDeposit: true,
-      //   });
-      //   toast.success("Đã xác nhận nhận cọc!");
-      // }
+      else if (action === "receiveDeposit") {
+        await AuctionServices.acceptPaymentDeposit(auctionId, _record.auctionDocumentsId);
+        toast.success("Đã xác nhận nhận cọc!");
+      }
       getListAuctionDocument();
     } catch (error) {
       toast.error(
