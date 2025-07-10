@@ -59,7 +59,7 @@ const HeaderCompany = memo(() => {
             />
           </div>
           {/* Tên người dùng (ẩn trên mobile) */}
-          <span className="hidden sm:inline-block font-medium text-sky-700">
+          <span className="hidden sm:inline-block font-medium text-[18px] text-sky-700">
             {user?.name}
           </span>
         </div>

@@ -52,8 +52,8 @@ export const guestRoutes = [
   {
     path:
       GUEST_ROUTERS.AUCITON_LIST +
-      "/" +
-      GUEST_ROUTERS.AUCTION_DETAIL ||
+        "/" +
+        GUEST_ROUTERS.AUCTION_DETAIL ||
       GUEST_ROUTERS.AUCTION_DETAIL,
     element: wrapWithLazy(AuctionDetailAnonymous),
   },

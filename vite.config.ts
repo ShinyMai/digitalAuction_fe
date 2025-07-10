@@ -7,5 +7,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     allowedHosts: ["auctiondigital.mooo.com", "localhost"],
+    port: 5173,
   },
+  // Ensure environment variables are loaded properly
+  envPrefix: "VITE_",
 });
