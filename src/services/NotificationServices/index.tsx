@@ -20,8 +20,25 @@ const getListNotifications = (param?: {
     },
   });
 
+const markAsRead = (
+  notiId: string
+): Promise<ApiResponse<null>> =>
+  http.post(NotiAPI.markAsRead.replace("noti_id", notiId));
+
+const markAllAsRead = (): Promise<ApiResponse<null>> =>
+  http.post(NotiAPI.markAllAsRead);
+
+const hasUnread = (): Promise<
+  ApiResponse<{
+    hasUnread: boolean;
+  }>
+> => http.get(NotiAPI.hasUnread);
+
 const NotiServices = {
   getListNotifications,
+  markAsRead,
+  markAllAsRead,
+  hasUnread,
 };
 
 export default NotiServices;
