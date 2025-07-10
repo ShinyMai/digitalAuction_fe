@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ADMIN_ROUTES,
+  AUCTIONEER_ROUTES,
   STAFF_ROUTES,
 } from "../../../routers";
 import { assets } from "../../../assets";
@@ -48,30 +49,49 @@ const items: MenuItem[] = [
   {
     key: "3",
     icon: <ScheduleOutlined />,
+    label: "Buổi đấu giá chưa công bố",
+    url: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF,
+    roleView: [
+      "Staff",
+      "Auctioneer",
+      "Director",
+      "Manager",
+    ],
+  },
+  {
+    key: "4",
+    icon: <ScheduleOutlined />,
     label: "Tạo buổi đấu giá",
     url: STAFF_ROUTES.SUB.POST_AUCTION,
     roleView: ["Staff"],
   },
   {
-    key: "4",
+    key: "5",
     icon: <HomeOutlined />,
     label: "Hỗ trợ đăng ký tham gia đấu giá",
-    url: STAFF_ROUTES.SUB.DASHBOARD,
+    url: STAFF_ROUTES.SUB.SUPPORT_REGISTER_AUCTION,
     roleView: ["Staff"],
   },
   {
-    key: "5",
+    key: "6",
     icon: <TeamOutlined />,
     label: "Danh sách nhân lực",
     url: STAFF_ROUTES.SUB.PROPERTIES,
     roleView: ["Director", "Manager"],
   },
   {
-    key: "6",
+    key: "7",
     icon: <UsergroupDeleteOutlined />,
     label: "Tạo tài khoản mới",
     url: ADMIN_ROUTES.SUB.ADD_EMPLOYEES,
     roleView: ["Admin"],
+  },
+  {
+    key: "8",
+    icon: <UsergroupDeleteOutlined />,
+    label: "Danh sách đấu giá hiện tại",
+    url: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
+    roleView: ["Manager", "Staff", "Auctioneer"],
   },
 ].map((item) => ({
   ...item,

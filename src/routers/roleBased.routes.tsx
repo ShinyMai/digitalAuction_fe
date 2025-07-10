@@ -1,5 +1,6 @@
 import {
   ADMIN_ROUTES,
+  AUCTIONEER_ROUTES,
   GUEST_ROUTERS,
   STAFF_ROUTES,
   USER_ROUTERS,
@@ -94,11 +95,15 @@ const AuctionList = React.lazy(
 );
 
 const AuctionListDraff = React.lazy(
-  () => import("../pages/Staff/AutionListDraff/index")
+  () => import("../pages/Manager/AutionListDraff/index")
 );
 
 const AuctionDetail = React.lazy(
   () => import("../pages/Staff/AuctionDetail/index")
+);
+
+const AuctionDetailAuctioneer = React.lazy(
+  () => import("../pages/Auctioneer/AuctionDetail/index")
 );
 
 // Placeholder components for missing routes
@@ -124,6 +129,14 @@ const Dashboard = React.lazy(() =>
   Promise.resolve({
     default: () => <div>Dashboard Page - Coming Soon</div>,
   })
+);
+
+const SupportRegisterAuction = React.lazy(
+  () => import("../pages/Staff/SupportRegisterAuction/index"),
+);
+
+const listAcutionNow = React.lazy(
+  () => import("../pages/Auctioneer/ListAuctionNow/index")
 );
 
 export const staffRoutes = [
@@ -159,10 +172,21 @@ export const staffRoutes = [
     path: STAFF_ROUTES.SUB.AUCTION_DETAIL,
     element: wrapWithLazy(AuctionDetail),
   },
-
+  {
+    path: STAFF_ROUTES.SUB.SUPPORT_REGISTER_AUCTION,
+    element: wrapWithLazy(SupportRegisterAuction),
+  },
   {
     path: GUEST_ROUTERS.NOT_FOUND,
     element: wrapWithLazy(NotFound),
+  },
+  {
+    path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
+    element: wrapWithLazy(listAcutionNow),
+  },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_NOW + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_NOW,
+    element: wrapWithLazy(AuctionDetailAuctioneer),
   },
 ];
 
@@ -183,3 +207,16 @@ export const adminRoutes = [
 ];
 
 export const managerRoutes = [...staffRoutes];
+
+
+
+export const auctioneerRoutes = [
+  {
+    path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
+    element: wrapWithLazy(listAcutionNow),
+  },
+  {
+    path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW + "/" + AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW,
+    element: wrapWithLazy(AuctionDetailAuctioneer),
+  },
+]

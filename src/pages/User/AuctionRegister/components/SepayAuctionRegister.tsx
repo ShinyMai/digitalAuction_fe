@@ -60,7 +60,7 @@ const SepayAuctionregister: React.FC<Props> = ({
   useEffect(() => {
     if (dataQrSepay?.auctionDocumentsId) {
       let callCount = 0;
-      const maxCalls = 5;
+      const maxCalls = 15;
 
       const intervalId = setInterval(async () => {
         callCount++;

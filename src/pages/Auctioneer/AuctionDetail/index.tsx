@@ -10,9 +10,8 @@ import AuctionDetail from "./components/AuctionDetail";
 import { Tabs } from "antd";
 import TabPane from "antd/es/tabs/TabPane";
 import ListAuctionDocument from "./components/ListAuctionDocument";
-import ListAuctionDocumentSuccesRegister from "./components/ListAuctionDocumentSuccessRegister";
 
-const AuctionDetailAnonymous = () => {
+const AuctionDetailAuctioneer = () => {
   const location = useLocation();
   const [auctionDetailData, setAuctionDetailData] =
     useState<AuctionDataDetail>();
@@ -72,14 +71,8 @@ const AuctionDetailAnonymous = () => {
               }
             />
           </TabPane>
-          <TabPane tab="Danh sách đơn đăng ký" key="2">
+          <TabPane tab="Danh sách tham gia đấu giá" key="2">
             <ListAuctionDocument
-              auctionId={location.state.key}
-              auctionDateModals={auctionDateModal}
-            />
-          </TabPane>
-          <TabPane tab="Danh sách đơn đã cọc" key="3">
-            <ListAuctionDocumentSuccesRegister
               auctionId={location.state.key}
               auctionDateModals={auctionDateModal}
             />
@@ -90,4 +83,4 @@ const AuctionDetailAnonymous = () => {
   );
 };
 
-export default AuctionDetailAnonymous;
+export default AuctionDetailAuctioneer;

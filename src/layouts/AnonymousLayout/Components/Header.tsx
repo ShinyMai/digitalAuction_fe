@@ -94,7 +94,7 @@ const Header = memo(() => {
       <div className="flex items-center justify-between px-4 py-3 md:px-6 lg:px-12">
         {/* Logo */}
         <img
-          src={assets.logoNo}
+          src={assets.logo}
           alt="Logo"
           className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl"
         />

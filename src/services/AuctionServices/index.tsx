@@ -24,12 +24,12 @@ const registerAuctionAsset = (
 ): Promise<ApiResponse<any>> =>
   http.post(AuctionAPI.AUCTION_REGISTER_ASSET, body);
 const getListAuctionDocument = (
-  params?: any,
+  body?: any,
   auctionId?: string
 ): Promise<ApiResponse<any>> =>
   http.get(
     AuctionAPI.AUCTION_DOCUMENT_LIST + `/${auctionId}`,
-    { params: params }
+    { params: body }
   );
 const assginAuctioneerAndPublicAuction = (
   body: any
@@ -44,6 +44,24 @@ const getAuctionById = (
   http.get(
     `${AuctionAPI.GET_AUCTION_BYID}?AuctionDocumentsId=${id}`
   );
+const getListAuctioners = (): Promise<ApiResponse<any>> =>
+  http.get(
+    AuctionAPI.GET_LIST_AUCTIONERS
+  );
+const supportRegisterAuction = (
+  body: any
+): Promise<ApiResponse<any>> =>
+  http.post(
+    AuctionAPI.SUPPORT_REGISTER_AUCTION,
+    body
+  )
+const receiveAuctionRegistrationDocument = (
+  body: any
+): Promise<ApiResponse<any>> =>
+  http.post(
+    AuctionAPI.RECEIVE_AUCTION_REGISTRATION_DOCUMENT,
+    body
+  )
 const AuctionServices = {
   addAuction,
   getListAuctionCategory,
@@ -53,6 +71,9 @@ const AuctionServices = {
   getListAuctionDocument,
   assginAuctioneerAndPublicAuction,
   getAuctionById,
+  getListAuctioners,
+  supportRegisterAuction,
+  receiveAuctionRegistrationDocument
 };
 
 export default AuctionServices;

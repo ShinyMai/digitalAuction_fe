@@ -44,7 +44,7 @@ const ListAuctionDocument = ({
     useState<SearchParams>({
       PageNumber: 1,
       PageSize: 8,
-      statusTicket: 1,
+
       SortBy: 'numericalorder',
       IsAscending: true,
     });
@@ -129,13 +129,12 @@ const ListAuctionDocument = ({
   ) => {
     try {
       // TODO: Uncomment when updateAuctionDocumentStatus is implemented in AuctionServices
-      if (action === "receiveTicket") {
-        await AuctionServices.receiveAuctionRegistrationDocument({
-          auctionDocumentsId: _record.auctionDocumentsId,
-        });
-        toast.success("Đã xác nhận nhận phiếu!");
-      }
-      // else if (action === "receiveDeposit") {
+      // if (action === "receiveTicket") {
+      //   await AuctionServices.updateAuctionDocumentStatus(record.auctionDocumentsId, {
+      //     statusTicket: 1,
+      //   });
+      //   toast.success("Đã xác nhận nhận phiếu!");
+      // } else if (action === "receiveDeposit") {
       //   await AuctionServices.updateAuctionDocumentStatus(record.auctionDocumentsId, {
       //     statusDeposit: true,
       //   });
@@ -191,14 +190,12 @@ const ListAuctionDocument = ({
         const statusMap: {
           [key: number]: { color: string; text: string };
         } = {
-          0: { color: "gray", text: "Chưa chuyển tiền" },
-          1: { color: "blue", text: "Đã chuyển tiền" },
-          2: { color: "cyan", text: "Đã nhận phiếu" },
-          3: { color: "green", text: "Đã hoàn tiền" },
+          0: { color: "gray", text: "Chưa xác nhận" },
+          1: { color: "blue", text: "Đã xác nhận" },
         };
         const { color, text } = statusMap[statusTicket] || {
           color: "gray",
-          text: "Chưa chuyển tiền",
+          text: "Chưa nhận đơn",
         };
         return <Tag color={color}>{text}</Tag>;
       },
@@ -207,46 +204,43 @@ const ListAuctionDocument = ({
       title: "Chức năng",
       key: "action",
       render: (_: any, record: AuctionDocument) => (
-        <div className="w-full h-full flex justify-center">
-          <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item
-                  key="receiveTicket"
-                  onClick={() =>
-                    handleAction("receiveTicket", record)
-                  }
-                  disabled={
-                    record.statusTicket != 1 ||
-                    !isWithinRegistrationPeriod
-                  }
-                >
-                  Đã nhận phiếu
-                </Menu.Item>
-                <Menu.Item
-                  key="receiveDeposit"
-                  onClick={() =>
-                    handleAction("receiveDeposit", record)
-                  }
-                // disabled={
-                //   record.statusDeposit ||
-                //   !isWithinRegistrationPeriod
-                // }
-                >
-                  Đã nhận cọc
-                </Menu.Item>
-              </Menu>
-            }
-            trigger={["click"]}
-          >
-            <Button
-              type="text"
-              icon={<SettingOutlined className="gear-icon" />}
-              className="text-blue-600 hover:text-blue-800 text-lg"
-            />
-          </Dropdown>
-        </div>
-
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item
+                key="receiveTicket"
+                onClick={() =>
+                  handleAction("receiveTicket", record)
+                }
+                disabled={
+                  record.statusTicket === 1 ||
+                  !isWithinRegistrationPeriod
+                }
+              >
+                Đã nhận phiếu
+              </Menu.Item>
+              <Menu.Item
+                key="receiveDeposit"
+                onClick={() =>
+                  handleAction("receiveDeposit", record)
+                }
+                disabled={
+                  record.statusDeposit ||
+                  !isWithinRegistrationPeriod
+                }
+              >
+                Đã nhận cọc
+              </Menu.Item>
+            </Menu>
+          }
+          trigger={["click"]}
+        >
+          <Button
+            type="text"
+            icon={<SettingOutlined className="gear-icon" />}
+            className="text-blue-600 hover:text-blue-800 text-lg"
+          />
+        </Dropdown>
       ),
     },
   ];

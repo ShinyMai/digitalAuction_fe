@@ -38,7 +38,6 @@ const AuctionDetailAnonymous = () => {
     try {
       const response =
         await AuctionServices.getAuctionDetail(auctionId);
-      console.log(response.data);
       setAuctionDetailData(response.data);
     } catch (error) {
       console.log(error);

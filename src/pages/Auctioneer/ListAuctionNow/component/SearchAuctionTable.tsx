@@ -1,17 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SearchOutlined } from "@ant-design/icons";
-import {
-  Button,
-  DatePicker,
-  Form,
-  Input,
-  Select,
-} from "antd";
+import { Button, Form, Input, Select } from "antd";
 import { useForm } from "antd/es/form/Form";
 import type { AuctionCategory } from "../../Modals";
 
 interface Props {
   auctionCategory?: AuctionCategory[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSearch: (searchValue: any) => void;
 }
 
@@ -20,6 +14,13 @@ const SearchAuctionTable = ({
   onSearch,
 }: Props) => {
   const [form] = useForm();
+
+  const optionSearchbyStatus = [
+    { label: "Đang thu hồ sơ", value: "1" },
+    { label: "Chuẩn bị đấu giá", value: "2" },
+    { label: "Chưa hoàn cọc", value: "3" },
+    { label: "Đã hoàn cọc", value: "4" },
+  ];
 
   const dataAuctionCategoryList = auctionCategory?.map(
     (val) => ({
@@ -43,13 +44,6 @@ const SearchAuctionTable = ({
         form={form}
       >
         <Form.Item
-          label="Thời gian đăng ký"
-          name="registerRangeDate"
-          className="flex-1 min-w-[200px]"
-        >
-          <DatePicker.RangePicker className="w-full h-10 rounded-lg" />
-        </Form.Item>
-        <Form.Item
           name="auctionName"
           className="flex-1 min-w-[200px]"
           label="Tên buổi đấu giá"
@@ -60,14 +54,7 @@ const SearchAuctionTable = ({
           />
         </Form.Item>
         <Form.Item
-          label="Thời gian đấu giá"
-          name="auctionRangeDate"
-          className="flex-1 min-w-[200px]"
-        >
-          <DatePicker.RangePicker className="w-full h-10 rounded-lg" />
-        </Form.Item>
-        <Form.Item
-          name="CategoryId"
+          name="CategoryfeldId"
           className="flex-1 min-w-[200px]"
           label="Loại tài sản"
         >
@@ -80,12 +67,28 @@ const SearchAuctionTable = ({
             allowClear
           />
         </Form.Item>
+        <Form.Item
+          name="AuctionStatus"
+          className="flex-1 min-w-[200px]"
+          label="Tình trạng buổi đấu giá"
+        >
+          <Select
+            className="w-full rounded-lg"
+            style={{ height: "40px" }}
+            placeholder="Danh mục tài sản"
+            defaultValue={"1"}
+            options={optionSearchbyStatus}
+            onSelect={(val) => console.log("Check", val)}
+            allowClear
+          />
+        </Form.Item>
         <Form.Item className="flex-1 min-w-[200px] self-end">
           <Button
             type="primary"
             htmlType="submit"
+            style={{ height: "40px" }}
             icon={<SearchOutlined />}
-            className=" h-40 rounded-lg flex items-center justify-center"
+            className="rounded-lg flex items-center justify-center"
           >
             Tìm kiếm
           </Button>

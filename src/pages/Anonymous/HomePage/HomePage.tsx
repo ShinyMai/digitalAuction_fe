@@ -7,7 +7,8 @@ import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 import type { AuctionDataList } from "../Modals";
 import dayjs from "dayjs";
-import { STAFF_ROUTES } from "../../../routers";
+import { GUEST_ROUTERS } from "../../../routers";
+import { convertToVietnamTime } from "../../../utils/timeConfig";
 interface SearchParams {
   AuctionName?: string;
   CategoryId?: number;
@@ -92,7 +93,7 @@ const HomePage = () => {
             level={2}
             className="mt-4 mb-2 !text-2xl md:!text-3xl"
           >
-            Nền tảng đấu giá trực tuyến của Việt Nam
+            Nền tảng đăng ký đấu giá trực tuyến của Việt Nam
           </Title>
           <Paragraph className="text-sm md:text-base mb-6 max-w-2xl mx-auto">
             CÔNG TY HỢP DANH ĐẤU GIÁ TÀI SẢN SỐ VDA (Vietnam
@@ -187,7 +188,7 @@ const HomePage = () => {
                 className="shadow-lg"
                 onClick={() =>
                   navigate(
-                    STAFF_ROUTES.SUB.AUCTION_DETAIL,
+                    GUEST_ROUTERS.AUCITON_LIST + '/' + GUEST_ROUTERS.AUCTION_DETAIL,
                     {
                       state: { key: property.auctionId },
                       replace: true,
@@ -210,14 +211,14 @@ const HomePage = () => {
                         <FieldTimeOutlined className="mr-2" />
                         Ngày kết thúc đăng kí:{" "}
                         <span className="font-bold text-lg ml-2">
-                          {property.registerEndDate}
+                          {convertToVietnamTime(property.registerEndDate)}
                         </span>
                       </div>
                       <div className="flex items-center text-gray-800">
                         <FieldTimeOutlined className="mr-2" />
                         Ngày đấu giá:{" "}
                         <span className="font-bold text-lg ml-2">
-                          {property.auctionStartDate}
+                          {convertToVietnamTime(property.auctionStartDate)}
                         </span>
                       </div>
                     </Space>
