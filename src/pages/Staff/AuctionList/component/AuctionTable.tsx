@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import type { AuctionDataList } from "../../Modals";
 import { STAFF_ROUTES } from "../../../../routers";
 import { useSelector } from "react-redux";
+import UserNameOrId from "../../../../components/Common/UserNameOrId";
 
 interface Props {
   auctionData?: AuctionDataList[];
@@ -14,6 +15,7 @@ interface Props {
   loading: boolean;
   pageSize?: number;
   currentPage?: number;
+  selectedAuctionType?: string; // Thêm prop để biết loại đấu giá được chọn
 }
 
 const AuctionTable = ({
@@ -24,6 +26,7 @@ const AuctionTable = ({
   loading,
   pageSize,
   currentPage,
+  selectedAuctionType,
 }: Props) => {
   const navigate = useNavigate();
   const { user } = useSelector((state: any) => state.auth);
@@ -71,10 +74,16 @@ const AuctionTable = ({
     },
     {
       title: "Người tạo",
-      dataIndex: "createdByUserName",
-      key: "createdByUserName",
+      dataIndex: "createdBy",
+      key: "createdBy",
       sorter: (a, b) => a.createdBy.localeCompare(b.createdBy),
-      render: (text: string) => text || "-",
+      render: (userId: string, record: AuctionDataList) => (
+        <UserNameOrId
+          userId={userId}
+          userName={record.createdByUserName}
+          showUserName={selectedAuctionType === "2"}
+        />
+      ),
     },
   ];
 
@@ -99,10 +108,13 @@ const AuctionTable = ({
         onRow={(record) => ({
           onClick: () => {
             const rolePath = role?.toLowerCase();
+            const navigationKey = record.auctionId || record._id;
+            const auctionType = record.auctionId ? "SQL" : "NODE";
+
             navigate(`/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_DETAIL}`, {
               state: {
-                key: record.auctionId || record._id,
-                type: record.auctionId ? "SQL" : "NODE",
+                key: navigationKey,
+                type: auctionType,
               },
               replace: true,
             });

@@ -5,10 +5,7 @@ import { toast } from "react-toastify";
 import AuctionServices from "../../../services/AuctionServices";
 import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
-import type {
-  AuctionCategory,
-  AuctionDataList,
-} from "../Modals.ts";
+import type { AuctionCategory, AuctionDataList } from "../Modals.ts";
 
 interface SearchParams {
   AuctionName?: string;
@@ -39,15 +36,11 @@ const DEFAULT_PARAMS: SearchParams = {
 };
 
 const AuctionList = () => {
-  const [listAuctionCategory, setListAuctionCategory] =
-    useState<AuctionCategory[]>([]);
-  const [auctionList, setAuctionList] = useState<
-    AuctionDataList[]
-  >([]);
+  const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
+  const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [searchParams, setSearchParams] =
-    useState<SearchParams>(DEFAULT_PARAMS);
+  const [searchParams, setSearchParams] = useState<SearchParams>(DEFAULT_PARAMS);
 
   useEffect(() => {
     fetchAuctionCategories();
@@ -59,8 +52,7 @@ const AuctionList = () => {
 
   const fetchAuctionCategories = async () => {
     try {
-      const res =
-        await AuctionServices.getListAuctionCategory();
+      const res = await AuctionServices.getListAuctionCategory();
       if (!res?.data?.length) {
         toast.error("Không có dữ liệu danh mục tài sản!");
         return;
@@ -81,10 +73,7 @@ const AuctionList = () => {
         AuctionType: searchParams.AuctionType ?? "1",
         AuctionName: searchParams.AuctionName,
         CategoryId: searchParams.CategoryId,
-        SortBy: searchParams.SortBy?.replace(
-          "auctionName",
-          "auction_name"
-        ),
+        SortBy: searchParams.SortBy?.replace("auctionName", "auction_name"),
         IsAscending: searchParams.IsAscending,
       };
 
@@ -157,16 +146,14 @@ const AuctionList = () => {
         <AuctionTable
           auctionData={auctionList}
           headerTable={
-            <SearchAuctionTable
-              onSearch={onSearch}
-              auctionCategory={listAuctionCategory}
-            />
+            <SearchAuctionTable onSearch={onSearch} auctionCategory={listAuctionCategory} />
           }
           onChange={onChangeTable}
           total={totalData}
           loading={loading}
           pageSize={searchParams.PageSize}
           currentPage={searchParams.PageNumber}
+          selectedAuctionType={searchParams.AuctionType}
         />
       </div>
     </section>

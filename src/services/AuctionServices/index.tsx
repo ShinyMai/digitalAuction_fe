@@ -6,6 +6,9 @@ import { AuctionAPI } from "./urls";
 const addAuction = (body: any): Promise<ApiResponse<any>> =>
   http.post(AuctionAPI.ADD_AUCTION, body);
 
+const addAuctionNode = (body: any): Promise<ApiResponse<any>> =>
+  httpNode.post(AuctionAPI.ADD_AUCTION_NODE, body);
+
 const getListAuctionCategory = (): Promise<ApiResponse<any>> =>
   http.get(AuctionAPI.AUCTION_CATEGORY);
 
@@ -13,7 +16,7 @@ const getListAuction = (params?: any): Promise<ApiResponse<any>> =>
   http.get(AuctionAPI.AUCTION_LIST, { params: params });
 
 const getListAuctionNode = (params?: any): Promise<ApiResponse<any>> =>
-  httpNode.get(AuctionAPI.AUCTION_LIST_NODE, {
+  httpNode.get(AuctionAPI.AUCTION_LIST_PUBLIC_NODE, {
     params: params,
   });
 
@@ -61,6 +64,7 @@ const AuctionServices = {
   acceptPaymentDeposit,
   getListAuctionNode,
   getAuctionDetailNode,
+  addAuctionNode,
 };
 
 export default AuctionServices;

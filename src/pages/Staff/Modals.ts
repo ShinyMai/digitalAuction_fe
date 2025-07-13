@@ -30,6 +30,7 @@ export type AuctionDataList = {
   auctionStartDate: string;
   auctionEndDate: string;
   createdBy: string;
+  createdByUserName?: string;
 };
 
 export type AuctionDataDetail = {
