@@ -50,4 +50,13 @@ export const AUCTIONEER_ROUTES = {
     AUCTION_NOW: "auction_now",
     AUCTION_DETAIL_NOW: "auction-detail-now",
   }
+};
+
+export const MANAGER_ROUTES = {
+  PATH: "manager",
+  SUB: {
+    AUCTION_LIST_CANCEL: "auction-list-cancel",
+    AUCTION_DETAIL_CANCEL: "auction-detail-cancel",
+  }
+
 }

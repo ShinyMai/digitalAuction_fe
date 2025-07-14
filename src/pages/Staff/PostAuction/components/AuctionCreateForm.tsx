@@ -190,12 +190,12 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
 
       delete formattedValues.RegisterTimeRange;
       delete formattedValues.AuctionTimeRange;
-
+      console.log(formattedValues)
       // Create FormData using the separate function
       const formData = createFormData(formattedValues);
 
       // Call the API with FormData
-      await AuctionServices.addAuction(formData);
+      // await AuctionServices.addAuction(formData);
 
       toast.success("Tạo đấu giá thành công!");
       // form.resetFields(); // Reset form sau khi thành công

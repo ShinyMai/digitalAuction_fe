@@ -13,6 +13,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   ADMIN_ROUTES,
   AUCTIONEER_ROUTES,
+  MANAGER_ROUTES,
   STAFF_ROUTES,
 } from "../../../routers";
 import { assets } from "../../../assets";
@@ -92,6 +93,13 @@ const items: MenuItem[] = [
     label: "Danh sách đấu giá hiện tại",
     url: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
     roleView: ["Manager", "Staff", "Auctioneer"],
+  },
+  {
+    key: "9",
+    icon: <UsergroupDeleteOutlined />,
+    label: "Danh sách đấu giá bị hủy",
+    url: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL,
+    roleView: ["Manager", "Staff"],
   },
 ].map((item) => ({
   ...item,

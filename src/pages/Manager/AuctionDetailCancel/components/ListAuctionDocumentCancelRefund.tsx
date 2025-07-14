@@ -18,7 +18,6 @@ import {
     CheckOutlined,
     CloseOutlined,
 } from "@ant-design/icons";
-import dayjs from "dayjs";
 
 interface SearchParams {
     Name?: string;
@@ -37,15 +36,13 @@ interface Props {
     auctionDateModals?: AuctionDateModal;
 }
 
-const ListAuctionDocumentSuccesRegister = ({
+const ListAuctionDocumentCancelRefund = ({
     auctionId,
-    auctionDateModals,
 }: Props) => {
     const [searchParams, setSearchParams] =
         useState<SearchParams>({
             PageNumber: 1,
             PageSize: 8,
-            StatusDeposit: 1,
         });
     const [auctionDocuments, setAuctionDocuments] = useState<
         AuctionDocument[]
@@ -59,19 +56,6 @@ const ListAuctionDocumentSuccesRegister = ({
     }>({});
     const [isRefundMode, setIsRefundMode] = useState<boolean>(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-
-    // Kiểm tra nếu ngày hiện tại lớn hơn hoặc bằng auctionStartDate
-    const isAfterOrOnAuctionStartDate =
-        auctionDateModals?.auctionStartDate
-            ? dayjs().isAfter(dayjs(auctionDateModals.auctionStartDate)) ||
-            dayjs().isSame(dayjs(auctionDateModals.auctionStartDate), "day")
-            : false;
-
-    // Kiểm tra nếu ngày hiện tại lớn hơn registerEndDate
-    const isAfterRegisterEndDate =
-        auctionDateModals?.registerEndDate
-            ? dayjs().isAfter(dayjs(auctionDateModals.registerEndDate))
-            : false;
 
     useEffect(() => {
         getListAuctionDocument();
@@ -87,7 +71,7 @@ const ListAuctionDocumentSuccesRegister = ({
                 CitizenIdentification: searchParams.CitizenIdentification,
                 TagName: searchParams.TagName,
                 SortBy: searchParams.SortBy,
-                StatusDeposit: searchParams.StatusDeposit
+                StatusDeposit: searchParams.StatusDeposit,
             };
             const response = await AuctionServices.getListAuctionDocument(
                 params,
@@ -129,23 +113,33 @@ const ListAuctionDocumentSuccesRegister = ({
                 "CMND/CCCD",
                 "Tên tài sản",
                 "Phí đăng ký",
-                "Chữ ký",
-                "Ghi chú",
+                "Trạng thái cọc",
+                "Trạng thái đơn",
             ];
 
             const csvRows = [
                 headers.join(","), // Header row
                 ...auctionDocuments.map((doc) => {
+                    const statusText = doc.statusTicket === 0
+                        ? "Chưa chuyển tiền"
+                        : doc.statusTicket === 1
+                            ? "Đã chuyển tiền"
+                            : doc.statusTicket === 2
+                                ? "Đã ký phiếu"
+                                : "Đã hoàn tiền";
+                    const depositStatusText = doc.statusDeposit === false
+                        ? "Chưa cọc"
+                        : "Đã cọc";
                     const row = [
                         doc.numericalOrder || "-",
                         `"${doc.name}"`,
                         doc.citizenIdentification,
                         `"${doc.tagName}"`,
                         `${doc.registrationFee.toLocaleString("vi-VN")} VND`,
-                        "", // Chữ ký để trống
-                        `"${doc.note || ""}"`, // Ghi chú từ trường note
+                        depositStatusText,
+                        statusText,
                     ];
-                    return row.join(",")
+                    return row.join(",");
                 }),
             ];
 
@@ -168,7 +162,6 @@ const ListAuctionDocumentSuccesRegister = ({
             console.error(error);
         }
     };
-
 
     const handleRefundModeToggle = () => {
         setIsRefundMode(true);
@@ -309,7 +302,6 @@ const ListAuctionDocumentSuccesRegister = ({
                             onClick={handleDownload}
                             icon={<DownloadOutlined />}
                             className="bg-green-500 hover:bg-green-600 w-full sm:w-auto"
-                            disabled={!isAfterRegisterEndDate || auctionDocuments.length === 0}
                         >
                             Tải danh sách
                         </Button>
@@ -320,7 +312,6 @@ const ListAuctionDocumentSuccesRegister = ({
                                     onClick={handleConfirmRefund}
                                     icon={<CheckOutlined />}
                                     className="bg-blue-500 hover:bg-blue-600 rounded-r-none border-r-0 flex-1 mr-2"
-                                    disabled={!isAfterOrOnAuctionStartDate || auctionDocuments.length === 0}
                                 >
                                     Xác nhận
                                 </Button>
@@ -329,7 +320,6 @@ const ListAuctionDocumentSuccesRegister = ({
                                     onClick={handleCancelRefund}
                                     icon={<CloseOutlined />}
                                     className="bg-red-500 hover:bg-red-600 rounded-l-none flex-1"
-                                    disabled={!isAfterOrOnAuctionStartDate || auctionDocuments.length === 0}
                                 />
                             </div>
                         ) : (
@@ -337,7 +327,6 @@ const ListAuctionDocumentSuccesRegister = ({
                                 type="primary"
                                 onClick={handleRefundModeToggle}
                                 className="bg-yellow-500 hover:bg-yellow-600 w-full sm:w-auto"
-                                disabled={!isAfterOrOnAuctionStartDate || auctionDocuments.length === 0}
                             >
                                 Hoàn tiền
                             </Button>
@@ -371,4 +360,4 @@ const ListAuctionDocumentSuccesRegister = ({
     );
 };
 
-export default ListAuctionDocumentSuccesRegister;
+export default ListAuctionDocumentCancelRefund;

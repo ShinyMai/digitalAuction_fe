@@ -133,7 +133,7 @@ const AuctionListDraff = () => {
                 setListAuctioners(res.data);
             }
         } catch (error: any) {
-            toast.error(error.message);
+            console.log(error)
         }
     };
 

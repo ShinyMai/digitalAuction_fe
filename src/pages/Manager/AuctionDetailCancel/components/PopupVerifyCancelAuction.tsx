@@ -1,9 +1,9 @@
 import React from "react";
 import { Modal, Button, Form, Input } from "antd";
 import { WarningOutlined } from "@ant-design/icons";
-import CustomUploadFile from "../../PostAuction/components/Upload";
 import AuctionServices from "../../../../services/AuctionServices";
 import { toast } from "react-toastify";
+import CustomUploadFile from "../../../Staff/PostAuction/components/Upload";
 
 interface WarningModalProps {
     isOpen: boolean;

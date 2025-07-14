@@ -101,7 +101,7 @@ const AuctionCard = ({ dataCard }: Props) => {
             </div>
             <div className="flex items-center text-gray-800">
               <FieldTimeOutlined className="mr-2" />
-              Thời gian còn lại để đăng ký:{" "}
+              Thời gian còn lại:{" "}
               <Text strong className="ml-2 text-lg text-red-500">
                 {timeLeft}
               </Text>

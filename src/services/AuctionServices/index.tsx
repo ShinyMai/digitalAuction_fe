@@ -43,8 +43,11 @@ const supportRegisterAuction = (body: any): Promise<ApiResponse<any>> =>
 const receiveAuctionRegistrationDocument = (body: any): Promise<ApiResponse<any>> =>
   http.post(AuctionAPI.RECEIVE_AUCTION_REGISTRATION_DOCUMENT, body);
 
-const acceptPaymentDeposit = (auctionId: any, auctionDocumentId: any): Promise<ApiResponse<any>> =>
-  http.post(AuctionAPI.ACCEPT_PAYMENT_DEPOSIT + `/${auctionId}` + `/${auctionDocumentId}`);
+const acceptPaymentDeposit = (auctionId: any, auctionDocumentId: any, body: any): Promise<ApiResponse<any>> =>
+  http.post(AuctionAPI.ACCEPT_PAYMENT_DEPOSIT + `/${auctionId}` + `/${auctionDocumentId}`, body);
+const cancelAuction = (body: any): Promise<ApiResponse<any>> =>
+  http.put(AuctionAPI.AUCTION_CANCEL, body);
+
 
 const AuctionServices = {
   addAuction,
@@ -61,6 +64,7 @@ const AuctionServices = {
   acceptPaymentDeposit,
   getListAuctionNode,
   getAuctionDetailNode,
+  cancelAuction,
 };
 
 export default AuctionServices;

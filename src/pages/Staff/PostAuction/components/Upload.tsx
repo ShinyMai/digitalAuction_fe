@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
-import { Button, message, Upload } from "antd";
+import { Button, message, Upload, Tooltip } from "antd";
 import type { UploadFile as AntUploadFile } from "antd/es/upload/interface";
 
 interface Props {
@@ -15,21 +15,31 @@ const CustomUploadFile = ({
   value = [],
   onChange,
 }: Props) => {
-  const [fileList, setFileList] =
-    useState<AntUploadFile[]>(value);
+  const [fileList, setFileList] = useState<AntUploadFile[]>(value);
+
+  // Hàm cắt ngắn tên file nếu quá dài
+  const truncateFileName = (name: string, maxLength: number = 20) => {
+    if (name.length > maxLength) {
+      return name.slice(0, maxLength - 3) + "...";
+    }
+    return name;
+  };
 
   const props: UploadProps = {
     name: "file",
-    accept: ".xlsx,.xls",
-    fileList,
+    accept: ".xlsx,.xls,.docx",
+    fileList: fileList.map((file) => ({
+      ...file,
+      name: truncateFileName(file.name),
+    })),
     beforeUpload: (file) => {
-      const isExcel =
-        file.type ===
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-        file.type === "application/vnd.ms-excel";
-      if (!isExcel) {
+      const isValidFile =
+        file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+        file.type === "application/vnd.ms-excel" ||
+        file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      if (!isValidFile) {
         message.error(
-          "Chỉ được tải lên file Excel (.xlsx, .xls)!"
+          "Chỉ được tải lên file Excel (.xlsx, .xls) hoặc Word (.docx)!"
         );
         return Upload.LIST_IGNORE;
       }
@@ -52,6 +62,14 @@ const CustomUploadFile = ({
       setTimeout(() => {
         onSuccess?.(null, file);
       }, 0);
+    },
+    // Tùy chỉnh cách hiển thị tên file
+    itemRender: (originNode, file) => {
+      return (
+        <Tooltip title={file.name}>
+          {originNode}
+        </Tooltip>
+      );
     },
   };
 

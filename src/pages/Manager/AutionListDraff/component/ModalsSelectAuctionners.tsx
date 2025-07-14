@@ -34,7 +34,7 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, onClose, onSelect }: P
                             }
                         }}
                         className="bg-blue-500 hover:bg-blue-600"
-                        disabled={!listAuctioners.length}
+                        disabled={!listAuctioners}
                     >
                         Xác nhận
                     </Button>

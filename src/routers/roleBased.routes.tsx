@@ -2,6 +2,7 @@ import {
   ADMIN_ROUTES,
   AUCTIONEER_ROUTES,
   GUEST_ROUTERS,
+  MANAGER_ROUTES,
   STAFF_ROUTES,
   USER_ROUTERS,
 } from ".";
@@ -52,8 +53,8 @@ export const guestRoutes = [
   {
     path:
       GUEST_ROUTERS.AUCITON_LIST +
-        "/" +
-        GUEST_ROUTERS.AUCTION_DETAIL ||
+      "/" +
+      GUEST_ROUTERS.AUCTION_DETAIL ||
       GUEST_ROUTERS.AUCTION_DETAIL,
     element: wrapWithLazy(AuctionDetailAnonymous),
   },
@@ -104,6 +105,15 @@ const AuctionDetail = React.lazy(
 
 const AuctionDetailAuctioneer = React.lazy(
   () => import("../pages/Auctioneer/AuctionDetail/index")
+);
+
+
+const AuctionListCancel = React.lazy(
+  () => import("../pages/Manager/AucationListCancel/index")
+);
+
+const AuctionDetailCancel = React.lazy(
+  () => import("../pages/Manager/AuctionDetailCancel/index")
 );
 
 // Placeholder components for missing routes
@@ -188,6 +198,15 @@ export const staffRoutes = [
     path: STAFF_ROUTES.SUB.AUCTION_NOW + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_NOW,
     element: wrapWithLazy(AuctionDetailAuctioneer),
   },
+  {
+    path: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL,
+    element: wrapWithLazy(AuctionListCancel),
+  },
+  {
+    path: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL + "/" + MANAGER_ROUTES.SUB.AUCTION_DETAIL_CANCEL,
+    element: wrapWithLazy(AuctionDetailCancel),
+  },
+
 ];
 
 // Router site Admin
@@ -206,7 +225,17 @@ export const adminRoutes = [
   },
 ];
 
-export const managerRoutes = [...staffRoutes];
+export const managerRoutes = [
+  ...staffRoutes,
+  {
+    path: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL,
+    element: wrapWithLazy(AuctionListCancel),
+  },
+  {
+    path: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL + "/" + MANAGER_ROUTES.SUB.AUCTION_DETAIL_CANCEL,
+    element: wrapWithLazy(AuctionDetailCancel),
+  },
+];
 
 
 

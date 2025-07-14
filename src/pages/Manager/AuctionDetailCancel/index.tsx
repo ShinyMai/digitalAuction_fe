@@ -3,13 +3,12 @@ import { useLocation } from "react-router-dom";
 import { Tabs } from "antd";
 import AuctionServices from "../../../services/AuctionServices";
 import AuctionDetail from "./components/AuctionDetail";
-import ListAuctionDocument from "./components/ListAuctionDocument";
-import ListAuctionDocumentSuccessRegister from "./components/ListAuctionDocumentSuccessRegister";
 import type { AuctionDataDetail, AuctionDateModal } from "../Modals";
+import ListAuctionDocumentCancelRefund from "./components/ListAuctionDocumentCancelRefund";
 
 const { TabPane } = Tabs;
 
-const AuctionDetailAnonymous = () => {
+const AuctionDetailCancel = () => {
   const { state } = useLocation();
   const auctionId = state?.key;
   const auctionType = state?.type;
@@ -62,11 +61,8 @@ const AuctionDetailAnonymous = () => {
               auctionId={auctionId}
             />
           </TabPane>
-          <TabPane tab="Danh sách đơn đăng ký" key="2">
-            <ListAuctionDocument auctionId={auctionId} auctionDateModals={auctionDateModal} />
-          </TabPane>
-          <TabPane tab="Danh sách đơn đã cọc" key="3">
-            <ListAuctionDocumentSuccessRegister
+          <TabPane tab="Danh sách cần hoàn tiền" key="3">
+            <ListAuctionDocumentCancelRefund
               auctionId={auctionId}
               auctionDateModals={auctionDateModal}
             />
@@ -77,4 +73,4 @@ const AuctionDetailAnonymous = () => {
   );
 };
 
-export default AuctionDetailAnonymous;
+export default AuctionDetailCancel;
