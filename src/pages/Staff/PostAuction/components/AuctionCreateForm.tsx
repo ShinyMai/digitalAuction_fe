@@ -447,7 +447,7 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
                 <MapComponent
                   isSearchMode={true}
                   value="Hoa Lư, Ninh Bình, Việt Nam"
-                  name="AuctionMap"
+                  // display_name="AuctionMap"
                   popupText="Vị trí đấu giá"
                 />
               </Form.Item>
