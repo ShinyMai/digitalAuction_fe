@@ -11,12 +11,14 @@ import {
     Input,
     Tag,
     Button,
+    Modal,
 } from "antd";
 import {
     SearchOutlined,
     DownloadOutlined,
     CheckOutlined,
     CloseOutlined,
+    ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
 interface SearchParams {
@@ -56,6 +58,8 @@ const ListAuctionDocumentCancelRefund = ({
     }>({});
     const [isRefundMode, setIsRefundMode] = useState<boolean>(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+    const [isConfirmModalVisible, setIsConfirmModalVisible] = useState<boolean>(false);
+    const [isErrorModalVisible, setIsErrorModalVisible] = useState<boolean>(false);
 
     useEffect(() => {
         getListAuctionDocument();
@@ -127,7 +131,7 @@ const ListAuctionDocumentCancelRefund = ({
                             : doc.statusTicket === 2
                                 ? "Đã ký phiếu"
                                 : "Đã hoàn tiền";
-                    const depositStatusText = doc.statusDeposit === false
+                    const depositStatusText = doc.statusDeposit === true
                         ? "Chưa cọc"
                         : "Đã cọc";
                     const row = [
@@ -168,10 +172,26 @@ const ListAuctionDocumentCancelRefund = ({
     };
 
     const handleConfirmRefund = () => {
+        if (selectedRowKeys.length === 0) {
+            setIsErrorModalVisible(true);
+        } else {
+            setIsConfirmModalVisible(true);
+        }
+    };
+
+    const handleConfirmModalOk = () => {
         console.log("Selected auction document IDs:", selectedRowKeys);
-        // Reset trạng thái sau khi xác nhận
         setIsRefundMode(false);
         setSelectedRowKeys([]);
+        setIsConfirmModalVisible(false);
+    };
+
+    const handleConfirmModalCancel = () => {
+        setIsConfirmModalVisible(false);
+    };
+
+    const handleErrorModalOk = () => {
+        setIsErrorModalVisible(false);
     };
 
     const handleCancelRefund = () => {
@@ -355,6 +375,33 @@ const ListAuctionDocumentCancelRefund = ({
                     scroll={{ x: "max-content" }}
                     className="border border-teal-100 rounded-lg"
                 />
+                <Modal
+                    title="Thông báo"
+                    open={isErrorModalVisible}
+                    onCancel={handleErrorModalOk}
+                    footer={null}
+                    closeIcon={<CloseOutlined />}
+                    className="flex items-center justify-center"
+                    bodyStyle={{ height: '200px', display: 'flex', justifyContent: 'center' }}
+                >
+                    <div className="flex flex-col items-center justify-center text-center gap-4">
+                        <div className="text-red-600 text-4xl"><ExclamationCircleOutlined /></div>
+                        <p className="text-lg text-gray-700 font-medium">
+                            Bạn chưa lựa chọn danh sách khách hàng đã được hoàn tiền.
+                        </p>
+                    </div>
+                </Modal>
+                <Modal
+                    title="Xác nhận hoàn tiền"
+                    open={isConfirmModalVisible}
+                    onOk={handleConfirmModalOk}
+                    onCancel={handleConfirmModalCancel}
+                    okText="Xác nhận"
+                    cancelText="Hủy"
+                    okButtonProps={{ className: "bg-teal-500 hover:bg-teal-600" }}
+                >
+                    <p>Bạn đã hoàn lại tiền cọc và tiền mua hồ sơ cho những khách hàng này rồi đúng chứ?</p>
+                </Modal>
             </div>
         </section>
     );

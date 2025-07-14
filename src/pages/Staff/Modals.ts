@@ -51,6 +51,7 @@ export type AuctionDataDetail = {
   qrLink: string;
   numberRoundMax: number;
   status: string;
+  auctionMap? : string;
   winnerData: string;
   listAuctionAssets?: AuctionAsset[];
 };
