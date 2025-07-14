@@ -9,202 +9,240 @@ import dayjs from "dayjs";
 import type { AuctionCategory, AuctionDataList, ModalAuctioners } from "../../Staff/Modals.ts";
 
 interface SearchParams {
-    AuctionName?: string;
-    CategoryId?: number;
-    RegisterOpenDate?: string;
-    RegisterEndDate?: string;
-    AuctionStartDate?: string;
-    AuctionEndDate?: string;
-    SortBy?: string;
-    IsAscending?: boolean;
-    PageNumber?: number;
-    PageSize?: number;
-    Status?: number;
+  AuctionName?: string;
+  CategoryId?: number;
+  SortBy?: string;
+  IsAscending?: boolean;
+  PageNumber?: number;
+  PageSize?: number;
+  RegisterOpenDate?: string;
+  RegisterEndDate?: string;
+  AuctionStartDate?: string;
+  AuctionEndDate?: string;
+  Status: number;
+  AuctionType?: string;
 }
 
+interface SearchValue {
+  auctionName?: string;
+  CategoryId?: number;
+  AuctionType?: string;
+  registerRangeDate?: any[];
+  auctionRangeDate?: any[];
+}
+
+const DEFAULT_PARAMS: SearchParams = {
+  PageNumber: 1,
+  PageSize: 8,
+  Status: 0,
+  AuctionType: "1",
+};
+
 const AuctionListDraff = () => {
-    const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
-    const [listAuctioners, setListAuctioners] = useState<ModalAuctioners[]>([]);
-    const [totalData, setTotalData] = useState<number>(0);
-    const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // State cho modal
-    const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(null); // Lưu auction được chọn
-    const [searchParams, setSearchParams] = useState<SearchParams>({
-        PageNumber: 1,
-        PageSize: 8,
-        Status: 0,
-    });
+  const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
+  const [listAuctioners, setListAuctioners] = useState<ModalAuctioners[]>([]);
+  const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
+  const [totalData, setTotalData] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // State cho modal
+  const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(null); // Lưu auction được chọn
+  const [searchParams, setSearchParams] = useState<SearchParams>(DEFAULT_PARAMS);
+  useEffect(() => {
+    fetchAuctionCategories();
+    fetchAuctioners();
+  }, []);
 
-    useEffect(() => {
-        getListAuctionCategory();
-        getListAuctioners();
-    }, []);
+  useEffect(() => {
+    fetchAuctionList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+  const fetchAuctionCategories = async () => {
+    try {
+      const res = await AuctionServices.getListAuctionCategory();
+      if (!res?.data?.length) {
+        toast.error("Không có dữ liệu danh mục tài sản!");
+        return;
+      }
+      setListAuctionCategory(res.data);
+    } catch (error: any) {
+      toast.error(error.message || "Lỗi khi tải danh mục!");
+    }
+  };
 
-    useEffect(() => {
-        getListAuction();
-    }, [searchParams]);
-
-    const onSearch = (searchValue: any) => {
-        const newParams: SearchParams = {
-            ...searchParams,
-            PageNumber: 1,
-        };
-        if (searchValue.auctionName) {
-            newParams.AuctionName = searchValue.auctionName;
-        } else {
-            delete newParams.AuctionName;
-        }
-        if (searchValue.CategoryId) {
-            newParams.CategoryId = searchValue.CategoryId;
-        } else {
-            delete newParams.CategoryId;
-        }
-        if (searchValue.registerRangeDate?.[0]) {
-            newParams.RegisterOpenDate = dayjs(searchValue.registerRangeDate[0]).format("YYYY-MM-DD");
-        } else {
-            delete newParams.RegisterOpenDate;
-        }
-        if (searchValue.registerRangeDate?.[1]) {
-            newParams.RegisterEndDate = dayjs(searchValue.registerRangeDate[1]).format("YYYY-MM-DD");
-        } else {
-            delete newParams.RegisterEndDate;
-        }
-        if (searchValue.auctionRangeDate?.[0]) {
-            newParams.AuctionStartDate = dayjs(searchValue.auctionRangeDate[0]).format("YYYY-MM-DD");
-        } else {
-            delete newParams.AuctionStartDate;
-        }
-        if (searchValue.auctionRangeDate?.[1]) {
-            newParams.AuctionEndDate = dayjs(searchValue.auctionRangeDate[1]).format("YYYY-MM-DD");
-        } else {
-            delete newParams.AuctionEndDate;
-        }
-        setSearchParams(newParams);
+  const fetchAuctioners = async () => {
+    try {
+      const res = await AuctionServices.getListAuctioners();
+      if (!res?.data?.length) {
+        toast.error("Không có đấu giá viên!");
+        return;
+      }
+      setListAuctioners(res.data);
+    } catch (error: any) {
+      toast.error(error.message || "Lỗi khi tải danh sách đấu giá viên!");
+    }
+  };
+  const onSearch = (searchValue: SearchValue) => {
+    const newParams: SearchParams = {
+      ...searchParams,
+      PageNumber: 1,
     };
 
-    const getListAuction = async () => {
-        try {
-            setLoading(true);
-            const params: SearchParams = {
-                PageNumber: searchParams.PageNumber || 1,
-                PageSize: searchParams.PageSize || 8,
-                Status: searchParams.Status,
-            };
-            if (searchParams.AuctionName) params.AuctionName = searchParams.AuctionName;
-            if (searchParams.CategoryId) params.CategoryId = searchParams.CategoryId;
-            if (searchParams.RegisterOpenDate) params.RegisterOpenDate = searchParams.RegisterOpenDate;
-            if (searchParams.RegisterEndDate) params.RegisterEndDate = searchParams.RegisterEndDate;
-            if (searchParams.AuctionStartDate) params.AuctionStartDate = searchParams.AuctionStartDate;
-            if (searchParams.AuctionEndDate) params.AuctionEndDate = searchParams.AuctionEndDate;
-            if (searchParams.SortBy) params.SortBy = searchParams.SortBy.replace("auctionName", "auction_name");
-            if (searchParams.IsAscending !== undefined) params.IsAscending = searchParams.IsAscending;
+    if (searchValue.auctionName) {
+      newParams.AuctionName = searchValue.auctionName;
+    } else {
+      delete newParams.AuctionName;
+    }
 
-            const response = await AuctionServices.getListAuction(params);
-            setTotalData(response.data.totalCount);
-            setAuctionList(response.data.auctions);
-        } catch (error) {
-            toast.error("Lỗi khi tải danh sách đấu giá!");
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
+    if (searchValue.CategoryId) {
+      newParams.CategoryId = searchValue.CategoryId;
+    } else {
+      delete newParams.CategoryId;
+    }
+
+    if (searchValue.AuctionType) {
+      newParams.AuctionType = searchValue.AuctionType;
+    } else {
+      delete newParams.AuctionType;
+    }
+
+    if (searchValue.registerRangeDate?.[0]) {
+      newParams.RegisterOpenDate = dayjs(searchValue.registerRangeDate[0]).format("YYYY-MM-DD");
+    } else {
+      delete newParams.RegisterOpenDate;
+    }
+
+    if (searchValue.registerRangeDate?.[1]) {
+      newParams.RegisterEndDate = dayjs(searchValue.registerRangeDate[1]).format("YYYY-MM-DD");
+    } else {
+      delete newParams.RegisterEndDate;
+    }
+
+    if (searchValue.auctionRangeDate?.[0]) {
+      newParams.AuctionStartDate = dayjs(searchValue.auctionRangeDate[0]).format("YYYY-MM-DD");
+    } else {
+      delete newParams.AuctionStartDate;
+    }
+
+    if (searchValue.auctionRangeDate?.[1]) {
+      newParams.AuctionEndDate = dayjs(searchValue.auctionRangeDate[1]).format("YYYY-MM-DD");
+    } else {
+      delete newParams.AuctionEndDate;
+    }
+
+    setSearchParams(newParams);
+  };
+
+  const fetchAuctionList = async () => {
+    try {
+      setLoading(true);
+      const params: SearchParams = {
+        PageNumber: searchParams.PageNumber ?? 1,
+        PageSize: searchParams.PageSize ?? 8,
+        Status: searchParams.Status,
+        AuctionType: searchParams.AuctionType ?? "1",
+        AuctionName: searchParams.AuctionName,
+        CategoryId: searchParams.CategoryId,
+        RegisterOpenDate: searchParams.RegisterOpenDate,
+        RegisterEndDate: searchParams.RegisterEndDate,
+        AuctionStartDate: searchParams.AuctionStartDate,
+        AuctionEndDate: searchParams.AuctionEndDate,
+        SortBy: searchParams.SortBy?.replace("auctionName", "auction_name"),
+        IsAscending: searchParams.IsAscending,
+      };
+
+      const response =
+        params.AuctionType === "2"
+          ? await AuctionServices.getListAuctionNode(params)
+          : await AuctionServices.getListAuction(params);
+
+      setTotalData(response.data?.totalCount || 0);
+      setAuctionList(response.data?.auctions || []);
+    } catch (error) {
+      console.error(error);
+      toast.error("Lỗi khi tải danh sách đấu giá!");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const onChangeTable = (
+    pagination: { current: number; pageSize: number },
+    sorter: { field?: string; order?: "ascend" | "descend" }
+  ) => {
+    const newParams: SearchParams = {
+      ...searchParams,
+      PageNumber: pagination.current,
+      PageSize: pagination.pageSize,
     };
 
-    const getListAuctionCategory = async () => {
-        try {
-            const res = await AuctionServices.getListAuctionCategory();
-            if (res.data.length === 0) {
-                toast.error("Không có dữ liệu danh mục tài sản!");
-            } else {
-                setListAuctionCategory(res.data);
+    if (sorter?.field && sorter?.order) {
+      newParams.SortBy = sorter.field;
+      newParams.IsAscending = sorter.order === "ascend";
+    } else {
+      delete newParams.SortBy;
+      delete newParams.IsAscending;
+    }
+
+    setSearchParams(newParams);
+  };
+
+  // Hàm mở modal khi click nút "Duyệt thông tin"
+  const handleOpenModal = (auctionId: string) => {
+    setSelectedAuctionId(auctionId);
+    setIsModalOpen(true);
+  };
+
+  // Hàm đóng modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedAuctionId(null);
+  };
+
+  // Hàm xử lý khi chọn auctioner
+  const handleSelectAuctioner = async (auctionerId: string) => {
+    if (selectedAuctionId && auctionerId) {
+      try {
+        //Giả định có API để gán auctioner cho auction
+        await AuctionServices.assginAuctioneerAndPublicAuction({
+          auctionId: selectedAuctionId,
+          auctioneer: auctionerId,
+        });
+        toast.success(`Gán đấu giá viên thành công!`);
+        fetchAuctionList(); // Làm mới danh sách
+        handleCloseModal();
+      } catch (error) {
+        toast.error("Lỗi khi gán đấu giá viên!");
+        console.error(error);
+      }
+    }
+  };
+
+  return (
+    <section className="w-full h-full p-4">
+      <div className="w-full h-full">
+        <div className="w-full h-full" id="table-list">
+          <AuctionTable
+            auctionData={auctionList}
+            headerTable={
+              <SearchAuctionTable onSearch={onSearch} auctionCategory={listAuctionCategory} />
             }
-        } catch (error: any) {
-            toast.error(error.message);
-        }
-    };
-
-    const getListAuctioners = async () => {
-        try {
-            const res = await AuctionServices.getListAuctioners();
-            if (res.data.length === 0) {
-                toast.error("Không có đấu giá viên!");
-            } else {
-                setListAuctioners(res.data);
-            }
-        } catch (error: any) {
-            console.log(error)
-        }
-    };
-
-    const onChangeTable = (pagination: any, sorter: any) => {
-        const newParams: SearchParams = {
-            ...searchParams,
-            PageNumber: pagination.current,
-            PageSize: pagination.pageSize,
-        };
-        if (sorter.field && sorter.order) {
-            newParams.SortBy = sorter.field;
-            newParams.IsAscending = sorter.order === "ascend";
-        } else {
-            delete newParams.SortBy;
-            delete newParams.IsAscending;
-        }
-        setSearchParams(newParams);
-    };
-
-    // Hàm mở modal khi click nút "Duyệt thông tin"
-    const handleOpenModal = (auctionId: string) => {
-        setSelectedAuctionId(auctionId);
-        setIsModalOpen(true);
-    };
-
-    // Hàm đóng modal
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setSelectedAuctionId(null);
-    };
-
-    // Hàm xử lý khi chọn auctioner
-    const handleSelectAuctioner = async (auctionerId: string) => {
-        if (selectedAuctionId && auctionerId) {
-            try {
-                //Giả định có API để gán auctioner cho auction
-                await AuctionServices.assginAuctioneerAndPublicAuction({ auctionId: selectedAuctionId, auctioneer: auctionerId });
-                toast.success(`Gán đấu giá viên thành công!`);
-                getListAuction(); // Làm mới danh sách
-                handleCloseModal()
-            } catch (error) {
-                toast.error("Lỗi khi gán đấu giá viên!");
-                console.error(error);
-            }
-        }
-    };
-
-    return (
-        <section className="w-full h-full p-4">
-            <div className="w-full h-full">
-                <div className="w-full h-full" id="table-list">
-                    <AuctionTable
-                        auctionData={auctionList}
-                        headerTable={<SearchAuctionTable onSearch={onSearch} auctionCategory={listAuctionCategory} />}
-                        onChange={onChangeTable}
-                        total={totalData}
-                        loading={loading}
-                        pageSize={searchParams.PageSize}
-                        currentPage={searchParams.PageNumber}
-                        onApprove={handleOpenModal} // Truyền hàm xử lý duyệt
-                    />
-                    <ModalsSelectAuctioners
-                        isOpen={isModalOpen}
-                        listAuctioners={listAuctioners}
-                        onClose={handleCloseModal}
-                        onSelect={handleSelectAuctioner}
-                    />
-                </div>
-            </div>
-        </section>
-    );
+            onChange={onChangeTable}
+            total={totalData}
+            loading={loading}
+            pageSize={searchParams.PageSize}
+            currentPage={searchParams.PageNumber}
+            selectedAuctionType={searchParams.AuctionType}
+            onApprove={handleOpenModal} // Truyền hàm xử lý duyệt
+          />
+          <ModalsSelectAuctioners
+            isOpen={isModalOpen}
+            listAuctioners={listAuctioners}
+            onClose={handleCloseModal}
+            onSelect={handleSelectAuctioner}
+          />
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default AuctionListDraff;

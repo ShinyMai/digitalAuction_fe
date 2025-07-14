@@ -9,6 +9,7 @@ import type { AuctionCategory } from "../../Modals.ts";
 import dayjs, { Dayjs } from "dayjs";
 import AuctionServices from "../../../../services/AuctionServices/index.tsx";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 const { RangePicker } = DatePicker;
 
@@ -47,6 +48,9 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
   const [isRealEstate, setIsRealEstate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [registerRange, setRegisterRange] = useState<[Dayjs, Dayjs] | null>(null);
+
+  const { user } = useSelector((state: any) => state.auth);
+  const CreatedBy = user?.id || "defaultUser";
 
   console.log("auctionType: ", auctionType);
 
@@ -192,10 +196,16 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
       delete formattedValues.AuctionTimeRange;
       console.log(formattedValues)
       // Create FormData using the separate function
-      const formData = createFormData(formattedValues);
+      const formData = createFormData(formattedValues); // Call the API with FormData
+      if (auctionType === "SQL") {
+        await AuctionServices.addAuction(formData);
+      }
 
-      // Call the API with FormData
-      // await AuctionServices.addAuction(formData);
+      if (auctionType === "NODE") {
+        // Add CreatedBy to FormData for NODE type
+        formData.append("CreatedBy", CreatedBy);
+        await AuctionServices.addAuctionNode(formData);
+      }
 
       toast.success("Tạo đấu giá thành công!");
       // form.resetFields(); // Reset form sau khi thành công

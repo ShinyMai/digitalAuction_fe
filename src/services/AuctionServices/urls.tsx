@@ -3,7 +3,7 @@ export const AuctionAPI = {
   ADD_AUCTION_NODE: "/auctions/createAuction",
   AUCTION_CATEGORY: "/AuctionCategories",
   AUCTION_LIST: "/List",
-  AUCTION_LIST_NODE: "/auctions/listAuction",
+  AUCTION_LIST_PUBLIC_NODE: "/auctions/listAuctionPublic",
   AUCTION_DETAIL: "/Detail",
   AUCTION_DETAIL_NODE: "/auctions/getAuctionById",
   AUCTION_REGISTER_ASSET: "/RegisterAuctionDocument/Register-Auction-Document",

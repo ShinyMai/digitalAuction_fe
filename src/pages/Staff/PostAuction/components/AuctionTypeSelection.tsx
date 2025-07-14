@@ -21,7 +21,7 @@ const AuctionTypeSelection: React.FC<AuctionTypeSelectionProps> = ({ onSelect })
           {/* Đấu giá từng tài sản */}
           <div className="group">
             <button
-              onClick={() => onSelect("NODE")}
+              onClick={() => onSelect("SQL")}
               className="w-full h-64 bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-200 hover:border-blue-300 rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-200"
             >
               <div className="flex flex-col items-center justify-center h-full p-6">
@@ -51,7 +51,7 @@ const AuctionTypeSelection: React.FC<AuctionTypeSelectionProps> = ({ onSelect })
           {/* Đấu giá theo lô */}
           <div className="group">
             <button
-              onClick={() => onSelect("SQL")}
+              onClick={() => onSelect("NODE")}
               className="w-full h-64 bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-2 border-green-200 hover:border-green-300 rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-200"
             >
               <div className="flex flex-col items-center justify-center h-full p-6">
