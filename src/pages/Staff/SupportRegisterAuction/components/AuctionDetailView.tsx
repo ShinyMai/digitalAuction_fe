@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Thêm useEffect
 import { Button, Card, Form, Input, Table, Typography, Spin } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
@@ -15,7 +15,6 @@ interface RegisterForm {
     phoneNumber: string;
     bankAccountNumber: string;
     bankBranch: string;
-
 }
 
 const AuctionDetailView = ({
@@ -23,16 +22,31 @@ const AuctionDetailView = ({
     loading,
     onBack,
     onSubmit,
+    account, // Thêm prop account
 }: {
     auctionDetail: AuctionDataDetail | null;
     loading: boolean;
     onBack: () => void;
     onSubmit: (values: RegisterForm, selectedAssetIds: string[]) => void;
+    account: any; // Có thể định nghĩa interface cụ thể hơn dựa trên EkycResult
 }) => {
     const [form] = Form.useForm();
     const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(5);
+
+    // Điền sẵn dữ liệu từ account vào form
+    useEffect(() => {
+        if (account) {
+            form.setFieldsValue({
+                bankAccount: account.name || "",
+                citizenIdentification: account.citizenIdentification || "",
+                phoneNumber: "", // phoneNumber không có trong EkycResult, để trống
+                bankAccountNumber: "", // Không có trong EkycResult, để trống
+                bankBranch: account.issueBy || "", // Sử dụng issueBy hoặc để trống
+            });
+        }
+    }, [account, form]);
 
     const columns = [
         {
@@ -56,7 +70,6 @@ const AuctionDetailView = ({
         onSubmit(values, selectedRowKeys);
     };
 
-    // Xử lý phân trang phía client
     const paginatedAssets = auctionDetail?.listAuctionAssets
         ? auctionDetail.listAuctionAssets.slice(
             (currentPage - 1) * pageSize,
@@ -89,10 +102,8 @@ const AuctionDetailView = ({
             {loading && <Spin size="large" className="flex justify-center my-8" />}
             {auctionDetail && !loading && (
                 <div className="flex flex-row gap-4 w-full">
-                    {/* Thông Tin Buổi Đấu Giá + Danh Sách Tài Sản Đấu Giá */}
                     <Card className="shadow-md rounded-lg flex-1 min-w-0">
                         <div className="flex flex-col">
-                            {/* Thông Tin Buổi Đấu Giá */}
                             <div className="mb-6">
                                 <Title level={4} className="text-gray-800 mb-4">
                                     Thông Tin Buổi Đấu Giá
@@ -112,8 +123,6 @@ const AuctionDetailView = ({
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Danh Sách Tài Sản Đấu Giá */}
                             {auctionDetail.listAuctionAssets && auctionDetail.listAuctionAssets.length > 0 && (
                                 <div>
                                     <Title level={4} className="text-gray-800 mb-4">
@@ -144,8 +153,6 @@ const AuctionDetailView = ({
                             )}
                         </div>
                     </Card>
-
-                    {/* Thông Tin Đăng Ký */}
                     <Card className="shadow-md rounded-lg flex-1 min-w-0">
                         <Title level={4} className="text-gray-800 mb-4">
                             Thông Tin Đăng Ký
@@ -172,6 +179,13 @@ const AuctionDetailView = ({
                                 ]}
                             >
                                 <Input placeholder="Nhập số căn cước" size="large" />
+                            </Form.Item>
+                            <Form.Item
+                                name="phoneNumber"
+                                label="Số điện thoại"
+                                rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
+                            >
+                                <Input placeholder="Nhập số điện thoại" size="large" />
                             </Form.Item>
                             <Form.Item
                                 name="bankAccountNumber"

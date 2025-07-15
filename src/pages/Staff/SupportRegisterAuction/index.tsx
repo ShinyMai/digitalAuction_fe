@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import type { AuctionCategory, AuctionDataDetail, AuctionDataList } from "../Modals.ts";
 import AuctionSearchList from "./components/AuctionSearchList.tsx";
 import AuctionDetailView from "./components/AuctionDetailView.tsx";
-
+import EkycSDK from "../../../components/Ekyc/EkycSDK.tsx";
 
 const { Title } = Typography;
 
@@ -18,8 +18,8 @@ interface RegisterForm {
     phoneNumber: string;
     bankAccountNumber: string;
     bankBranch: string;
-
 }
+
 interface SearchParams {
     AuctionName?: string;
     CategoryId?: number;
@@ -31,7 +31,7 @@ interface SearchParams {
     RegisterEndDate?: string;
     AuctionStartDate?: string;
     AuctionEndDate?: string;
-    Status: number
+    Status: number;
 }
 
 const SupportRegisterAuction = () => {
@@ -39,8 +39,8 @@ const SupportRegisterAuction = () => {
         PageNumber: 1,
         PageSize: 5,
         Status: 1,
-        SortBy: 'RegisterEndDate',
-        IsAscending: false
+        SortBy: "RegisterEndDate",
+        IsAscending: false,
     });
     const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
     const [totalData, setTotalData] = useState<number>(0);
@@ -48,12 +48,18 @@ const SupportRegisterAuction = () => {
     const [submitting, setSubmitting] = useState<boolean>(false);
     const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(null);
     const [auctionDetail, setAuctionDetail] = useState<AuctionDataDetail | null>(null);
-    const [listAuctionCategory, setListAuctionCategory] =
-        useState<AuctionCategory[]>([]);
+    const [account, setAccount] = useState({});
+    const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
+    const [step, setStep] = useState<"list" | "ekyc" | "detail">("list"); // Thêm bước ekyc
+
     useEffect(() => {
-        fetchAuctionList();
-        getListAuctionCategory();
-    }, [searchParams]);
+        if (step === "list") {
+            fetchAuctionList();
+            getListAuctionCategory();
+        } else if (step === "detail" && selectedAuctionId) {
+            fetchAuctionDetail(selectedAuctionId);
+        }
+    }, [searchParams, step, selectedAuctionId]);
 
     const fetchAuctionList = async () => {
         try {
@@ -63,7 +69,7 @@ const SupportRegisterAuction = () => {
                 PageSize: searchParams.PageSize,
                 AuctionName: searchParams.AuctionName || undefined,
                 SortBy: searchParams.SortBy,
-                IsAscending: searchParams.IsAscending
+                IsAscending: searchParams.IsAscending,
             };
             const response = await AuctionServices.getListAuction(params);
             setAuctionList(response.data.auctions);
@@ -91,18 +97,23 @@ const SupportRegisterAuction = () => {
 
     const handleSelectAuction = (auctionId: string) => {
         setSelectedAuctionId(auctionId);
-        fetchAuctionDetail(auctionId);
+        setStep("ekyc"); // Chuyển sang bước ekyc
+    };
+
+    const handleEkycSuccess = () => {
+        setStep("detail"); // Chuyển sang bước detail sau khi eKYC thành công
     };
 
     const handleBack = () => {
+        setStep("list"); // Quay lại bước list
         setSelectedAuctionId(null);
         setAuctionDetail(null);
+        setAccount({}); // Reset account để yêu cầu eKYC lại nếu cần
     };
 
     const getListAuctionCategory = async () => {
         try {
-            const res =
-                await AuctionServices.getListAuctionCategory();
+            const res = await AuctionServices.getListAuctionCategory();
             if (res.data.length === 0) {
                 toast.error("Không có dữ liệu danh mục tài sản!");
             } else {
@@ -120,13 +131,12 @@ const SupportRegisterAuction = () => {
         }
         try {
             setSubmitting(true);
-
             const payload = {
                 auctionId: selectedAuctionId,
                 auctionAssetsIds: selectedAssetIds,
                 ...values,
             };
-            console.log("Check: ", payload)
+            console.log("Check: ", payload);
             await AuctionServices.supportRegisterAuction(payload);
             toast.success("Đăng ký tham gia đấu giá thành công!");
         } catch (error: any) {
@@ -144,7 +154,7 @@ const SupportRegisterAuction = () => {
                     Hỗ Trợ Đăng Ký Tham Gia Đấu Giá
                 </Title>
                 <AnimatePresence mode="wait">
-                    {!selectedAuctionId ? (
+                    {step === "list" && (
                         <AuctionSearchList
                             searchParams={searchParams}
                             setSearchParams={setSearchParams}
@@ -152,14 +162,24 @@ const SupportRegisterAuction = () => {
                             totalData={totalData}
                             loading={loading}
                             onSelectAuction={handleSelectAuction}
-                            listAuctionCategory={listAuctionCategory} // Thêm prop này
+                            listAuctionCategory={listAuctionCategory}
                         />
-                    ) : (
+                    )}
+                    {step === "ekyc" && (
+                        <EkycSDK
+                            setCurrent={handleEkycSuccess}
+                            setAccount={setAccount}
+                            face={true}
+                            className="w-full"
+                        />
+                    )}
+                    {step === "detail" && (
                         <AuctionDetailView
                             auctionDetail={auctionDetail}
                             loading={loading}
                             onBack={handleBack}
                             onSubmit={handleSubmit}
+                            account={account}
                         />
                     )}
                 </AnimatePresence>

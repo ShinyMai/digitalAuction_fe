@@ -15,7 +15,7 @@ declare global {
 }
 
 interface EkycSDKProps {
-  setCurrent: (current: number) => void;
+  setCurrent?: (current: number) => void;
   setAccount: (account: object) => void;
   face: boolean;
   className?: string;
@@ -135,15 +135,15 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
           : null,
         issueDate: result.ocr.object.issue_date
           ? dayjs(
-              result.ocr.object.issue_date,
-              "DD/MM/YYYY"
-            )
+            result.ocr.object.issue_date,
+            "DD/MM/YYYY"
+          )
           : null,
         validDate: result.ocr.object.valid_date
           ? dayjs(
-              result.ocr.object.valid_date,
-              "DD/MM/YYYY"
-            )
+            result.ocr.object.valid_date,
+            "DD/MM/YYYY"
+          )
           : null,
         nationality: result.ocr.object.nationality || "",
         gender: result.ocr.object.gender === "Nam",
@@ -174,7 +174,7 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
         return;
       }
 
-      setCurrent(1);
+      if (setCurrent) setCurrent(1);
       toast.success(
         "Xác thực thành công, sang bước tiếp theo."
       );

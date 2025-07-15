@@ -109,7 +109,7 @@ const AuctionDetailAuctioneer = React.lazy(
 
 
 const AuctionListCancel = React.lazy(
-  () => import("../pages/Manager/AucationListCancel/index")
+  () => import("../pages/Manager/AuctionListCancel/index")
 );
 
 const AuctionDetailCancel = React.lazy(

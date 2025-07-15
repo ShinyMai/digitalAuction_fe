@@ -87,7 +87,7 @@ const AuctionSearchList = ({
             render: (_: any, record: AuctionDataList) => (
                 <Button
                     type="primary"
-                    onClick={() => onSelectAuction(record.auctionId)}
+                    onClick={() => onSelectAuction(record.auctionId)} // Chuyển thẳng sang bước detail
                     className="bg-blue-500 hover:bg-blue-600"
                     disabled={!dayjs().isBefore(dayjs(record.registerEndDate))}
                 >

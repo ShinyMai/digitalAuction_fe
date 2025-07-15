@@ -1,9 +1,7 @@
-import { Button, Image, Typography, Card } from "antd";
+import { Image, Typography, Card } from "antd";
 import MINPHAPLOGO from "../../../../assets/LOGO-MINH-PHAP.jpg";
 import dayjs from "dayjs";
 import type { AuctionDataDetail } from "../../Modals";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../../store/store";
 import { useState } from "react";
 import PopupVerifyCancelAuction from "./PopupVerifyCancelAuction";
 
@@ -13,17 +11,6 @@ interface AuctionDetailProps {
   auctionId?: string
 }
 
-const USER_ROLES = {
-  USER: "Customer",
-  ADMIN: "Admin",
-  STAFF: "Staff",
-  AUCTIONEER: "Auctioneer",
-  MANAGER: "Manager",
-  DIRECTOR: "Director",
-} as const;
-
-type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
-
 const API_BASE_URL_NODE = import.meta.env.VITE_BE_URL_NODE;
 
 const AuctionDetail = ({
@@ -31,13 +18,7 @@ const AuctionDetail = ({
   auctionType,
   auctionId,
 }: AuctionDetailProps) => {
-  const { user } = useSelector((state: RootState) => state.auth);
-  const role = user?.roleName as UserRole | undefined;
   const [isModalOpen, setIsModalOpen] = useState(false);
-  console.log("check", auctionDetailData)
-  const handleCancelClick = () => {
-    setIsModalOpen(true);
-  };
 
   const handleModalCancel = () => {
     setIsModalOpen(false);
@@ -127,18 +108,6 @@ const AuctionDetail = ({
                     </span>
                   </div>
                 </div>
-                {role === USER_ROLES.STAFF && (
-                  <div className="text-center mt-6">
-                    <Button
-                      type="primary"
-                      size="large"
-                      className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
-                      onClick={handleCancelClick}
-                    >
-                      Hủy buổi đấu giá
-                    </Button>
-                  </div>
-                )}
               </div>
             </div>
 
