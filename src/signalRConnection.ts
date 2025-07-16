@@ -2,16 +2,16 @@ import * as signalR from "@microsoft/signalr";
 
 const VITE_SIGNALR_URL = import.meta.env.VITE_SIGNALR_URL;
 
-const signalRUrl =
-  VITE_SIGNALR_URL ||
-  "https://digitalauction.mooo.com/hub/notifications";
+const signalRUrl = VITE_SIGNALR_URL || "https://digitalauction.mooo.com/hub/notifications";
 
 const connection = new signalR.HubConnectionBuilder()
   .withUrl(signalRUrl, {
-    accessTokenFactory: () => "",
-    transport:
-      signalR.HttpTransportType.WebSockets |
-      signalR.HttpTransportType.LongPolling,
+    accessTokenFactory: () => {
+      // Lấy token từ localStorage hoặc Redux store
+      const token = localStorage.getItem("authToken") || "";
+      return token;
+    },
+    transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling,
     withCredentials: true,
   })
   .configureLogging(signalR.LogLevel.Information)
@@ -20,10 +20,7 @@ const connection = new signalR.HubConnectionBuilder()
       if (retryContext.previousRetryCount === 0) {
         return 0;
       }
-      return Math.min(
-        1000 * Math.pow(2, retryContext.previousRetryCount),
-        30000
-      );
+      return Math.min(1000 * Math.pow(2, retryContext.previousRetryCount), 30000);
     },
   })
   .build();

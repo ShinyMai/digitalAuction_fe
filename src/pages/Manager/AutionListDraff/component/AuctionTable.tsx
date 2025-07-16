@@ -17,7 +17,6 @@ interface Props {
   pageSize?: number;
   currentPage?: number;
   selectedAuctionType?: string; // Thêm prop để biết loại đấu giá được chọn
-  onApprove: (auctionId: string) => void; // Prop để xử lý duyệt thông tin
 }
 
 const AuctionTable = ({
@@ -29,7 +28,6 @@ const AuctionTable = ({
   pageSize,
   currentPage,
   selectedAuctionType,
-  onApprove,
 }: Props) => {
   const navigate = useNavigate();
   const { user } = useSelector((state: any) => state.auth);
@@ -51,8 +49,14 @@ const AuctionTable = ({
         <div
           onClick={() => {
             const rolePath = role?.toLowerCase();
+            const navigationKey = record.auctionId || record._id;
+            const auctionType = record.auctionId ? "SQL" : "NODE";
+
             navigate(`/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_DETAIL}`, {
-              state: { key: record.auctionId },
+              state: {
+                key: navigationKey,
+                type: auctionType,
+              },
               replace: true,
             });
           }}
@@ -111,7 +115,19 @@ const AuctionTable = ({
           <Button
             type="primary"
             icon={<CheckCircleOutlined />}
-            onClick={() => onApprove(record.auctionId)} // Gọi onApprove với auctionId
+            onClick={() => {
+              const rolePath = role?.toLowerCase();
+              const navigationKey = record.auctionId || record._id;
+              const auctionType = record.auctionId ? "SQL" : "NODE";
+
+              navigate(`/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_DETAIL}`, {
+                state: {
+                  key: navigationKey,
+                  type: auctionType,
+                },
+                replace: true,
+              });
+            }}
             className="bg-green-500 hover:bg-green-600"
             disabled={!record.registerEndDate || !dayjs().isBefore(dayjs(record.registerEndDate))}
           >

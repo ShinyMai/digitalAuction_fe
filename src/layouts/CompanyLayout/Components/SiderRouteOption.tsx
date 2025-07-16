@@ -10,12 +10,7 @@ import { Menu, type MenuProps } from "antd";
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  ADMIN_ROUTES,
-  AUCTIONEER_ROUTES,
-  MANAGER_ROUTES,
-  STAFF_ROUTES,
-} from "../../../routers";
+import { ADMIN_ROUTES, AUCTIONEER_ROUTES, MANAGER_ROUTES, STAFF_ROUTES } from "../../../routers";
 import { assets } from "../../../assets";
 
 interface MenuItem {
@@ -38,31 +33,21 @@ const items: MenuItem[] = [
   {
     key: "2",
     icon: <ScheduleOutlined />,
-    label: "Danh sách các buổi đấu giá",
+    label: "Danh sách các phiên đấu giá",
     url: STAFF_ROUTES.SUB.AUCTION_LIST,
-    roleView: [
-      "Staff",
-      "Auctioneer",
-      "Director",
-      "Manager",
-    ],
+    roleView: ["Staff", "Auctioneer", "Director", "Manager"],
   },
   {
     key: "3",
     icon: <ScheduleOutlined />,
-    label: "Buổi đấu giá chưa công bố",
+    label: "Phiên đấu giá chưa công bố",
     url: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF,
-    roleView: [
-      "Staff",
-      "Auctioneer",
-      "Director",
-      "Manager",
-    ],
+    roleView: ["Staff", "Auctioneer", "Director", "Manager"],
   },
   {
     key: "4",
     icon: <ScheduleOutlined />,
-    label: "Tạo buổi đấu giá",
+    label: "Tạo phiên đấu giá",
     url: STAFF_ROUTES.SUB.POST_AUCTION,
     roleView: ["Staff"],
   },
@@ -76,7 +61,7 @@ const items: MenuItem[] = [
   {
     key: "6",
     icon: <TeamOutlined />,
-    label: "Danh sách nhân lực",
+    label: "Quản lý nhân sự",
     url: STAFF_ROUTES.SUB.PROPERTIES,
     roleView: ["Director", "Manager"],
   },
@@ -90,14 +75,14 @@ const items: MenuItem[] = [
   {
     key: "8",
     icon: <UsergroupDeleteOutlined />,
-    label: "Danh sách đấu giá hiện tại",
+    label: "Phiên đấu giá hiện tại",
     url: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
     roleView: ["Manager", "Staff", "Auctioneer"],
   },
   {
     key: "9",
     icon: <UsergroupDeleteOutlined />,
-    label: "Danh sách đấu giá bị hủy",
+    label: "Phiên đấu giá bị hủy",
     url: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL,
     roleView: ["Manager", "Staff"],
   },
@@ -112,27 +97,18 @@ const SiderRouteOption = () => {
   const { user } = useSelector((state: any) => state.auth);
   const role = user?.roleName; // Filter items based on user's role
   const filteredItems = useMemo(
-    () =>
-      items.filter(
-        (item) => role && item.roleView.includes(role)
-      ),
+    () => items.filter((item) => role && item.roleView.includes(role)),
     [role]
   );
 
   const getCurrentKey = () => {
     const pathname = location.pathname;
     const rolePath = role?.toLowerCase();
-    const routeWithoutRole = pathname.replace(
-      `/${rolePath}/`,
-      ""
-    );
+    const routeWithoutRole = pathname.replace(`/${rolePath}/`, "");
     let currentKey = filteredItems[0]?.key || "1";
 
     for (const item of filteredItems) {
-      if (
-        routeWithoutRole === item.url ||
-        routeWithoutRole.startsWith(item.url || "/")
-      ) {
+      if (routeWithoutRole === item.url || routeWithoutRole.startsWith(item.url || "/")) {
         currentKey = item.key;
       }
     }
