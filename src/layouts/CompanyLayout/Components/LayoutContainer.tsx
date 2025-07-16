@@ -5,9 +5,9 @@ import SiderRouteOption from "./SiderRouteOption";
 
 interface Props {
   children?:
-    | string
-    | React.JSX.Element
-    | React.JSX.Element[];
+  | string
+  | React.JSX.Element
+  | React.JSX.Element[];
 }
 
 const siderStyle: React.CSSProperties = {
@@ -28,7 +28,7 @@ const siderStyle: React.CSSProperties = {
 };
 
 const LayoutContainer = ({ children }: Props) => {
-  const { Header, Footer, Content, Sider } = Layout;
+  const { Header, Content, Sider } = Layout;
 
   return (
     <Layout
@@ -71,14 +71,6 @@ const LayoutContainer = ({ children }: Props) => {
             {children}
           </div>
         </Content>
-        <Footer
-          style={{
-            textAlign: "center",
-            padding: "16px 0",
-            backgroundColor: "#f8fafc",
-            borderTop: "1px solid #e2e8f0",
-          }}
-        ></Footer>
       </Layout>
     </Layout>
   );

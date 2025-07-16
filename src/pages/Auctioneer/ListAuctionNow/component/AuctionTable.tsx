@@ -105,6 +105,7 @@ const AuctionTable = ({
         onRow={(record) => ({
           onClick: () => {
             const rolePath = role?.toLowerCase();
+
             if (rolePath == STAFF_ROUTES.PATH) {
               navigate(
                 `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_NOW}/${STAFF_ROUTES.SUB.AUCTION_DETAIL_NOW}`,
@@ -113,7 +114,8 @@ const AuctionTable = ({
                   replace: true,
                 }
               );
-            } else if (rolePath == AUCTIONEER_ROUTES.SUB) {
+            } else if (rolePath == AUCTIONEER_ROUTES.PATH) {
+              console.log("RolePath", rolePath)
               navigate(
                 `/${rolePath}/${AUCTIONEER_ROUTES.SUB.AUCTION_NOW}/${AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW}`,
                 {

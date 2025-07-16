@@ -101,3 +101,12 @@ export type InputAuctionPriceModals = {
   auctionAssetName?: string;
   price: number;
 }
+
+export type AuctionRoundPrice = {
+  AuctionRoundId: string;
+  UserName: string;
+  CitizenIdentification: string;
+  RecentLocation: string;
+  TagName: string;
+  AuctionPrice: string;
+}
