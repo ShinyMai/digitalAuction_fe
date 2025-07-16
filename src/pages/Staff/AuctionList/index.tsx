@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import AuctionServices from "../../../services/AuctionServices";
 import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
 import type { AuctionCategory, AuctionDataList } from "../Modals.ts";
+import type { ApiResponse } from "../../../types/responseAxios";
 
 interface SearchParams {
   AuctionName?: string;
@@ -28,11 +27,18 @@ interface SearchValue {
   AuctionType?: string;
 }
 
+interface PaginationChangeParams {
+  current?: number;
+  pageSize?: number;
+}
+
 const DEFAULT_PARAMS: SearchParams = {
   PageNumber: 1,
   PageSize: 8,
   Status: 1,
   AuctionType: "1",
+  SortBy: "register_open_date",
+  IsAscending: false,
 };
 
 const AuctionList = () => {
@@ -42,28 +48,21 @@ const AuctionList = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useState<SearchParams>(DEFAULT_PARAMS);
 
-  useEffect(() => {
-    fetchAuctionCategories();
+  const fetchAuctionCategories = useCallback(async (): Promise<void> => {
+    try {
+      const res: ApiResponse<AuctionCategory[]> = await AuctionServices.getListAuctionCategory();
+      if (res.code === 200 && res.data) {
+        setListAuctionCategory(res.data);
+      } else {
+        toast.error("Không có dữ liệu danh mục tài sản!");
+      }
+    } catch (error) {
+      console.error("Error fetching auction categories:", error);
+      toast.error("Lỗi khi tải danh mục đấu giá");
+    }
   }, []);
 
-  useEffect(() => {
-    fetchAuctionList();
-  }, [searchParams]);
-
-  const fetchAuctionCategories = async () => {
-    try {
-      const res = await AuctionServices.getListAuctionCategory();
-      if (!res?.data?.length) {
-        toast.error("Không có dữ liệu danh mục tài sản!");
-        return;
-      }
-      setListAuctionCategory(res.data);
-    } catch (error: any) {
-      toast.error(error.message || "Lỗi khi tải danh mục!");
-    }
-  };
-
-  const fetchAuctionList = async () => {
+  const fetchAuctionList = useCallback(async (): Promise<void> => {
     try {
       setLoading(true);
       const params: SearchParams = {
@@ -73,26 +72,36 @@ const AuctionList = () => {
         AuctionType: searchParams.AuctionType ?? "1",
         AuctionName: searchParams.AuctionName,
         CategoryId: searchParams.CategoryId,
-        SortBy: searchParams.SortBy?.replace("auctionName", "auction_name"),
+        SortBy: searchParams.SortBy,
         IsAscending: searchParams.IsAscending,
       };
-
       const response =
         params.AuctionType === "2"
           ? await AuctionServices.getListAuctionNode(params)
           : await AuctionServices.getListAuction(params);
 
-      setTotalData(response.data?.totalCount || 0);
-      setAuctionList(response.data?.auctions || []);
+      if (response.code === 200 && response.data) {
+        const data = response.data;
+        setTotalData(data.totalCount || 0);
+        setAuctionList(data.auctions || []);
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching auction list:", error);
       toast.error("Lỗi khi tải danh sách đấu giá!");
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchParams]);
 
-  const onSearch = (searchValue: SearchValue) => {
+  useEffect(() => {
+    fetchAuctionCategories();
+  }, [fetchAuctionCategories]);
+
+  useEffect(() => {
+    fetchAuctionList();
+  }, [fetchAuctionList]);
+
+  const onSearch = (searchValue: SearchValue): void => {
     const newParams: SearchParams = {
       ...searchParams,
       PageNumber: 1,
@@ -119,23 +128,14 @@ const AuctionList = () => {
     setSearchParams(newParams);
   };
 
-  const onChangeTable = (
-    pagination: { current: number; pageSize: number },
-    sorter: { field?: string; order?: "ascend" | "descend" }
-  ) => {
+  const onChangeTable = (pagination: PaginationChangeParams): void => {
     const newParams: SearchParams = {
       ...searchParams,
-      PageNumber: pagination.current,
-      PageSize: pagination.pageSize,
+      PageNumber: pagination.current || 1,
+      PageSize: pagination.pageSize || 8,
+      SortBy: searchParams.SortBy,
+      IsAscending: searchParams.IsAscending,
     };
-
-    if (sorter?.field && sorter?.order) {
-      newParams.SortBy = sorter.field;
-      newParams.IsAscending = sorter.order === "ascend";
-    } else {
-      delete newParams.SortBy;
-      delete newParams.IsAscending;
-    }
 
     setSearchParams(newParams);
   };
@@ -153,7 +153,6 @@ const AuctionList = () => {
           loading={loading}
           pageSize={searchParams.PageSize}
           currentPage={searchParams.PageNumber}
-          selectedAuctionType={searchParams.AuctionType}
         />
       </div>
     </section>

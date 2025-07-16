@@ -31,6 +31,8 @@ const AuctionTable = ({
   const navigate = useNavigate();
   const { user } = useSelector((state: any) => state.auth);
   const role = user?.roleName;
+  const currentDate = dayjs();
+
   const columns: TableProps<AuctionDataList>["columns"] = [
     {
       title: "STT",
@@ -45,32 +47,30 @@ const AuctionTable = ({
       sorter: (a, b) => a.auctionName.localeCompare(b.auctionName),
     },
     {
-      title: "Ngày ĐK Mở",
-      dataIndex: "registerOpenDate",
-      key: "registerOpenDate",
+      title: "Ngày Mở - Kết thúc ĐK",
+      key: "registerDateRange",
       sorter: (a, b) => dayjs(a.registerOpenDate).unix() - dayjs(b.registerOpenDate).unix(),
-      render: (text: string) => (text ? dayjs(text).format("DD/MM/YYYY") : "-"),
+      render: (_: any, record: AuctionDataList) => {
+        const start = record.registerOpenDate
+          ? dayjs(record.registerOpenDate).format("DD/MM/YYYY")
+          : "-";
+        const end = record.registerEndDate
+          ? dayjs(record.registerEndDate).format("DD/MM/YYYY")
+          : "-";
+        return `${start} - ${end}`;
+      },
     },
     {
-      title: "Ngày ĐK Kết Thúc",
-      dataIndex: "registerEndDate",
-      key: "registerEndDate",
-      sorter: (a, b) => dayjs(a.registerEndDate).unix() - dayjs(b.registerEndDate).unix(),
-      render: (text: string) => (text ? dayjs(text).format("DD/MM/YYYY") : "-"),
-    },
-    {
-      title: "Ngày Bắt Đầu",
-      dataIndex: "auctionStartDate",
-      key: "auctionStartDate",
+      title: "Ngày Bắt Đầu - Kết Thúc",
+      key: "auctionDateRange",
       sorter: (a, b) => dayjs(a.auctionStartDate).unix() - dayjs(b.auctionStartDate).unix(),
-      render: (text: string) => (text ? dayjs(text).format("DD/MM/YYYY") : "-"),
-    },
-    {
-      title: "Ngày Kết Thúc",
-      dataIndex: "auctionEndDate",
-      key: "auctionEndDate",
-      sorter: (a, b) => dayjs(a.auctionEndDate).unix() - dayjs(b.auctionEndDate).unix(),
-      render: (text: string) => (text ? dayjs(text).format("DD/MM/YYYY") : "-"),
+      render: (_: any, record: AuctionDataList) => {
+        const start = record.auctionStartDate
+          ? dayjs(record.auctionStartDate).format("DD/MM/YYYY")
+          : "-";
+        const end = record.auctionEndDate ? dayjs(record.auctionEndDate).format("DD/MM/YYYY") : "-";
+        return `${start} - ${end}`;
+      },
     },
     {
       title: "Người tạo",
@@ -85,6 +85,47 @@ const AuctionTable = ({
         />
       ),
     },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, record: AuctionDataList) => {
+        const regEndDate = record.registerEndDate ? dayjs(record.registerEndDate) : null;
+        const aucStartDate = record.auctionStartDate ? dayjs(record.auctionStartDate) : null;
+        const aucEndDate = record.auctionEndDate ? dayjs(record.auctionEndDate) : null;
+
+        let statusText = "-";
+        let statusClass = "bg-gray-100 text-gray-800";
+
+        if (regEndDate && currentDate.isBefore(regEndDate)) {
+          statusText = "Đang thu hồ sơ";
+          statusClass = "bg-green-100 text-green-800";
+        } else if (
+          regEndDate &&
+          aucStartDate &&
+          currentDate.isAfter(regEndDate) &&
+          currentDate.isBefore(aucStartDate)
+        ) {
+          statusText = "Đang chuẩn bị tổ chức";
+          statusClass = "bg-yellow-100 text-yellow-800";
+        } else if (
+          aucStartDate &&
+          aucEndDate &&
+          currentDate.isAfter(aucStartDate) &&
+          currentDate.isBefore(aucEndDate)
+        ) {
+          statusText = "Đang diễn ra";
+          statusClass = "bg-teal-100 text-teal-800";
+        } else if (aucEndDate && currentDate.isAfter(aucEndDate)) {
+          statusText = "Đã kết thúc";
+          statusClass = "bg-red-100 text-red-800";
+        }
+
+        return (
+          <span className={`inline-block px-2 py-1 rounded ${statusClass}`}>{statusText}</span>
+        );
+      },
+    },
   ];
 
   return (
@@ -98,8 +139,6 @@ const AuctionTable = ({
           total,
           pageSize,
           current: currentPage,
-          // showSizeChanger: true,
-          // pageSizeOptions: ["10", "20", "50"],
           className: "bg-white rounded-b-lg",
         }}
         loading={loading}

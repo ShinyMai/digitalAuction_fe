@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Table, type TableProps } from "antd";
+import { Table, Tooltip, type TableProps } from "antd";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import type { AuctionDataList } from "../../Modals";
 import { AUCTIONEER_ROUTES, STAFF_ROUTES } from "../../../../routers";
 import { useSelector } from "react-redux";
+import UserNameOrId from "../../../../components/Common/UserNameOrId";
 
 interface Props {
   auctionData?: AuctionDataList[];
@@ -12,8 +13,9 @@ interface Props {
   onChange: (pagination: any, sorter: any) => void;
   total: number;
   loading: boolean;
-  pageSize?: number;
-  currentPage?: number;
+  pageSize: number;
+  currentPage: number;
+  selectedAuctionType?: string;
 }
 
 const AuctionTable = ({
@@ -24,63 +26,92 @@ const AuctionTable = ({
   loading,
   pageSize,
   currentPage,
+  selectedAuctionType,
 }: Props) => {
   const navigate = useNavigate();
   const { user } = useSelector((state: any) => state.auth);
   const role = user?.roleName;
+  const formatDate = (dateString: string): string => {
+    return dateString ? dayjs(dateString).format("DD/MM/YYYY") : "-";
+  };
+
+  const calculateRowIndex = (index: number): number => {
+    return (currentPage - 1) * pageSize + index + 1;
+  };
+
+  const TruncatedText: React.FC<{ text: string; maxWidth?: number }> = ({
+    text,
+    maxWidth = 200,
+  }) => (
+    <Tooltip title={text} placement="topLeft">
+      <div
+        className="truncate cursor-pointer"
+        style={{
+          maxWidth: `${maxWidth}px`,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {text}
+      </div>
+    </Tooltip>
+  );
+
   const columns: TableProps<AuctionDataList>["columns"] = [
     {
       title: "STT",
       key: "index",
-      render: (_: any, __: any, index: number) =>
-        ((currentPage || 1) - 1) * (pageSize || 10) +
-        index +
-        1,
+      render: (_, __, index: number) => calculateRowIndex(index),
     },
     {
       title: "Tên Đấu Giá",
       dataIndex: "auctionName",
       key: "auctionName",
       sorter: true,
+      width: 250,
+      render: (text: string) => <TruncatedText text={text} maxWidth={700} />,
     },
     {
-      title: "Ngày ĐK Mở",
-      dataIndex: "registerOpenDate",
-      key: "registerOpenDate",
-      sorter: true,
-      render: (text: string) =>
-        text ? dayjs(text).format("DD/MM/YYYY") : "-",
+      title: "Ngày Mở - Kết thúc ĐK",
+      key: "registerDateRange",
+      sorter: (a, b) => dayjs(a.registerOpenDate).unix() - dayjs(b.registerOpenDate).unix(),
+      render: (_: any, record: AuctionDataList) => {
+        const start = record.registerOpenDate ? formatDate(record.registerOpenDate) : "-";
+        const end = record.registerEndDate ? formatDate(record.registerEndDate) : "-";
+        return `${start} - ${end}`;
+      },
     },
     {
-      title: "Ngày ĐK Kết Thúc",
-      dataIndex: "registerEndDate",
-      key: "registerEndDate",
-      sorter: true,
-      render: (text: string) =>
-        text ? dayjs(text).format("DD/MM/YYYY") : "-",
-    },
-    {
-      title: "Ngày Bắt Đầu",
-      dataIndex: "auctionStartDate",
-      key: "auctionStartDate",
-      sorter: true,
-      render: (text: string) =>
-        text ? dayjs(text).format("DD/MM/YYYY") : "-",
-    },
-    {
-      title: "Ngày Kết Thúc",
-      dataIndex: "auctionEndDate",
-      key: "auctionEndDate",
-      sorter: true,
-      render: (text: string) =>
-        text ? dayjs(text).format("DD/MM/YYYY") : "-",
+      title: "Ngày Bắt Đầu - Kết Thúc",
+      key: "auctionDateRange",
+      sorter: (a, b) => dayjs(a.auctionStartDate).unix() - dayjs(b.auctionStartDate).unix(),
+      render: (_: any, record: AuctionDataList) => {
+        const start = record.auctionStartDate ? formatDate(record.auctionStartDate) : "-";
+        const end = record.auctionEndDate ? formatDate(record.auctionEndDate) : "-";
+        return `${start} - ${end}`;
+      },
     },
     {
       title: "Người tạo",
-      dataIndex: "createdByUserName",
-      key: "createdByUserName",
+      dataIndex: "createdBy",
+      key: "createdBy",
       sorter: true,
-      render: (text: string) => text || "-",
+      width: 180,
+      render: (userId: string, record: AuctionDataList) => {
+        const userName = record.createdByUserName || userId;
+        return (
+          <Tooltip title={userName} placement="topLeft">
+            <div className="truncate max-w-[150px]">
+              <UserNameOrId
+                userId={userId}
+                userName={record.createdByUserName}
+                showUserName={selectedAuctionType === "2"}
+              />
+            </div>
+          </Tooltip>
+        );
+      },
     },
   ];
 
@@ -115,7 +146,7 @@ const AuctionTable = ({
                 }
               );
             } else if (rolePath == AUCTIONEER_ROUTES.PATH) {
-              console.log("RolePath", rolePath)
+              console.log("RolePath", rolePath);
               navigate(
                 `/${rolePath}/${AUCTIONEER_ROUTES.SUB.AUCTION_NOW}/${AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW}`,
                 {
@@ -124,7 +155,6 @@ const AuctionTable = ({
                 }
               );
             }
-
           },
         })}
         rowClassName="cursor-pointer hover:bg-blue-50 transition-colors duration-200"

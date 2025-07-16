@@ -9,25 +9,13 @@ import {
 import wrapWithLazy from "../utils/wrapWithLazy";
 import React from "react";
 
-const HomePage = React.lazy(
-  () => import("../pages/Anonymous/HomePage/HomePage")
-);
-const Register = React.lazy(
-  () => import("../pages/Anonymous/Register/Register")
-);
-const News = React.lazy(
-  () => import("../pages/Anonymous/News/News")
-);
-const NotFound = React.lazy(
-  () => import("../components/Common/NotFound/index")
-);
-const AuctionListAnonymous = React.lazy(
-  () => import("../pages/Anonymous/AuctionList/index")
-);
+const HomePage = React.lazy(() => import("../pages/Anonymous/HomePage/HomePage"));
+const Register = React.lazy(() => import("../pages/Anonymous/Register/Register"));
+const News = React.lazy(() => import("../pages/Anonymous/News/News"));
+const NotFound = React.lazy(() => import("../components/Common/NotFound/index"));
+const AuctionListAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionList/index"));
 
-const AuctionDetailAnonymous = React.lazy(
-  () => import("../pages/Anonymous/AcutionDetail/index")
-);
+const AuctionDetailAnonymous = React.lazy(() => import("../pages/Anonymous/AcutionDetail/index"));
 
 export const guestRoutes = [
   {
@@ -52,9 +40,7 @@ export const guestRoutes = [
   },
   {
     path:
-      GUEST_ROUTERS.AUCITON_LIST +
-      "/" +
-      GUEST_ROUTERS.AUCTION_DETAIL ||
+      GUEST_ROUTERS.AUCITON_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL ||
       GUEST_ROUTERS.AUCTION_DETAIL,
     element: wrapWithLazy(AuctionDetailAnonymous),
   },
@@ -62,9 +48,7 @@ export const guestRoutes = [
 
 // Router site User
 
-const AuctionRegister = React.lazy(
-  () => import("../pages/User/AuctionRegister/index")
-);
+const AuctionRegister = React.lazy(() => import("../pages/User/AuctionRegister/index"));
 
 export const userRoutes = [
   {
@@ -87,34 +71,21 @@ export const userRoutes = [
 ];
 
 // Router site TuanLinh
-const PostAuction = React.lazy(
-  () => import("../pages/Staff/PostAuction/index")
-);
+const PostAuction = React.lazy(() => import("../pages/Staff/PostAuction/index"));
 
-const AuctionList = React.lazy(
-  () => import("../pages/Staff/AuctionList/index")
-);
+const AuctionList = React.lazy(() => import("../pages/Staff/AuctionList/index"));
 
-const AuctionListDraff = React.lazy(
-  () => import("../pages/Manager/AutionListDraff/index")
-);
+const AuctionListDraff = React.lazy(() => import("../pages/Manager/AutionListDraff/index"));
 
-const AuctionDetail = React.lazy(
-  () => import("../pages/Staff/AuctionDetail/index")
-);
+const AuctionDetail = React.lazy(() => import("../pages/Staff/AuctionDetail/index"));
 
-const AuctionDetailAuctioneer = React.lazy(
-  () => import("../pages/Auctioneer/AuctionDetail/index")
-);
+const AuctionDetailAuctioneer = React.lazy(() => import("../pages/Auctioneer/AuctionDetail/index"));
 
+const AuctionListCancel = React.lazy(() => import("../pages/Manager/AuctionListCancel/index"));
 
-const AuctionListCancel = React.lazy(
-  () => import("../pages/Manager/AuctionListCancel/index")
-);
+const AuctionDetailCancel = React.lazy(() => import("../pages/Manager/AuctionDetailCancel/index"));
 
-const AuctionDetailCancel = React.lazy(
-  () => import("../pages/Manager/AuctionDetailCancel/index")
-);
+const AuctionDetailDraff = React.lazy(() => import("../pages/Manager/AuctionDraffDetail/index"));
 
 // Placeholder components for missing routes
 const Statistics = React.lazy(() =>
@@ -142,12 +113,10 @@ const Dashboard = React.lazy(() =>
 );
 
 const SupportRegisterAuction = React.lazy(
-  () => import("../pages/Staff/SupportRegisterAuction/index"),
+  () => import("../pages/Staff/SupportRegisterAuction/index")
 );
 
-const listAcutionNow = React.lazy(
-  () => import("../pages/Auctioneer/ListAuctionNow/index")
-);
+const listAcutionNow = React.lazy(() => import("../pages/Auctioneer/ListAuctionNow/index"));
 
 export const staffRoutes = [
   {
@@ -206,13 +175,14 @@ export const staffRoutes = [
     path: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL + "/" + MANAGER_ROUTES.SUB.AUCTION_DETAIL_CANCEL,
     element: wrapWithLazy(AuctionDetailCancel),
   },
-
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_DRAFF,
+    element: wrapWithLazy(AuctionDetailDraff),
+  },
 ];
 
 // Router site Admin
-const AddAccountStaff = React.lazy(
-  () => import("../pages/Admin/ManagerAccount/AddEmployees")
-);
+const AddAccountStaff = React.lazy(() => import("../pages/Admin/ManagerAccount/AddEmployees"));
 
 export const adminRoutes = [
   {
@@ -237,8 +207,6 @@ export const managerRoutes = [
   },
 ];
 
-
-
 export const auctioneerRoutes = [
   {
     path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
@@ -248,4 +216,4 @@ export const auctioneerRoutes = [
     path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW + "/" + AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW,
     element: wrapWithLazy(AuctionDetailAuctioneer),
   },
-]
+];

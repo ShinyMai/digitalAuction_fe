@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  Layout,
-  Pagination,
-  Spin,
-} from "antd";
-import {
-  FrownOutlined,
-} from "@ant-design/icons";
+import { Layout, Pagination, Spin, Input } from "antd";
+import { FrownOutlined } from "@ant-design/icons";
 import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
@@ -53,8 +47,11 @@ const AuctionListAnonyMous = () => {
         PageNumber: searchParams.PageNumber || 1,
         PageSize: searchParams.PageSize || 9,
         CategoryId: location.state?.key, // Luôn bao gồm CategoryId từ location.state.key
-        Status: searchParams.Status
+        Status: searchParams.Status,
       };
+      if (searchParams.AuctionName) {
+        params.AuctionName = searchParams.AuctionName;
+      }
 
       const response = await AuctionServices.getListAuction(params);
       setTotalData(response.data.totalCount || 0);
@@ -83,6 +80,20 @@ const AuctionListAnonyMous = () => {
         <h2 className="text-center mb-6 text-3xl md:text-4xl text-blue-800">
           Danh sách phiên đấu giá
         </h2>
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <div className="w-full lg:w-1/3 [&_.ant-input]:border-teal-200 [&_.ant-input]:bg-blue-50">
+            <Input
+              placeholder="Tìm kiếm theo tên phiên đấu giá..."
+              value={searchParams.AuctionName || ""}
+              onChange={(e) =>
+                setSearchParams((prev) => ({
+                  ...prev,
+                  AuctionName: e.target.value,
+                }))
+              }
+            />
+          </div>
+        </div>
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <Spin size="large" className="text-teal-600" />
@@ -91,12 +102,7 @@ const AuctionListAnonyMous = () => {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 mt-8">
               {auctionList.length > 0 ? (
-                auctionList.map((item) => (
-                  <AuctionCard
-                    key={item.auctionId}
-                    dataCard={item}
-                  />
-                ))
+                auctionList.map((item) => <AuctionCard key={item.auctionId} dataCard={item} />)
               ) : (
                 <div className="col-span-full text-center text-teal-600 bg-blue-50 p-6 rounded-lg flex flex-col items-center justify-center">
                   <FrownOutlined
@@ -106,9 +112,7 @@ const AuctionListAnonyMous = () => {
                       marginBottom: "16px",
                     }}
                   />
-                  <span className="text-lg">
-                    Không có dữ liệu phiên đấu giá
-                  </span>
+                  <span className="text-lg">Không có dữ liệu phiên đấu giá</span>
                 </div>
               )}
             </div>

@@ -36,15 +36,15 @@ const SearchAuctionTable = ({ auctionCategory, onSearch }: Props) => {
         onFinish={handleSearch}
         form={form}
       >
+        <Form.Item name="auctionName" className="flex-1 min-w-[200px]" label="Tên buổi đấu giá">
+          <Input placeholder="Tên buổi đấu giá" className="w-full h-10 rounded-lg" />
+        </Form.Item>
         <Form.Item
           label="Thời gian đăng ký"
           name="registerRangeDate"
           className="flex-1 min-w-[200px]"
         >
           <DatePicker.RangePicker className="w-full h-10 rounded-lg" />
-        </Form.Item>
-        <Form.Item name="auctionName" className="flex-1 min-w-[200px]" label="Tên buổi đấu giá">
-          <Input placeholder="Tên buổi đấu giá" className="w-full h-10 rounded-lg" />
         </Form.Item>
         <Form.Item
           label="Thời gian đấu giá"

@@ -10,11 +10,7 @@ interface Props {
   onChange?: (value: AntUploadFile[]) => void;
 }
 
-const CustomUploadFile = ({
-  contentName,
-  value = [],
-  onChange,
-}: Props) => {
+const CustomUploadFile = ({ contentName, value = [], onChange }: Props) => {
   const [fileList, setFileList] = useState<AntUploadFile[]>(value);
 
   // Hàm cắt ngắn tên file nếu quá dài
@@ -27,7 +23,7 @@ const CustomUploadFile = ({
 
   const props: UploadProps = {
     name: "file",
-    accept: ".xlsx,.xls,.docx",
+    accept: ".xlsx,.xls,.docx,.pdf",
     fileList: fileList.map((file) => ({
       ...file,
       name: truncateFileName(file.name),
@@ -38,9 +34,7 @@ const CustomUploadFile = ({
         file.type === "application/vnd.ms-excel" ||
         file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
       if (!isValidFile) {
-        message.error(
-          "Chỉ được tải lên file Excel (.xlsx, .xls) hoặc Word (.docx)!"
-        );
+        message.error("Chỉ được tải lên file Excel (.xlsx, .xls) hoặc Word (.docx)!");
         return Upload.LIST_IGNORE;
       }
       return false;
@@ -65,21 +59,13 @@ const CustomUploadFile = ({
     },
     // Tùy chỉnh cách hiển thị tên file
     itemRender: (originNode, file) => {
-      return (
-        <Tooltip title={file.name}>
-          {originNode}
-        </Tooltip>
-      );
+      return <Tooltip title={file.name}>{originNode}</Tooltip>;
     },
   };
 
   return (
     <Upload {...props}>
-      <Button
-        icon={<UploadOutlined />}
-        style={{ width: 250, height: 40 }}
-        className="rounded-lg"
-      >
+      <Button icon={<UploadOutlined />} style={{ width: 250, height: 40 }} className="rounded-lg">
         {contentName}
       </Button>
     </Upload>

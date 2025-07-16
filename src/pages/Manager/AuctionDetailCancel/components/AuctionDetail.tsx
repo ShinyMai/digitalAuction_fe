@@ -4,20 +4,17 @@ import dayjs from "dayjs";
 import type { AuctionDataDetail } from "../../Modals";
 import { useState } from "react";
 import PopupVerifyCancelAuction from "./PopupVerifyCancelAuction";
+import { EnvironmentOutlined } from "@ant-design/icons";
 
 interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
   auctionType?: string;
-  auctionId?: string
+  auctionId?: string;
 }
 
 const API_BASE_URL_NODE = import.meta.env.VITE_BE_URL_NODE;
 
-const AuctionDetail = ({
-  auctionDetailData,
-  auctionType,
-  auctionId,
-}: AuctionDetailProps) => {
+const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDetailProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleModalCancel = () => {
@@ -122,7 +119,7 @@ const AuctionDetail = ({
                 Danh sách tài sản đấu giá
               </h3>
               {auctionDetailData.listAuctionAssets &&
-                auctionDetailData.listAuctionAssets.length > 0 ? (
+              auctionDetailData.listAuctionAssets.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {auctionDetailData.listAuctionAssets.map((asset) => (
                     <Card
@@ -208,6 +205,53 @@ const AuctionDetail = ({
                 )}
               </div>
             </div>
+
+            {/* Thông tin bản đồ */}
+            {auctionDetailData.auctionMap || auctionDetailData.auctionPlanningMap ? (
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold text-blue-800 mb-4">
+                  Thông tin bản đồ tài sản
+                </h3>
+                <div className="bg-blue-50 border border-teal-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+                  <div>
+                    {auctionDetailData.auctionPlanningMap && (
+                      <div className="flex items-center bg-blue-50 pt-4 pl-4 rounded-lg">
+                        <EnvironmentOutlined className="text-teal-600 mr-2" />
+                        <Typography.Link
+                          href={
+                            auctionType === "SQL"
+                              ? auctionDetailData.auctionPlanningMap
+                              : API_BASE_URL_NODE + "/" + auctionDetailData.auctionPlanningMap
+                          }
+                          target="_blank"
+                          className="text-teal-600 font-medium hover:text-teal-800 "
+                        >
+                          Xem bản đồ tài sản
+                        </Typography.Link>
+                      </div>
+                    )}
+                    {auctionDetailData.auctionMap && (
+                      <div className="flex items-center bg-blue-50 p-4 rounded-lg">
+                        <EnvironmentOutlined className="text-teal-600 mr-2" />
+                        <Typography.Link
+                          href={
+                            auctionType === "SQL"
+                              ? auctionDetailData.auctionMap
+                              : API_BASE_URL_NODE + "/" + auctionDetailData.auctionMap
+                          }
+                          target="_blank"
+                          className="text-teal-600 font-medium hover:text-teal-800"
+                        >
+                          Xem trên Google Maps
+                        </Typography.Link>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
         ) : (
           <div className="text-center text-teal-600 py-6 bg-blue-50 rounded-lg">

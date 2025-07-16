@@ -44,18 +44,11 @@ const formatVND = (value: string) => {
   }).format(number);
 };
 
-const AssetSelect = ({
-  listAsset,
-  onGetAssetSelect,
-  onNext,
-}: Props) => {
+const AssetSelect = ({ listAsset, onGetAssetSelect, onNext }: Props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
 
-  const truncateDescription = (
-    text?: string,
-    maxLength: number = 100
-  ) => {
+  const truncateDescription = (text?: string, maxLength: number = 100) => {
     if (!text) return "";
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength) + "...";
@@ -73,11 +66,7 @@ const AssetSelect = ({
       key: "imageUrl",
       render: (url: string) =>
         url ? (
-          <img
-            src={url}
-            alt="Asset"
-            className="w-16 h-16 object-cover rounded"
-          />
+          <img src={url} alt="Asset" className="w-16 h-16 object-cover rounded" />
         ) : (
           <div className="text-gray-400">Không có hình</div>
         ),
@@ -91,9 +80,7 @@ const AssetSelect = ({
       ),
       dataIndex: "tagName",
       key: "tagName",
-      render: (text: string) => (
-        <span className="text-teal-700">{text}</span>
-      ),
+      render: (text: string) => <span className="text-teal-700">{text}</span>,
     },
     {
       title: (
@@ -116,11 +103,7 @@ const AssetSelect = ({
       dataIndex: "description",
       key: "description",
       render: (text: string) => (
-        <Tooltip
-          title={text}
-          placement="top"
-          color="#4b5563"
-        >
+        <Tooltip title={text} placement="top" color="#4b5563">
           <div className="cursor-pointer hover:text-blue-600 text-gray-600">
             {truncateDescription(text)}
           </div>
@@ -137,9 +120,7 @@ const AssetSelect = ({
       dataIndex: "startingPrice",
       key: "startingPrice",
       render: (text: string) => (
-        <span className="text-teal-600 font-medium">
-          {formatVND(text)}
-        </span>
+        <span className="text-teal-600 font-medium">{formatVND(text)}</span>
       ),
     },
     {
@@ -152,9 +133,7 @@ const AssetSelect = ({
       dataIndex: "deposit",
       key: "deposit",
       render: (text: string) => (
-        <span className="text-teal-600 font-medium">
-          {formatVND(text)}
-        </span>
+        <span className="text-teal-600 font-medium">{formatVND(text)}</span>
       ),
     },
     {
@@ -167,9 +146,7 @@ const AssetSelect = ({
       dataIndex: "registrationFee",
       key: "registrationFee",
       render: (text: string) => (
-        <span className="text-teal-600 font-medium">
-          {formatVND(text)}
-        </span>
+        <span className="text-teal-600 font-medium">{formatVND(text)}</span>
       ),
     },
     {
@@ -179,11 +156,7 @@ const AssetSelect = ({
         <Button
           type="primary"
           className="bg-teal-500 hover:bg-teal-600"
-          onClick={() =>
-            handleGetValueAssetAndNext(
-              record.auctionAssetsId
-            )
-          }
+          onClick={() => handleGetValueAssetAndNext(record.auctionAssetsId)}
         >
           Mua hồ sơ
         </Button>
@@ -191,10 +164,7 @@ const AssetSelect = ({
     },
   ];
 
-  const paginatedData = listAsset?.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  const paginatedData = listAsset?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const handleGetValueAssetAndNext = (value: string) => {
     onGetAssetSelect(value);
@@ -212,27 +182,22 @@ const AssetSelect = ({
           dataSource={paginatedData}
           rowKey="auctionAssetsId"
           pagination={false}
+          scroll={{ x: 800 }} // Thêm cuộn ngang cho màn hình nhỏ
           className="custom-table"
           rowClassName="hover:bg-blue-50 transition-colors duration-200"
         />
-        {listAsset?.length &&
-          listAsset?.length > pageSize && (
-            <div className="mt-6 flex justify-center">
-              <Pagination
-                current={currentPage}
-                pageSize={pageSize}
-                total={listAsset?.length || 0}
-                onChange={(page) => setCurrentPage(page)}
-                showSizeChanger={false}
-                className="pagination-custom"
-              />
-            </div>
-          )}
-      </div>
-      <div className="mt-6 flex justify-between">
-        {/* <Button className="bg-gray-200 hover:bg-gray-300" onClick={onPrev}>
-                    Quay Lại
-                </Button> */}
+        {listAsset?.length && listAsset?.length > pageSize && (
+          <div className="mt-6 flex justify-center">
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={listAsset?.length || 0}
+              onChange={(page) => setCurrentPage(page)}
+              showSizeChanger={false}
+              className="pagination-custom"
+            />
+          </div>
+        )}
       </div>
     </div>
   );

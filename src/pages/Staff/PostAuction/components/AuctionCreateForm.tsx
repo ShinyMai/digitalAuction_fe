@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Card, Col, DatePicker, Form, Input, message, Row, Select } from "antd";
+import { Button, Card, Col, DatePicker, Form, Input, message, Row, Select, Tooltip } from "antd";
 import { useForm } from "antd/es/form/Form";
-import MapComponent from "./MapComponent";
 import { useState, useEffect } from "react";
 import UploadFile from "./Upload";
 import type { AuctionCategory } from "../../Modals.ts";
@@ -9,6 +8,8 @@ import dayjs, { Dayjs } from "dayjs";
 import AuctionServices from "../../../../services/AuctionServices/index.tsx";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import * as XLSX from "xlsx";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 const { RangePicker } = DatePicker;
 
@@ -40,7 +41,7 @@ interface Props {
   auctionType: "NODE" | "SQL";
 }
 
-const REAL_ESTATE_CATEGORY_ID = 1; // Hằng số cho danh mục bất động sản
+const REAL_ESTATE_CATEGORY_ID = 2; // Hằng số cho danh mục bất động sản
 
 const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
   const [form] = useForm<AuctionFormValues>();
@@ -102,7 +103,7 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
       AuctionEndDate: formValues.AuctionEndDate,
       NumberRoundMax: formValues.NumberRoundMax,
       AuctionDescription: formValues.AuctionDescription,
-      AuctionMap: formValues.AuctionMap,
+      Auction_Map: formValues.AuctionMap,
     };
 
     // Append non-file fields to FormData
@@ -206,6 +207,55 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
       toast.error(`Tạo đấu giá thất bại: ${errorMessage}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Hàm tải file mẫu định dạng tài sản
+  const handleDownloadTemplate = () => {
+    try {
+      const templateData = [
+        {
+          Tag_Name: "Máy xúc",
+          starting_price: "100,000,000",
+          Unit: "Cái",
+          Deposit: "10,000,000",
+          Registration_fee: "500,000",
+          Description: "Máy xúc đã qua sử dụng, còn hoạt động tốt",
+        },
+        {
+          Tag_Name: "Xe tải",
+          starting_price: "150,000,000",
+          Unit: "Chiếc",
+          Deposit: "15,000,000",
+          Registration_fee: "700,000",
+          Description: "Xe tải trọng tải 5 tấn, đời 2018",
+        },
+        {
+          Tag_Name: "Máy khoan",
+          starting_price: "50,000,000",
+          Unit: "Bộ",
+          Deposit: "5,000,000",
+          Registration_fee: "300,000",
+          Description: "Máy khoan điện, đầy đủ phụ kiện",
+        },
+      ];
+      const ws = XLSX.utils.json_to_sheet(templateData, {
+        header: [
+          "Tag_Name",
+          "starting_price",
+          "Unit",
+          "Deposit",
+          "Registration_fee",
+          "Description",
+        ],
+      });
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "AuctionAssets");
+      XLSX.writeFile(wb, "Mau_Thong_Tin_Dau_Gia_DinhDang.xlsx");
+      toast.success("Tải file mẫu thành công!");
+    } catch (error) {
+      toast.error("Lỗi khi tải file mẫu!");
+      console.error(error);
     }
   };
 
@@ -332,7 +382,16 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
             className="bg-blue-50 border border-teal-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
           >
             <Form.Item
-              label="Tệp tài sản đấu giá"
+              label={
+                <span>
+                  Tệp tài sản đấu giá
+                  <Tooltip title="Chỉ nhận file đúng định dạng như file mẫu" placement="top">
+                    <span className="ml-2 text-blue-500 cursor-pointer">
+                      <QuestionCircleOutlined />
+                    </span>
+                  </Tooltip>
+                </span>
+              }
               name="AuctionAssetFile"
               rules={[
                 {
@@ -343,7 +402,14 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
               valuePropName="fileList"
             >
               <UploadFile contentName="AuctionAssetFile" />
+              <div
+                className="cursor-pointer mt-2 text-blue-400 underline"
+                onClick={handleDownloadTemplate}
+              >
+                Tải mẫu danh sách tải sản
+              </div>
             </Form.Item>
+
             <Form.Item
               label="Tệp quy tắc đấu giá"
               name="AuctionRulesFile"
@@ -369,6 +435,7 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
           >
             <Form.Item
               name="AuctionDescription"
+              label="Người có tài sản"
               rules={[
                 {
                   required: true,
@@ -394,14 +461,18 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
                 label="Bản đồ kế hoạch đấu giá"
                 name="AuctionPlanningMap"
                 valuePropName="fileList"
+                required={isRealEstate ? true : false}
               >
                 <UploadFile contentName="AuctionPlanningMap" />
               </Form.Item>
-              <Form.Item label="Vị trí trên bản đồ" name="AuctionMap">
-                <MapComponent
-                  isSearchMode={true}
-                  value="Hoa Lư, Ninh Bình, Việt Nam"
-                  popupText="Vị trí đấu giá"
+              <Form.Item
+                label="Vị trí trên bản đồ"
+                name="AuctionMap"
+                required={isRealEstate ? true : false}
+              >
+                <Input
+                  className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
+                  placeholder="Nhập vị trí trên bản đồ"
                 />
               </Form.Item>
             </Card>

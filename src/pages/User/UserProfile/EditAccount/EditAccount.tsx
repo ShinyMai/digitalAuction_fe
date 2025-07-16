@@ -1,12 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  Button,
-  Col,
-  Form,
-  Input,
-  Spin,
-  message,
-} from "antd";
+import { Button, Col, Form, Input, Spin, message } from "antd";
 import { useEffect, useState } from "react";
 import CustomModal from "../../../../components/Common/CustomModal";
 import AuthServices from "../../../../services/AuthServices";
@@ -16,10 +9,7 @@ interface EditAccountProps {
   onCancel: () => void;
 }
 
-const EditAccount = ({
-  open,
-  onCancel,
-}: EditAccountProps) => {
+const EditAccount = ({ open, onCancel }: EditAccountProps) => {
   const [formEdit] = Form.useForm();
   const [formOTP] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -57,16 +47,12 @@ const EditAccount = ({
     }
   };
 
-  const handleSubmitOTP = async (values: {
-    otpCode: string;
-  }) => {
+  const handleSubmitOTP = async (values: { otpCode: string }) => {
     try {
       setLoading(true);
-      const res = await AuthServices.verifyUpdateAccountOTP(
-        {
-          otpCode: values.otpCode,
-        }
-      );
+      const res = await AuthServices.verifyUpdateAccountOTP({
+        otpCode: values.otpCode,
+      });
 
       if (res.code === 200) {
         message.success("Thay đổi thành công!");
@@ -92,11 +78,7 @@ const EditAccount = ({
     >
       <Spin spinning={loading}>
         {isSendOTP ? (
-          <Form
-            form={formOTP}
-            style={{ width: "75%", margin: "auto" }}
-            onFinish={handleSubmitOTP}
-          >
+          <Form form={formOTP} style={{ width: "75%", margin: "auto" }} onFinish={handleSubmitOTP}>
             <Form.Item
               name="otpCode"
               label="Mã OTP"
@@ -135,8 +117,7 @@ const EditAccount = ({
                 label="Số điện thoại"
                 rules={[
                   {
-                    pattern:
-                      /^0(3[2-9]|5[6|8|9]|7[06-9]|8[1-6|8|9]|9[0-9])[0-9]{7}$/,
+                    pattern: /^0(3[2-9]|5[6|8|9]|7[06-9]|8[1-6|8|9]|9[0-9])[0-9]{7}$/,
                     message: "Số điện thoại không hợp lệ",
                   },
                 ]}

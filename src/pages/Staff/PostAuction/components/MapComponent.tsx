@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MapContainer, TileLayer, Circle, Popup, useMap } from "react-leaflet";
 import { Input, Tooltip } from "antd";
@@ -8,6 +7,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 // Fix Leaflet default icon issue
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
@@ -15,7 +15,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-// Định nghĩa kiểu cho dữ liệu từ Nominatim
+// Define types for Nominatim API
 interface NominatimResult {
   lat: string;
   lon: string;
@@ -23,12 +23,12 @@ interface NominatimResult {
   boundingbox: [string, string, string, string]; // [minLat, maxLat, minLon, maxLon]
 }
 
-// Định nghĩa props cho component
+// Component props interface
 interface MapComponentProps {
   isSearchMode: boolean;
   defaultPosition?: [number, number];
-  value?: string; // Giá trị form là display_name
-  onChange?: (value: string) => void; // Truyền display_name ra form
+  value?: string; // Form value is display_name
+  onChange?: (value: string) => void; // Pass display_name to form
   onPositionNameChange?: (name: string) => void;
   popupText?: string;
 }
@@ -59,7 +59,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const prevValueRef = useRef<string | undefined>(value);
 
   // Hàm tính tâm và bán kính từ boundingbox
-  const calculateCircle = (bbox: [number, number, number, number]): {
+  const calculateCircle = (
+    bbox: [number, number, number, number]
+  ): {
     center: [number, number];
     radius: number;
   } => {
@@ -69,7 +71,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     // Tính bán kính (khoảng cách từ tâm đến góc boundingbox, đơn vị mét)
     const latDiff = maxLat - minLat;
     const lonDiff = maxLon - minLon;
-    const radius = Math.sqrt(latDiff * latDiff + lonDiff * lonDiff) * 111_000 / 2; // Ước lượng mét
+    const radius = (Math.sqrt(latDiff * latDiff + lonDiff * lonDiff) * 111_000) / 2; // Ước lượng mét
     return { center: [centerLat, centerLon], radius };
   };
 
@@ -94,7 +96,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             params: {
               q: address,
               format: "json",
-              limit: 1
+              limit: 1,
             },
             headers: { "User-Agent": "AuctionApp/1.0" },
             maxRedirects: 5,

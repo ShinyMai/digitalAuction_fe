@@ -5,18 +5,20 @@ import { toast } from "react-toastify";
 import AuctionServices from "../../../services/AuctionServices";
 import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
-import type {
-  AuctionCategory,
-  AuctionDataList,
-} from "../Modals";
+import type { AuctionCategory, AuctionDataList } from "../Modals";
+
+interface PaginationChangeParams {
+  current?: number;
+  pageSize?: number;
+}
 
 interface SearchParams {
   AuctionName?: string;
   CategoryId?: number;
   SortBy?: string;
   IsAscending?: boolean;
-  PageNumber?: number;
-  PageSize?: number;
+  PageNumber: number;
+  PageSize: number;
   RegisterOpenDate?: string;
   RegisterEndDate?: string;
   AuctionStartDate?: string;
@@ -39,15 +41,11 @@ const DEFAULT_PARAMS: SearchParams = {
 };
 
 const AuctionListCancel = () => {
-  const [listAuctionCategory, setListAuctionCategory] =
-    useState<AuctionCategory[]>([]);
-  const [auctionList, setAuctionList] = useState<
-    AuctionDataList[]
-  >([]);
+  const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
+  const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [searchParams, setSearchParams] =
-    useState<SearchParams>(DEFAULT_PARAMS);
+  const [searchParams, setSearchParams] = useState<SearchParams>(DEFAULT_PARAMS);
 
   useEffect(() => {
     fetchAuctionCategories();
@@ -59,8 +57,7 @@ const AuctionListCancel = () => {
 
   const fetchAuctionCategories = async () => {
     try {
-      const res =
-        await AuctionServices.getListAuctionCategory();
+      const res = await AuctionServices.getListAuctionCategory();
       if (!res?.data?.length) {
         toast.error("Không có dữ liệu danh mục tài sản!");
         return;
@@ -81,10 +78,7 @@ const AuctionListCancel = () => {
         AuctionType: searchParams.AuctionType ?? "1",
         AuctionName: searchParams.AuctionName,
         CategoryId: searchParams.CategoryId,
-        SortBy: searchParams.SortBy?.replace(
-          "auctionName",
-          "auction_name"
-        ),
+        SortBy: searchParams.SortBy?.replace("auctionName", "auction_name"),
         IsAscending: searchParams.IsAscending,
       };
 
@@ -130,23 +124,14 @@ const AuctionListCancel = () => {
     setSearchParams(newParams);
   };
 
-  const onChangeTable = (
-    pagination: { current: number; pageSize: number },
-    sorter: { field?: string; order?: "ascend" | "descend" }
-  ) => {
+  const onChangeTable = (pagination: PaginationChangeParams): void => {
     const newParams: SearchParams = {
       ...searchParams,
-      PageNumber: pagination.current,
-      PageSize: pagination.pageSize,
+      PageNumber: pagination.current || 1,
+      PageSize: pagination.pageSize || 8,
+      SortBy: searchParams.SortBy,
+      IsAscending: searchParams.IsAscending,
     };
-
-    if (sorter?.field && sorter?.order) {
-      newParams.SortBy = sorter.field;
-      newParams.IsAscending = sorter.order === "ascend";
-    } else {
-      delete newParams.SortBy;
-      delete newParams.IsAscending;
-    }
 
     setSearchParams(newParams);
   };
@@ -157,10 +142,7 @@ const AuctionListCancel = () => {
         <AuctionTable
           auctionData={auctionList}
           headerTable={
-            <SearchAuctionTable
-              onSearch={onSearch}
-              auctionCategory={listAuctionCategory}
-            />
+            <SearchAuctionTable onSearch={onSearch} auctionCategory={listAuctionCategory} />
           }
           onChange={onChangeTable}
           total={totalData}

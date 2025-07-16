@@ -30,6 +30,9 @@ export type AuctionDataList = {
   auctionStartDate: string;
   auctionEndDate: string;
   createdBy: string;
+  createdByUserName?: string;
+  updateByUserName?: string;
+  status: number;
 };
 
 export type AuctionDataDetail = {
@@ -50,7 +53,9 @@ export type AuctionDataDetail = {
   qrLink: string;
   numberRoundMax: number;
   status: string;
+  auctionMap?: string;
   winnerData: string;
+  auctioneer?: string;
   listAuctionAssets?: AuctionAsset[];
 };
 

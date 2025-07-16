@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   BarChartOutlined,
   ScheduleOutlined,
@@ -12,6 +11,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ADMIN_ROUTES, AUCTIONEER_ROUTES, MANAGER_ROUTES, STAFF_ROUTES } from "../../../routers";
 import { assets } from "../../../assets";
+import type { RootState } from "../../../store/store";
 
 interface MenuItem {
   key: string;
@@ -94,8 +94,8 @@ const items: MenuItem[] = [
 const SiderRouteOption = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useSelector((state: any) => state.auth);
-  const role = user?.roleName; // Filter items based on user's role
+  const { user } = useSelector((state: RootState) => state.auth);
+  const role = user?.roleName;
   const filteredItems = useMemo(
     () => items.filter((item) => role && item.roleView.includes(role)),
     [role]

@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import CustomModal from "../../../components/Common/CustomModal";
 import { useSelector } from "react-redux";
 import { Button, Spin, Tooltip } from "antd";
@@ -9,45 +7,62 @@ import { InfoRow } from "../../../components/InfoRow";
 import { convertToVietnamTime } from "../../../utils/timeConfig";
 import { EditOutlined } from "@ant-design/icons";
 import EditAccount from "./EditAccount/EditAccount";
+import type { RootState } from "../../../store/store";
+import type { ApiResponse } from "../../../types/responseAxios";
+
+interface UserInfo {
+  name?: string;
+  roleName?: string;
+  phoneNumber?: string;
+  email?: string;
+  gender?: boolean | string;
+  birthDay?: string;
+  recentLocation?: string;
+  originLocation?: string;
+  citizenIdentification?: string;
+  issueDate?: string;
+  validDate?: string;
+  issueBy?: string;
+  nationality?: string;
+}
 
 interface UserProfileProps {
   open: boolean;
   onCancel: () => void;
 }
 
-const UserProfile = ({
-  open,
-  onCancel,
-}: UserProfileProps) => {
-  const [loading, setLoading] = useState(false);
-  const [editAccountOpen, setEditAccountOpen] =
-    useState(false);
-  const { user } = useSelector((state: any) => state.auth);
-  const [userInfo, setUserInfo] = useState<any>();
+interface GetUserInfoParams {
+  user_id: string;
+}
 
-  const getUserInfo = async () => {
+const UserProfile = ({ open, onCancel }: UserProfileProps) => {
+  const [loading, setLoading] = useState(false);
+  const [editAccountOpen, setEditAccountOpen] = useState(false);
+  const { user } = useSelector((state: RootState) => state.auth);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const getUserInfo = useCallback(async (): Promise<void> => {
+    if (!user?.id) return;
+
     setLoading(true);
     try {
-      const res = await UserServices.getUserInfo({
-        user_id: user.id,
-      });
+      const params: GetUserInfoParams = { user_id: user.id };
+      const res: ApiResponse<UserInfo> = await UserServices.getUserInfo(params);
 
       if (res.code === 200) {
         setUserInfo(res.data);
       }
     } catch (error) {
-      console.error(
-        "Lỗi khi lấy thông tin người dùng:",
-        error
-      );
+      console.error("Error fetching user info:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
 
   useEffect(() => {
-    getUserInfo();
-  }, [open, editAccountOpen]);
+    if (open) {
+      getUserInfo();
+    }
+  }, [open, editAccountOpen, getUserInfo]);
 
   return (
     <CustomModal
@@ -70,85 +85,33 @@ const UserProfile = ({
                 className="text-white"
               >
                 <Tooltip title="Chỉnh sửa thông tin liên lạc">
-                  <EditOutlined
-                    onClick={() => setEditAccountOpen(true)}
-                  />
+                  <EditOutlined onClick={() => setEditAccountOpen(true)} />
                 </Tooltip>
               </Button>
             </div>
-            <InfoRow
-              label="Họ và tên"
-              value={userInfo?.name}
-            />
-            <InfoRow
-              label="Chức vụ"
-              value={userInfo?.roleName as string}
-            />
-            <InfoRow
-              label="Số điện thoại"
-              value={userInfo?.phoneNumber}
-            />
-            <InfoRow
-              label="Email"
-              value={userInfo?.email}
-            />
+            <InfoRow label="Họ và tên" value={userInfo?.name} />
+            <InfoRow label="Chức vụ" value={userInfo?.roleName as string} />
+            <InfoRow label="Số điện thoại" value={userInfo?.phoneNumber} />
+            <InfoRow label="Email" value={userInfo?.email} />
           </div>
           <div className="flex flex-col gap-2.5 shadow-[0_0_12px_2px_rgba(0,0,0,0.1)] rounded-xl p-5">
-            <InfoRow
-              label="Giới tính"
-              value={
-                userInfo?.gender === true ? "Nam" : "Nữ"
-              }
-            />
-            <InfoRow
-              label="Ngày sinh"
-              value={convertToVietnamTime(
-                userInfo?.birthDay
-              )}
-            />
+            <InfoRow label="Giới tính" value={userInfo?.gender === true ? "Nam" : "Nữ"} />
+            <InfoRow label="Ngày sinh" value={convertToVietnamTime(userInfo?.birthDay)} />
 
-            <InfoRow
-              label="Địa chỉ"
-              value={userInfo?.recentLocation}
-            />
-            <InfoRow
-              label="Quê quán"
-              value={userInfo?.originLocation}
-            />
+            <InfoRow label="Địa chỉ" value={userInfo?.recentLocation} />
+            <InfoRow label="Quê quán" value={userInfo?.originLocation} />
           </div>
 
           <div className="flex flex-col gap-2.5 shadow-[0_0_12px_2px_rgba(0,0,0,0.1)] rounded-xl p-5">
-            <InfoRow
-              label="Số CCCD"
-              value={userInfo?.citizenIdentification}
-            />
-            <InfoRow
-              label="Ngày cấp"
-              value={convertToVietnamTime(
-                userInfo?.issueDate
-              )}
-            />
-            <InfoRow
-              label="Ngày hết hạn"
-              value={convertToVietnamTime(
-                userInfo?.validDate
-              )}
-            />
-            <InfoRow
-              label="Nơi cấp"
-              value={userInfo?.issueBy}
-            />
-            <InfoRow
-              label="Quốc tịch"
-              value={userInfo?.nationality}
-            />
+            <InfoRow label="Số CCCD" value={userInfo?.citizenIdentification} />
+            <InfoRow label="Ngày cấp" value={convertToVietnamTime(userInfo?.issueDate)} />
+            <InfoRow label="Ngày hết hạn" value={convertToVietnamTime(userInfo?.validDate)} />
+            <InfoRow label="Nơi cấp" value={userInfo?.issueBy} />
+            <InfoRow label="Quốc tịch" value={userInfo?.nationality} />
           </div>
         </div>
       </Spin>
-      <EditAccount
-        open={editAccountOpen}
-        onCancel={() => setEditAccountOpen(false)}
-      />
+      <EditAccount open={editAccountOpen} onCancel={() => setEditAccountOpen(false)} />
     </CustomModal>
   );
 };

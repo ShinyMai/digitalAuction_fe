@@ -31,11 +31,18 @@ interface SearchValue {
   auctionRangeDate?: any[];
 }
 
+interface PaginationChangeParams {
+  current?: number;
+  pageSize?: number;
+}
+
 const DEFAULT_PARAMS: SearchParams = {
   PageNumber: 1,
   PageSize: 8,
   Status: 0,
   AuctionType: "1",
+  SortBy: "register_open_date",
+  IsAscending: false,
 };
 
 const AuctionListDraff = () => {
@@ -146,7 +153,7 @@ const AuctionListDraff = () => {
         RegisterEndDate: searchParams.RegisterEndDate,
         AuctionStartDate: searchParams.AuctionStartDate,
         AuctionEndDate: searchParams.AuctionEndDate,
-        SortBy: searchParams.SortBy?.replace("auctionName", "auction_name"),
+        SortBy: searchParams.SortBy,
         IsAscending: searchParams.IsAscending,
       };
 
@@ -164,31 +171,16 @@ const AuctionListDraff = () => {
       setLoading(false);
     }
   };
-  const onChangeTable = (
-    pagination: { current: number; pageSize: number },
-    sorter: { field?: string; order?: "ascend" | "descend" }
-  ) => {
+  const onChangeTable = (pagination: PaginationChangeParams): void => {
     const newParams: SearchParams = {
       ...searchParams,
-      PageNumber: pagination.current,
-      PageSize: pagination.pageSize,
+      PageNumber: pagination.current || 1,
+      PageSize: pagination.pageSize || 8,
+      SortBy: searchParams.SortBy,
+      IsAscending: searchParams.IsAscending,
     };
 
-    if (sorter?.field && sorter?.order) {
-      newParams.SortBy = sorter.field;
-      newParams.IsAscending = sorter.order === "ascend";
-    } else {
-      delete newParams.SortBy;
-      delete newParams.IsAscending;
-    }
-
     setSearchParams(newParams);
-  };
-
-  // Hàm mở modal khi click nút "Duyệt thông tin"
-  const handleOpenModal = (auctionId: string) => {
-    setSelectedAuctionId(auctionId);
-    setIsModalOpen(true);
   };
 
   // Hàm đóng modal
@@ -231,7 +223,6 @@ const AuctionListDraff = () => {
             pageSize={searchParams.PageSize}
             currentPage={searchParams.PageNumber}
             selectedAuctionType={searchParams.AuctionType}
-            onApprove={handleOpenModal} // Truyền hàm xử lý duyệt
           />
           <ModalsSelectAuctioners
             isOpen={isModalOpen}

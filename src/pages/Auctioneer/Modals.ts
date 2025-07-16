@@ -21,6 +21,7 @@ export type AuctionCategory = {
 };
 
 export type AuctionDataList = {
+  _id: string;
   auctionId: string;
   auctionName: string;
   categoryId: number;
@@ -28,7 +29,10 @@ export type AuctionDataList = {
   registerEndDate: string;
   auctionStartDate: string;
   auctionEndDate: string;
-  createdByUserName: string;
+  createdBy: string;
+  createdByUserName?: string;
+  updateByUserName?: string;
+  status: number;
 };
 
 export type AuctionDataDetail = {
@@ -49,7 +53,9 @@ export type AuctionDataDetail = {
   qrLink: string;
   numberRoundMax: number;
   status: string;
+  auctionMap?: string;
   winnerData: string;
+  auctioneer?: string;
   listAuctionAssets?: AuctionAsset[];
 };
 
@@ -93,20 +99,4 @@ export type AuctionDateModal = {
 export type ModalAuctioners = {
   id: string;
   name: string;
-}
-
-export type InputAuctionPriceModals = {
-  citizenIdentification?: string,
-  auctionAssetId?: string;
-  auctionAssetName?: string;
-  price: number;
-}
-
-export type AuctionRoundPrice = {
-  AuctionRoundId: string;
-  UserName: string;
-  CitizenIdentification: string;
-  RecentLocation: string;
-  TagName: string;
-  AuctionPrice: string;
-}
+};
