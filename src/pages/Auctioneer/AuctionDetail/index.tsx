@@ -237,7 +237,7 @@ const AuctionDetailAuctioneer = () => {
               </TabPane>
               :
               <TabPane tab="Nhập giá" key="3">
-                <InputAuctionPrice
+                <InputAuctionPrice auctionId={location.state.key}
                 />
               </TabPane>
           }
