@@ -298,7 +298,7 @@ const AuctionDetailAuctioneer = () => {
                   {role === "Auctioneer" ? (
                     <AuctioneerCreateAuctionRound auctionRoundPrices={listAuctionRoundPice} />
                   ) : (
-                    <InputAuctionPrice />
+                    <InputAuctionPrice auctionId={location.state.key} />
                   )}
                 </div>
               ),

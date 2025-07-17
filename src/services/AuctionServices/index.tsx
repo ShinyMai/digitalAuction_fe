@@ -54,6 +54,8 @@ const acceptPaymentDeposit = (
   http.post(AuctionAPI.ACCEPT_PAYMENT_DEPOSIT + `/${auctionId}` + `/${auctionDocumentId}`, body);
 const cancelAuction = (body: any): Promise<ApiResponse<any>> =>
   http.put(AuctionAPI.AUCTION_CANCEL, body);
+const userRegistedAuction = (body: any): Promise<ApiResponse<any>> =>
+  http.post(AuctionAPI.USER_REGISTER_AUCTION, body);
 
 const AuctionServices = {
   addAuction,
@@ -72,6 +74,7 @@ const AuctionServices = {
   getAuctionDetailNode,
   addAuctionNode,
   cancelAuction,
+  userRegistedAuction
 };
 
 export default AuctionServices;
