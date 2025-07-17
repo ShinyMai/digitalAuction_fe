@@ -10,8 +10,8 @@ interface Props {
   onChange?: (value: AntUploadFile[]) => void;
 }
 
-const CustomUploadFile = ({ contentName, value = [], onChange }: Props) => {
-  const [fileList, setFileList] = useState<AntUploadFile[]>(value);
+const CustomUploadFile = ({ contentName, onChange }: Omit<Props, "value">) => {
+  const [fileList, setFileList] = useState<AntUploadFile[]>([]);
 
   // Hàm cắt ngắn tên file nếu quá dài
   const truncateFileName = (name: string, maxLength: number = 20) => {
@@ -24,51 +24,83 @@ const CustomUploadFile = ({ contentName, value = [], onChange }: Props) => {
   const props: UploadProps = {
     name: "file",
     accept: ".xlsx,.xls,.docx,.pdf",
-    fileList: fileList.map((file) => ({
-      ...file,
-      name: truncateFileName(file.name),
-    })),
+    fileList: fileList,
     beforeUpload: (file) => {
       const isValidFile =
         file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
         file.type === "application/vnd.ms-excel" ||
-        file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        file.type === "application/pdf";
+
       if (!isValidFile) {
-        message.error("Chỉ được tải lên file Excel (.xlsx, .xls) hoặc Word (.docx)!");
+        message.error("Chỉ được tải lên file Excel (.xlsx, .xls), Word (.docx) hoặc PDF!");
         return Upload.LIST_IGNORE;
       }
+
+      const isLt10M = file.size < 10 * 1024 * 1024;
+      if (!isLt10M) {
+        message.error("File phải nhỏ hơn 10MB!");
+        return Upload.LIST_IGNORE;
+      }
+
+      console.log("File uploaded successfully:", file.name, "Size:", file.size, "Type:", file.type);
       return false;
     },
     onChange: (info) => {
+      console.log("Upload onChange - contentName:", contentName, "info:", info);
+
       let newFileList = [...info.fileList];
+
+      // Chỉ giữ file cuối cùng
       newFileList = newFileList.slice(-1);
-      newFileList = newFileList.map((file) => {
-        if (!file.status) {
-          return { ...file, status: "done" };
-        }
-        return file;
-      });
+
+      // Đảm bảo file có status
+      newFileList = newFileList.map((file) => ({
+        ...file,
+        status: file.status || "done",
+      }));
+
+      console.log("Processed fileList for", contentName, ":", newFileList);
+
       setFileList(newFileList);
       onChange?.(newFileList);
-      console.log("FileList:", newFileList);
     },
-    customRequest: ({ file, onSuccess }) => {
+    customRequest: ({ file, onSuccess, onError }) => {
+      console.log("Custom request for file:", file);
+
+      // Simulate upload success
       setTimeout(() => {
-        onSuccess?.(null, file);
-      }, 0);
+        try {
+          onSuccess?.("Upload completed");
+        } catch (error) {
+          console.error("Upload error:", error);
+          onError?.(error as Error);
+        }
+      }, 100);
+    },
+    onRemove: () => {
+      console.log("File removed for", contentName);
+      setFileList([]);
+      onChange?.([]);
     },
     // Tùy chỉnh cách hiển thị tên file
     itemRender: (originNode, file) => {
       return <Tooltip title={file.name}>{originNode}</Tooltip>;
     },
   };
-
   return (
-    <Upload {...props}>
-      <Button icon={<UploadOutlined />} style={{ width: 250, height: 40 }} className="rounded-lg">
-        {contentName}
-      </Button>
-    </Upload>
+    <div>
+      <Upload {...props}>
+        <Button icon={<UploadOutlined />} style={{ width: 250, height: 40 }} className="rounded-lg">
+          {contentName}
+        </Button>
+      </Upload>{" "}
+      {fileList.length > 0 && (
+        <div className="mt-2 text-sm text-green-600">
+          ✓ Đã tải: {truncateFileName(fileList[0].name || "Unnamed file")}
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -3,6 +3,7 @@ import { Button, Card, Col, DatePicker, Form, Input, message, Row, Select, Toolt
 import { useForm } from "antd/es/form/Form";
 import { useState, useEffect } from "react";
 import UploadFile from "./Upload";
+import { useFormFileUpload } from "./useFormFileUpload";
 import type { AuctionCategory } from "../../Modals.ts";
 import dayjs, { Dayjs } from "dayjs";
 import AuctionServices from "../../../../services/AuctionServices/index.tsx";
@@ -49,6 +50,11 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
   const [loading, setLoading] = useState(false);
   const [registerRange, setRegisterRange] = useState<[Dayjs, Dayjs] | null>(null);
 
+  // File upload hooks
+  const auctionAssetUpload = useFormFileUpload("AuctionAssetFile", form);
+  const auctionRulesUpload = useFormFileUpload("AuctionRulesFile", form);
+  const auctionPlanningUpload = useFormFileUpload("AuctionPlanningMap", form);
+
   const { user } = useSelector((state: any) => state.auth);
   const CreatedBy = user?.id || "defaultUser";
 
@@ -75,7 +81,6 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
     const minAuctionStart = registerEndDate.add(1, "day"); // Ngày bắt đầu tối thiểu (1 ngày sau)
     return current.isBefore(minAuctionStart);
   };
-
   // Hàm tạo FormData từ form values và các file
   const createFormData = (formValues: {
     AuctionName?: string;
@@ -92,6 +97,8 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
     AuctionMap?: any;
   }): FormData => {
     const formData = new FormData();
+
+    console.log("Creating FormData with values:", formValues);
 
     // Define the fields to include in FormData
     const fields = {
@@ -110,16 +117,35 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
     Object.entries(fields).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         formData.append(key, typeof value === "object" ? JSON.stringify(value) : value.toString());
+        console.log(`Added field ${key}:`, value);
       }
     });
 
     // Append required files
-    formData.append("AuctionAssetFile", formValues.AuctionAssetFile);
-    formData.append("AuctionRulesFile", formValues.AuctionRulesFile);
+    if (formValues.AuctionAssetFile) {
+      formData.append("AuctionAssetFile", formValues.AuctionAssetFile);
+      console.log("Added AuctionAssetFile:", formValues.AuctionAssetFile.name);
+    } else {
+      console.error("AuctionAssetFile is missing!");
+    }
+
+    if (formValues.AuctionRulesFile) {
+      formData.append("AuctionRulesFile", formValues.AuctionRulesFile);
+      console.log("Added AuctionRulesFile:", formValues.AuctionRulesFile.name);
+    } else {
+      console.error("AuctionRulesFile is missing!");
+    }
 
     // Append optional file if it exists
     if (formValues.AuctionPlanningMap) {
       formData.append("AuctionPlanningMap", formValues.AuctionPlanningMap);
+      console.log("Added AuctionPlanningMap:", formValues.AuctionPlanningMap.name);
+    }
+
+    // Log all FormData entries
+    console.log("Final FormData entries:");
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
     }
 
     return formData;
@@ -135,16 +161,41 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
       }
     }
   }, [registerRange, form]);
-
   // Hàm xử lý submit form
   const onFinish = async (values: AuctionFormValues) => {
     setLoading(true);
 
     try {
-      const auctionAssetFile = values.AuctionAssetFile?.[0]?.originFileObj;
-      const auctionRulesFile = values.AuctionRulesFile?.[0]?.originFileObj;
+      // Debug log để kiểm tra cấu trúc dữ liệu
+      console.log("Form values:", values);
+      console.log("AuctionAssetFile array:", values.AuctionAssetFile);
+      console.log("AuctionRulesFile array:", values.AuctionRulesFile);
+
+      // Lấy file theo nhiều cách khác nhau để đảm bảo
+      let auctionAssetFile = values.AuctionAssetFile?.[0]?.originFileObj;
+      let auctionRulesFile = values.AuctionRulesFile?.[0]?.originFileObj;
       const auctionPlanningMap = values.AuctionPlanningMap?.[0]?.originFileObj;
+
+      // Fallback nếu originFileObj không có
+      if (!auctionAssetFile && values.AuctionAssetFile?.[0]) {
+        auctionAssetFile = values.AuctionAssetFile[0] as unknown as File;
+      }
+      if (!auctionRulesFile && values.AuctionRulesFile?.[0]) {
+        auctionRulesFile = values.AuctionRulesFile[0] as unknown as File;
+      }
+
+      // Debug log cho từng file
+      console.log("Extracted AuctionAssetFile:", auctionAssetFile);
+      console.log("Extracted AuctionRulesFile:", auctionRulesFile);
+      console.log("Extracted AuctionPlanningMap:", auctionPlanningMap);
+
       if (!auctionAssetFile || !auctionRulesFile) {
+        console.error("File validation failed:", {
+          hasAuctionAssetFile: !!auctionAssetFile,
+          hasAuctionRulesFile: !!auctionRulesFile,
+          AuctionAssetFileArray: values.AuctionAssetFile,
+          AuctionRulesFileArray: values.AuctionRulesFile,
+        });
         toast.error("Vui lòng tải lên đầy đủ các tệp bắt buộc!");
         setLoading(false);
         return;
@@ -168,7 +219,6 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
         setLoading(false);
         return;
       }
-
       const formattedValues = {
         ...values,
         AuctionAssetFile: auctionAssetFile,
@@ -180,8 +230,11 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
         AuctionEndDate: dayjs(auctionEndDate).format("YYYY-MM-DD"),
       };
 
+      // Xóa các trường range picker
       delete formattedValues.RegisterTimeRange;
       delete formattedValues.AuctionTimeRange;
+
+      console.log("Formatted values before creating FormData:", formattedValues);
 
       const formData = createFormData(formattedValues);
       if (auctionType === "SQL") {
@@ -381,6 +434,7 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
             title="Tệp Tài Liệu"
             className="bg-blue-50 border border-teal-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
           >
+            {" "}
             <Form.Item
               label={
                 <span>
@@ -398,18 +452,28 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
                   required: true,
                   message: "Vui lòng tải lên tệp tài sản!",
                 },
+                {
+                  validator: (_, value) => {
+                    if (!value || value.length === 0) {
+                      return Promise.reject(new Error("Vui lòng tải lên tệp tài sản!"));
+                    }
+                    const file = value[0];
+                    if (!file.originFileObj && !file.name) {
+                      return Promise.reject(new Error("File không hợp lệ!"));
+                    }
+                    return Promise.resolve();
+                  },
+                },
               ]}
-              valuePropName="fileList"
             >
-              <UploadFile contentName="AuctionAssetFile" />
+              <UploadFile contentName="AuctionAssetFile" onChange={auctionAssetUpload.onChange} />
               <div
                 className="cursor-pointer mt-2 text-blue-400 underline"
                 onClick={handleDownloadTemplate}
               >
                 Tải mẫu danh sách tải sản
               </div>
-            </Form.Item>
-
+            </Form.Item>{" "}
             <Form.Item
               label="Tệp quy tắc đấu giá"
               name="AuctionRulesFile"
@@ -418,10 +482,21 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
                   required: true,
                   message: "Vui lòng tải lên tệp quy tắc!",
                 },
+                {
+                  validator: (_, value) => {
+                    if (!value || value.length === 0) {
+                      return Promise.reject(new Error("Vui lòng tải lên tệp quy tắc!"));
+                    }
+                    const file = value[0];
+                    if (!file.originFileObj && !file.name) {
+                      return Promise.reject(new Error("File không hợp lệ!"));
+                    }
+                    return Promise.resolve();
+                  },
+                },
               ]}
-              valuePropName="fileList"
             >
-              <UploadFile contentName="AuctionRulesFile" />
+              <UploadFile contentName="AuctionRulesFile" onChange={auctionRulesUpload.onChange} />
             </Form.Item>
           </Card>
         </Col>
@@ -463,7 +538,10 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
                 valuePropName="fileList"
                 required={isRealEstate ? true : false}
               >
-                <UploadFile contentName="AuctionPlanningMap" />
+                <UploadFile
+                  contentName="AuctionPlanningMap"
+                  onChange={auctionPlanningUpload.onChange}
+                />
               </Form.Item>
               <Form.Item
                 label="Vị trí trên bản đồ"
