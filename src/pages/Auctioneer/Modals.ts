@@ -108,4 +108,4 @@ export type AuctionRoundPrice = {
   RecentLocation: string;
   TagName: string;
   AuctionPrice: string;
-}
+};

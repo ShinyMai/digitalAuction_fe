@@ -1,8 +1,5 @@
-import { Button, Form, Input, Spin } from "antd";
-import {
-  LockOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { Form, Input, Spin } from "antd";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import AuthServices from "../../../services/AuthServices";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -17,14 +14,10 @@ interface LoginProps {
   open: boolean;
 }
 
-const Login: React.FC<LoginProps> = ({
-  onCancel,
-  open,
-}) => {
+const Login: React.FC<LoginProps> = ({ onCancel, open }) => {
   const [loginError, setLoginError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [forgotPassword, setForgotPassword] =
-    useState(false);
+  const [forgotPassword, setForgotPassword] = useState(false);
   const [formLogin] = Form.useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -37,17 +30,11 @@ const Login: React.FC<LoginProps> = ({
       if (res.code === 200) {
         dispatch(setUser(res?.data));
         onCancel();
-        toast.success(
-          res.message || "Đăng nhập thành công!"
-        );
-        navigate(
-          `/${(res.data?.roleName || "").toLowerCase()}`
-        );
+        toast.success(res.message || "Đăng nhập thành công!");
+        navigate(`/${(res.data?.roleName || "").toLowerCase()}`);
       } else {
         setLoginError(true);
-        toast.error(
-          res.message || "Đăng nhập không thành công!"
-        );
+        toast.error(res.message || "Đăng nhập không thành công!");
       }
     } catch (error) {
       setLoginError(true);
@@ -57,107 +44,145 @@ const Login: React.FC<LoginProps> = ({
       setLoading(false);
     }
   };
-
   return (
     <CustomModal
-      title={"Đăng nhập"}
+      title=""
       open={open}
       onCancel={onCancel}
       footer={null}
-      width={600}
+      width={500}
+      className="login-modal"
     >
-      <Spin spinning={loading}>
-        <div className="text-center">
-          {loginError ? (
-            <div className="text-red-500 mb-2">
-              Email Hoặc Mật Khẩu không đúng!
+      <div className="relative overflow-hidden">
+        {/* Background Design */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 opacity-5"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full -translate-y-16 translate-x-16"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-400/20 to-pink-400/20 rounded-full translate-y-12 -translate-x-12"></div>
+
+        <Spin spinning={loading}>
+          <div className="relative z-10 p-8">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg animate-float">
+                <UserOutlined className="text-3xl text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text mb-2">
+                Chào mừng trở lại!
+              </h2>
+              <p className="text-gray-600">Đăng nhập để tiếp tục sử dụng dịch vụ</p>
             </div>
-          ) : null}
-          <Form
-            form={formLogin}
-            name="normal_login"
-            className="sm:w-3/4"
-            style={{ margin: "auto" }}
-          >
-            <Form.Item
-              name="email"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập Email!",
-                },
-                {
-                  type: "email",
-                  message: "Email không hợp lệ!",
-                },
-              ]}
-            >
-              <Input
-                prefix={
-                  <UserOutlined
-                    className="site-form-item-icon"
-                    style={{ paddingRight: "10px" }}
-                  />
-                }
-                placeholder="Vui lòng nhập Email"
-              />
-            </Form.Item>
-            <Form.Item
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập mật khẩu!",
-                },
-              ]}
-            >
-              <Input.Password
-                prefix={
-                  <LockOutlined
-                    className="site-form-item-icon"
-                    style={{ paddingRight: "10px" }}
-                  />
-                }
-                placeholder="Mật khẩu"
-                onPressEnter={loginAccout}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    loginAccout();
-                  }
-                }}
-              />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                className="login-form-button"
-                onClick={loginAccout}
-                style={{
-                  backgroundColor: "#3e70a7",
-                  color: "white",
-                }}
+
+            {/* Error Message */}
+            {loginError && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl animate-slide-in-up">
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm">!</span>
+                  </div>
+                  <span className="text-red-700 font-medium">Email hoặc mật khẩu không đúng!</span>
+                </div>
+              </div>
+            )}
+
+            {/* Login Form */}
+            <Form form={formLogin} name="modern_login" className="space-y-6" layout="vertical">
+              <Form.Item
+                name="email"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập Email!",
+                  },
+                  {
+                    type: "email",
+                    message: "Email không hợp lệ!",
+                  },
+                ]}
               >
-                Đăng nhập
-              </Button>
-            </Form.Item>
-          </Form>
-          <div
-            style={{
-              cursor: "pointer",
-              color: "#3e70a7",
-              marginTop: "-18px",
-            }}
-            onClick={() => setForgotPassword(true)}
-          >
-            Quên mật khẩu?
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                    <UserOutlined className="text-gray-400" />
+                  </div>
+                  <Input
+                    placeholder="Nhập địa chỉ email của bạn"
+                    className="pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 hover:border-blue-400 focus:border-blue-500 transition-all duration-300"
+                    size="large"
+                  />
+                </div>
+              </Form.Item>
+
+              <Form.Item
+                name="password"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập mật khẩu!",
+                  },
+                ]}
+              >
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
+                    <LockOutlined className="text-gray-400" />
+                  </div>
+                  <Input.Password
+                    placeholder="Nhập mật khẩu của bạn"
+                    className="pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 hover:border-blue-400 focus:border-blue-500 transition-all duration-300"
+                    size="large"
+                    onPressEnter={loginAccout}
+                  />
+                </div>
+              </Form.Item>
+
+              <Form.Item className="mb-4">
+                <button
+                  type="button"
+                  onClick={loginAccout}
+                  className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 glow-button text-lg"
+                >
+                  Đăng nhập
+                </button>
+              </Form.Item>
+            </Form>
+
+            {/* Forgot Password */}
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setForgotPassword(true)}
+                className="text-blue-600 hover:text-purple-600 font-medium transition-colors duration-300 hover:underline"
+              >
+                Quên mật khẩu?
+              </button>
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4 my-6">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gray-300"></div>
+              <span className="text-gray-500 text-sm">hoặc</span>
+              <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gray-300"></div>
+            </div>
+
+            {/* Register Link */}
+            <div className="text-center">
+              <span className="text-gray-600">Chưa có tài khoản? </span>
+              <button
+                type="button"
+                onClick={() => {
+                  onCancel();
+                  navigate("/register");
+                }}
+                className="text-blue-600 hover:text-purple-600 font-semibold transition-colors duration-300 hover:underline"
+              >
+                Đăng ký ngay
+              </button>
+            </div>
           </div>
-        </div>
-      </Spin>
-      {forgotPassword && (
-        <VerifyOTP
-          open={forgotPassword}
-          onCancel={() => setForgotPassword(false)}
-        />
-      )}
+        </Spin>
+
+        {forgotPassword && (
+          <VerifyOTP open={forgotPassword} onCancel={() => setForgotPassword(false)} />
+        )}
+      </div>
     </CustomModal>
   );
 };

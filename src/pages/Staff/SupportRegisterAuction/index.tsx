@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
 import { Typography } from "antd";
 import { AnimatePresence } from "framer-motion";
@@ -61,6 +60,7 @@ const SupportRegisterAuction = () => {
     } else if (step === "detail" && selectedAuctionId) {
       fetchAuctionDetail(selectedAuctionId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, step, selectedAuctionId]);
 
   const fetchAuctionList = async () => {

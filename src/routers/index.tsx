@@ -2,6 +2,7 @@ export const GUEST_ROUTERS = {
   HOME: "",
   LOGIN: "login",
   REGISTER: "register",
+  INTRODUCTION: "introduction",
   TIN_TUC: "tin-tuc",
   NOT_FOUND: "not-found",
   AUCITON_LIST: "auction-list",

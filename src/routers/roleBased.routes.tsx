@@ -10,6 +10,7 @@ import wrapWithLazy from "../utils/wrapWithLazy";
 import React from "react";
 
 const HomePage = React.lazy(() => import("../pages/Anonymous/HomePage/HomePage"));
+const Introduction = React.lazy(() => import("../pages/Anonymous/Introduction/Introduction"));
 const Register = React.lazy(() => import("../pages/Anonymous/Register/Register"));
 const News = React.lazy(() => import("../pages/Anonymous/News/News"));
 const NotFound = React.lazy(() => import("../components/Common/NotFound/index"));
@@ -25,6 +26,10 @@ export const guestRoutes = [
   {
     path: GUEST_ROUTERS.REGISTER,
     element: wrapWithLazy(Register),
+  },
+  {
+    path: GUEST_ROUTERS.INTRODUCTION,
+    element: wrapWithLazy(Introduction),
   },
   {
     path: GUEST_ROUTERS.TIN_TUC,
@@ -47,7 +52,6 @@ export const guestRoutes = [
 ];
 
 // Router site User
-
 const AuctionRegister = React.lazy(() => import("../pages/User/AuctionRegister/index"));
 
 export const userRoutes = [
