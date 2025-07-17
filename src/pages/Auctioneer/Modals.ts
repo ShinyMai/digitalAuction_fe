@@ -100,3 +100,12 @@ export type ModalAuctioners = {
   id: string;
   name: string;
 };
+
+export type AuctionRoundPrice = {
+  AuctionRoundId: string;
+  UserName: string;
+  CitizenIdentification: string;
+  RecentLocation: string;
+  TagName: string;
+  AuctionPrice: string;
+};

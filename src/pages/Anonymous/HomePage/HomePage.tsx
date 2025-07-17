@@ -69,7 +69,7 @@ const HomePage = () => {
         <div className="container mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           <div className="flex-1 max-w-2xl text-center lg:text-left order-2 lg:order-1">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-              Hệ thống đăng ký tham gia
+              Hệ thống đăng ký tham gia{" "}
               <span className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent font-extrabold">
                 đấu giá trực tuyến
               </span>
@@ -95,7 +95,8 @@ const HomePage = () => {
           </div>
           <div className="flex-1 flex justify-center lg:pl-8 order-1 lg:order-2 mt-8 lg:mt-0">
             <div className="relative">
-              <div className="text-8xl md:text-9xl lg:text-[12rem] mb-4 animate-bounce">🏛️</div>              <div className="absolute -top-2 sm:-top-4 -right-4 sm:-right-6 text-xl sm:text-2xl md:text-3xl animate-pulse delay-300">
+              <div className="text-8xl md:text-9xl lg:text-[12rem] mb-4 animate-bounce">🏛️</div>{" "}
+              <div className="absolute -top-2 sm:-top-4 -right-4 sm:-right-6 text-xl sm:text-2xl md:text-3xl animate-pulse delay-300">
                 ⚖️
               </div>
               <div className="absolute -bottom-1 sm:-bottom-2 -left-3 sm:-left-4 text-xl sm:text-2xl md:text-3xl animate-pulse delay-500">

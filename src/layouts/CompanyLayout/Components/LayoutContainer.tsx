@@ -1,22 +1,14 @@
 import { Layout } from "antd";
 import type React from "react";
+import { useState } from "react";
 import HeaderCompany from "./HeaderCompany";
 import SiderRouteOption from "./SiderRouteOption";
 
 interface Props {
-  children?:
-  | string
-  | React.JSX.Element
-  | React.JSX.Element[];
+  children?: string | React.JSX.Element | React.JSX.Element[];
 }
 
 const siderStyle: React.CSSProperties = {
-  // overflow: "auto",
-  // position: "sticky",
-  // insetInlineEnd: 0,
-  // top: 0,
-  // bottom: 0,
-
   overflow: "auto",
   height: "100vh",
   position: "sticky",
@@ -24,11 +16,14 @@ const siderStyle: React.CSSProperties = {
   top: 0,
   bottom: 0,
   scrollbarWidth: "thin",
-  // scrollbarGutter: 'stable',
 };
 
 const LayoutContainer = ({ children }: Props) => {
   const { Header, Content, Sider } = Layout;
+  const [collapsed, setCollapsed] = useState(false);
+
+  const siderWidth = collapsed ? 80 : 280;
+  const headerWidth = `calc(100% - ${siderWidth}px)`;
 
   return (
     <Layout
@@ -38,24 +33,32 @@ const LayoutContainer = ({ children }: Props) => {
       className="min-h-screen w-full"
     >
       <Sider
-        style={siderStyle}
+        style={{
+          ...siderStyle,
+          width: siderWidth,
+        }}
         theme="light"
-        width={"15%"}
-        className="bg-slate-100"
+        width={siderWidth}
+        className="bg-slate-100 transition-all duration-300"
       >
-        <SiderRouteOption />
+        <SiderRouteOption collapsed={collapsed} onCollapse={setCollapsed} />
       </Sider>
       <Layout
-        style={{ marginTop: 64, padding: "0px 10px" }}
+        style={{
+          marginTop: 64,
+          padding: "0px 10px",
+          transition: "all 0.3s ease",
+        }}
       >
         <Header
           style={{
             position: "fixed",
             top: 0,
             backgroundColor: "white",
-            width: "85%",
+            width: headerWidth,
             zIndex: 1000,
             padding: 0,
+            transition: "width 0.3s ease",
           }}
         >
           <HeaderCompany />
@@ -67,9 +70,7 @@ const LayoutContainer = ({ children }: Props) => {
             marginTop: "30px",
           }}
         >
-          <div className="h-full bg-gradient-to-b from-blue-50 to-teal-50">
-            {children}
-          </div>
+          <div className="h-full bg-gradient-to-b from-blue-50 to-teal-50">{children}</div>
         </Content>
       </Layout>
     </Layout>

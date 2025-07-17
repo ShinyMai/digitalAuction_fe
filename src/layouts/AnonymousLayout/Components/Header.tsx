@@ -48,71 +48,127 @@ const Header = memo(() => {
     ],
     []
   );
-
   return (
-    <header className="sticky top-0 z-10 bg-gradient-to-r from-sky-600 to-sky-400 text-white border-b border-sky-300 shadow-md">
-      <div className="flex items-center justify-between px-4 py-3 md:px-6 lg:px-12">
-        {/* Logo */}
-        <img
-          src={assets.logo}
-          alt="Logo"
-          className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl cursor-pointer"
-          onClick={() => navigate("/")}
-        />
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-6 font-medium">
-          <div onClick={() => navigate("/")} className="cursor-pointer hover:scale-105">
-            Trang chủ
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 backdrop-blur-lg border-b border-white/20 shadow-xl">
+      {/* Animated background overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 animate-pulse"></div>
+
+      <div className="relative flex items-center justify-between px-4 py-4 md:px-6 lg:px-12">
+        {/* Enhanced Logo */}
+        <div className="flex items-center gap-3">
+          <div className="relative group cursor-pointer" onClick={() => navigate("/")}>
+            <div className="absolute inset-0 bg-white/20 rounded-2xl blur-sm group-hover:blur-md transition-all duration-300"></div>
+            <img
+              src={assets.logo}
+              alt="Digital Auction Logo"
+              className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl ring-2 ring-white/30 group-hover:ring-white/50 transition-all duration-300 hover:scale-110 animate-float"
+            />
           </div>
-          <div className="cursor-pointer hover:scale-105" onClick={() => navigate("/introduction")}>
-            Giới thiệu
+          <div className="hidden sm:block">
+            <h1 className="text-xl font-bold text-white gradient-text bg-gradient-to-r from-white to-blue-100 bg-clip-text">
+              Digital Auction
+            </h1>
+            <p className="text-xs text-blue-100 opacity-80">Nền tảng đấu giá số #1</p>
           </div>
-          <div className="cursor-pointer hover:scale-105">Kết quả đấu giả</div>
-          <div className="cursor-pointer hover:scale-105">Tin tức</div>
-          <div className="cursor-pointer hover:scale-105">Hướng dẫn</div>
-        </nav>{" "}
-        {/* Right Section: Auth or User Info */}
-        <div className="flex items-center gap-2">
+        </div>
+
+        {/* Enhanced Desktop Navigation */}
+        <nav className="hidden lg:flex items-center gap-8 font-medium">
+          {[
+            { label: "Trang chủ", path: "/" },
+            { label: "Giới thiệu", path: "/introduction" },
+            { label: "Danh sách đấu giá", path: "/auction-list" },
+            { label: "Tin tức", path: "/tin-tuc" },
+            { label: "Hướng dẫn", path: "/guide" },
+          ].map((item, index) => (
+            <div
+              key={index}
+              onClick={() => navigate(item.path)}
+              className="relative group cursor-pointer px-4 py-2 rounded-full transition-all duration-300 hover:bg-white/10 hover:scale-105"
+            >
+              <span className="text-white/90 group-hover:text-white transition-colors duration-300">
+                {item.label}
+              </span>
+              <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-yellow-400 to-orange-500 group-hover:w-full group-hover:left-0 transition-all duration-300 rounded-full"></div>
+            </div>
+          ))}
+        </nav>
+
+        {/* Enhanced Right Section */}
+        <div className="flex items-center gap-3">
           {user ? (
-            <div className="flex items-center gap-3 text-[#0085D2]">
-              <NotificationDropdown />
-              <UserDropdown
-                onShowInfo={() => setShowInfo(true)}
-                onChangePassword={() => setChangePassword(true)}
-                onLogout={handleLogout}
-              />
-              {/* Tên người dùng (ẩn trên mobile) */}
-              <span className="hidden sm:inline-block font-medium text-white">{user?.name}</span>
+            <div className="flex items-center gap-4">
+              {/* Enhanced Notification */}
+              <div className="relative">
+                <NotificationDropdown />
+              </div>
+
+              {/* Enhanced User Dropdown */}
+              <div className="relative">
+                <UserDropdown
+                  onShowInfo={() => setShowInfo(true)}
+                  onChangePassword={() => setChangePassword(true)}
+                  onLogout={handleLogout}
+                />
+              </div>
+
+              {/* Enhanced User Name Display */}
+              <div className="hidden sm:flex items-center gap-2 bg-white/10 rounded-full px-4 py-2 backdrop-blur-sm">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="font-medium text-white text-sm">{user?.name}</span>
+              </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              {/* Enhanced Login Button */}
               <button
                 onClick={() => setLogin(true)}
-                className="text-xs sm:text-sm font-bold text-black bg-white hover:bg-blue-100 px-2 py-1 rounded-lg cursor-pointer"
+                className="group relative px-6 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold rounded-full border border-white/20 hover:border-white/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5"
               >
-                <UserOutlined className="mr-1" />
-                Đăng nhập
+                <div className="flex items-center gap-2">
+                  <UserOutlined className="text-sm group-hover:scale-110 transition-transform duration-300" />
+                  <span className="text-sm">Đăng nhập</span>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
+
+              {/* Enhanced Register Button */}
               <button
                 onClick={() => navigate("/register")}
-                className="text-xs sm:text-sm font-bold bg-white text-black hover:bg-blue-100 px-2 py-1 rounded-lg cursor-pointer"
+                className="group relative px-6 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 glow-button"
               >
-                <UserAddOutlined className="mr-1 " />
-                Đăng ký
+                <div className="flex items-center gap-2">
+                  <UserAddOutlined className="text-sm group-hover:scale-110 transition-transform duration-300" />
+                  <span className="text-sm">Đăng ký</span>
+                </div>
               </button>
             </div>
           )}
 
-          {/* Mobile Menu */}
-          <Dropdown menu={{ items: items2 }} trigger={["click"]} className="lg:hidden">
-            <a onClick={(e) => e.preventDefault()} className="text-white ml-2">
-              <MenuOutlined className="text-lg" />
-            </a>
+          {/* Enhanced Mobile Menu */}
+          <Dropdown
+            menu={{
+              items: items2.map((item) => ({
+                ...item,
+                className: "hover:bg-blue-50 rounded-lg transition-colors duration-200",
+              })),
+            }}
+            trigger={["click"]}
+            className="lg:hidden"
+            dropdownRender={(menu) => (
+              <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
+                {menu}
+              </div>
+            )}
+          >
+            <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 hover:border-white/40 transition-all duration-300 hover:scale-110">
+              <MenuOutlined className="text-lg text-white" />
+            </button>
           </Dropdown>
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Enhanced Modals */}
       {login && <Login open={login} onCancel={() => setLogin(false)} />}
       {showInfo && <UserProfile open={showInfo} onCancel={() => setShowInfo(false)} />}
       {changePassword && (

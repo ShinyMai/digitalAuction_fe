@@ -4,8 +4,10 @@ import {
   HomeOutlined,
   TeamOutlined,
   UsergroupDeleteOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
 } from "@ant-design/icons";
-import { Menu, type MenuProps } from "antd";
+import { Menu, type MenuProps, Button, Tooltip } from "antd";
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -91,15 +93,26 @@ const items: MenuItem[] = [
   icon: React.createElement(item.icon.type),
 }));
 
-const SiderRouteOption = () => {
+interface SiderRouteOptionProps {
+  collapsed?: boolean;
+  onCollapse?: (collapsed: boolean) => void;
+}
+
+const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName;
+
   const filteredItems = useMemo(
     () => items.filter((item) => role && item.roleView.includes(role)),
     [role]
   );
+
+  const handleCollapse = () => {
+    const newCollapsed = !collapsed;
+    onCollapse?.(newCollapsed);
+  };
 
   const getCurrentKey = () => {
     const pathname = location.pathname;
@@ -125,14 +138,53 @@ const SiderRouteOption = () => {
     }
   };
   return (
-    <div className="w-full h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm">
-      <div className="w-full h-28 flex items-center justify-center bg-gradient-to-r from-sky-100 to-sky-50 border-b border-sky-200">
-        <img
-          src={assets.logoNo}
-          alt="Logo"
-          className="w-full h-auto max-h-20 object-contain border-2 border-sky-300 rounded-xl shadow-md"
-        />
+    <div
+      className={`h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm transition-all duration-300 ${
+        collapsed ? "w-20" : "w-full"
+      }`}
+    >
+      {/* Header with Logo and Collapse Button */}
+      <div
+        className={`flex items-center justify-between bg-gradient-to-r from-sky-100 to-sky-50 border-b border-sky-200 transition-all duration-300 ${
+          collapsed ? "h-20 px-2" : "h-28 px-4"
+        }`}
+      >
+        {!collapsed && (
+          <img
+            src={assets.logoNo}
+            alt="Logo"
+            className="h-auto max-h-16 object-contain border-2 border-sky-300 rounded-xl shadow-md"
+          />
+        )}
+        {/* Collapse/Expand Button */}{" "}
+        <Tooltip title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"} placement="right">
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={handleCollapse}
+            className={`flex items-center justify-center text-sky-600 hover:text-sky-800 hover:bg-sky-100 border-sky-300 transition-all duration-300 ${
+              collapsed ? "w-12 h-12 rounded-xl" : "w-10 h-10 rounded-lg ml-2"
+            }`}
+            style={{
+              boxShadow: collapsed
+                ? "0 4px 12px rgba(0, 0, 0, 0.1)"
+                : "0 2px 8px rgba(0, 0, 0, 0.1)",
+            }}
+          />
+        </Tooltip>
       </div>
+
+      {/* User Role Badge - only show when not collapsed */}
+      {!collapsed && role && (
+        <div className="px-4 py-3 border-b border-sky-200">
+          <div className="bg-gradient-to-r from-sky-100 to-blue-100 rounded-lg p-3 text-center shadow-sm">
+            <span className="text-xs text-sky-600 font-medium block">Vai trò hiện tại</span>
+            <span className="font-bold text-sky-800 text-sm">{role}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Navigation Menu */}
       <div className="w-full">
         <Menu
           onClick={onClick}
@@ -140,14 +192,35 @@ const SiderRouteOption = () => {
           mode="inline"
           selectedKeys={[getCurrentKey()]}
           defaultOpenKeys={["2"]}
-          items={filteredItems as MenuProps["items"]}
-          className="w-full bg-transparent border-none [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3 [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900"
+          inlineCollapsed={collapsed}
+          items={
+            filteredItems.map((item) => ({
+              ...item,
+              label: collapsed ? null : item.label,
+              title: collapsed ? item.label : undefined,
+            })) as MenuProps["items"]
+          }
+          className={`w-full bg-transparent border-none transition-all duration-300 ${
+            collapsed
+              ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
+              : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
+          } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900`}
           style={{
             backgroundColor: "transparent",
             border: "none",
           }}
         />
       </div>
+
+      {/* Footer - Version info when expanded */}
+      {!collapsed && (
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-sky-200">
+          <div className="bg-gradient-to-r from-sky-50 to-blue-50 rounded-lg p-3 text-center shadow-sm">
+            <span className="text-xs text-sky-600 font-medium block">Phiên bản</span>
+            <span className="font-semibold text-sky-800 text-sm">v1.0.0</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
