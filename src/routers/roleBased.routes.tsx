@@ -13,6 +13,7 @@ const HomePage = React.lazy(() => import("../pages/Anonymous/HomePage/HomePage")
 const Introduction = React.lazy(() => import("../pages/Anonymous/Introduction/Introduction"));
 const Register = React.lazy(() => import("../pages/Anonymous/Register/Register"));
 const News = React.lazy(() => import("../pages/Anonymous/News/News"));
+const Guidance = React.lazy(() => import("../pages/Anonymous/Guidance/Guidance"));
 const NotFound = React.lazy(() => import("../components/Common/NotFound/index"));
 const AuctionListAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionList/index"));
 
@@ -34,6 +35,10 @@ export const guestRoutes = [
   {
     path: GUEST_ROUTERS.TIN_TUC,
     element: wrapWithLazy(News),
+  },
+  {
+    path: GUEST_ROUTERS.GUIDANCE,
+    element: wrapWithLazy(Guidance),
   },
   {
     path: GUEST_ROUTERS.NOT_FOUND,
