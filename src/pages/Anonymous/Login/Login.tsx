@@ -46,12 +46,19 @@ const Login: React.FC<LoginProps> = ({ onCancel, open }) => {
   };
   return (
     <CustomModal
-      title=""
       open={open}
       onCancel={onCancel}
       footer={null}
       width={500}
       className="login-modal"
+      styles={{
+        body: {
+          padding: 0,
+          borderRadius: "15px",
+          overflow: "hidden",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        },
+      }}
     >
       <div className="relative overflow-hidden">
         {/* Background Design */}

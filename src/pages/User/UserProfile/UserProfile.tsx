@@ -4,15 +4,7 @@ import { useSelector } from "react-redux";
 import { Button, Tooltip } from "antd";
 import UserServices from "../../../services/UserServices";
 import { convertToVietnamTime } from "../../../utils/timeConfig";
-import {
-  EditOutlined,
-  UserOutlined,
-  PhoneOutlined,
-  MailOutlined,
-  IdcardOutlined,
-  CalendarOutlined,
-  EnvironmentOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, UserOutlined, IdcardOutlined } from "@ant-design/icons";
 import EditAccount from "./EditAccount/EditAccount";
 import type { RootState } from "../../../store/store";
 import type { ApiResponse } from "../../../types/responseAxios";
@@ -76,9 +68,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
     <CustomModal
       title={
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-            <UserOutlined className="text-white text-lg" />
-          </div>
           <span className="text-2xl font-bold text-gray-800">Thông tin cá nhân</span>
         </div>
       }
@@ -104,11 +93,11 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
           {/* Personal Info Section */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100 relative overflow-hidden">
             {/* Edit Button */}
-            <div className="absolute top-4 right-4">
+            <div className="absolute top-4 right-4 z-20">
               <Tooltip title="Chỉnh sửa thông tin liên lạc">
                 <Button
                   onClick={() => setEditAccountOpen(true)}
-                  className="w-12 h-12 rounded-full border-0 bg-white/80 backdrop-blur-sm hover:bg-white hover:scale-110 transition-all duration-300 shadow-lg flex items-center justify-center"
+                  className="!w-12 !h-12 !rounded-full !border-0 !bg-white/80 !backdrop-blur-sm !hover:bg-white !hover:scale-110 !transition-all !duration-300 !shadow-lg !flex !items-center !justify-center !cursor-pointer"
                 >
                   <EditOutlined className="text-blue-600 text-lg" />
                 </Button>
@@ -129,9 +118,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                    <UserOutlined className="text-white" />
-                  </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 font-medium">Họ và tên</p>
                     <p className="text-lg font-bold text-gray-800">
@@ -141,9 +127,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold">👤</span>
-                  </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 font-medium">Chức vụ</p>
                     <p className="text-lg font-bold text-gray-800">
@@ -153,9 +136,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-                    <PhoneOutlined className="text-white" />
-                  </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 font-medium">Số điện thoại</p>
                     <p className="text-lg font-bold text-gray-800">
@@ -165,9 +145,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
-                    <MailOutlined className="text-white" />
-                  </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 font-medium">Email</p>
                     <p className="text-lg font-bold text-gray-800 break-all">
@@ -178,7 +155,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
               </div>
             </div>
           </div>
-
           {/* Detailed Info Section */}
           <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100 relative overflow-hidden">
             {/* Decorative Elements */}
@@ -195,9 +171,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
-                    <span className="text-white">{userInfo?.gender === true ? "♂" : "♀"}</span>
-                  </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 font-medium">Giới tính</p>
                     <p className="text-lg font-bold text-gray-800">
@@ -207,9 +180,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-full flex items-center justify-center">
-                    <CalendarOutlined className="text-white" />
-                  </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 font-medium">Ngày sinh</p>
                     <p className="text-lg font-bold text-gray-800">
@@ -219,9 +189,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center">
-                    <EnvironmentOutlined className="text-white" />
-                  </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 font-medium">Địa chỉ hiện tại</p>
                     <p className="text-lg font-bold text-gray-800">
@@ -231,9 +198,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full flex items-center justify-center">
-                    <span className="text-white">🏠</span>
-                  </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 font-medium">Quê quán</p>
                     <p className="text-lg font-bold text-gray-800">
@@ -244,7 +208,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
               </div>
             </div>
           </div>
-
           {/* ID Card Info Section */}
           <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-6 border border-orange-100 relative overflow-hidden">
             {/* Decorative Elements */}
@@ -261,9 +224,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center">
-                    <IdcardOutlined className="text-white" />
-                  </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 font-medium">Số CCCD</p>
                     <p className="text-lg font-bold text-gray-800">
@@ -273,9 +233,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-                    <CalendarOutlined className="text-white" />
-                  </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 font-medium">Ngày cấp</p>
                     <p className="text-lg font-bold text-gray-800">
@@ -285,9 +242,6 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-600 rounded-full flex items-center justify-center">
-                    <CalendarOutlined className="text-white" />
-                  </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 font-medium">Ngày hết hạn</p>
                     <p className="text-lg font-bold text-gray-800">
@@ -297,25 +251,19 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                    <EnvironmentOutlined className="text-white" />
-                  </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Nơi cấp</p>
+                    <p className="text-sm text-gray-600 font-medium">Quốc tịch</p>
                     <p className="text-lg font-bold text-gray-800">
-                      {userInfo?.issueBy || "Chưa cập nhật"}
+                      {userInfo?.nationality || "Chưa cập nhật"}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl md:col-span-2">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-violet-600 rounded-full flex items-center justify-center">
-                    <span className="text-white">🌍</span>
-                  </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Quốc tịch</p>
+                    <p className="text-sm text-gray-600 font-medium">Nơi cấp</p>
                     <p className="text-lg font-bold text-gray-800">
-                      {userInfo?.nationality || "Chưa cập nhật"}
+                      {userInfo?.issueBy || "Chưa cập nhật"}
                     </p>
                   </div>
                 </div>

@@ -14,10 +14,13 @@ const Introduction = React.lazy(() => import("../pages/Anonymous/Introduction/In
 const Register = React.lazy(() => import("../pages/Anonymous/Register/Register"));
 const News = React.lazy(() => import("../pages/Anonymous/News/News"));
 const Guidance = React.lazy(() => import("../pages/Anonymous/Guidance/Guidance"));
+const AuctionResultsAnonymous = React.lazy(
+  () => import("../pages/Anonymous/ResultAuction/ResultAuction")
+);
 const NotFound = React.lazy(() => import("../components/Common/NotFound/index"));
 const AuctionListAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionList/index"));
 
-const AuctionDetailAnonymous = React.lazy(() => import("../pages/Anonymous/AcutionDetail/index"));
+const AuctionDetailAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionDetail/index"));
 
 export const guestRoutes = [
   {
@@ -45,14 +48,18 @@ export const guestRoutes = [
     element: wrapWithLazy(NotFound),
   },
   {
-    path: GUEST_ROUTERS.AUCITON_LIST,
+    path: GUEST_ROUTERS.AUCTION_LIST,
     element: wrapWithLazy(AuctionListAnonymous),
   },
   {
     path:
-      GUEST_ROUTERS.AUCITON_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL ||
+      GUEST_ROUTERS.AUCTION_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL ||
       GUEST_ROUTERS.AUCTION_DETAIL,
     element: wrapWithLazy(AuctionDetailAnonymous),
+  },
+  {
+    path: GUEST_ROUTERS.AUCTION_RESULTS,
+    element: wrapWithLazy(AuctionResultsAnonymous),
   },
 ];
 
@@ -70,7 +77,7 @@ export const userRoutes = [
   },
   {
     path:
-      GUEST_ROUTERS.AUCITON_LIST +
+      GUEST_ROUTERS.AUCTION_LIST +
       "/" +
       GUEST_ROUTERS.AUCTION_DETAIL +
       "/" +

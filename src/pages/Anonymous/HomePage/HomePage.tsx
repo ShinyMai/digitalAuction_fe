@@ -149,7 +149,7 @@ const HomePage = () => {
                   key={property.auctionId}
                   className="bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden"
                   onClick={() =>
-                    navigate(GUEST_ROUTERS.AUCITON_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL, {
+                    navigate(GUEST_ROUTERS.AUCTION_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL, {
                       state: { key: property.auctionId },
                       replace: true,
                     })

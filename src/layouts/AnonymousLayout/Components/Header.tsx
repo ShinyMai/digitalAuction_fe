@@ -78,6 +78,7 @@ const Header = memo(() => {
             { label: "Trang chủ", path: "/" },
             { label: "Giới thiệu", path: "/introduction" },
             { label: "Danh sách đấu giá", path: "/auction-list" },
+            { label: "Kết quả đấu giá", path: "/auction-results" },
             { label: "Tin tức", path: "/news" },
             { label: "Hướng dẫn", path: "/guidance" },
           ].map((item, index) => (

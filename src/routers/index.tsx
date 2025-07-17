@@ -6,8 +6,9 @@ export const GUEST_ROUTERS = {
   TIN_TUC: "news",
   GUIDANCE: "guidance",
   NOT_FOUND: "not-found",
-  AUCITON_LIST: "auction-list",
+  AUCTION_LIST: "auction-list",
   AUCTION_DETAIL: "auction-detail",
+  AUCTION_RESULTS: "auction-results",
 };
 
 export const USER_ROUTERS = {
