@@ -78,8 +78,8 @@ const Header = memo(() => {
             { label: "Trang chủ", path: "/" },
             { label: "Giới thiệu", path: "/introduction" },
             { label: "Danh sách đấu giá", path: "/auction-list" },
-            { label: "Tin tức", path: "/tin-tuc" },
-            { label: "Hướng dẫn", path: "/guide" },
+            { label: "Tin tức", path: "/news" },
+            { label: "Hướng dẫn", path: "/guidance" },
           ].map((item, index) => (
             <div
               key={index}

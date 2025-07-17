@@ -166,7 +166,7 @@ const News = () => {
 
           {/* Search and Filter Section */}
           <div
-            className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-6 mb-8 border border-white/20 animate-slide-in-up"
+            className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-6 mb-8 animate-slide-in-up"
             style={{ animationDelay: "0.1s" }}
           >
             <div className="flex flex-col lg:flex-row gap-6 items-center">
@@ -175,10 +175,9 @@ const News = () => {
                 <Input
                   size="large"
                   placeholder="Tìm kiếm tin tức..."
-                  prefix={<SearchOutlined className="text-blue-600" />}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="rounded-xl border-2 border-gray-200 hover:border-blue-400 focus:border-blue-600 transition-all duration-300"
+                  className="rounded-xl transition-all duration-300"
                 />
               </div>
 
@@ -187,12 +186,12 @@ const News = () => {
                 {categories.map((category) => (
                   <Button
                     key={category}
-                    type={selectedCategory === category ? "primary" : "default"}
+                    type={"primary"}
                     onClick={() => setSelectedCategory(category)}
-                    className={`rounded-full px-6 py-2 font-semibold transition-all duration-300 hover:scale-105 ${
+                    className={`!rounded-full !px-6 !py-2 !font-semibold !transition-all !duration-300 !hover:scale-105 ${
                       selectedCategory === category
-                        ? "bg-gradient-to-r from-blue-500 to-purple-600 border-0 shadow-lg"
-                        : "bg-white/70 hover:bg-blue-50 border-gray-300"
+                        ? "!bg-gradient-to-r !from-blue-500 !to-purple-600 !border-0 !shadow-lg"
+                        : "!bg-white/70 !hover:bg-blue-50 !border-gray-300"
                     }`}
                   >
                     {category}
