@@ -1,55 +1,143 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
-import { Form, Input, Button, Table, Row, Col, Card, Typography, InputNumber } from "antd";
+import { Form, Button, Table, Row, Col, Card, Typography, InputNumber, AutoComplete, Select, Space } from "antd";
 import {
   PlusOutlined,
   DeleteOutlined,
+  CheckOutlined,
   DollarOutlined,
   IdcardOutlined,
   HomeOutlined,
   TrophyOutlined,
 } from "@ant-design/icons";
+import AuctionServices from "../../../../services/AuctionServices";
 
 const { Title, Text } = Typography;
 
 export interface InputAuctionPriceModals {
   citizenIdentification?: string;
+  userName?: string;
   auctionAssetId?: string;
   auctionAssetName?: string;
   price: number;
+  id: string;
 }
 
-const InputAuctionPrice: React.FC = () => {
+interface AuctionAsset {
+  auctionAssetsId: string;
+  tagName: string;
+}
+
+interface UserInfo {
+  UserName: string;
+  CitizenIdentification: string;
+  id: string;
+}
+
+interface props {
+  auctionId: string;
+}
+
+const InputAuctionPrice = ({ auctionId }: props) => {
   // State cho danh sách dữ liệu
   const [auctionList, setAuctionList] = useState<InputAuctionPriceModals[]>([]);
   const [loading, setLoading] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [citizenOptions, setCitizenOptions] = useState<{ value: string }[]>([]);
+  const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   // Form instance từ antd
   const [form] = Form.useForm();
+
+  // Gọi API để lấy thông tin người dùng
+  const getUserRegistedAuctionByCitizenIdentification = async (citizenIdentification: string) => {
+    try {
+      const response = await AuctionServices.userRegistedAuction({ citizenIdentification, auctionId: auctionId });
+      if (
+        response.data &&
+        response.data.auctionAssets &&
+        response.data.auctionAssets.length > 0 &&
+        response.data.name
+      ) {
+        setAuctionAssets(response.data.auctionAssets);
+        setUserInfo({
+          UserName: response.data.name,
+          CitizenIdentification: response.data.citizenIdentification,
+          id: response.data.id,
+        });
+        setErrorMessage(null);
+      } else {
+        setAuctionAssets([]);
+        setUserInfo(null);
+        setErrorMessage("Không tìm thấy dữ liệu với số CMND/CCCD này");
+      }
+    } catch (error) {
+      console.error("Error fetching user registration:", error);
+      setAuctionAssets([]);
+      setUserInfo(null);
+      setErrorMessage("Không tìm thấy dữ liệu với số CMND/CCCD này");
+    }
+  };
+
+  // Xử lý khi nhập citizenIdentification
+  const handleCitizenInput = (value: string) => {
+    if (value.length === 12) {
+      getUserRegistedAuctionByCitizenIdentification(value);
+      setCitizenOptions([{ value }]);
+    } else {
+      setAuctionAssets([]);
+      setUserInfo(null);
+      setErrorMessage(null);
+      setCitizenOptions(value ? [{ value }] : []);
+    }
+  };
 
   // Xử lý submit form
   const onFinish = async (values: InputAuctionPriceModals) => {
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Chuyển price thành number
+      // Chuyển price thành number và thêm id ngẫu nhiên
       const formattedValues = {
         ...values,
         price: values.price,
+        userName: userInfo?.UserName || "-",
+        auctionAssetName: auctionAssets.find(asset => asset.auctionAssetsId === values.auctionAssetId)?.tagName || "-",
+        id: crypto.randomUUID(),
       };
+
+      // Kiểm tra trùng lặp
+      const isDuplicate = auctionList.some(
+        item =>
+          item.citizenIdentification === formattedValues.citizenIdentification &&
+          item.auctionAssetId === formattedValues.auctionAssetId
+      );
+
+      if (isDuplicate) {
+        setErrorMessage("Người đấu giá tài sản này đã được bạn nhập giá đấu trước đây");
+        setLoading(false);
+        return;
+      }
 
       // Thêm dữ liệu vào danh sách
       setAuctionList([...auctionList, formattedValues]);
 
-      // Reset form
+      // Reset form và các state liên quan
       form.resetFields();
+      setAuctionAssets([]);
+      setUserInfo(null);
+      setErrorMessage(null);
+      setCitizenOptions([]);
     } catch (error) {
       console.error("Error:", error);
+      setErrorMessage("Đã xảy ra lỗi khi thêm giá đấu");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Xử lý khi click nút Hoàn thành
+  const handleComplete = () => {
+    console.log("Danh sách giá đấu giá:", auctionList);
   };
 
   // Xử lý xóa hàng
@@ -72,13 +160,12 @@ const InputAuctionPrice: React.FC = () => {
       ),
     },
     {
-      title: "Mã tài sản",
-      dataIndex: "auctionAssetId",
-      key: "auctionAssetId",
-      width: 120,
+      title: "Tên Người Dùng",
+      dataIndex: "userName",
+      key: "userName",
+      width: 200,
       render: (text: string) => (
         <div className="flex items-center gap-2">
-          <HomeOutlined className="text-teal-500" />
           <Text className="font-medium">{text || "-"}</Text>
         </div>
       ),
@@ -105,7 +192,8 @@ const InputAuctionPrice: React.FC = () => {
     {
       title: "Thao tác",
       key: "action",
-      width: 100, render: (_: any, __: InputAuctionPriceModals, index: number) => (
+      width: 100,
+      render: (_: any, __: InputAuctionPriceModals, index: number) => (
         <div className="opacity-0 group-hover:opacity-100 transition-all duration-300">
           <Button
             type="text"
@@ -137,7 +225,7 @@ const InputAuctionPrice: React.FC = () => {
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-200/30 to-cyan-200/30 rounded-full animate-float"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-purple-200/30 to-pink-200/30 rounded-full animate-float delay-1000"></div>
+        {/* <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-purple-200/30 to-pink-200/30 rounded-full animate-float delay-1000"></div> */}
         <div className="absolute bottom-32 left-1/4 w-20 h-20 bg-gradient-to-r from-teal-200/30 to-blue-200/30 rounded-full animate-float delay-2000"></div>
       </div>
 
@@ -156,7 +244,7 @@ const InputAuctionPrice: React.FC = () => {
           {/* Form nhập liệu bên trái */}
           <Col xs={24} lg={10}>
             <Card
-              className="shadow-xl bg-white/90 backdrop-blur-sm border-0 hover:shadow-2xl transition-shadow duration-300"
+              className="shadow-xl bg-white/90 backdrop-blur-sm border-0 transition-shadow duration-300"
               title={
                 <div className="flex items-center gap-3 text-gray-800">
                   <span className="text-lg font-semibold">Nhập Thông Tin Đấu Giá</span>
@@ -171,9 +259,17 @@ const InputAuctionPrice: React.FC = () => {
                       <IdcardOutlined className="text-blue-500" />
                       Số CMND/CCCD
                     </span>
-                  } rules={[{ required: true, message: "Vui lòng nhập số CMND/CCCD" }]}
+                  }
+                  rules={[
+                    { required: true, message: "Vui lòng nhập số CMND/CCCD" },
+                    { len: 12, message: "Số CMND/CCND phải có 12 ký tự" },
+                  ]}
+                  help={errorMessage}
+                  validateStatus={errorMessage ? "error" : undefined}
                 >
-                  <Input
+                  <AutoComplete
+                    options={citizenOptions}
+                    onChange={handleCitizenInput}
                     placeholder="Nhập số CMND/CCCD"
                     className="rounded-lg h-12 border-gray-300 hover:border-blue-500 focus:border-blue-500"
                     prefix={<IdcardOutlined className="text-gray-400" />}
@@ -185,27 +281,22 @@ const InputAuctionPrice: React.FC = () => {
                   label={
                     <span className="text-gray-700 font-medium flex items-center gap-2">
                       <HomeOutlined className="text-teal-500" />
-                      Mã Tài Sản
+                      Tài Sản Đấu Giá
                     </span>
                   }
-                  rules={[{ required: true, message: "Vui lòng nhập mã tài sản" }]}
+                  rules={[{ required: true, message: "Vui lòng chọn tài sản đấu giá" }]}
                 >
-                  <Input
-                    placeholder="Nhập mã tài sản"
-                    className="rounded-lg h-12 border-gray-300 hover:border-blue-500 focus:border-blue-500"
-                    prefix={<HomeOutlined className="text-gray-400" />}
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  name="auctionAssetName"
-                  label={<span className="text-gray-700 font-medium">Tên Tài Sản</span>}
-                  rules={[{ required: true, message: "Vui lòng nhập tên tài sản" }]}
-                >
-                  <Input
-                    placeholder="Nhập tên tài sản"
-                    className="rounded-lg h-12 border-gray-300 hover:border-blue-500 focus:border-blue-500"
-                  />
+                  <Select
+                    placeholder="Chọn tài sản đấu giá"
+                    className="rounded-lg h-12"
+                    disabled={!auctionAssets.length}
+                  >
+                    {auctionAssets.map(asset => (
+                      <Select.Option key={asset.auctionAssetsId} value={asset.auctionAssetsId}>
+                        {asset.tagName}
+                      </Select.Option>
+                    ))}
+                  </Select>
                 </Form.Item>
 
                 <Form.Item
@@ -221,7 +312,6 @@ const InputAuctionPrice: React.FC = () => {
                     { type: "number", min: 1000, message: "Giá đấu phải lớn hơn 1,000 VND" },
                   ]}
                 >
-                  {" "}
                   <InputNumber
                     placeholder="Nhập giá đấu"
                     className="w-full rounded-lg h-12 border-gray-300 hover:border-blue-500 focus:border-blue-500"
@@ -232,14 +322,25 @@ const InputAuctionPrice: React.FC = () => {
                 </Form.Item>
 
                 <Form.Item className="mb-0">
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    loading={loading} className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                    icon={<PlusOutlined />}
-                  >
-                    {loading ? "Đang thêm..." : "Thêm Giá Đấu"}
-                  </Button>
+                  <Space>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      loading={loading}
+                      className="h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                      icon={<PlusOutlined />}
+                    >
+                      {loading ? "Đang thêm..." : "Thêm Giá Đấu"}
+                    </Button>
+                    <Button
+                      type="primary"
+                      icon={<CheckOutlined />}
+                      onClick={handleComplete}
+                      className="h-12 rounded-lg font-semibold"
+                    >
+                      Hoàn thành nhập phiếu
+                    </Button>
+                  </Space>
                 </Form.Item>
               </Form>
             </Card>
@@ -248,7 +349,7 @@ const InputAuctionPrice: React.FC = () => {
           {/* Bảng dữ liệu bên phải */}
           <Col xs={24} lg={14}>
             <Card
-              className="shadow-xl bg-white/90 backdrop-blur-sm border-0 hover:shadow-2xl transition-shadow duration-300"
+              className="shadow-xl bg-white/90 backdrop-blur-sm border-0 transition-shadow duration-300 min-h-[450px]"
               title={
                 <div className="flex items-center gap-3 text-gray-800">
                   <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-600 rounded-full flex items-center justify-center">
@@ -312,7 +413,8 @@ const InputAuctionPrice: React.FC = () => {
           background: rgba(59, 130, 246, 0.05) !important;
         }
         
-        .ant-card-head {border-bottom: 2px solid #e5e7eb !important;
+        .ant-card-head {
+          border-bottom: 2px solid # —e5e7eb !important;
         }
         
         .ant-input:focus, .ant-input-focused {
