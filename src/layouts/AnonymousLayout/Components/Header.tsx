@@ -64,7 +64,9 @@ const Header = memo(() => {
           <div onClick={() => navigate("/")} className="cursor-pointer hover:scale-105">
             Trang chủ
           </div>
-          <div className="cursor-pointer hover:scale-105">Giới thiệu</div>
+          <div className="cursor-pointer hover:scale-105" onClick={() => navigate("/introduction")}>
+            Giới thiệu
+          </div>
           <div className="cursor-pointer hover:scale-105">Kết quả đấu giả</div>
           <div className="cursor-pointer hover:scale-105">Tin tức</div>
           <div className="cursor-pointer hover:scale-105">Hướng dẫn</div>

@@ -1,4 +1,3 @@
-import { Carousel, Card, Typography, Space } from "antd";
 import { FieldTimeOutlined } from "@ant-design/icons";
 import { assets } from "../../../assets";
 import { useNavigate } from "react-router-dom";
@@ -36,7 +35,6 @@ const categories = [
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { Title, Paragraph } = Typography;
   const [searchParams] = useState<SearchParams>({
     PageNumber: 1,
     PageSize: 3,
@@ -64,131 +62,133 @@ const HomePage = () => {
     getListAuction();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   return (
-    <div className="bg-gray-50">
-      {/* Banner Section */}
-      <div className="bg-sky-100 lg:py-8 px-4 lg:px-12 flex flex-col lg:flex-row items-center justify-between">
-        <div className="w-full lg:w-1/2 text-center mb-8 lg:mb-0">
-          <div className="flex flex-col items-center">
-            <img src={assets.logoNo} alt="VDA Logo" className="w-32 lg:w-40 rounded-2xl mb-2" />
-            <Title level={4} className="text-[#0A3A58] !mb-0">
-              CÔNG TY HỢP DANH ĐẤU GIÁ TÀI SẢN SỐ
-            </Title>
+    <div className="min-h-screen overflow-x-hidden">
+      {/* Hero Banner Section */}
+      <section className="flex items-center min-h-screen px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
+        <div className="container mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+          <div className="flex-1 max-w-2xl text-center lg:text-left order-2 lg:order-1">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
+              Hệ thống đăng ký tham gia
+              <span className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent font-extrabold">
+                đấu giá trực tuyến
+              </span>
+            </h1>
+            <p className="text-lg sm:text-xl lg:text-2xl mb-6 sm:mb-8 opacity-90 leading-relaxed">
+              Nền tảng đăng ký đấu giá hàng đầu Việt Nam - Kết nối bạn với các phiên đấu giá chính
+              thức
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
+              <button
+                onClick={() => navigate("/register")}
+                className="px-6 sm:px-8 py-3 sm:py-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl text-sm sm:text-base"
+              >
+                Đăng ký ngay
+              </button>
+              <button
+                onClick={() => navigate("/auction-list")}
+                className="px-6 sm:px-8 py-3 sm:py-4 border-2 border-white text-white hover:bg-white hover:text-slate-900 font-semibold rounded-full transition-all duration-300 transform hover:-translate-y-1 text-sm sm:text-base"
+              >
+                Xem danh sách đấu giá
+              </button>
+            </div>
           </div>
-          <Title level={2} className="mt-4 mb-2 !text-2xl lg:!text-3xl">
-            Nền tảng đăng ký đấu giá trực tuyến của Việt Nam
-          </Title>
-          <Paragraph className="text-sm lg:text-base mb-6 max-w-2xl mx-auto">
-            CÔNG TY HỢP DANH ĐẤU GIÁ TÀI SẢN SỐ VDA (Vietnam Digital Auction) - là một Tổ chức hoạt
-            động chuyên nghiệp trong lĩnh vực dịch vụ tư vấn, tổ chức đấu giá tài sản, quyền tài
-            sản, vật tư, thiết bị, hàng hóa và các dịch vụ khác liên quan đến đấu giá tài sản.
-          </Paragraph>
-        </div>
-        <div className="w-full lg:w-1/2">
-          <Carousel
-            autoplay
-            autoplaySpeed={3000}
-            effect="fade"
-            className="rounded-lg shadow-xl border border-gray-200"
-          >
-            <div>
-              <img
-                src={assets.banner}
-                alt="Banner 1"
-                className="w-full h-48 md:h-[360px] lg:h-[350px] object-cover rounded-lg"
-              />
+          <div className="flex-1 flex justify-center lg:pl-8 order-1 lg:order-2 mt-8 lg:mt-0">
+            <div className="relative">
+              <div className="text-8xl md:text-9xl lg:text-[12rem] mb-4 animate-bounce">🏛️</div>              <div className="absolute -top-2 sm:-top-4 -right-4 sm:-right-6 text-xl sm:text-2xl md:text-3xl animate-pulse delay-300">
+                ⚖️
+              </div>
+              <div className="absolute -bottom-1 sm:-bottom-2 -left-3 sm:-left-4 text-xl sm:text-2xl md:text-3xl animate-pulse delay-500">
+                📝
+              </div>
             </div>
-            <div>
-              <img
-                src={assets.banner2}
-                alt="Banner 2"
-                className="w-full h-48 md:h-[360px] lg:h-[350px] object-cover rounded-lg"
-              />
-            </div>
-          </Carousel>
+          </div>
         </div>
-      </div>
-
+      </section>
       {/* Categories Section */}
-      <div className="px-4 lg:px-12 py-8">
-        <Title level={2} className="text-center mb-6 !text-3xl lg:!text-4xl">
-          Danh mục tài sản
-        </Title>
-        <div className="flex flex-wrap justify-center gap-4">
-          {categories.map((category) => (
-            <Card
-              key={category.id}
-              hoverable
-              className="w-[300px] h-[200px] flex flex-col items-center justify-center"
-              onClick={() =>
-                navigate("/auction-list", {
-                  state: { key: category.id },
-                })
-              }
-            >
-              <img src={category.image} alt={category.name} className="w-16 h-16 mb-2" />
-              <Paragraph className="text-center font-semibold">{category.name}</Paragraph>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      {/* Upcoming Auctions Section */}
-      {auctionList.length > 0 && (
-        <div className="bg-sky-100 px-4 lg:px-12 py-8">
-          <Title level={2} className="text-center mb-6 !text-3xl lg:!text-4xl">
-            Tài sản sắp được đấu giá
-          </Title>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {auctionList.map((property) => (
-              <Card
-                key={property.auctionId}
-                hoverable
-                cover={
-                  <img
-                    alt={property.auctionName}
-                    src={
-                      "https://tse1.mm.bing.net/th/id/OIP.-IAlyndSbk_ZpEILNowpGQHaGK?cb=iwc2&rs=1&pid=ImgDetMain"
-                    }
-                    className="w-full h-48 object-cover rounded-t-lg"
-                  />
-                }
-                className="shadow-lg"
+      <section className="py-12 sm:py-16 lg:py-20 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-10 lg:mb-12 text-gray-800">
+            Danh mục tài sản đấu giá
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+            {categories.map((category) => (
+              <div
+                key={category.id}
+                className="bg-white p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 text-center cursor-pointer"
                 onClick={() =>
-                  navigate(GUEST_ROUTERS.AUCITON_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL, {
-                    state: { key: property.auctionId },
-                    replace: true,
+                  navigate("/auction-list", {
+                    state: { key: category.id },
                   })
                 }
               >
-                <Card.Meta
-                  title={
-                    <div className="text-center text-lg font-semibold">{property.auctionName}</div>
-                  }
-                  description={
-                    <Space direction="vertical" className="w-full">
-                      <div className="flex items-center text-gray-800">
-                        <FieldTimeOutlined className="mr-2" />
-                        Ngày kết thúc đăng kí:{" "}
-                        <span className="font-bold text-lg ml-2">
-                          {convertToVietnamTime(property.registerEndDate)}
-                        </span>
-                      </div>
-                      <div className="flex items-center text-gray-800">
-                        <FieldTimeOutlined className="mr-2" />
-                        Ngày đấu giá:{" "}
-                        <span className="font-bold text-lg ml-2">
-                          {convertToVietnamTime(property.auctionStartDate)}
-                        </span>
-                      </div>
-                    </Space>
-                  }
+                <img
+                  src={category.image}
+                  alt={category.name}
+                  className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4"
                 />
-              </Card>
+                <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 leading-tight">
+                  {category.name}
+                </h3>
+              </div>
             ))}
           </div>
         </div>
+      </section>
+      {/* Upcoming Auctions Section */}
+      {auctionList.length > 0 && (
+        <section className="py-12 sm:py-16 lg:py-20 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-10 lg:mb-12 text-gray-800">
+              Tài sản sắp mở đăng ký đấu giá
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8">
+              {auctionList.map((property) => (
+                <div
+                  key={property.auctionId}
+                  className="bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden"
+                  onClick={() =>
+                    navigate(GUEST_ROUTERS.AUCITON_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL, {
+                      state: { key: property.auctionId },
+                      replace: true,
+                    })
+                  }
+                >
+                  <img
+                    alt={property.auctionName}
+                    src="https://tse1.mm.bing.net/th/id/OIP.-IAlyndSbk_ZpEILNowpGQHaGK?cb=iwc2&rs=1&pid=ImgDetMain"
+                    className="w-full h-40 sm:h-48 object-cover"
+                  />
+                  <div className="p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-800 text-center line-clamp-2">
+                      {property.auctionName}
+                    </h3>
+                    <div className="space-y-2 sm:space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-gray-600 gap-1 sm:gap-2">
+                        <span className="flex items-center text-sm sm:text-base">
+                          <FieldTimeOutlined className="mr-1 sm:mr-2 text-blue-500" />
+                          Hạn đăng ký:
+                        </span>
+                        <span className="font-bold text-red-600 text-sm sm:text-base">
+                          {convertToVietnamTime(property.registerEndDate)}
+                        </span>
+                      </div>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-gray-600 gap-1 sm:gap-2">
+                        <span className="flex items-center text-sm sm:text-base">
+                          <FieldTimeOutlined className="mr-1 sm:mr-2 text-green-500" />
+                          Ngày đấu giá:
+                        </span>
+                        <span className="font-bold text-green-600 text-sm sm:text-base">
+                          {convertToVietnamTime(property.auctionStartDate)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       )}
     </div>
   );
