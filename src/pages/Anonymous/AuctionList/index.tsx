@@ -26,7 +26,7 @@ const AuctionListAnonyMous = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
-    PageSize: 9,
+    PageSize: 8,
     CategoryId: location.state?.key,
     Status: 1,
   });

@@ -148,7 +148,6 @@ const NotificationDropdown = () => {
 
   return (
     <div ref={ref} className="relative group">
-      {/* Enhanced Notification Bell */}
       <div
         className="relative w-10 h-10 rounded-full bg-gradient-to-r hover:from-blue-600 hover:to-purple-700 flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-110 shadow-lg group-hover:shadow-xl"
         onClick={() => {
@@ -158,22 +157,18 @@ const NotificationDropdown = () => {
       >
         <BellOutlined className="text-lg text-white" />
 
-        {/* Animated Notification Badge */}
         {hasNewNotification && (
           <div className="absolute -top-1 -right-1">
             <div className="w-4 h-4 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center animate-pulse">
               <div className="w-2 h-2 bg-white rounded-full"></div>
             </div>
-            {/* Pulse effect */}
             <div className="absolute -top-1 -right-1 w-6 h-6 bg-red-400 rounded-full animate-ping opacity-75"></div>
           </div>
         )}
 
-        {/* Hover glow effect */}
         <div className="absolute inset-0 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
 
-      {/* Enhanced Notification Dropdown */}
       <div
         className={`absolute right-0 mt-3 z-50 ${
           open ? "block" : "hidden"
@@ -209,7 +204,6 @@ const NotificationDropdown = () => {
         {/* Notifications List */}
         <div className="max-h-96 overflow-y-auto">
           <Spin spinning={loading}>
-            {" "}
             {notifications.length > 0 ? (
               <div className="divide-y divide-gray-100">
                 {notifications.map((notification) => (
