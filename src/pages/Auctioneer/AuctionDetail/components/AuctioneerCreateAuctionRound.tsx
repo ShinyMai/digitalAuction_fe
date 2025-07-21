@@ -16,8 +16,20 @@ export type AuctionRoundPrice = {
     AuctionPrice: string;
 };
 
+// Thêm function xử lý xác nhận người thắng
+const handleConfirmWinner = (price: AuctionRoundPrice) => {
+    console.log("Xác nhận người thắng:", price);
+    // TODO: Implement winner confirmation logic
+};
+
+interface AuctionAsset {
+    auctionAssetsId: string;
+    tagName: string;
+}
+
 interface AuctioneerCreateAuctionRoundProps {
     auctionRoundPrices: AuctionRoundPrice[];
+    auctionAssets: AuctionAsset[];
     loading?: boolean;
 }
 
@@ -108,7 +120,7 @@ const AuctioneerCreateAuctionRound = ({ auctionRoundPrices, loading = false }: A
     ];
 
     return (
-        <section className="w-full overflow-hidden box-border h-[550px] sm:h-[750px] md:h-[550px] lg:h-[450px]">
+        <section className="w-full overflow-hidden box-border h-full">
             <style>
                 {`
                     .truncate {
@@ -119,46 +131,119 @@ const AuctioneerCreateAuctionRound = ({ auctionRoundPrices, loading = false }: A
                     .scroll-container {
                         max-height: calc(100vh - 350px);
                         overflow-y: auto;
+                        scrollbar-width: thin;
+                        scrollbar-color: #93C5FD transparent;
+                    }
+                    .scroll-container::-webkit-scrollbar {
+                        width: 6px;
+                    }
+                    .scroll-container::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+                    .scroll-container::-webkit-scrollbar-thumb {
+                        background-color: #93C5FD;
+                        border-radius: 3px;
+                    }
+                    .price-card {
+                        transition: all 0.3s ease;
+                        cursor: pointer;
+                    }
+                    .price-card:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                    }
+                    .ant-table-cell {
+                        font-size: 14px !important;
+                        padding: 12px 16px !important;
+                    }
+                    .ant-table-thead > tr > th {
+                        background: #F8FAFC !important;
+                        font-weight: 600 !important;
+                    }
+                    .ant-table-row:hover {
+                        background: #EFF6FF !important;
                     }
                 `}
             </style>
-            <div className="flex flex-col lg:flex-row h-full box-border">
+            <div className="flex flex-col lg:flex-row h-full box-border gap-4">
                 {/* Phần bên trái: Danh sách giá cao nhất cho từng loại tài sản */}
                 <motion.div
-                    className="w-full lg:w-1/3 p-2 lg:p-3 lg:border-r border-gray-200 h-full max-h-full flex flex-col overflow-hidden"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
+                    className="w-full lg:w-1/3 h-full max-h-full flex flex-col overflow-hidden"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4 }}
                 >
-                    <Card className="flex-1 shadow-md rounded-lg overflow-hidden box-border flex flex-col">
-                        <Title level={4} className="text-gray-800 mb-2 text-base sm:text-lg md:text-lg">
-                            Giá Đấu Cao Nhất Theo Loại Tài Sản
-                        </Title>
-                        {loading && <Spin size="large" className="flex justify-center my-6" />}
-                        {!loading && highestPrices.length === 0 && (
-                            <Text className="text-gray-500 text-sm sm:text-base">Không có dữ liệu giá đấu</Text>
+                    <Card
+                        className="flex-1 shadow-lg rounded-xl overflow-hidden box-border flex flex-col bg-gradient-to-br from-blue-50 to-indigo-50"
+                        bordered={false}
+                    >
+                        <div className="flex items-center justify-between mb-4">
+                            <Title level={4} className="text-gray-800 m-0 text-lg flex items-center gap-2">
+                                <span className="bg-blue-100 p-2 rounded-lg">🏆</span>
+                                Giá Đấu Cao Nhất
+                            </Title>
+                        </div>
+
+                        {loading && (
+                            <div className="flex justify-center items-center flex-1">
+                                <Spin size="large" />
+                            </div>
                         )}
+
+                        {!loading && highestPrices.length === 0 && (
+                            <div className="flex flex-col items-center justify-center flex-1 text-gray-500">
+                                <span className="text-4xl mb-2">📊</span>
+                                <Text>Chưa có dữ liệu giá đấu</Text>
+                            </div>
+                        )}
+
                         {!loading && highestPrices.length > 0 && (
-                            <div className={`space-y-4 text-sm sm:text-base ${highestPrices.length > 2 ? 'scroll-container' : ''}`}>
+                            <div className={`space-y-3 ${highestPrices.length > 2 ? 'scroll-container pr-2' : ''}`}>
                                 {highestPrices.map((price, index) => (
-                                    <div key={index} className="border-b border-gray-200 pb-2">
-                                        <div>
-                                            <Text strong>Tên tài sản: </Text>
-                                            <Text>{price.TagName}</Text>
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                                        className="price-card bg-white p-4 rounded-xl border border-blue-100"
+                                    >
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="bg-blue-100 p-2 rounded-lg">
+                                                <span className="text-lg">💎</span>
+                                            </div>
+                                            <div className="flex-1">
+                                                <Text className="block font-semibold text-blue-600">{price.TagName}</Text>
+                                                <Text className="text-sm text-gray-500">{price.UserName}</Text>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <Text strong>Tên người dùng: </Text>
-                                            <Text>{price.UserName}</Text>
+                                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-100">
+                                            <Text className="text-gray-600">Số CCCD:</Text>
+                                            <Text className="font-medium">{price.CitizenIdentification}</Text>
                                         </div>
-                                        <div>
-                                            <Text strong>Số căn cước: </Text>
-                                            <Text>{price.CitizenIdentification}</Text>
+                                        <div className="flex justify-between items-center mt-2">
+                                            <Text className="text-gray-600">Giá đấu:</Text>
+                                            <Text className="text-lg font-semibold text-green-600">
+                                                {formatNumber(parseFloat(price.AuctionPrice))} VND
+                                            </Text>
                                         </div>
-                                        <div>
-                                            <Text strong>Giá đấu: </Text>
-                                            <Text>{formatNumber(parseFloat(price.AuctionPrice))} VND</Text>
-                                        </div>
-                                    </div>
+                                        <motion.div
+                                            className="mt-4 pt-3 border-t border-gray-100"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ delay: 0.2 }}
+                                        >
+                                            <button
+                                                onClick={() => handleConfirmWinner(price)}
+                                                className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 
+                                                text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-[1.02] 
+                                                focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 
+                                                flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                                            >
+                                                <span className="text-lg">👑</span>
+                                                Xác nhận người thắng
+                                            </button>
+                                        </motion.div>
+                                    </motion.div>
                                 ))}
                             </div>
                         )}
@@ -167,24 +252,37 @@ const AuctioneerCreateAuctionRound = ({ auctionRoundPrices, loading = false }: A
 
                 {/* Phần bên phải: Danh sách AuctionRoundPrice */}
                 <motion.div
-                    className="w-full lg:w-2/3 p-2 lg:p-3 h-full max-h-full flex flex-col overflow-x-hidden overflow-y-hidden"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
+                    className="w-full lg:w-2/3 h-full max-h-full flex flex-col overflow-hidden"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4 }}
                 >
-                    <Card className="flex-1 shadow-md rounded-lg overflow-hidden box-border flex flex-col">
-                        <Title level={4} className="text-gray-800 mb-2 text-base sm:text-lg md:text-lg">
-                            Danh Sách Giá Đấu
-                        </Title>
+                    <Card
+                        className="flex-1 shadow-lg rounded-xl overflow-hidden box-border flex flex-col bg-gradient-to-br from-indigo-50 to-purple-50"
+                        bordered={false}
+                    >
+                        <div className="flex items-center justify-between mb-4">
+                            <Title level={4} className="text-gray-800 m-0 text-lg flex items-center gap-2">
+                                <span className="bg-indigo-100 p-2 rounded-lg">📋</span>
+                                Danh Sách Giá Đấu
+                            </Title>
+                        </div>
                         <div className="flex-1 overflow-hidden">
                             <Table
                                 columns={columns}
                                 dataSource={auctionRoundPrices}
                                 loading={loading}
                                 rowKey="AuctionRoundId"
-                                locale={{ emptyText: "Không có dữ liệu" }}
-                                className="w-full rounded-lg overflow-hidden table-fixed"
-                                rowClassName="hover:bg-blue-50 transition-colors duration-200"
+                                locale={{
+                                    emptyText: (
+                                        <div className="flex flex-col items-center justify-center py-8">
+                                            <span className="text-4xl mb-2">📊</span>
+                                            <Text>Không có dữ liệu</Text>
+                                        </div>
+                                    )
+                                }}
+                                className="w-full overflow-hidden"
+                                rowClassName="cursor-pointer"
                                 pagination={false}
                                 scroll={{ y: "calc(100vh - 450px)" }}
                             />

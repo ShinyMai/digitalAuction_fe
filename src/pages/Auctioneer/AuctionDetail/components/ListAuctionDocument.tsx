@@ -13,12 +13,24 @@ import {
   Button,
   Dropdown,
   Menu,
+  Select,
 } from "antd";
 import {
   SearchOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+
+interface AuctionAsset {
+  auctionAssetsId: string;
+  tagName: string;
+}
+
+interface Props {
+  auctionId: string;
+  auctionDateModals?: AuctionDateModal;
+  auctionAssets: AuctionAsset[];
+}
 
 interface SearchParams {
   Name?: string;
@@ -32,13 +44,14 @@ interface SearchParams {
 }
 
 interface Props {
-  auctionId?: string;
+  auctionId: string;
   auctionDateModals?: AuctionDateModal;
 }
 
 const ListAuctionDocument = ({
   auctionId,
   auctionDateModals,
+  auctionAssets,
 }: Props) => {
   const [searchParams, setSearchParams] =
     useState<SearchParams>({
@@ -273,14 +286,19 @@ const ListAuctionDocument = ({
               }
               className="w-full sm:w-1/4"
             />
-            <Input
-              placeholder="Tìm kiếm theo tên tài sản"
-              prefix={<SearchOutlined />}
+            <Select
+              placeholder="Chọn tài sản đấu giá"
               allowClear
+              showSearch
               value={searchValues.TagName}
-              onChange={(e) =>
-                handleInputChange("TagName", e.target.value)
+              onChange={(value) => handleInputChange("TagName", value)}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
               }
+              options={auctionAssets.map(asset => ({
+                value: asset.tagName,
+                label: asset.tagName,
+              }))}
               className="w-full sm:w-1/4"
             />
             <Button

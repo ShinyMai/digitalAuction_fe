@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useLocation } from "react-router-dom";
 import AuctionServices from "../../../services/AuctionServices";
 import { useEffect, useState } from "react";
@@ -50,144 +51,14 @@ const auctionRoundPriceFakeData: AuctionRoundPrice[] = [
     RecentLocation: "Hai Bà Trưng, Hà Nội",
     TagName: "Xe máy SH 150i",
     AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
-  {
-    AuctionRoundId: "AR005",
-    UserName: "Hoàng Văn Nam",
-    CitizenIdentification: "789123456789",
-    RecentLocation: "Hai Bà Trưng, Hà Nội",
-    TagName: "Xe máy SH 150i",
-    AuctionPrice: "150000000",
-  },
+  }
 ];
+
+// Thêm interface cho auction asset
+interface AuctionAsset {
+  auctionAssetsId: string;
+  tagName: string;
+}
 
 const AuctionDetailAuctioneer = () => {
   const location = useLocation();
@@ -196,6 +67,7 @@ const AuctionDetailAuctioneer = () => {
   const [isOpentPopupVerifyCancel, setIsOpenPopupVerifyCancel] = useState<boolean>(false);
   const [auctionDateModal, setAuctionDateModal] = useState<AuctionDateModal>();
   const [listAuctionRoundPice] = useState<AuctionRoundPrice[]>(auctionRoundPriceFakeData);
+  const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
 
   useEffect(() => {
     console.log("role: ", role);
@@ -208,13 +80,23 @@ const AuctionDetailAuctioneer = () => {
   const getAuctionDetailById = async (auctionId: string) => {
     try {
       const response = await AuctionServices.getAuctionDetail(auctionId);
-      console.log(response.data);
       const auctionDate: AuctionDateModal = {
         auctionEndDate: response.data?.auctionEndDate,
         auctionStartDate: response.data?.auctionStartDate,
         registerOpenDate: response.data?.registerOpenDate,
         registerEndDate: response.data?.registerEndDate,
       };
+
+      // Xử lý và set auction assets từ response data
+      if (response.data?.listAuctionAssets && Array.isArray(response.data.listAuctionAssets)) {
+        const assets: AuctionAsset[] = response.data.listAuctionAssets.map((asset: any) => ({
+          auctionAssetsId: asset.auctionAssetsId,
+          tagName: asset.tagName
+        }));
+        console.log("Auction Assets: ", assets);
+        setAuctionAssets(assets);
+      }
+
       setAuctionDateModal(auctionDate);
       setAuctionDetailData(response.data);
     } catch (error) {
@@ -275,6 +157,7 @@ const AuctionDetailAuctioneer = () => {
                   <ListAuctionDocument
                     auctionId={location.state.key}
                     auctionDateModals={auctionDateModal}
+                    auctionAssets={auctionAssets}
                   />
                 </div>
               ),
@@ -296,7 +179,10 @@ const AuctionDetailAuctioneer = () => {
               children: (
                 <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 min-h-[500px]">
                   {role === "Auctioneer" ? (
-                    <AuctioneerCreateAuctionRound auctionRoundPrices={listAuctionRoundPice} />
+                    <AuctioneerCreateAuctionRound
+                      auctionRoundPrices={listAuctionRoundPice}
+                      auctionAssets={auctionAssets}
+                    />
                   ) : (
                     <InputAuctionPrice auctionId={location.state.key} />
                   )}
@@ -312,33 +198,48 @@ const AuctionDetailAuctioneer = () => {
           border-radius: 12px !important;
           transition: all 0.3s ease !important;
           margin: 0 4px !important;
+          padding: 8px 16px !important;
         }
         
         .auction-tabs .ant-tabs-tab:hover {
           background: rgba(59, 130, 246, 0.1) !important;
           transform: translateY(-2px) !important;
+          border-color: transparent !important;
         }
         
         .auction-tabs .ant-tabs-tab-active {
           background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
           color: white !important;
           box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3) !important;
+          border-color: transparent !important;
         }
         
         .auction-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
           color: white !important;
+          font-weight: 600 !important;
         }
         
         .auction-tabs .ant-tabs-tab-active .anticon {
           color: white !important;
+          font-size: 16px !important;
         }
         
         .auction-tabs .ant-tabs-content-holder {
           background: transparent !important;
+          border: none !important;
         }
         
         .auction-tabs .ant-tabs-tabpane {
           background: transparent !important;
+          padding: 24px !important;
+        }
+        
+        .auction-tabs .ant-tabs-nav {
+          margin-bottom: 24px !important;
+        }
+        
+        .auction-tabs .ant-tabs-nav::before {
+          border: none !important;
         }
         
         @keyframes float {
