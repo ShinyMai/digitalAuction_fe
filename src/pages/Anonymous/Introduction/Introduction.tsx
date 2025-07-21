@@ -8,7 +8,7 @@ const Introduction = () => {
         <div className="container mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           <div className="flex-1 max-w-2xl text-center lg:text-left order-2 lg:order-1">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-              Chào mừng đến với
+              Chào mừng đến với {""}
               <span className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent font-extrabold">
                 Digital Auction
               </span>
@@ -184,9 +184,6 @@ const Introduction = () => {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">
             Sẵn sàng bắt đầu hành trình đấu giá?
           </h2>
-          <p className="text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 opacity-90 max-w-2xl mx-auto">
-            Tham gia cộng đồng đấu giá lớn nhất Việt Nam ngay hôm nay
-          </p>
           <Link
             to="/register"
             className="inline-block px-8 sm:px-10 py-3 sm:py-4 bg-gradient-to-r from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600 text-white font-bold text-base sm:text-lg rounded-full transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl"

@@ -13,7 +13,6 @@ import {
   Space,
   Typography,
   Divider,
-  Empty,
   Spin,
   Image,
   Table,
@@ -21,6 +20,7 @@ import {
   Descriptions,
   Statistic,
   Progress,
+  Tooltip,
 } from "antd";
 import {
   SearchOutlined,
@@ -258,6 +258,69 @@ const ResultAuction = () => {
   const [sortBy, setSortBy] = useState<string>("endDate");
   const [selectedAuction, setSelectedAuction] = useState<AuctionResult | null>(null);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+  // Add custom styles for enhanced search experience
+  useEffect(() => {
+    const customSearchStyles = `
+      .search-section-gradient {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 69, 219, 0.1) 100%);
+        backdrop-filter: blur(10px);
+      }
+      
+      .filter-tag-hover:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+      
+      .quick-filter-btn {
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+      }
+      
+      .quick-filter-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-color: #e5e7eb;
+      }
+      
+      .search-input-focus .ant-input:focus {
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        border-color: #3b82f6;
+      }
+    `;
+
+    const style = document.createElement("style");
+    style.textContent = customSearchStyles;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+  // Add keyboard shortcuts for better UX
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        const searchInput = document.querySelector(
+          'input[placeholder*="Nhập tên đấu giá"]'
+        ) as HTMLInputElement;
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }
+
+      if (e.key === "Escape") {
+        setSearchTerm("");
+        setSelectedCategory("");
+        setSelectedStatus("");
+        setDateRange(null);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const categoryOptions = [
     { value: "real-estate", label: "Bất động sản", icon: <HomeOutlined /> },
     { value: "vehicle", label: "Phương tiện", icon: <CarOutlined /> },
@@ -457,121 +520,352 @@ const ResultAuction = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header Section */}
-      <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative container mx-auto px-4 py-16">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-6">
-              <TrophyOutlined className="text-4xl text-white" />
-            </div>
-            <Title level={1} className="!text-white !mb-4 font-bold">
-              Kết Quả Đấu Giá
-            </Title>
-            <Text className="text-white/90 text-xl block max-w-2xl mx-auto leading-relaxed">
-              Khám phá những phiên đấu giá đã kết thúc với thông tin chi tiết về tài sản và giá
-              thành công
-            </Text>
-          </div>
-        </div>
-      </div>
-
       <div className="container mx-auto px-4 py-8">
-        {" "}
-        {/* Filter Section */}
-        <Card className="!mb-8 !shadow-lg !border-0">
-          <div className="flex items-center mb-6">
-            <FilterOutlined className="text-blue-600 text-xl mr-3" />
-            <Title level={4} className="!mb-0">
-              Bộ lọc kết quả
-            </Title>
+        <div className="text-center mb-12 animate-slide-in-up">
+          <div className="inline-block p-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl">
+            <div className="bg-white px-6 py-2 rounded-xl">
+              <span className="text-2xl font-semibold text-transparent bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text">
+                📰 TIN TỨC & THÔNG TIN
+              </span>
+            </div>
+          </div>
+        </div>{" "}
+        {/* Enhanced Search & Filter Section */}
+        <Card className="!mb-8 !shadow-lg !border-0 !bg-gradient-to-r !from-blue-50/50 !to-indigo-50/50">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-blue-100 rounded-lg mr-3">
+                <SearchOutlined className="text-blue-600 text-xl" />
+              </div>
+              <div>
+                <Title level={4} className="!mb-1">
+                  Tìm kiếm & Lọc kết quả
+                </Title>
+                <Text className="text-gray-500 text-sm">
+                  Sử dụng các bộ lọc bên dưới để tìm kiếm kết quả phù hợp
+                </Text>
+              </div>
+            </div>
+
+            {/* Quick action buttons */}
+            <div className="flex gap-2">
+              <Button
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedCategory("");
+                  setSelectedStatus("");
+                  setDateRange(null);
+                  setSortBy("endDate");
+                }}
+                icon={<FilterOutlined />}
+                className="!rounded-lg"
+              >
+                Xóa bộ lọc
+              </Button>
+            </div>
           </div>
 
-          <Row gutter={[16, 16]}>
-            <Col xs={24} sm={12} md={6}>
+          {/* Main Search Bar */}
+          <div className="mb-6">
+            {" "}
+            <Text className="!font-medium !text-gray-700 !block !mb-2">
+              🔍 Tìm kiếm nhanh
+              <Tooltip
+                title={
+                  <div className="text-sm">
+                    <div>⌨️ Phím tắt hữu ích:</div>
+                    <div>• Ctrl+K: Focus vào ô tìm kiếm</div>
+                    <div>• Esc: Xóa tất cả bộ lọc</div>
+                  </div>
+                }
+                placement="right"
+              >
+                <Button type="text" size="small" className="!text-gray-400 !ml-2">
+                  ❓
+                </Button>
+              </Tooltip>
+            </Text>
+            <div className="search-input-focus">
               <Input
-                placeholder="Tìm kiếm đấu giá..."
+                placeholder="Nhập tên đấu giá, mô tả, hoặc tên người thắng cuộc..."
                 prefix={<SearchOutlined className="text-gray-400" />}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="!rounded-lg"
-                size="large"
-              />
-            </Col>
-            <Col xs={24} sm={12} md={5}>
-              <Select
-                placeholder="Danh mục"
-                value={selectedCategory}
-                onChange={setSelectedCategory}
-                className="!w-full"
+                onPressEnter={() => {
+                  // Optional: Add search analytics or focus management here
+                }}
+                className="!rounded-xl !shadow-sm"
                 size="large"
                 allowClear
-              >
-                {categoryOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    <Space>
-                      {option.icon}
-                      {option.label}
-                    </Space>
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-            <Col xs={24} sm={12} md={5}>
-              <Select
-                placeholder="Trạng thái"
-                value={selectedStatus}
-                onChange={setSelectedStatus}
-                className="!w-full"
-                size="large"
-                allowClear
-              >
-                {statusOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    <Badge color={option.color} text={option.label} />
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-            <Col xs={24} sm={12} md={5}>
-              {" "}
-              <RangePicker
-                placeholder={["Từ ngày", "Đến ngày"]}
-                value={dateRange}
-                onChange={(dates) => setDateRange(dates as [dayjs.Dayjs, dayjs.Dayjs] | null)}
-                className="!w-full"
-                size="large"
-                format="DD/MM/YYYY"
               />
-            </Col>
-            <Col xs={24} sm={12} md={3}>
-              <Select
-                placeholder="Sắp xếp"
-                value={sortBy}
-                onChange={setSortBy}
-                className="!w-full"
-                size="large"
-                suffixIcon={<SortAscendingOutlined />}
-              >
-                <Option value="endDate">Ngày kết thúc</Option>
-                <Option value="winningPrice">Giá thắng</Option>
-                <Option value="totalBids">Số lượt đấu</Option>
-              </Select>
-            </Col>
-          </Row>
-        </Card>
-        {/* Results Section */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center">
-            <Title level={3} className="!mb-0">
-              Tìm thấy {filteredResults.length} kết quả
-            </Title>
-            <Text className="text-gray-600">
-              Hiển thị {Math.min((currentPage - 1) * pageSize + 1, filteredResults.length)} -{" "}
-              {Math.min(currentPage * pageSize, filteredResults.length)} của{" "}
-              {filteredResults.length}
-            </Text>
+              <Text className="!text-xs !text-gray-500 !mt-1 !block">
+                💡 Mẹo: Nhấn Enter để tìm kiếm nhanh, hoặc sử dụng các bộ lọc bên dưới
+              </Text>
+            </div>
           </div>
+
+          {/* Filter Section */}
+          <div className="space-y-6">
+            {/* Category & Status Filters */}
+            <div>
+              <Text className="!font-medium !text-gray-700 !block !mb-3">
+                📂 Phân loại & Trạng thái
+              </Text>
+              <Row gutter={[16, 16]}>
+                <Col xs={24} sm={12} md={8}>
+                  <div>
+                    <Text className="!text-sm !text-gray-600 !block !mb-2">Danh mục tài sản</Text>
+                    <Select
+                      placeholder="Chọn danh mục..."
+                      value={selectedCategory}
+                      onChange={setSelectedCategory}
+                      className="!w-full"
+                      size="large"
+                      allowClear
+                      showSearch
+                      optionFilterProp="children"
+                    >
+                      {categoryOptions.map((option) => (
+                        <Option key={option.value} value={option.value}>
+                          <Space>
+                            {option.icon}
+                            {option.label}
+                          </Space>
+                        </Option>
+                      ))}
+                    </Select>
+                  </div>
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                  <div>
+                    <Text className="!text-sm !text-gray-600 !block !mb-2">
+                      Trạng thái hoàn thành
+                    </Text>
+                    <Select
+                      placeholder="Chọn trạng thái..."
+                      value={selectedStatus}
+                      onChange={setSelectedStatus}
+                      className="!w-full"
+                      size="large"
+                      allowClear
+                    >
+                      {statusOptions.map((option) => (
+                        <Option key={option.value} value={option.value}>
+                          <Badge color={option.color} text={option.label} />
+                        </Option>
+                      ))}
+                    </Select>
+                  </div>
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                  <div>
+                    <Text className="!text-sm !text-gray-600 !block !mb-2">Sắp xếp theo</Text>
+                    <Select
+                      placeholder="Chọn cách sắp xếp..."
+                      value={sortBy}
+                      onChange={setSortBy}
+                      className="!w-full"
+                      size="large"
+                      suffixIcon={<SortAscendingOutlined />}
+                    >
+                      <Option value="endDate">
+                        <Space>
+                          <ClockCircleOutlined />
+                          Ngày kết thúc (mới nhất)
+                        </Space>
+                      </Option>
+                      <Option value="winningPrice">
+                        <Space>
+                          <DollarOutlined />
+                          Giá thắng cuộc (cao nhất)
+                        </Space>
+                      </Option>
+                      <Option value="totalBids">
+                        <Space>
+                          <TrophyOutlined />
+                          Số lượt đấu (nhiều nhất)
+                        </Space>
+                      </Option>
+                    </Select>
+                  </div>
+                </Col>
+              </Row>
+            </div>
+
+            {/* Date Range Filter */}
+            <div>
+              <Text className="!font-medium !text-gray-700 !block !mb-3">
+                📅 Thời gian kết thúc
+              </Text>
+              <Row gutter={[16, 16]}>
+                <Col xs={24} md={12}>
+                  <RangePicker
+                    placeholder={["Từ ngày", "Đến ngày"]}
+                    value={dateRange}
+                    onChange={(dates) => setDateRange(dates as [dayjs.Dayjs, dayjs.Dayjs] | null)}
+                    className="!w-full !rounded-lg"
+                    size="large"
+                    format="DD/MM/YYYY"
+                    allowClear
+                  />
+                </Col>
+                <Col xs={24} md={12}>
+                  {" "}
+                  <div className="flex gap-2 flex-wrap">
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        const today = dayjs();
+                        const weekAgo = today.subtract(7, "day");
+                        setDateRange([weekAgo, today]);
+                      }}
+                      className="!rounded-full quick-filter-btn"
+                    >
+                      7 ngày qua
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        const today = dayjs();
+                        const monthAgo = today.subtract(1, "month");
+                        setDateRange([monthAgo, today]);
+                      }}
+                      className="!rounded-full quick-filter-btn"
+                    >
+                      Tháng này
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        const today = dayjs();
+                        const quarterAgo = today.subtract(3, "month");
+                        setDateRange([quarterAgo, today]);
+                      }}
+                      className="!rounded-full quick-filter-btn"
+                    >
+                      3 tháng qua
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
+            </div>
+
+            {/* Active Filters Display */}
+            {(searchTerm || selectedCategory || selectedStatus || dateRange) && (
+              <div className="bg-white rounded-lg p-4 border-l-4 border-blue-500">
+                <div className="flex items-center justify-between mb-3">
+                  <Text className="!font-medium !text-gray-700">🏷️ Bộ lọc đang áp dụng:</Text>
+                  <Button
+                    type="link"
+                    size="small"
+                    onClick={() => {
+                      setSearchTerm("");
+                      setSelectedCategory("");
+                      setSelectedStatus("");
+                      setDateRange(null);
+                    }}
+                    className="!text-red-500 !p-0"
+                  >
+                    Xóa tất cả
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {" "}
+                  {searchTerm && (
+                    <Tag
+                      closable
+                      onClose={() => setSearchTerm("")}
+                      color="blue"
+                      className="!rounded-full !px-3 !py-1 filter-tag-hover"
+                    >
+                      <SearchOutlined className="mr-1" />
+                      Tìm: "{searchTerm}"
+                    </Tag>
+                  )}
+                  {selectedCategory && (
+                    <Tag
+                      closable
+                      onClose={() => setSelectedCategory("")}
+                      color="green"
+                      className="!rounded-full !px-3 !py-1 filter-tag-hover"
+                    >
+                      {getCategoryIcon(selectedCategory)}
+                      <span className="ml-1">{getCategoryLabel(selectedCategory)}</span>
+                    </Tag>
+                  )}
+                  {selectedStatus && (
+                    <Tag
+                      closable
+                      onClose={() => setSelectedStatus("")}
+                      color={getStatusColor(selectedStatus)}
+                      className="!rounded-full !px-3 !py-1 filter-tag-hover"
+                    >
+                      <CheckCircleOutlined className="mr-1" />
+                      {getStatusLabel(selectedStatus)}
+                    </Tag>
+                  )}
+                  {dateRange && (
+                    <Tag
+                      closable
+                      onClose={() => setDateRange(null)}
+                      color="purple"
+                      className="!rounded-full !px-3 !py-1 filter-tag-hover"
+                    >
+                      <ClockCircleOutlined className="mr-1" />
+                      {dateRange[0].format("DD/MM/YYYY")} - {dateRange[1].format("DD/MM/YYYY")}
+                    </Tag>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </Card>{" "}
+        {/* Enhanced Results Section */}
+        <div className="mb-6">
+          <Card className="!shadow-sm !border-0 !bg-gradient-to-r !from-green-50/50 !to-emerald-50/50">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+              <div className="flex items-center">
+                <div className="p-2 bg-green-100 rounded-lg mr-3">
+                  <TrophyOutlined className="text-green-600 text-xl" />
+                </div>
+                <div>
+                  <Title level={3} className="!mb-1">
+                    Tìm thấy {filteredResults.length} kết quả đấu giá
+                  </Title>
+                  <Text className="text-gray-600">
+                    {filteredResults.length === auctionResults.length
+                      ? "Hiển thị tất cả kết quả"
+                      : `Đã lọc từ ${auctionResults.length} kết quả ban đầu`}
+                  </Text>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                <Text className="text-gray-600 text-sm">
+                  Hiển thị {Math.min((currentPage - 1) * pageSize + 1, filteredResults.length)} -{" "}
+                  {Math.min(currentPage * pageSize, filteredResults.length)} của{" "}
+                  {filteredResults.length} kết quả
+                </Text>
+                {filteredResults.length > 0 && (
+                  <div className="flex gap-2">
+                    <Tag color="blue" className="!rounded-full">
+                      📊 {filteredResults.reduce((total, auction) => total + auction.totalLots, 0)}{" "}
+                      lô
+                    </Tag>
+                    <Tag color="green" className="!rounded-full">
+                      💰{" "}
+                      {formatPrice(
+                        filteredResults.reduce(
+                          (total, auction) => total + getTotalWinningPrice(auction),
+                          0
+                        )
+                      )}
+                    </Tag>
+                  </div>
+                )}
+              </div>
+            </div>
+          </Card>
         </div>
         {loading ? (
           <div className="text-center py-20">
@@ -579,11 +873,54 @@ const ResultAuction = () => {
             <Text className="block mt-4 text-gray-600">Đang tải dữ liệu...</Text>
           </div>
         ) : currentResults.length === 0 ? (
-          <Card className="!text-center !py-20">
-            <Empty
-              description="Không tìm thấy kết quả phù hợp"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            />
+          <Card className="!text-center !py-20 !shadow-lg !border-0">
+            <div className="max-w-md mx-auto">
+              <div className="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
+                <SearchOutlined className="text-6xl text-gray-400" />
+              </div>
+              <Title level={3} className="!text-gray-700 !mb-4">
+                Không tìm thấy kết quả phù hợp
+              </Title>
+              <Text className="!text-gray-500 !text-lg !block !mb-8">
+                {searchTerm || selectedCategory || selectedStatus || dateRange
+                  ? "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm để có kết quả tốt hơn"
+                  : "Hiện tại chưa có kết quả đấu giá nào trong hệ thống"}
+              </Text>
+
+              {(searchTerm || selectedCategory || selectedStatus || dateRange) && (
+                <div className="space-y-4">
+                  <Text className="!text-gray-600 !font-medium !block">💡 Gợi ý tìm kiếm:</Text>
+                  <div className="text-left space-y-2 bg-blue-50 p-4 rounded-lg">
+                    <Text className="!text-sm !text-gray-600 !block">
+                      • Thử sử dụng từ khóa ngắn gọn hơn
+                    </Text>
+                    <Text className="!text-sm !text-gray-600 !block">• Kiểm tra lại chính tả</Text>
+                    <Text className="!text-sm !text-gray-600 !block">
+                      • Mở rộng khoảng thời gian tìm kiếm
+                    </Text>
+                    <Text className="!text-sm !text-gray-600 !block">
+                      • Thử bỏ bớt một số bộ lọc
+                    </Text>
+                  </div>
+
+                  <Button
+                    type="primary"
+                    size="large"
+                    onClick={() => {
+                      setSearchTerm("");
+                      setSelectedCategory("");
+                      setSelectedStatus("");
+                      setDateRange(null);
+                      setSortBy("endDate");
+                    }}
+                    className="!mt-6 !bg-gradient-to-r !from-blue-500 !to-purple-500 !border-0 !rounded-xl"
+                    icon={<FilterOutlined />}
+                  >
+                    Xóa tất cả bộ lọc
+                  </Button>
+                </div>
+              )}
+            </div>
           </Card>
         ) : (
           <Row gutter={[24, 24]}>

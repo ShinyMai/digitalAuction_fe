@@ -1,5 +1,5 @@
 import { Form, Input, Spin } from "antd";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { UserOutlined } from "@ant-design/icons";
 import AuthServices from "../../../services/AuthServices";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -58,6 +58,9 @@ const Login: React.FC<LoginProps> = ({ onCancel, open }) => {
           overflow: "hidden",
           boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
         },
+      }}
+      style={{
+        top: "7%",
       }}
     >
       <div className="relative overflow-hidden">
@@ -128,9 +131,6 @@ const Login: React.FC<LoginProps> = ({ onCancel, open }) => {
                 ]}
               >
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
-                    <LockOutlined className="text-gray-400" />
-                  </div>
                   <Input.Password
                     placeholder="Nhập mật khẩu của bạn"
                     className="pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 hover:border-blue-400 focus:border-blue-500 transition-all duration-300"

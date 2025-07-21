@@ -2,8 +2,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import AuctionServices from "../../../services/AuctionServices";
 import { useEffect, useState } from "react";
-import type { AuctionDataDetail } from "../Modals";
-import { Button, Image, Tabs, Typography, Card } from "antd";
+import type { AuctionDataDetail, AuctionAsset } from "../Modals";
+import { Button, Image, Tabs, Typography, Table } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import MINPHAPLOGO from "../../../assets/LOGO-MINH-PHAP.jpg";
 import dayjs from "dayjs";
 import { USER_ROUTERS } from "../../../routers";
@@ -40,6 +41,100 @@ const AuctionDetailAnonymous = () => {
       console.log(error);
     }
   };
+  // Table columns configuration for assets
+  const assetColumns: ColumnsType<AuctionAsset> = [
+    {
+      title: (
+        <span className="font-semibold text-gray-700 flex items-center gap-2">
+          <DollarOutlined className="text-blue-600" />
+          Tên tài sản
+        </span>
+      ),
+      dataIndex: "tagName",
+      key: "tagName",
+      width: "25%",
+      render: (text: string, record: AuctionAsset) => (
+        <div className="flex flex-col">
+          <span className=" text-xl font-semibold text-gray-800">
+            {text || "Tài sản không tên"}
+          </span>
+          {record.unit && (
+            <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-lg mt-1 inline-block w-fit">
+              Đơn vị: {record.unit}
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: (
+        <span className="font-semibold text-gray-700 flex items-center gap-2">
+          <DollarOutlined className="text-green-600" />
+          Giá khởi điểm
+        </span>
+      ),
+      dataIndex: "startingPrice",
+      key: "startingPrice",
+      width: "18%",
+      render: (value: string) => (
+        <span className="font-bold text-green-700 bg-green-50 px-3 py-2 rounded-lg">
+          {value ? `${parseFloat(value).toLocaleString("vi-VN")} VND` : "-"}
+        </span>
+      ),
+    },
+    {
+      title: (
+        <span className="font-semibold text-gray-700 flex items-center gap-2">
+          <DollarOutlined className="text-blue-600" />
+          Tiền đặt trước
+        </span>
+      ),
+      dataIndex: "deposit",
+      key: "deposit",
+      width: "18%",
+      render: (value: string) => (
+        <span className="font-bold text-blue-700 bg-blue-50 px-3 py-2 rounded-lg">
+          {value ? `${parseFloat(value).toLocaleString("vi-VN")} VND` : "-"}
+        </span>
+      ),
+    },
+    {
+      title: (
+        <span className="font-semibold text-gray-700 flex items-center gap-2">
+          <DollarOutlined className="text-purple-600" />
+          Phí đăng ký
+        </span>
+      ),
+      dataIndex: "registrationFee",
+      key: "registrationFee",
+      width: "18%",
+      render: (value: string) => (
+        <span className="font-bold text-purple-700 bg-purple-50 px-3 py-2 rounded-lg">
+          {value ? `${parseFloat(value).toLocaleString("vi-VN")} VND` : "-"}
+        </span>
+      ),
+    },
+    {
+      title: (
+        <span className="font-semibold text-gray-700 flex items-center gap-2">
+          <FileTextOutlined className="text-gray-600" />
+          Mô tả
+        </span>
+      ),
+      dataIndex: "description",
+      key: "description",
+      width: "21%",
+      render: (text: string) => (
+        <div className="max-w-xs">
+          {text ? (
+            <span className="text-gray-600 text-sm leading-relaxed">{text}</span>
+          ) : (
+            <span className="text-gray-400 italic">Không có mô tả</span>
+          )}
+        </div>
+      ),
+    },
+  ];
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -58,7 +153,6 @@ const AuctionDetailAnonymous = () => {
           style={{ animationDelay: "1.5s" }}
         ></div>
       </div>
-
       <div className="relative z-10 p-6 md:p-8 lg:p-12">
         <div className="max-w-6xl mx-auto">
           {auctionDetailData ? (
@@ -357,6 +451,7 @@ const AuctionDetailAnonymous = () => {
                         </div>
 
                         <div>
+                          {" "}
                           <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
                             <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-teal-600 rounded-lg flex items-center justify-center">
                               <DollarOutlined className="text-white text-sm" />
@@ -365,127 +460,24 @@ const AuctionDetailAnonymous = () => {
                           </h3>
                           {auctionDetailData.listAuctionAssets &&
                           auctionDetailData.listAuctionAssets.length > 0 ? (
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                              {auctionDetailData.listAuctionAssets.map((asset, index) => (
-                                <Card
-                                  key={asset.auctionAssetsId}
-                                  className="shadow-lg hover:shadow-xl transition-all duration-500 bg-white border-0 rounded-2xl overflow-hidden group hover:scale-105"
-                                  style={{
-                                    background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
-                                    animationDelay: `${0.1 * index}s`,
-                                  }}
-                                >
-                                  <div className="p-6">
-                                    {/* Asset Header */}
-                                    <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
-                                      <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                                          <DollarOutlined className="text-white text-lg" />
-                                        </div>
-                                        <div>
-                                          <h4 className="text-lg font-bold text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
-                                            {asset.tagName || "Tài sản không tên"}
-                                          </h4>
-                                          {asset.unit && (
-                                            <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-lg">
-                                              {asset.unit}
-                                            </span>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    {/* Asset Details */}
-                                    <div className="space-y-4">
-                                      {[
-                                        {
-                                          label: "Giá khởi điểm",
-                                          value: asset.startingPrice
-                                            ? `${parseFloat(asset.startingPrice).toLocaleString(
-                                                "vi-VN"
-                                              )} VND`
-                                            : "-",
-                                          color: "blue",
-                                          icon: <DollarOutlined />,
-                                        },
-                                        {
-                                          label: "Tiền đặt trước",
-                                          value: asset.deposit
-                                            ? `${parseFloat(asset.deposit).toLocaleString(
-                                                "vi-VN"
-                                              )} VND`
-                                            : "-",
-                                          color: "green",
-                                          icon: <DollarOutlined />,
-                                        },
-                                        {
-                                          label: "Phí đăng ký",
-                                          value: asset.registrationFee
-                                            ? `${parseFloat(asset.registrationFee).toLocaleString(
-                                                "vi-VN"
-                                              )} VND`
-                                            : "-",
-                                          color: "purple",
-                                          icon: <DollarOutlined />,
-                                        },
-                                      ].map((item, idx) => (
-                                        <div
-                                          key={idx}
-                                          className={`flex items-center justify-between p-3 bg-gradient-to-r from-${item.color}-50 to-${item.color}-100 rounded-xl`}
-                                        >
-                                          <div className="flex items-center gap-3">
-                                            <div
-                                              className={`w-8 h-8 bg-${item.color}-500/20 rounded-lg flex items-center justify-center`}
-                                            >
-                                              <span className={`text-${item.color}-600 text-sm`}>
-                                                {item.icon}
-                                              </span>
-                                            </div>
-                                            <span className="font-semibold text-gray-700">
-                                              {item.label}:
-                                            </span>
-                                          </div>
-                                          <span
-                                            className={`font-bold text-${item.color}-700 bg-white/70 px-2 py-1 rounded-lg text-sm`}
-                                          >
-                                            {item.value}
-                                          </span>
-                                        </div>
-                                      ))}
-
-                                      {asset.description && (
-                                        <div className="p-3 bg-gradient-to-r from-gray-50 to-slate-100 rounded-xl">
-                                          <div className="flex items-start gap-3">
-                                            <div className="w-8 h-8 bg-gray-500/20 rounded-lg flex items-center justify-center mt-1">
-                                              <FileTextOutlined className="text-gray-600 text-sm" />
-                                            </div>
-                                            <div className="flex-1">
-                                              <span className="font-semibold text-gray-700 block mb-1">
-                                                Mô tả:
-                                              </span>
-                                              <span className="text-gray-600 text-sm leading-relaxed">
-                                                {asset.description}
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
-
-                                      {asset.createdAt && (
-                                        <div className="flex items-center justify-between text-sm text-gray-500 pt-3 border-t border-gray-100">
-                                          <span className="flex items-center gap-2">
-                                            <CalendarOutlined />
-                                            Ngày tạo:
-                                          </span>
-                                          <span className="font-semibold">
-                                            {dayjs(asset.createdAt).format("DD/MM/YYYY")}
-                                          </span>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </Card>
-                              ))}
+                            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+                              <Table
+                                columns={assetColumns}
+                                dataSource={auctionDetailData.listAuctionAssets}
+                                rowKey="auctionAssetsId"
+                                pagination={{
+                                  pageSize: 10,
+                                  showQuickJumper: true,
+                                  showTotal: (total, range) =>
+                                    `${range[0]}-${range[1]} của ${total} tài sản`,
+                                  className: "px-6 py-4",
+                                }}
+                                className="asset-table"
+                                scroll={{ x: 800 }}
+                                rowClassName={(_, index) =>
+                                  index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                                }
+                              />
                             </div>
                           ) : (
                             <div className="text-center py-12">
@@ -574,8 +566,7 @@ const AuctionDetailAnonymous = () => {
             </div>
           )}
         </div>
-      </div>
-
+      </div>{" "}
       <style>{`
         .enhanced-tabs .ant-tabs-tab {
           border-radius: 12px !important;
@@ -610,6 +601,41 @@ const AuctionDetailAnonymous = () => {
         .enhanced-tabs .ant-tabs-content-holder {
           background: white !important;
           border-radius: 0 0 24px 24px !important;
+        }
+
+        .asset-table .ant-table-thead > tr > th {
+          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+          border-bottom: 2px solid #e2e8f0 !important;
+          font-weight: 600 !important;
+          padding: 16px 12px !important;
+          font-size: 14px !important;
+        }
+
+        .asset-table .ant-table-tbody > tr > td {
+          border-bottom: 1px solid #f1f5f9 !important;
+          vertical-align: middle !important;
+        }
+
+        .asset-table .ant-table-tbody > tr:hover > td {
+          background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%) !important;
+        }
+
+        .asset-table .ant-pagination {
+          margin: 24px 0 8px 0 !important;
+        }
+
+        .asset-table .ant-pagination-item {
+          border-radius: 8px !important;
+          border: 1px solid #e2e8f0 !important;
+        }
+
+        .asset-table .ant-pagination-item-active {
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+          border-color: transparent !important;
+        }
+
+        .asset-table .ant-pagination-item-active a {
+          color: white !important;
         }
       `}</style>
     </section>

@@ -73,7 +73,7 @@ const Header = memo(() => {
         </div>
 
         {/* Enhanced Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-8 font-medium">
+        <nav className="hidden lg:flex items-center gap-2 font-medium">
           {[
             { label: "Trang chủ", path: "/" },
             { label: "Giới thiệu", path: "/introduction" },
