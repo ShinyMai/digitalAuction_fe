@@ -82,11 +82,9 @@ const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout 
 
       {/* Enhanced Dropdown Menu */}
       <div
-        className={`absolute right-0 mt-3 z-50 ${
-          open ? "block" : "hidden"
-        } w-72 bg-white/95 backdrop-blur-lg border border-white/20 shadow-2xl rounded-2xl overflow-hidden transition-all duration-300 transform ${
-          open ? "scale-100 opacity-100" : "scale-95 opacity-0"
-        }`}
+        className={`absolute right-0 mt-3 z-50 ${open ? "block" : "hidden"
+          } w-72 bg-white/95 backdrop-blur-lg border border-white/20 shadow-2xl rounded-2xl overflow-hidden transition-all duration-300 transform ${open ? "scale-100 opacity-100" : "scale-95 opacity-0"
+          }`}
         style={{
           boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
           backdropFilter: "blur(20px)",
@@ -158,6 +156,25 @@ const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout 
                 Đổi mật khẩu
               </p>
               <p className="text-xs text-gray-500">Bảo mật tài khoản</p>
+            </div>
+          </div>
+
+          <div
+            onClick={() => {
+              console.log("Clicked: Xem đấu giá đã đăng ký");
+              setOpen(false);
+            }}
+            className="group flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-green-50 transition-all duration-300 relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <CrownOutlined className="text-green-600" />
+            </div>
+            <div className="relative">
+              <p className="font-semibold text-gray-800 group-hover:text-green-600 transition-colors duration-300">
+                Đấu giá đã đăng ký
+              </p>
+              <p className="text-xs text-gray-500">Xem danh sách đấu giá</p>
             </div>
           </div>
 
