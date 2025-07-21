@@ -2,11 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button, Steps } from "antd";
 import AssetSelect from "./components/AssetSelect";
-import type {
-  AuctionAsset,
-  AuctionDataDetail,
-  dataPayment,
-} from "../../Anonymous/Modals";
+import type { AuctionAsset, AuctionDataDetail, dataPayment } from "../../Anonymous/Modals";
 import { useLocation, useNavigate } from "react-router-dom";
 import InfomationRegisterAsset from "./components/InfomationRegisterAssest";
 import SepayAuctionregister from "./components/SepayAuctionRegister";
@@ -17,13 +13,9 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 const AuctionRegister = () => {
   const [current, setCurrent] = useState(0);
   const location = useLocation();
-  const [auctionDetail] = useState<AuctionDataDetail>(
-    location.state?.key
-  );
-  const [selectedAssets, setSelectedAssets] =
-    useState<AuctionAsset>();
-  const [dataPayment, setDatapayment] =
-    useState<dataPayment>();
+  const [auctionDetail] = useState<AuctionDataDetail>(location.state?.key);
+  const [selectedAssets, setSelectedAssets] = useState<AuctionAsset>();
+  const [dataPayment, setDatapayment] = useState<dataPayment>();
   const { user } = useSelector((state: any) => state.auth);
   const [userInfo, setUserInfo] = useState<any>();
   const navigate = useNavigate();
@@ -38,10 +30,7 @@ const AuctionRegister = () => {
         setUserInfo(res.data);
       }
     } catch (error) {
-      console.error(
-        "Lỗi khi lấy thông tin người dùng:",
-        error
-      );
+      console.error("Lỗi khi lấy thông tin người dùng:", error);
     }
   };
 
@@ -52,10 +41,9 @@ const AuctionRegister = () => {
 
   const onGetSelectAsset = (value: string) => {
     if (auctionDetail?.listAuctionAssets) {
-      const dataAuctionAssetsSelected =
-        auctionDetail.listAuctionAssets.find((item) =>
-          value.includes(item.auctionAssetsId)
-        );
+      const dataAuctionAssetsSelected = auctionDetail.listAuctionAssets.find((item) =>
+        value.includes(item.auctionAssetsId)
+      );
       setSelectedAssets(dataAuctionAssetsSelected);
     }
   };
@@ -68,21 +56,17 @@ const AuctionRegister = () => {
           listAsset={auctionDetail?.listAuctionAssets || []}
           onGetAssetSelect={onGetSelectAsset}
           onNext={() => setCurrent(current + 1)}
-          onPrev={() =>
-            current > 0 && setCurrent(current - 1)
-          }
+          onPrev={() => current > 0 && setCurrent(current - 1)}
         />
       ),
     },
     {
-      title: "Thông Tin Đăng Ký",
+      title: "Thông Tin",
       content: (
         <InfomationRegisterAsset
           auctionAssetsSelected={selectedAssets}
           onNext={() => setCurrent(current + 1)}
-          onPrev={() =>
-            current > 0 && setCurrent(current - 1)
-          }
+          onPrev={() => current > 0 && setCurrent(current - 1)}
           onSetDataPayment={setDatapayment}
           userInfo={userInfo}
         />
@@ -138,9 +122,7 @@ const AuctionRegister = () => {
         <div>
           <Button
             type="text"
-            icon={
-              <ArrowLeftOutlined className="text-blue-800 text-lg" />
-            }
+            icon={<ArrowLeftOutlined className="text-blue-800 text-lg" />}
             onClick={() => navigate("/auction-list")}
             className="p-0 hover:bg-blue-100"
           />

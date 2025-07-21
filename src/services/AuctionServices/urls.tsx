@@ -16,8 +16,9 @@ export const AuctionAPI = {
   RECEIVE_AUCTION_REGISTRATION_DOCUMENT:
     "/ReceiveAuctionRegistrationForm/Receive-Auction-Registration-Form",
   ACCEPT_PAYMENT_DEPOSIT: "/UpdateDeposit",
-  AUCTION_CANCEL: '/Auctions/cancel',
+  AUCTION_CANCEL: "/Auctions/cancel",
   USER_REGISTER_AUCTION: "/UserRegisteredAuction/User-Registered-Auction",
+  LIST_AUCTION_REGISTED: "ListAuctionRegisted/List-Auction-Registed",
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;

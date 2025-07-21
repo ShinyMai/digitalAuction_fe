@@ -9,6 +9,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   onShowInfo: () => void;
@@ -19,6 +20,7 @@ interface Props {
 const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
@@ -134,7 +136,6 @@ const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout 
               <p className="text-xs text-gray-500">Xem và chỉnh sửa hồ sơ</p>
             </div>
           </div>
-
           <div
             onClick={() => {
               onChangePassword();
@@ -152,12 +153,11 @@ const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout 
               </p>
               <p className="text-xs text-gray-500">Bảo mật tài khoản</p>
             </div>
-          </div>
-
+          </div>{" "}
           {user?.roleName === "Customer" && (
             <div
               onClick={() => {
-                console.log("Clicked: Xem đấu giá đã đăng ký");
+                navigate("/registed-auction");
                 setOpen(false);
               }}
               className="group flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-green-50 transition-all duration-300 relative overflow-hidden"
@@ -174,10 +174,8 @@ const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout 
               </div>
             </div>
           )}
-
           {/* Divider */}
           <div className="my-2 mx-4 border-t border-gray-100"></div>
-
           <div
             onClick={() => {
               onLogout();

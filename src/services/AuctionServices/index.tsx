@@ -57,6 +57,9 @@ const cancelAuction = (body: any): Promise<ApiResponse<any>> =>
 const userRegistedAuction = (body: any): Promise<ApiResponse<any>> =>
   http.post(AuctionAPI.USER_REGISTER_AUCTION, body);
 
+const getListAuctionRegisted = (params?: any): Promise<ApiResponse<any>> =>
+  http.get(AuctionAPI.LIST_AUCTION_REGISTED, { params: params });
+
 const AuctionServices = {
   addAuction,
   getListAuctionCategory,
@@ -74,7 +77,8 @@ const AuctionServices = {
   getAuctionDetailNode,
   addAuctionNode,
   cancelAuction,
-  userRegistedAuction
+  userRegistedAuction,
+  getListAuctionRegisted,
 };
 
 export default AuctionServices;

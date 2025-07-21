@@ -110,9 +110,6 @@ const Login: React.FC<LoginProps> = ({ onCancel, open }) => {
                 ]}
               >
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                    <UserOutlined className="text-gray-400" />
-                  </div>
                   <Input
                     placeholder="Nhập địa chỉ email của bạn"
                     className="pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 hover:border-blue-400 focus:border-blue-500 transition-all duration-300"
@@ -120,7 +117,6 @@ const Login: React.FC<LoginProps> = ({ onCancel, open }) => {
                   />
                 </div>
               </Form.Item>
-
               <Form.Item
                 name="password"
                 rules={[
@@ -133,13 +129,11 @@ const Login: React.FC<LoginProps> = ({ onCancel, open }) => {
                 <div className="relative">
                   <Input.Password
                     placeholder="Nhập mật khẩu của bạn"
-                    className="pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 hover:border-blue-400 focus:border-blue-500 transition-all duration-300"
                     size="large"
                     onPressEnter={loginAccout}
                   />
                 </div>
               </Form.Item>
-
               <Form.Item className="mb-4">
                 <button
                   type="button"

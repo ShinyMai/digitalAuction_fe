@@ -19,7 +19,6 @@ const AuctionResultsAnonymous = React.lazy(
 );
 const NotFound = React.lazy(() => import("../components/Common/NotFound/index"));
 const AuctionListAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionList/index"));
-
 const AuctionDetailAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionDetail/index"));
 
 export const guestRoutes = [
@@ -65,6 +64,10 @@ export const guestRoutes = [
 
 // Router site User
 const AuctionRegister = React.lazy(() => import("../pages/User/AuctionRegister/index"));
+const RegistedAuction = React.lazy(() => import("../pages/User/RegistedAuction/RegistedAuction"));
+// const AuctionDetailRegister = React.lazy(() =>
+//   import("../pages/User/AuctionDetailRegister/index")
+// );
 
 export const userRoutes = [
   {
@@ -83,6 +86,10 @@ export const userRoutes = [
       "/" +
       USER_ROUTERS.SUB.AUCTION_REGISTER,
     element: wrapWithLazy(AuctionRegister),
+  },
+  {
+    path: USER_ROUTERS.SUB.REGISTED_AUCTION,
+    element: wrapWithLazy(RegistedAuction),
   },
 ];
 

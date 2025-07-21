@@ -6,12 +6,9 @@ interface ModalWrapperProps {
   isError?: boolean;
 }
 
-export const ModalWrapper = styled(
-  Modal
-)<ModalWrapperProps>`
+export const ModalWrapper = styled(Modal)<ModalWrapperProps>`
   .ant-modal .ant-modal-header {
-    background-color: ${(props) =>
-      props.isError ? "red" : "#e6f4ff"};
+    background: ${(props) => (props.isError ? "red" : "var(--primary-gradient)")};
   }
 
   .ant-modal-header {
@@ -19,10 +16,10 @@ export const ModalWrapper = styled(
   }
 
   .ant-modal-title {
-    background-color: rgb(215, 236, 252) !important;
+    background: var(--primary-gradient) !important;
     font-weight: bold;
     font-size: 1.6em !important;
-    color: black !important;
+    color: white !important;
     padding: 10px 20px !important;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -34,8 +31,7 @@ export const ModalWrapper = styled(
 
   .ant-modal-body {
     flex: auto;
-    overflow: ${(props) =>
-      props.hiddenScroll ? "hidden" : "hidden auto"};
+    overflow: ${(props) => (props.hiddenScroll ? "hidden" : "hidden auto")};
     padding: 20px;
   }
 

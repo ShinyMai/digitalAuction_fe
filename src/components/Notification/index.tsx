@@ -211,7 +211,7 @@ const NotificationDropdown = () => {
                     key={notification.id}
                     className={`group p-4 cursor-pointer transition-all duration-300 hover:bg-blue-50 relative overflow-hidden ${
                       !notification.isRead
-                        ? "bg-gradient-to-r from-blue-50/50 to-purple-50/50 border-l-4 border-blue-500"
+                        ? "bg-gradient-to-r from-blue-50/50 to-purple-50/50"
                         : "hover:bg-gray-50"
                     }`}
                     onClick={() => {

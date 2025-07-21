@@ -217,7 +217,7 @@ const AssetSelect = ({ listAsset, onGetAssetSelect, onNext }: Props) => {
               e.stopPropagation();
               toggleSelection(asset.auctionAssetsId);
             }}
-            className={`border-0 shadow-md hover:scale-110 transition-transform ${
+            className={`!border-0 !shadow-md !hover:scale-110 !transition-transform ${
               selectedAssets.includes(asset.auctionAssetsId)
                 ? "bg-blue-500 text-white"
                 : "bg-white/80"
@@ -888,7 +888,7 @@ const AssetSelect = ({ listAsset, onGetAssetSelect, onNext }: Props) => {
             );
           })}
         </div>
-      </Modal>{" "}
+      </Modal>
       <style>{`
         .search-input-no-border .ant-input {
           border: none !important;

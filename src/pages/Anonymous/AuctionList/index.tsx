@@ -17,11 +17,11 @@ interface SearchParams {
   PageSize?: number;
   Status: number;
   AuctionName?: string;
+  SortBy: "register_open_date";
+  IsAscending: false;
 }
 
 const AuctionListAnonyMous = () => {
-  //   const [listAuctionCategory, setListAuctionCategory] =
-  //     useState<AuctionCategory[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const location = useLocation();
   const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -29,9 +29,12 @@ const AuctionListAnonyMous = () => {
     PageSize: 8,
     CategoryId: location.state?.key,
     Status: 1,
+    SortBy: "register_open_date",
+    IsAscending: false,
   });
   const [totalData, setTotalData] = useState<number>(0);
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
+  console.log(location.state?.key);
 
   useEffect(() => {
     getListAuction();
@@ -43,9 +46,11 @@ const AuctionListAnonyMous = () => {
       setLoading(true);
       const params: SearchParams = {
         PageNumber: searchParams.PageNumber || 1,
-        PageSize: searchParams.PageSize || 9,
-        CategoryId: location.state?.key, // Luôn bao gồm CategoryId từ location.state.key
+        PageSize: searchParams.PageSize || 8,
+        CategoryId: location.state?.key,
         Status: searchParams.Status,
+        SortBy: searchParams.SortBy,
+        IsAscending: searchParams.IsAscending,
       };
       if (searchParams.AuctionName) {
         params.AuctionName = searchParams.AuctionName;
