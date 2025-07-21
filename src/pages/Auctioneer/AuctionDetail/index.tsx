@@ -2,7 +2,7 @@
 import { useLocation } from "react-router-dom";
 import AuctionServices from "../../../services/AuctionServices";
 import { useEffect, useState } from "react";
-import type { AuctionDataDetail, AuctionDateModal, AuctionRoundPrice } from "../Modals";
+import type { AuctionDataDetail, AuctionDateModal, AuctionRoundModals, AuctionRoundPrice } from "../Modals";
 import { useAppRouting } from "../../../hooks/useAppRouting";
 import AuctionDetail from "./components/AuctionDetail";
 import { Tabs } from "antd";
@@ -68,12 +68,38 @@ const AuctionDetailAuctioneer = () => {
   const [auctionDateModal, setAuctionDateModal] = useState<AuctionDateModal>();
   const [listAuctionRoundPice] = useState<AuctionRoundPrice[]>(auctionRoundPriceFakeData);
   const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
+  const [listAuctionRound, setListAuctionRound] = useState<AuctionRoundModals[]>([]);
+
+  const getListAuctionRound = async (auctionId: string) => {
+    try {
+      const response = await AuctionServices.getListAuctionRound(auctionId);
+      if (response.code === 200) {
+        setListAuctionRound(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching auction rounds:", error);
+    }
+  }
+
+  const handleCreateAuctionRound = async () => {
+    try {
+      const response = await AuctionServices.createAuctionRound({
+        auctionId: location.state.key
+      });
+      if (response.code === 200) {
+        getListAuctionRound(location.state.key);
+      }
+    } catch (error) {
+      console.error("Error creating auction round:", error);
+    }
+  };
 
   useEffect(() => {
     console.log("role: ", role);
     getAuctionDetailById(location.state.key);
+    getListAuctionRound(location.state.key);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [handleCreateAuctionRound]);
 
   console.log(isOpentPopupVerifyCancel);
 
@@ -140,6 +166,7 @@ const AuctionDetailAuctioneer = () => {
                   <AuctionDetail
                     auctionDetailData={auctionDetailData}
                     setIsOpenPopupVerifyCancel={setIsOpenPopupVerifyCancel}
+                    onCreateAuctionRound={handleCreateAuctionRound}
                   />
                 </div>
               ),
@@ -162,33 +189,47 @@ const AuctionDetailAuctioneer = () => {
                 </div>
               ),
             },
-            {
-              key: "3",
-              label:
-                role === "Auctioneer" ? (
+            ...(listAuctionRound.length > 0
+              ? listAuctionRound.map((round, index) => ({
+                key: `round-${index + 3}`,
+                label: (
                   <div className="flex items-center gap-2 px-4 py-2">
-                    <TrophyOutlined className="text-purple-600" />
-                    <span className="font-semibold text-gray-700">Tạo vòng đấu giá</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 px-4 py-2">
-                    <DollarOutlined className="text-green-600" />
-                    <span className="font-semibold text-gray-700">Nhập giá</span>
+                    {role === "Auctioneer" ? (
+                      <>
+                        <TrophyOutlined className="text-purple-600" />
+                        <span className="font-semibold text-gray-700">
+                          Vòng đấu giá {index + 1}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <DollarOutlined className="text-green-600" />
+                        <span className="font-semibold text-gray-700">
+                          Nhập giá vòng {index + 1}
+                        </span>
+                      </>
+                    )}
                   </div>
                 ),
-              children: (
-                <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 min-h-[500px]">
-                  {role === "Auctioneer" ? (
-                    <AuctioneerCreateAuctionRound
-                      auctionRoundPrices={listAuctionRoundPice}
-                      auctionAssets={auctionAssets}
-                    />
-                  ) : (
-                    <InputAuctionPrice auctionId={location.state.key} />
-                  )}
-                </div>
-              ),
-            },
+                children: (
+                  <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 min-h-[500px]">
+                    {role === "Auctioneer" ? (
+                      <AuctioneerCreateAuctionRound
+                        auctionRoundPrices={listAuctionRoundPice}
+                        auctionAssets={auctionAssets}
+                        auctionRoundData={round}
+                      />
+                    ) : (
+                      <InputAuctionPrice
+                        auctionId={location.state.key}
+                        roundData={round}
+                      />
+                    )}
+                  </div>
+                ),
+              }))
+              : []
+            ),
           ]}
         />
       </div>

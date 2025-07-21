@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { Card, Table, Typography, Spin, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { motion } from "framer-motion";
 import { formatNumber } from "../../../../utils/numberFormat";
+import type { AuctionRoundModals } from "../../Modals";
 
 const { Title, Text } = Typography;
 
@@ -31,10 +33,15 @@ interface AuctioneerCreateAuctionRoundProps {
     auctionRoundPrices: AuctionRoundPrice[];
     auctionAssets: AuctionAsset[];
     loading?: boolean;
+    auctionRoundData: AuctionRoundModals;
 }
 
-const AuctioneerCreateAuctionRound = ({ auctionRoundPrices, loading = false }: AuctioneerCreateAuctionRoundProps) => {
+const AuctioneerCreateAuctionRound = ({ auctionRoundPrices, loading = false, auctionRoundData }: AuctioneerCreateAuctionRoundProps) => {
     const [highestPrices, setHighestPrices] = useState<AuctionRoundPrice[]>([]);
+
+    useEffect(() => {
+        console.log("Current Round Data:", auctionRoundData);
+    }, [auctionRoundData]);
 
     // Tìm giá cao nhất cho từng loại tài sản
     useEffect(() => {

@@ -36,6 +36,7 @@ interface UserInfo {
 
 interface props {
   auctionId: string;
+  roundData?: AuctionRoundModals;
 }
 
 const InputAuctionPrice = ({ auctionId }: props) => {

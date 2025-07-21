@@ -18,6 +18,8 @@ export const AuctionAPI = {
   ACCEPT_PAYMENT_DEPOSIT: "/UpdateDeposit",
   AUCTION_CANCEL: '/Auctions/cancel',
   USER_REGISTER_AUCTION: "/UserRegisteredAuction/User-Registered-Auction",
+  CREATE_AUCTIN_ROUND: "/CreateAuctionRound",
+  GET_LIST_AUCTION_ROUND: "/ListAuctionRound",
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;
