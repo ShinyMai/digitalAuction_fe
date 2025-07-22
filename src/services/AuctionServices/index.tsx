@@ -65,6 +65,10 @@ const getListAuctionRegisted = (body?: any): Promise<ApiResponse<any>> =>
 const getListAuctionDocumentRegisted = (body?: any): Promise<ApiResponse<any>> =>
   http.post(AuctionAPI.LIST_AUCTION_DOCUMENT_REGISTED, body);
 
+const createAuctionRound = (body: any): Promise<ApiResponse<any>> =>
+  http.post(AuctionAPI.CREATE_AUCTIN_ROUND, body);
+const getListAuctionRound = (auction_id: string): Promise<ApiResponse<any>> =>
+  http.get(`${AuctionAPI.GET_LIST_AUCTION_ROUND}/${auction_id}`);
 const AuctionServices = {
   addAuction,
   getListAuctionCategory,
@@ -85,6 +89,8 @@ const AuctionServices = {
   userRegistedAuction,
   getListAuctionRegisted,
   getListAuctionDocumentRegisted,
+  createAuctionRound,
+  getListAuctionRound
 };
 
 export default AuctionServices;

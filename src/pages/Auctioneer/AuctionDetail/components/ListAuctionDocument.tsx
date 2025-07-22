@@ -10,15 +10,21 @@ import {
   Table,
   Input,
   Tag,
-  Button,
-  Dropdown,
-  Menu,
+  Select,
 } from "antd";
-import {
-  SearchOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-import dayjs from "dayjs";
+
+// Đã xóa import dayjs
+
+interface AuctionAsset {
+  auctionAssetsId: string;
+  tagName: string;
+}
+
+interface Props {
+  auctionId: string;
+  auctionDateModals?: AuctionDateModal;
+  auctionAssets: AuctionAsset[];
+}
 
 interface SearchParams {
   Name?: string;
@@ -32,13 +38,13 @@ interface SearchParams {
 }
 
 interface Props {
-  auctionId?: string;
+  auctionId: string;
   auctionDateModals?: AuctionDateModal;
 }
 
 const ListAuctionDocument = ({
   auctionId,
-  auctionDateModals,
+  auctionAssets,
 }: Props) => {
   const [searchParams, setSearchParams] =
     useState<SearchParams>({
@@ -59,17 +65,7 @@ const ListAuctionDocument = ({
     TagName?: string;
   }>({});
 
-  // Kiểm tra nếu ngày hiện tại nằm trong khoảng registerOpenDate đến registerEndDate
-  const isWithinRegistrationPeriod =
-    auctionDateModals?.registerOpenDate &&
-      auctionDateModals?.registerEndDate
-      ? dayjs().isAfter(
-        dayjs(auctionDateModals.registerOpenDate)
-      ) &&
-      dayjs().isBefore(
-        dayjs(auctionDateModals.registerEndDate)
-      )
-      : false;
+  // Đã xóa kiểm tra thời gian đăng ký
 
   useEffect(() => {
     getListAuctionDocument();
@@ -106,51 +102,23 @@ const ListAuctionDocument = ({
     }
   };
 
-  const handleSearch = () => {
-    setSearchParams((prev) => ({
-      ...prev,
-      ...searchValues,
-      PageNumber: 1, // Reset về trang 1 khi tìm kiếm
-    }));
-  };
-
   const handleInputChange = (
     key: keyof SearchParams,
     value: string
   ) => {
+    const newValue = value || undefined;
     setSearchValues((prev) => ({
       ...prev,
-      [key]: value || undefined,
+      [key]: newValue,
+    }));
+    // Thực hiện search ngay khi giá trị thay đổi
+    setSearchParams((prev) => ({
+      ...prev,
+      [key]: newValue,
+      PageNumber: 1, // Reset về trang 1 khi tìm kiếm
     }));
   };
-  const handleAction = async (
-    action: string,
-    _record: AuctionDocument // eslint-disable-line @typescript-eslint/no-unused-vars
-  ) => {
-    try {
-      // TODO: Uncomment when updateAuctionDocumentStatus is implemented in AuctionServices
-      // if (action === "receiveTicket") {
-      //   await AuctionServices.updateAuctionDocumentStatus(record.auctionDocumentsId, {
-      //     statusTicket: 1,
-      //   });
-      //   toast.success("Đã xác nhận nhận phiếu!");
-      // } else if (action === "receiveDeposit") {
-      //   await AuctionServices.updateAuctionDocumentStatus(record.auctionDocumentsId, {
-      //     statusDeposit: true,
-      //   });
-      //   toast.success("Đã xác nhận nhận cọc!");
-      // }
-      getListAuctionDocument();
-    } catch (error) {
-      toast.error(
-        `Lỗi khi thực hiện ${action === "receiveTicket"
-          ? "nhận phiếu"
-          : "nhận cọc"
-        }!`
-      );
-      console.error(error);
-    }
-  };
+  // Đã xóa handleAction
 
   const columns = [
     {
@@ -201,95 +169,67 @@ const ListAuctionDocument = ({
       },
     },
     {
-      title: "Chức năng",
-      key: "action",
-      render: (_: any, record: AuctionDocument) => (
-        <Dropdown
-          overlay={
-            <Menu>
-              <Menu.Item
-                key="receiveTicket"
-                onClick={() =>
-                  handleAction("receiveTicket", record)
-                }
-                disabled={
-                  record.statusTicket === 1 ||
-                  !isWithinRegistrationPeriod
-                }
-              >
-                Đã nhận phiếu
-              </Menu.Item>
-              <Menu.Item
-                key="receiveDeposit"
-                onClick={() =>
-                  handleAction("receiveDeposit", record)
-                }
-                disabled={
-                  record.statusDeposit ||
-                  !isWithinRegistrationPeriod
-                }
-              >
-                Đã nhận cọc
-              </Menu.Item>
-            </Menu>
-          }
-          trigger={["click"]}
-        >
-          <Button
-            type="text"
-            icon={<SettingOutlined className="gear-icon" />}
-            className="text-blue-600 hover:text-blue-800 text-lg"
-          />
-        </Dropdown>
-      ),
+      title: "Trạng thái cọc",
+      dataIndex: "statusDeposit",
+      key: "statusDeposit",
+      render: (statusDeposit: number) => {
+        const color = statusDeposit === 1 ? 'green' : 'orange';
+        const text = statusDeposit === 1 ? 'Đã cọc' : 'Chưa cọc';
+        return <Tag color={color}>{text}</Tag>;
+      },
     },
   ];
 
   return (
-    <section className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-teal-50">
-      <div className="w-full mx-auto bg-white shadow-lg rounded-xl p-6">
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-          <div className="flex flex-col sm:flex-row gap-4 items-center">
-            <Input
-              placeholder="Tìm kiếm theo tên"
-              prefix={<SearchOutlined />}
-              allowClear
-              value={searchValues.name}
-              onChange={(e) =>
-                handleInputChange("Name", e.target.value)
-              }
-              className="w-full sm:w-1/4"
-            />
-            <Input
-              placeholder="Tìm kiếm theo CMND/CCCD"
-              prefix={<SearchOutlined />}
-              allowClear
-              value={searchValues.CitizenIdentification}
-              onChange={(e) =>
-                handleInputChange(
-                  "CitizenIdentification",
-                  e.target.value
-                )
-              }
-              className="w-full sm:w-1/4"
-            />
-            <Input
-              placeholder="Tìm kiếm theo tên tài sản"
-              prefix={<SearchOutlined />}
-              allowClear
-              value={searchValues.TagName}
-              onChange={(e) =>
-                handleInputChange("TagName", e.target.value)
-              }
-              className="w-full sm:w-1/4"
-            />
-            <Button
-              type="primary"
-              onClick={handleSearch}
-              className="bg-teal-500 hover:bg-teal-600 w-full sm:w-auto"
-            >
-              Tìm kiếm
-            </Button>
+    <section className="w-full h-fit bg-gradient-to-b from-blue-50 to-teal-50">
+      <div className="w-full mx-auto bg-white rounded-xl">
+        <div className="mb-6">
+          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="p-4 bg-gradient-to-r from-teal-500 to-blue-500">
+              <h2 className="text-lg font-semibold text-white">Tìm kiếm hồ sơ đấu giá</h2>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">Tên người đăng ký</label>
+                  <Input
+                    placeholder="Nhập tên người đăng ký..."
+                    allowClear
+                    value={searchValues.name}
+                    onChange={(e) => handleInputChange("Name", e.target.value)}
+                    className="w-full !rounded-md [&>input]:!py-2 [&>input]:!px-3 [&>input]:!border-gray-300 [&>input]:!hover:border-teal-500 [&>input]:!focus:border-teal-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">CMND/CCCD</label>
+                  <Input
+                    placeholder="Nhập số CMND/CCCD..."
+                    allowClear
+                    value={searchValues.CitizenIdentification}
+                    onChange={(e) => handleInputChange("CitizenIdentification", e.target.value)}
+                    className="w-full !rounded-md [&>input]:!py-2 [&>input]:!px-3 [&>input]:!border-gray-300 [&>input]:!hover:border-teal-500 [&>input]:!focus:border-teal-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">Tài sản đấu giá</label>
+                  <Select
+                    placeholder="Chọn tài sản đấu giá..."
+                    allowClear
+                    showSearch
+                    value={searchValues.TagName}
+                    onChange={(value) => handleInputChange("TagName", value)}
+                    filterOption={(input, option) =>
+                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    }
+                    options={auctionAssets.map(asset => ({
+                      value: asset.tagName,
+                      label: asset.tagName,
+                    }))}
+                    className="w-full [&>.ant-select-selector]:!rounded-md [&>.ant-select-selector]:!h-[40px] [&>.ant-select-selector]:!py-1 [&>.ant-select-selector]:!px-3 [&>.ant-select-selector]:!border-gray-300 [&>.ant-select-selector]:!hover:border-teal-500 [&>.ant-select-selector]:!focus:border-teal-500"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <Table
@@ -299,31 +239,21 @@ const ListAuctionDocument = ({
           loading={loading}
           pagination={{
             current: searchParams.PageNumber,
-            pageSize: searchParams.PageSize,
+            pageSize: 8, // Cố định 8 bản ghi/trang
             total: totalCount,
-            showSizeChanger: true,
-            pageSizeOptions: ["8", "16", "24", "32"],
-            onChange: (page, pageSize) =>
+            showSizeChanger: false, // Ẩn tùy chọn thay đổi số lượng bản ghi/trang
+            onChange: (page) =>
               setSearchParams((prev) => ({
                 ...prev,
                 PageNumber: page,
-                PageSize: pageSize,
+                PageSize: 8,
               })),
           }}
           scroll={{ x: "max-content" }}
           className="border border-teal-100 rounded-lg"
         />
       </div>
-      <style>{`
-        .gear-icon {
-          font-size: 1.5rem; /* Tăng kích thước icon */
-          transition: transform 0.3s ease, color 0.3s ease; /* Hiệu ứng mượt mà */
-        }
-        .ant-btn:hover .gear-icon {
-          transform: rotate(90deg); /* Xoay 90 độ khi hover */
-          color: #1d4ed8; /* Đổi màu thành xanh đậm khi hover */
-        }
-      `}</style>
+      {/* Đã xóa style cho gear icon */}
     </section>
   );
 };

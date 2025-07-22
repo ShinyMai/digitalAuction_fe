@@ -1,0 +1,42 @@
+.auction-tabs .ant-tabs-nav {
+    margin-bottom: 24px !important;
+}
+.auction-tabs .ant-tabs-tab {
+    padding: 12px 24px !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+.auction-tabs .ant-tabs-tab:hover {
+    color: rgb(37 99 235) !important;
+}
+.auction-tabs .ant-tabs-tab-active {
+    background: rgb(239 246 255) !important;
+    border-radius: 8px !important;
+}
+.auction-tabs .ant-badge {
+    background: rgb(37 99 235) !important;
+}
+.auction-tabs .ant-tabs-tab-active .ant-badge {
+    background: rgb(22 163 74) !important;
+}
+.auction-tabs .ant-tabs-ink-bar {
+    background: rgb(37 99 235) !important;
+    height: 3px !important;
+    border-radius: 3px !important;
+}
+.auction-tabs .ant-tabs-tab::after {
+    content: '';
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    width: 0 !important;
+    height: 2px !important;
+    background: rgb(37 99 235) !important;
+    transition: all 0.3s ease !important;
+    transform: translateX(-50%) !important;
+}
+.auction-tabs .ant-tabs-tab:hover::after {
+    width: 100% !important;
+}

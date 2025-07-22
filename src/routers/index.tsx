@@ -55,6 +55,7 @@ export const AUCTIONEER_ROUTES = {
   SUB: {
     AUCTION_NOW: "auction_now",
     AUCTION_DETAIL_NOW: "auction-detail-now",
+    LIST_AUCTION_ASSIGNED: "list-auction-assigned",
   },
 };
 
