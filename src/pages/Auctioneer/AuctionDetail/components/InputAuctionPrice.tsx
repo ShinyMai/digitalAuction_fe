@@ -11,6 +11,7 @@ import {
   TrophyOutlined,
 } from "@ant-design/icons";
 import AuctionServices from "../../../../services/AuctionServices";
+import type { AuctionRoundModals } from "../../Modals";
 
 const { Title, Text } = Typography;
 

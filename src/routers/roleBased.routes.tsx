@@ -134,6 +134,9 @@ const SupportRegisterAuction = React.lazy(
 
 const listAcutionNow = React.lazy(() => import("../pages/Auctioneer/ListAuctionNow/index"));
 
+const ListAuctionAssigned = React.lazy(() =>
+  import("../pages/Auctioneer/ListAuctionAssigned/index"))
+
 export const staffRoutes = [
   {
     path: STAFF_ROUTES.SUB.POST_AUCTION,
@@ -232,4 +235,8 @@ export const auctioneerRoutes = [
     path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW + "/" + AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW,
     element: wrapWithLazy(AuctionDetailAuctioneer),
   },
+  {
+    path: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
+    element: wrapWithLazy(ListAuctionAssigned),
+  }
 ];

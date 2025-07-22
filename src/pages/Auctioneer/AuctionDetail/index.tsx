@@ -74,7 +74,7 @@ const AuctionDetailAuctioneer = () => {
     try {
       const response = await AuctionServices.getListAuctionRound(auctionId);
       if (response.code === 200) {
-        setListAuctionRound(response.data);
+        setListAuctionRound(response.data.auctionRounds);
       }
     } catch (error) {
       console.error("Error fetching auction rounds:", error);
@@ -99,7 +99,7 @@ const AuctionDetailAuctioneer = () => {
     getAuctionDetailById(location.state.key);
     getListAuctionRound(location.state.key);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleCreateAuctionRound]);
+  }, []);
 
   console.log(isOpentPopupVerifyCancel);
 
@@ -144,6 +144,9 @@ const AuctionDetailAuctioneer = () => {
         <Tabs
           defaultActiveKey="1"
           className="w-full h-full auction-tabs"
+          tabBarGutter={8}
+          centered={false}
+          tabPosition="top"
           tabBarStyle={{
             background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
             borderRadius: "16px",
@@ -151,6 +154,8 @@ const AuctionDetailAuctioneer = () => {
             border: "1px solid #e2e8f0",
             boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
             backdropFilter: "blur(10px)",
+            overflowX: "auto",
+            whiteSpace: "nowrap",
           }}
           items={[
             {
@@ -191,7 +196,7 @@ const AuctionDetailAuctioneer = () => {
             },
             ...(listAuctionRound.length > 0
               ? listAuctionRound.map((round, index) => ({
-                key: `round-${index + 3}`,
+                key: `${index + 3}`,
                 label: (
                   <div className="flex items-center gap-2 px-4 py-2">
                     {role === "Auctioneer" ? (
@@ -235,11 +240,31 @@ const AuctionDetailAuctioneer = () => {
       </div>
 
       <style>{`
+        .auction-tabs .ant-tabs-nav-wrap {
+          overflow-x: auto !important;
+          scrollbar-width: thin !important;
+          scrollbar-color: #93C5FD transparent !important;
+        }
+        
+        .auction-tabs .ant-tabs-nav-wrap::-webkit-scrollbar {
+          height: 4px !important;
+        }
+        
+        .auction-tabs .ant-tabs-nav-wrap::-webkit-scrollbar-track {
+          background: transparent !important;
+        }
+        
+        .auction-tabs .ant-tabs-nav-wrap::-webkit-scrollbar-thumb {
+          background-color: #93C5FD !important;
+          border-radius: 2px !important;
+        }
+
         .auction-tabs .ant-tabs-tab {
           border-radius: 12px !important;
           transition: all 0.3s ease !important;
           margin: 0 4px !important;
           padding: 8px 16px !important;
+          flex-shrink: 0 !important;
         }
         
         .auction-tabs .ant-tabs-tab:hover {

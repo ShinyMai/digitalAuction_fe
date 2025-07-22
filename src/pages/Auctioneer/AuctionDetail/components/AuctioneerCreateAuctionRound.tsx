@@ -288,7 +288,7 @@ const AuctioneerCreateAuctionRound = ({ auctionRoundPrices, loading = false, auc
                                         </div>
                                     )
                                 }}
-                                className="w-full overflow-hidden"
+                                className="w-full overflow-hidden h-full"
                                 rowClassName="cursor-pointer"
                                 pagination={false}
                                 scroll={{ y: "calc(100vh - 450px)" }}
