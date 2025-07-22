@@ -40,9 +40,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({ filteredDocuments, 
       case 0:
         return { color: "orange", text: "Chờ xác nhận", icon: <ClockCircleOutlined /> };
       case 1:
-        return { color: "green", text: "Xác nhận thanh toán", icon: <CheckCircleOutlined /> };
-      case 2:
-        return { color: "blue", text: "Đã hoàn trả", icon: <DollarOutlined /> };
+        return { color: "green", text: "Xác nhận cọc", icon: <CheckCircleOutlined /> };
       default:
         return { color: "gray", text: "Không xác định", icon: <ClockCircleOutlined /> };
     }
@@ -51,9 +49,13 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({ filteredDocuments, 
   const getTicketStatus = (status: TicketStatus) => {
     switch (status) {
       case 0:
-        return { color: "orange", text: "Chưa nhận đơn", icon: <ClockCircleOutlined /> };
+        return { color: "orange", text: "Chưa chuyển tiền", icon: <ClockCircleOutlined /> };
       case 1:
-        return { color: "green", text: "Đã nhận", icon: <CheckCircleOutlined /> };
+        return { color: "green", text: "Đã chuyển tiền", icon: <CheckCircleOutlined /> };
+      case 2:
+        return { color: "green", text: "Đã nhận phiếu", icon: <CheckCircleOutlined /> };
+      case 3:
+        return { color: "green", text: "Đã hoàn cọc", icon: <CheckCircleOutlined /> };
       default:
         return { color: "gray", text: "Không xác định", icon: <ClockCircleOutlined /> };
     }
@@ -302,6 +304,36 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({ filteredDocuments, 
               </Tooltip>
             ) : (
               <Text type="secondary">--</Text>
+            ),
+        },
+        {
+          title: (
+            <>
+              <EditOutlined /> Trạng thái đấu giá
+            </>
+          ),
+          dataIndex: "auctionStatus",
+          key: "auctionStatus",
+          width: 200,
+          render: (text: string) =>
+            text ? (
+              <Tooltip title={text} placement="topLeft">
+                <Text
+                  italic
+                  style={{
+                    color: "#666",
+                    display: "block",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "180px",
+                  }}
+                >
+                  Thành công
+                </Text>
+              </Tooltip>
+            ) : (
+              <Text type="secondary">Thành công</Text>
             ),
         },
       ]}
