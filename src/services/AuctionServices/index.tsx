@@ -52,13 +52,18 @@ const acceptPaymentDeposit = (
   body: any
 ): Promise<ApiResponse<any>> =>
   http.post(AuctionAPI.ACCEPT_PAYMENT_DEPOSIT + `/${auctionId}` + `/${auctionDocumentId}`, body);
+
 const cancelAuction = (body: any): Promise<ApiResponse<any>> =>
   http.put(AuctionAPI.AUCTION_CANCEL, body);
+
 const userRegistedAuction = (body: any): Promise<ApiResponse<any>> =>
   http.post(AuctionAPI.USER_REGISTER_AUCTION, body);
 
-const getListAuctionRegisted = (params?: any): Promise<ApiResponse<any>> =>
-  http.get(AuctionAPI.LIST_AUCTION_REGISTED, { params: params });
+const getListAuctionRegisted = (body?: any): Promise<ApiResponse<any>> =>
+  http.post(AuctionAPI.LIST_AUCTION_REGISTED, body);
+
+const getListAuctionDocumentRegisted = (body?: any): Promise<ApiResponse<any>> =>
+  http.post(AuctionAPI.LIST_AUCTION_DOCUMENT_REGISTED, body);
 
 const AuctionServices = {
   addAuction,
@@ -79,6 +84,7 @@ const AuctionServices = {
   cancelAuction,
   userRegistedAuction,
   getListAuctionRegisted,
+  getListAuctionDocumentRegisted,
 };
 
 export default AuctionServices;

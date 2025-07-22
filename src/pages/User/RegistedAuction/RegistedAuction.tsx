@@ -1,56 +1,20 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useCallback } from "react";
-import { Card, Tag, Button, Empty, Spin, Input, Select, DatePicker, Table, Pagination } from "antd";
+import { Card, Button, Empty, Spin, Input, Select, DatePicker, Pagination } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 
-// Enable the isBetween plugin
 dayjs.extend(isBetween);
-import {
-  CalendarOutlined,
-  ClockCircleOutlined,
-  DollarOutlined,
-  FireOutlined,
-  EyeOutlined,
-  SearchOutlined,
-  FilterOutlined,
-  TrophyOutlined,
-  CheckCircleOutlined,
-  ExclamationCircleOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
+import { FilterOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import { formatNumber } from "../../../utils/numberFormat";
 import AuctionServices from "../../../services/AuctionServices";
+import { StatsCards, AuctionCard, getStatusString } from "./components";
+import type { RegisteredAuction } from "./components";
 
 const { RangePicker } = DatePicker;
-
-interface RegisteredAuction {
-  auctionId: string;
-  auctionName: string;
-  categoryName: string;
-  auctionDescription: string;
-  auctionRules: string;
-  auctionPlanningMap: string;
-  registerOpenDate: string;
-  registerEndDate: string;
-  auctionStartDate: string;
-  auctionEndDate: string;
-  numberRoundMax: number;
-  status: number;
-  auctionAssets: {
-    auctionAssetsId: string;
-    tagName: string;
-    startingPrice: number;
-    unit: string;
-    deposit: number;
-    registrationFee: number;
-    description: string;
-    auctionId: string;
-  }[];
-}
 
 const RegistedAuction = () => {
   const navigate = useNavigate();
@@ -61,167 +25,101 @@ const RegistedAuction = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [dateRange, setDateRange] = useState<any>(null);
-
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(6);
+  const [pageSize, setPageSize] = useState(4);
   const [totalAuctions, setTotalAuctions] = useState(0);
 
-  // Status determination based on auction dates
-  const getStatusString = (auction: RegisteredAuction): string => {
-    const now = dayjs();
-    const auctionStart = dayjs(auction.auctionStartDate);
-    const auctionEnd = dayjs(auction.auctionEndDate);
-    const registerEnd = dayjs(auction.registerEndDate);
-
-    if (now.isBefore(registerEnd)) {
-      return "registration";
-    } else if (now.isBefore(auctionStart)) {
-      return "upcoming"; // Registration closed, auction not started yet
-    } else if (now.isBetween(auctionStart, auctionEnd, "day", "[]")) {
-      return "ongoing"; // Auction is currently happening
-    } else {
-      return "completed"; // Auction has ended
-    }
-  };
-
-  const getStatusInfo = (auction: RegisteredAuction) => {
-    const statusString = getStatusString(auction);
-    switch (statusString) {
-      case "upcoming":
-        return {
-          color: "blue",
-          icon: <ClockCircleOutlined />,
-          text: "Sắp diễn ra",
-          bgColor: "bg-blue-50",
-          borderColor: "border-blue-200",
-        };
-      case "ongoing":
-        return {
-          color: "orange",
-          icon: <FireOutlined />,
-          text: "Đang diễn ra",
-          bgColor: "bg-orange-50",
-          borderColor: "border-orange-200",
-        };
-      case "completed":
-        return {
-          color: "green",
-          icon: <CheckCircleOutlined />,
-          text: "Đã kết thúc",
-          bgColor: "bg-green-50",
-          borderColor: "border-green-200",
-        };
-      case "cancelled":
-        return {
-          color: "red",
-          icon: <CloseCircleOutlined />,
-          text: "Đã hủy",
-          bgColor: "bg-red-50",
-          borderColor: "border-red-200",
-        };
-      default:
-        return {
-          color: "default",
-          icon: <ExclamationCircleOutlined />,
-          text: "Không xác định",
-          bgColor: "bg-gray-50",
-          borderColor: "border-gray-200",
-        };
-    }
-  };
-
   const applyFilters = useCallback(() => {
-    let filtered = registeredAuctions;
+    const auctions = Array.isArray(registeredAuctions) ? registeredAuctions : [];
+    let filtered = auctions;
 
-    // Apply search filter
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (auction) =>
-          auction.auctionName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          auction.auctionAssets.some((asset) =>
-            asset.tagName.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-      );
-    }
-
-    // Apply status filter
     if (statusFilter) {
       filtered = filtered.filter((auction) => getStatusString(auction) === statusFilter);
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const paginatedResults = filtered.slice(startIndex, endIndex);
+      setFilteredAuctions(paginatedResults);
+    } else {
+      setFilteredAuctions(auctions);
     }
-
-    // Apply date range filter
-    if (dateRange && dateRange.length === 2) {
-      const [startDate, endDate] = dateRange;
-      filtered = filtered.filter((auction) => {
-        const auctionDate = dayjs(auction.auctionStartDate);
-        return auctionDate.isBetween(dayjs(startDate), dayjs(endDate), "day", "[]");
-      });
-    }
-
-    // Update total count for pagination
-    setTotalAuctions(filtered.length);
-
-    // Apply pagination
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const paginatedResults = filtered.slice(startIndex, endIndex);
-
-    setFilteredAuctions(paginatedResults);
-  }, [registeredAuctions, searchTerm, statusFilter, dateRange, currentPage, pageSize]);
+  }, [registeredAuctions, statusFilter, currentPage, pageSize]);
 
   useEffect(() => {
     applyFilters();
   }, [applyFilters]);
 
-  const getListAuctionRegisted = useCallback(async () => {
-    if (!user?.id) return;
-
-    try {
-      setLoading(true);
-      const res = await AuctionServices.getListAuctionRegisted();
-      if (res?.code === 200) {
-        setRegisteredAuctions(res.data || []);
-      } else {
-        toast.error("Không thể tải danh sách đấu giá đã đăng ký!");
+  const getListAuctionRegisted = useCallback(
+    async (searchValue?: string) => {
+      if (!user?.id) return;
+      try {
+        setLoading(true);
+        const requestBody = {
+          pageNumber: currentPage,
+          pageSize: pageSize,
+          search: {
+            auctionName: searchValue ?? searchTerm ?? null,
+            auctionStartDate: dateRange?.[0] ? dayjs(dateRange[0]).toISOString() : null,
+            auctionEndDate: dateRange?.[1] ? dayjs(dateRange[1]).toISOString() : null,
+          },
+        };
+        const res = await AuctionServices.getListAuctionRegisted(requestBody);
+        if (res?.code === 200) {
+          const auctionData = res.data?.auctionResponse || [];
+          setRegisteredAuctions(Array.isArray(auctionData) ? auctionData : []);
+          setTotalAuctions(res.data?.totalAuctionRegisted || 0);
+        } else {
+          toast.error("Không thể tải danh sách đấu giá đã đăng ký!");
+        }
+      } catch (error) {
+        console.error("Error fetching registered auctions:", error);
+        toast.error("Lỗi khi tải danh sách đấu giá đã đăng ký!");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching registered auctions:", error);
-      toast.error("Lỗi khi tải danh sách đấu giá đã đăng ký!");
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.id]);
+    },
+    [user?.id, dateRange, currentPage, pageSize]
+  );
 
   useEffect(() => {
     getListAuctionRegisted();
-  }, [getListAuctionRegisted]);
+  }, [currentPage, pageSize, dateRange]);
 
-  useEffect(() => {
-    const debounceTimer = setTimeout(() => {
+  const handleSearch = useCallback(
+    (value: string) => {
+      setSearchTerm(value);
       setCurrentPage(1);
-    }, 500);
+      getListAuctionRegisted(value);
+    },
+    [getListAuctionRegisted]
+  );
 
-    return () => clearTimeout(debounceTimer);
-  }, [searchTerm]);
-
+  // Effect for date range changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [statusFilter, dateRange]);
+    if (user?.id) {
+      getListAuctionRegisted();
+    }
+  }, [dateRange, getListAuctionRegisted, user?.id]);
+
+  // Effect for status filter changes (no API call needed since it's client-side filtering)
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter]);
 
   const handleViewDetails = (auctionId: string) => {
     navigate(`/auction-detail/${auctionId}`);
   };
 
   const getStats = () => {
-    const total = registeredAuctions.length;
-    const registration = registeredAuctions.filter(
-      (a) => getStatusString(a) === "registration"
-    ).length;
-    const upcoming = registeredAuctions.filter((a) => getStatusString(a) === "upcoming").length;
-    const ongoing = registeredAuctions.filter((a) => getStatusString(a) === "ongoing").length;
-    const completed = registeredAuctions.filter((a) => getStatusString(a) === "completed").length;
-    const cancelled = registeredAuctions.filter((a) => getStatusString(a) === "cancelled").length;
+    const auctions = Array.isArray(registeredAuctions) ? registeredAuctions : [];
+
+    const total = totalAuctions || auctions.length;
+    const registration = auctions.filter((a) => getStatusString(a) === "registration").length;
+    const upcoming = auctions.filter((a) => getStatusString(a) === "upcoming").length;
+    const ongoing = auctions.filter((a) => getStatusString(a) === "ongoing").length;
+    const completed = auctions.filter((a) => getStatusString(a) === "completed").length;
+    const cancelled = auctions.filter((a) => getStatusString(a) === "cancelled").length;
 
     return { total, registration, upcoming, ongoing, completed, cancelled };
   };
@@ -246,54 +144,21 @@ const RegistedAuction = () => {
           </h1>
           <p className="text-gray-600 text-lg">
             Quản lý và theo dõi các phiên đấu giá bạn đã tham gia
-          </p>
+          </p>{" "}
         </div>
-
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <Card className="!text-center !bg-gradient-to-r !from-blue-500 !to-blue-600 !border-0 !shadow-lg">
-            <div className="text-white">
-              <div className="text-2xl font-bold">{stats.total}</div>
-              <div className="text-sm opacity-90">Tổng đăng ký</div>
-            </div>
-          </Card>
-          <Card className="!text-center !bg-gradient-to-r !from-cyan-500 !to-cyan-600 !border-0 !shadow-lg">
-            <div className="text-white">
-              <div className="text-2xl font-bold">{stats.registration}</div>
-              <div className="text-sm opacity-90">Đang đăng ký</div>
-            </div>
-          </Card>
-          <Card className="!text-center !bg-gradient-to-r !from-orange-500 !to-orange-600 !border-0 !shadow-lg">
-            <div className="text-white">
-              <div className="text-2xl font-bold">{stats.upcoming}</div>
-              <div className="text-sm opacity-90">Sắp diễn ra</div>
-            </div>
-          </Card>
-          <Card className="!text-center !bg-gradient-to-r !from-green-500 !to-green-600 !border-0 !shadow-lg">
-            <div className="text-white">
-              <div className="text-2xl font-bold">{stats.ongoing}</div>
-              <div className="text-sm opacity-90">Đang diễn ra</div>
-            </div>
-          </Card>
-          <Card className="!text-center !bg-gradient-to-r !from-purple-500 !to-purple-600 !border-0 !shadow-lg">
-            <div className="text-white">
-              <div className="text-2xl font-bold">{stats.completed}</div>
-              <div className="text-sm opacity-90">Đã kết thúc</div>
-            </div>
-          </Card>
-        </div>
-
+        <StatsCards stats={stats} />
         {/* Filters */}
         <Card className="!mb-8 !shadow-lg !border-0">
           <div className="flex flex-col md:flex-row gap-4 items-center">
             <div className="flex-1">
-              <Input
+              <Input.Search
                 placeholder="Tìm kiếm theo tên đấu giá hoặc tài sản..."
-                prefix={<SearchOutlined className="text-gray-400" />}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                onSearch={handleSearch}
                 size="large"
-                className="!rounded-lg"
+                allowClear
               />
             </div>
             <Select
@@ -325,13 +190,18 @@ const RegistedAuction = () => {
                 setSearchTerm("");
                 setStatusFilter("");
                 setDateRange(null);
+                setCurrentPage(1);
+                setTimeout(() => {
+                  if (user?.id) {
+                    getListAuctionRegisted();
+                  }
+                }, 0);
               }}
             >
               Xóa bộ lọc
             </Button>
           </div>
         </Card>
-
         {/* Auction Cards */}
         {filteredAuctions.length === 0 ? (
           <Card className="!text-center !p-12 !shadow-lg !border-0">
@@ -339,7 +209,7 @@ const RegistedAuction = () => {
               description={
                 <div>
                   <p className="text-lg text-gray-500 mb-2">
-                    {registeredAuctions.length === 0
+                    {(Array.isArray(registeredAuctions) ? registeredAuctions.length : 0) === 0
                       ? "Bạn chưa đăng ký tham gia đấu giá nào"
                       : "Không tìm thấy đấu giá nào phù hợp với bộ lọc"}
                   </p>
@@ -360,177 +230,21 @@ const RegistedAuction = () => {
           </Card>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredAuctions.map((auction) => {
-              const statusInfo = getStatusInfo(auction);
-              const registrationInfo = { color: "green", text: "Đã đăng ký" };
-
-              return (
-                <Card
-                  key={auction.auctionId}
-                  className={`!shadow-lg !border-0 hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 ${statusInfo.bgColor} ${statusInfo.borderColor}`}
-                >
-                  <div className="space-y-4">
-                    {/* Header */}
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
-                          {auction.auctionName}
-                        </h3>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Tag color={statusInfo.color} className="!flex !items-center !gap-1">
-                            {statusInfo.icon}
-                            {statusInfo.text}
-                          </Tag>
-                          <Tag color={registrationInfo.color}>{registrationInfo.text}</Tag>
-                          <Tag color="default">{auction.categoryName}</Tag>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Assets */}
-                    <div className="bg-white/50 backdrop-blur-sm rounded-lg p-3">
-                      <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                        <TrophyOutlined className="text-yellow-500" />
-                        Tài sản đăng ký ({auction.auctionAssets.length})
-                      </h4>
-                      <div className="overflow-x-auto">
-                        <Table
-                          dataSource={auction.auctionAssets}
-                          pagination={false}
-                          size="small"
-                          rowKey="auctionAssetsId"
-                          className="!bg-transparent"
-                          columns={[
-                            {
-                              title: "Tên tài sản",
-                              dataIndex: "tagName",
-                              key: "tagName",
-                              render: (text: string) => (
-                                <div className="font-medium text-gray-800">{text}</div>
-                              ),
-                            },
-                            {
-                              title: "Giá khởi điểm",
-                              dataIndex: "startingPrice",
-                              key: "startingPrice",
-                              align: "right" as const,
-                              render: (value: number) => (
-                                <div className="font-bold text-blue-600">
-                                  {formatNumber(value)} VND
-                                </div>
-                              ),
-                            },
-                            {
-                              title: "Tiền cọc",
-                              dataIndex: "deposit",
-                              key: "deposit",
-                              align: "right" as const,
-                              render: (value: number) => (
-                                <div className="font-semibold text-green-600">
-                                  {formatNumber(value)} VND
-                                </div>
-                              ),
-                            },
-                            {
-                              title: "Phí đăng ký",
-                              dataIndex: "registrationFee",
-                              key: "registrationFee",
-                              align: "right" as const,
-                              render: (value: number) => (
-                                <div className="font-semibold text-orange-600">
-                                  {formatNumber(value)} VND
-                                </div>
-                              ),
-                            },
-                          ]}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Timeline */}
-                    <div className="grid grid-cols-2 gap-4 text-sm p-3">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <CalendarOutlined className="text-blue-500" />
-                          <span>Hạn đăng ký:</span>
-                        </div>
-                        <div className="font-semibold text-gray-800">
-                          {dayjs(auction.registerEndDate).format("DD/MM/YYYY HH:mm")}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <FireOutlined className="text-orange-500" />
-                          <span>Ngày đấu giá:</span>
-                        </div>
-                        <div className="font-semibold text-gray-800">
-                          {dayjs(auction.auctionStartDate).format("DD/MM/YYYY HH:mm")}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Financial Info */}
-                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-3">
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <div className="flex items-center gap-2 text-gray-600 mb-1">
-                            <DollarOutlined className="text-green-500" />
-                            <span>Tổng tiền cọc:</span>
-                          </div>
-                          <div className="font-bold text-green-600">
-                            {formatNumber(
-                              auction.auctionAssets.reduce((sum, asset) => sum + asset.deposit, 0)
-                            )}
-                            VND
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2 text-gray-600 mb-1">
-                            <DollarOutlined className="text-blue-500" />
-                            <span>Tổng phí đăng ký:</span>
-                          </div>
-                          <div className="font-bold text-blue-600">
-                            {formatNumber(
-                              auction.auctionAssets.reduce(
-                                (sum, asset) => sum + asset.registrationFee,
-                                0
-                              )
-                            )}
-                            VND
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Registration Date */}
-                    <div className="text-xs text-gray-500 border-t pt-2">
-                      Hạn đăng ký: {dayjs(auction.registerEndDate).format("DD/MM/YYYY HH:mm")}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 pt-2">
-                      <Button
-                        type="primary"
-                        icon={<EyeOutlined />}
-                        onClick={() => handleViewDetails(auction.auctionId)}
-                        className="!flex-1 !bg-gradient-to-r !from-blue-500 !to-blue-600 !border-0"
-                      >
-                        Xem chi tiết
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
+            {filteredAuctions.map((auction) => (
+              <AuctionCard
+                key={auction.auctionId}
+                auction={auction}
+                onViewDetails={handleViewDetails}
+              />
+            ))}
           </div>
         )}
-
         {/* Pagination */}
-        {totalAuctions > pageSize && (
+        {(statusFilter ? filteredAuctions.length : totalAuctions) > 0 && (
           <div className="flex justify-center mt-8">
             <Pagination
               current={currentPage}
-              total={totalAuctions}
+              total={statusFilter ? filteredAuctions.length : totalAuctions}
               pageSize={pageSize}
               showSizeChanger
               showQuickJumper
@@ -545,7 +259,7 @@ const RegistedAuction = () => {
                 setPageSize(size);
                 setCurrentPage(1);
               }}
-              pageSizeOptions={["6", "12", "24", "48"]}
+              pageSizeOptions={["4", "8", "12", "16"]}
               className="!mt-6"
               disabled={loading}
             />

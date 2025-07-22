@@ -54,7 +54,7 @@ const AuctionCard = ({ dataCard }: Props) => {
   return (
     <div className="group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden hover-lift animate-slide-in-up">
       {/* Status Badge */}
-      <div className="absolute top-4 left-4 z-10">
+      <div className="absolute top-4 right-4 z-10">
         <div
           className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
             isExpired ? "bg-red-500/90 text-white" : "bg-green-500/90 text-white animate-pulse-glow"
@@ -66,11 +66,6 @@ const AuctionCard = ({ dataCard }: Props) => {
 
       {/* Image Section */}
       <div className="relative overflow-hidden">
-        <img
-          alt={dataCard.auctionName}
-          src="https://thamdinhgiathanhdo.com/wp-content/uploads/2020/10/quyen-su-dung-dat-la-gi.jpg"
-          className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700"
-        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
         {/* Floating Action Button */}

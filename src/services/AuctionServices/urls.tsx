@@ -19,6 +19,7 @@ export const AuctionAPI = {
   AUCTION_CANCEL: "/Auctions/cancel",
   USER_REGISTER_AUCTION: "/UserRegisteredAuction/User-Registered-Auction",
   LIST_AUCTION_REGISTED: "ListAuctionRegisted/List-Auction-Registed",
+  LIST_AUCTION_DOCUMENT_REGISTED: "AuctionDocumentRegisted/Auction-Document-Registed",
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;
