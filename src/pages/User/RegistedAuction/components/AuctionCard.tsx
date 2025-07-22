@@ -8,7 +8,7 @@ import {
   TrophyOutlined,
 } from "@ant-design/icons";
 import { formatNumber } from "../../../../utils/numberFormat";
-import type { RegisteredAuction } from "./types";
+import type { RegisteredAuction } from "../types";
 import { getStatusInfo } from "./utils";
 
 interface AuctionCardProps {

@@ -153,7 +153,17 @@ body {
   border: none !important;
   border-radius: 50px !important;
   height: auto !important;
-  padding: 12px 24px !important;
+  padding: 10px 20px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-btn-default {
+  background: #FFFFFF !important;
+  border: 1px solid #d9d9d9 !important;
+  border-radius: 50px !important;
+  height: auto !important;
+  padding: 10px 20px !important;
   font-weight: 600 !important;
   transition: all 0.3s ease !important;
 }

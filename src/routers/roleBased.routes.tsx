@@ -65,9 +65,9 @@ export const guestRoutes = [
 // Router site User
 const AuctionRegister = React.lazy(() => import("../pages/User/AuctionRegister/index"));
 const RegistedAuction = React.lazy(() => import("../pages/User/RegistedAuction/RegistedAuction"));
-// const AuctionDetailRegister = React.lazy(() =>
-//   import("../pages/User/AuctionDetailRegister/index")
-// );
+const RegistedAuctionDetail = React.lazy(
+  () => import("../pages/User/RegistedAuctionDetail/RegistedAuctionDetail")
+);
 
 export const userRoutes = [
   {
@@ -90,6 +90,10 @@ export const userRoutes = [
   {
     path: USER_ROUTERS.SUB.REGISTED_AUCTION,
     element: wrapWithLazy(RegistedAuction),
+  },
+  {
+    path: USER_ROUTERS.SUB.REGISTED_AUCTION_DETAIL + "/:id",
+    element: wrapWithLazy(RegistedAuctionDetail),
   },
 ];
 

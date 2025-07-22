@@ -6,8 +6,10 @@ import {
   CloseCircleOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import type { RegisteredAuction, StatusInfo, StatusString } from "./types";
+import isBetween from "dayjs/plugin/isBetween";
+dayjs.extend(isBetween);
 
+import type { RegisteredAuction, StatusInfo, StatusString } from "../types";
 
 export const getStatusString = (auction: RegisteredAuction): StatusString => {
   const now = dayjs();

@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
-
 dayjs.extend(isBetween);
 import { FilterOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
@@ -106,9 +105,8 @@ const RegistedAuction = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [statusFilter]);
-
   const handleViewDetails = (auctionId: string) => {
-    navigate(`/auction-detail/${auctionId}`);
+    navigate(`/registed-auction-detail/${auctionId}`);
   };
 
   const getStats = () => {
@@ -144,7 +142,7 @@ const RegistedAuction = () => {
           </h1>
           <p className="text-gray-600 text-lg">
             Quản lý và theo dõi các phiên đấu giá bạn đã tham gia
-          </p>{" "}
+          </p>
         </div>
         {/* Stats Cards */}
         <StatsCards stats={stats} />

@@ -1,5 +1,5 @@
 import { Card } from "antd";
-import type { Stats } from "./types";
+import type { Stats } from "../types";
 
 interface StatsCardsProps {
   stats: Stats;

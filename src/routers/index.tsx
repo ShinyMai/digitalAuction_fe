@@ -18,6 +18,7 @@ export const USER_ROUTERS = {
     AUCTION_REGISTER: "auction-register",
     REGISTED_AUCTION: "registed-auction",
     AUCTION_DETAIL_REGISTER: "auction-detail-register",
+    REGISTED_AUCTION_DETAIL: "registed-auction-detail",
   },
 };
 
