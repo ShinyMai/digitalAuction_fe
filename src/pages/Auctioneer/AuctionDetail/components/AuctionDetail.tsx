@@ -10,6 +10,7 @@ interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
   setIsOpenPopupVerifyCancel: (open: boolean) => void;
   auctionType?: string;
+  onCreateAuctionRound?: () => void;
 }
 
 const USER_ROLES = {
@@ -29,6 +30,7 @@ const AuctionDetail = ({
   auctionDetailData,
   setIsOpenPopupVerifyCancel,
   auctionType,
+  onCreateAuctionRound,
 }: AuctionDetailProps) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
@@ -110,16 +112,29 @@ const AuctionDetail = ({
                     </span>
                   </div>
                 </div>
-                {role == USER_ROLES.MANAGER && (
-                  <div className="text-center mt-6">
-                    <Button
-                      type="primary"
-                      size="large"
-                      className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
-                      onClick={() => setIsOpenPopupVerifyCancel(true)}
-                    >
-                      Hủy buổi đấu giá
-                    </Button>
+                {(role === USER_ROLES.MANAGER || role === USER_ROLES.AUCTIONEER) && (
+                  <div className="flex justify-center gap-4 mt-6">
+                    {role === USER_ROLES.MANAGER && (
+                      <Button
+                        type="primary"
+                        danger
+                        size="large"
+                        className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded-lg"
+                        onClick={() => setIsOpenPopupVerifyCancel(true)}
+                      >
+                        Hủy buổi đấu giá
+                      </Button>
+                    )}
+                    {role === USER_ROLES.AUCTIONEER && (
+                      <Button
+                        type="primary"
+                        size="large"
+                        className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
+                        onClick={onCreateAuctionRound}
+                      >
+                        Tạo vòng đấu giá
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>
@@ -136,7 +151,7 @@ const AuctionDetail = ({
                 Danh sách tài sản đấu giá
               </h3>
               {auctionDetailData.listAuctionAssets &&
-              auctionDetailData.listAuctionAssets.length > 0 ? (
+                auctionDetailData.listAuctionAssets.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {auctionDetailData.listAuctionAssets.map((asset) => (
                     <Card

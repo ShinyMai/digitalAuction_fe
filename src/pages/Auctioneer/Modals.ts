@@ -109,3 +109,11 @@ export type AuctionRoundPrice = {
   TagName: string;
   AuctionPrice: string;
 };
+
+export type AuctionRoundModals = {
+  auctionRoundId: string;
+  auctionId?: string;
+  roundNumber: number
+  status: number;
+  highestBid?: number
+}

@@ -20,6 +20,8 @@ export const AuctionAPI = {
   USER_REGISTER_AUCTION: "/UserRegisteredAuction/User-Registered-Auction",
   LIST_AUCTION_REGISTED: "ListAuctionRegisted/List-Auction-Registed",
   LIST_AUCTION_DOCUMENT_REGISTED: "AuctionDocumentRegisted/Auction-Document-Registed",
+  CREATE_AUCTIN_ROUND: "/CreateAuctionRound",
+  GET_LIST_AUCTION_ROUND: "/ListAuctionRound",
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;

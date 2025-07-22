@@ -11,6 +11,7 @@ import {
   TrophyOutlined,
 } from "@ant-design/icons";
 import AuctionServices from "../../../../services/AuctionServices";
+import type { AuctionRoundModals } from "../../Modals";
 
 const { Title, Text } = Typography;
 
@@ -36,6 +37,7 @@ interface UserInfo {
 
 interface props {
   auctionId: string;
+  roundData?: AuctionRoundModals;
 }
 
 const InputAuctionPrice = ({ auctionId }: props) => {
