@@ -13,18 +13,16 @@ interface SearchParams {
   IsAscending?: boolean;
   PageNumber?: number;
   PageSize?: number;
-  RegisterOpenDate?: string;
-  RegisterEndDate?: string;
-  AuctionStartDate?: string;
-  AuctionEndDate?: string;
   Status: number;
   AuctionType?: string;
+  ConditionAuction?: number;
 }
 
 interface SearchValue {
   auctionName?: string;
   CategoryId?: number;
   AuctionType?: string;
+  ConditionAuction?: number;
 }
 
 interface PaginationChangeParams {
@@ -39,6 +37,7 @@ const DEFAULT_PARAMS: SearchParams = {
   AuctionType: "1",
   SortBy: "register_open_date",
   IsAscending: false,
+  ConditionAuction: 1,
 };
 
 const AuctionList = () => {
@@ -74,6 +73,7 @@ const AuctionList = () => {
         CategoryId: searchParams.CategoryId,
         SortBy: searchParams.SortBy,
         IsAscending: searchParams.IsAscending,
+        ConditionAuction: searchParams.ConditionAuction,
       };
       const response =
         params.AuctionType === "2"
@@ -121,6 +121,12 @@ const AuctionList = () => {
 
     if (searchValue.AuctionType) {
       newParams.AuctionType = searchValue.AuctionType;
+    } else {
+      delete newParams.AuctionType;
+    }
+
+    if (searchValue.ConditionAuction) {
+      newParams.ConditionAuction = searchValue.ConditionAuction;
     } else {
       delete newParams.AuctionType;
     }

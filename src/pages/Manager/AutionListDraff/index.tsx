@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import AuctionTable from "./component/AuctionTable.tsx";
 import SearchAuctionTable from "./component/SearchAuctionTable.tsx";
 import ModalsSelectAuctioners from "./component/ModalsSelectAuctionners.tsx"; // Import modal
-import dayjs from "dayjs";
+
 import type { AuctionCategory, AuctionDataList, ModalAuctioners } from "../../Staff/Modals.ts";
 
 interface SearchParams {
@@ -15,10 +15,6 @@ interface SearchParams {
   IsAscending?: boolean;
   PageNumber?: number;
   PageSize?: number;
-  RegisterOpenDate?: string;
-  RegisterEndDate?: string;
-  AuctionStartDate?: string;
-  AuctionEndDate?: string;
   Status: number;
   AuctionType?: string;
 }
@@ -27,8 +23,6 @@ interface SearchValue {
   auctionName?: string;
   CategoryId?: number;
   AuctionType?: string;
-  registerRangeDate?: any[];
-  auctionRangeDate?: any[];
 }
 
 interface PaginationChangeParams {
@@ -112,29 +106,7 @@ const AuctionListDraff = () => {
       delete newParams.AuctionType;
     }
 
-    if (searchValue.registerRangeDate?.[0]) {
-      newParams.RegisterOpenDate = dayjs(searchValue.registerRangeDate[0]).format("YYYY-MM-DD");
-    } else {
-      delete newParams.RegisterOpenDate;
-    }
 
-    if (searchValue.registerRangeDate?.[1]) {
-      newParams.RegisterEndDate = dayjs(searchValue.registerRangeDate[1]).format("YYYY-MM-DD");
-    } else {
-      delete newParams.RegisterEndDate;
-    }
-
-    if (searchValue.auctionRangeDate?.[0]) {
-      newParams.AuctionStartDate = dayjs(searchValue.auctionRangeDate[0]).format("YYYY-MM-DD");
-    } else {
-      delete newParams.AuctionStartDate;
-    }
-
-    if (searchValue.auctionRangeDate?.[1]) {
-      newParams.AuctionEndDate = dayjs(searchValue.auctionRangeDate[1]).format("YYYY-MM-DD");
-    } else {
-      delete newParams.AuctionEndDate;
-    }
 
     setSearchParams(newParams);
   };
@@ -149,10 +121,6 @@ const AuctionListDraff = () => {
         AuctionType: searchParams.AuctionType ?? "1",
         AuctionName: searchParams.AuctionName,
         CategoryId: searchParams.CategoryId,
-        RegisterOpenDate: searchParams.RegisterOpenDate,
-        RegisterEndDate: searchParams.RegisterEndDate,
-        AuctionStartDate: searchParams.AuctionStartDate,
-        AuctionEndDate: searchParams.AuctionEndDate,
         SortBy: searchParams.SortBy,
         IsAscending: searchParams.IsAscending,
       };

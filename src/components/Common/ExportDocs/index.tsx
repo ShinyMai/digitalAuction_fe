@@ -532,6 +532,12 @@ const ExportDocxRegistration: React.FC<Props> = ({
           tham gia đấu giá tài sản của bạn.
         </Typography.Paragraph>
 
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+          <p className="text-yellow-700">
+            ⚠️ <span className="font-semibold">Lưu ý quan trọng:</span> Vui lòng tải xuống phiếu đăng ký và nộp lại cho chúng tôi để hoàn tất quá trình đăng ký. Thông báo này sẽ chỉ hiển thị một lần!
+          </p>
+        </div>
+
         <button
           className="bg-blue-600 hover:bg-blue-700 text-amber-50 font-semibold mt-8 py-2 px-6 rounded-xl transition-colors duration-300 mb-4 w-full md:w-auto"
           onClick={exportToDocx}

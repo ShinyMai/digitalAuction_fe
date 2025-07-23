@@ -6,7 +6,8 @@ import { toast } from "react-toastify";
 import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
 import type { AuctionCategory, AuctionDataList } from "../Modals";
-import dayjs from "dayjs";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../store/store";
 
 interface SearchParams {
   AuctionName?: string;
@@ -15,11 +16,8 @@ interface SearchParams {
   IsAscending?: boolean;
   PageNumber: number;
   PageSize: number;
-  RegisterOpenDate?: string;
-  RegisterEndDate?: string;
-  AuctionStartDate?: string;
-  AuctionEndDate?: string;
   Status: number;
+  ConditionAuction?: number;
 }
 
 interface PaginationChangeParams {
@@ -35,11 +33,11 @@ const AuctionListNow = () => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
     PageSize: 8,
-    AuctionStartDate: dayjs().format("YYYY-MM-DD"),
-    AuctionEndDate: dayjs().add(3, "day").format("YYYY-MM-DD"),
+    ConditionAuction: 3,
     Status: 1,
   });
-
+  const { user } = useSelector((state: RootState) => state.auth);
+  console.log("Check", user);
   useEffect(() => {
     getListAuctionCategory();
   }, [location.search]);
@@ -73,8 +71,8 @@ const AuctionListNow = () => {
         PageNumber: searchParams.PageNumber || 1,
         PageSize: searchParams.PageSize || 8,
         Status: searchParams.Status,
-        AuctionStartDate: searchParams.AuctionStartDate,
-        AuctionEndDate: searchParams.AuctionEndDate,
+        AuctionName: searchParams.AuctionName,
+        ConditionAuction: searchParams.ConditionAuction,
       };
       if (searchParams.AuctionName) params.AuctionName = searchParams.AuctionName;
       if (searchParams.CategoryId) params.CategoryId = searchParams.CategoryId;

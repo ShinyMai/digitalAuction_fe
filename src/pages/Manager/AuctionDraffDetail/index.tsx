@@ -8,6 +8,7 @@ import type { AuctionDataDetail, ModalAuctioners } from "../Modals";
 import { toast } from "react-toastify";
 import ModalsSelectAuctioners from "./components/ModalsSelectAuctionners";
 import { TrophyOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
 
 const { Title } = Typography;
 
@@ -15,6 +16,7 @@ const AuctionDetailDraff = () => {
   const { state } = useLocation();
   const auctionId = state?.key;
   const auctionType = state?.type;
+  const { user } = useSelector((state: any) => state.auth);
 
   const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -103,7 +105,7 @@ const AuctionDetailDraff = () => {
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white mb-4">
             <TrophyOutlined className="text-xl" />
             <Title level={2} className="!text-white !mb-0">
-              Duyệt Phiên Đấu Giá
+              {user?.roleName?.toLowerCase() === "manager" ? "Duyệt Phiên Đấu Giá" : "Đang Chờ Duyệt"}
             </Title>
           </div>
         </div>

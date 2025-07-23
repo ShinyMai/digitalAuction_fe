@@ -5,20 +5,17 @@ import { useEffect, useState } from "react";
 import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 import type { AuctionDataList } from "../Modals";
-import dayjs from "dayjs";
 import { GUEST_ROUTERS } from "../../../routers";
 import { convertToVietnamTime } from "../../../utils/timeConfig";
 interface SearchParams {
   AuctionName?: string;
   CategoryId?: number;
-  RegisterOpenDate?: string;
-  RegisterEndDate?: string;
-  AuctionStartDate?: string;
-  AuctionEndDate?: string;
+  ConditionAuction?: number;
   SortBy?: string;
   IsAscending?: boolean;
   PageNumber?: number;
   PageSize?: number;
+  Status?: number;
 }
 
 const categories = [
@@ -46,7 +43,8 @@ const HomePage = () => {
       const params: SearchParams = {
         PageNumber: searchParams.PageNumber || 1,
         PageSize: searchParams.PageSize || 3,
-        AuctionStartDate: dayjs().add(3, "day").format("YYYY-MM-DD"),
+        ConditionAuction: 2,
+        Status: 1,
       };
 
       const response = await AuctionServices.getListAuction(params);
