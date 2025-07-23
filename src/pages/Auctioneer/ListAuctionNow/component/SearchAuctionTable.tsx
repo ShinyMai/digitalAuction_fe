@@ -44,7 +44,7 @@ const SearchAuctionTable = ({
           />
         </Form.Item>
         <Form.Item
-          name="CategoryfeldId"
+          name="CategoryId"
           className="flex-1 min-w-[200px]"
           label="Loại tài sản"
         >

@@ -72,6 +72,7 @@ const SupportRegisterAuction = () => {
         IsAscending: searchParams.IsAscending,
         ConditionAuction: searchParams.ConditionAuction || 1,
         Status: searchParams.Status,
+        CategoryId: searchParams.CategoryId || undefined,
       };
       const response = await AuctionServices.getListAuction(params);
       setAuctionList(response.data.auctions);
