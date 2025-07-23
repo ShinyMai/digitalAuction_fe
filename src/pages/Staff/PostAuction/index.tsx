@@ -66,7 +66,7 @@ const PostAuction = () => {
           </h1>
           <div className="w-20"></div>
         </div>
-        <div className="w-full p-6 sm:p-8 hover:shadow-xl transition-shadow duration-300">
+        <div className="w-full transition-shadow duration-300">
           {listAuctionCategory && (
             <AuctionCreateForm
               auctionCategoryList={listAuctionCategory}
