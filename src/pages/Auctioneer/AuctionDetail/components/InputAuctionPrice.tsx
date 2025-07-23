@@ -223,7 +223,7 @@ const InputAuctionPrice = ({ auctionId }: props) => {
       : false;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+    <div className="min-h-fit bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-200/30 to-cyan-200/30 rounded-full animate-float"></div>
@@ -244,7 +244,7 @@ const InputAuctionPrice = ({ auctionId }: props) => {
 
         <Row gutter={[24, 24]}>
           {/* Form nhập liệu bên trái */}
-          <Col xs={24} lg={10}>
+          <Col xs={24} lg={12}>
             <Card
               className="shadow-xl bg-white/90 backdrop-blur-sm border-0 transition-shadow duration-300"
               title={
@@ -349,7 +349,7 @@ const InputAuctionPrice = ({ auctionId }: props) => {
           </Col>
 
           {/* Bảng dữ liệu bên phải */}
-          <Col xs={24} lg={14}>
+          <Col xs={24} lg={12}>
             <Card
               className="shadow-xl bg-white/90 backdrop-blur-sm border-0 transition-shadow duration-300 min-h-[450px]"
               title={
