@@ -115,5 +115,4 @@ export type AuctionRoundModals = {
   auctionId?: string;
   roundNumber: number
   status: number;
-  highestBid?: number
 }

@@ -10,6 +10,7 @@ import ListAuctionDocument from "./components/ListAuctionDocument";
 import InputAuctionPrice from "./components/InputAuctionPrice";
 import AuctioneerCreateAuctionRound from "./components/AuctioneerCreateAuctionRound";
 import { TrophyOutlined, TeamOutlined, DollarOutlined, FileTextOutlined } from "@ant-design/icons";
+import { toast } from "react-toastify";
 
 const auctionRoundPriceFakeData: AuctionRoundPrice[] = [
   {
@@ -83,11 +84,16 @@ const AuctionDetailAuctioneer = () => {
 
   const handleCreateAuctionRound = async () => {
     try {
-      const response = await AuctionServices.createAuctionRound({
-        auctionId: location.state.key
-      });
-      if (response.code === 200) {
-        getListAuctionRound(location.state.key);
+      if (auctionDetailData?.numberRoundMax && listAuctionRound.length >= auctionDetailData?.numberRoundMax) {
+        toast.error("Đã đạt giới hạn số vòng đấu giá cho phiên này!");
+        return;
+      } else {
+        const response = await AuctionServices.createAuctionRound({
+          auctionId: location.state.key
+        });
+        if (response.code === 200) {
+          getListAuctionRound(location.state.key);
+        }
       }
     } catch (error) {
       console.error("Error creating auction round:", error);
@@ -119,7 +125,6 @@ const AuctionDetailAuctioneer = () => {
           auctionAssetsId: asset.auctionAssetsId,
           tagName: asset.tagName
         }));
-        console.log("Auction Assets: ", assets);
         setAuctionAssets(assets);
       }
 
@@ -227,6 +232,7 @@ const AuctionDetailAuctioneer = () => {
                     ) : (
                       <InputAuctionPrice
                         auctionId={location.state.key}
+                        auctionAssetsToStatistic={auctionAssets}
                         roundData={round}
                       />
                     )}

@@ -11,7 +11,10 @@ import {
   TrophyOutlined,
 } from "@ant-design/icons";
 import AuctionServices from "../../../../services/AuctionServices";
-import type { AuctionRoundModals } from "../../Modals";
+import type { AuctionDataDetail, AuctionRoundModals } from "../../Modals";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../store/store";
+import { toast } from "react-toastify";
 
 const { Title, Text } = Typography;
 
@@ -21,6 +24,7 @@ export interface InputAuctionPriceModals {
   auctionAssetId?: string;
   auctionAssetName?: string;
   price: number;
+  recentLocation?: string;
   id: string;
 }
 
@@ -36,24 +40,30 @@ interface UserInfo {
 }
 
 interface props {
-  auctionId: string;
+  auctionId?: AuctionDataDetail;
   roundData?: AuctionRoundModals;
+  auctionAssetsToStatistic: AuctionAsset[];
 }
 
-const InputAuctionPrice = ({ auctionId }: props) => {
+const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic }: props) => {
   // State cho danh sách dữ liệu
-  const [auctionList, setAuctionList] = useState<InputAuctionPriceModals[]>([]);
+  const [auctionRoundPriceList, setAuctionRoundPriceList] = useState<InputAuctionPriceModals[]>([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [citizenOptions, setCitizenOptions] = useState<{ value: string }[]>([]);
+  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   // Form instance từ antd
   const [form] = Form.useForm();
-
+  const { user } = useSelector((state: RootState) => state.auth);
   // Gọi API để lấy thông tin người dùng
   const getUserRegistedAuctionByCitizenIdentification = async (citizenIdentification: string) => {
     try {
+      if (!auctionId) {
+        toast.error("Không có thông tin đấu giá");
+        return;
+      }
       const response = await AuctionServices.userRegistedAuction({ citizenIdentification, auctionId: auctionId });
       if (
         response.data &&
@@ -83,7 +93,7 @@ const InputAuctionPrice = ({ auctionId }: props) => {
 
   // Xử lý khi nhập citizenIdentification
   const handleCitizenInput = (value: string) => {
-    if (value.length === 12) {
+    if (value.length >= 12) {
       getUserRegistedAuctionByCitizenIdentification(value);
       setCitizenOptions([{ value }]);
     } else {
@@ -108,7 +118,7 @@ const InputAuctionPrice = ({ auctionId }: props) => {
       };
 
       // Kiểm tra trùng lặp
-      const isDuplicate = auctionList.some(
+      const isDuplicate = auctionRoundPriceList.some(
         item =>
           item.citizenIdentification === formattedValues.citizenIdentification &&
           item.auctionAssetId === formattedValues.auctionAssetId
@@ -121,7 +131,7 @@ const InputAuctionPrice = ({ auctionId }: props) => {
       }
 
       // Thêm dữ liệu vào danh sách
-      setAuctionList([...auctionList, formattedValues]);
+      setAuctionRoundPriceList([...auctionRoundPriceList, formattedValues]);
 
       // Reset form và các state liên quan
       form.resetFields();
@@ -138,13 +148,34 @@ const InputAuctionPrice = ({ auctionId }: props) => {
   };
 
   // Xử lý khi click nút Hoàn thành
-  const handleComplete = () => {
-    console.log("Danh sách giá đấu giá:", auctionList);
+  const handleComplete = async () => {
+    console.log("Danh sách giá đấu giá:", auctionRoundPriceList);
+    const dataSubmit = {
+      auctionRoundId: roundData?.auctionRoundId,
+      resultDTOs: auctionRoundPriceList.map(item => ({
+        userName: item.userName || "-",
+        citizenIdentification: item.citizenIdentification,
+        recentLocation: item.recentLocation || "",
+        tagName: item.auctionAssetName || "-",
+        auctionPrice: item.price,
+        createdBy: user?.id,
+      })),
+    };
+    console.log("Dữ liệu gửi đi:", dataSubmit);
+    try {
+      const response = await AuctionServices.saveListAuctionRoundPrice(dataSubmit);
+      if (response.code === 200) {
+        toast.success(response.message || "Lưu danh sách giá đấu thành công");
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Lưu danh sách giá đấu thất bại");
+    }
   };
 
   // Xử lý xóa hàng
   const handleDelete = (index: number) => {
-    setAuctionList(auctionList.filter((_, i) => i !== index));
+    setAuctionRoundPriceList(auctionRoundPriceList.filter((_, i) => i !== index));
   };
 
   // Cấu hình cột cho Table của antd
@@ -162,7 +193,7 @@ const InputAuctionPrice = ({ auctionId }: props) => {
       ),
     },
     {
-      title: "Tên Người Dùng",
+      title: "Tên Khách Hàng",
       dataIndex: "userName",
       key: "userName",
       width: 200,
@@ -196,14 +227,14 @@ const InputAuctionPrice = ({ auctionId }: props) => {
       key: "action",
       width: 100,
       render: (_: any, __: InputAuctionPriceModals, index: number) => (
-        <div className="opacity-0 group-hover:opacity-100 transition-all duration-300">
+        <div className="flex justify-center">
           <Button
             type="text"
             danger
-            icon={<DeleteOutlined />}
+            icon={<DeleteOutlined className="text-gray-400 hover:text-red-500 transition-colors duration-300" />}
             onClick={() => handleDelete(index)}
-            className="hover:scale-110 transition-transform duration-200"
-            size="small"
+            className="hover:scale-110 transition-transform duration-200 !border-none"
+            size="middle"
           />
         </div>
       ),
@@ -212,7 +243,7 @@ const InputAuctionPrice = ({ auctionId }: props) => {
 
   // Cấu hình phân trang
   const paginationConfig =
-    auctionList.length > 8
+    auctionRoundPriceList.length > 8
       ? {
         pageSize: 8,
         showSizeChanger: true,
@@ -231,20 +262,63 @@ const InputAuctionPrice = ({ auctionId }: props) => {
         <div className="absolute bottom-32 left-1/4 w-20 h-20 bg-gradient-to-r from-teal-200/30 to-blue-200/30 rounded-full animate-float delay-2000"></div>
       </div>
 
-      <div className="p-4 sm:p-6 max-w-7xl mx-auto relative z-10">
-        {/* Header Section */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white mb-4">
-            <TrophyOutlined className="text-xl" />
-            <Title level={3} className="!text-white !mb-0">
-              Nhập Giá Đấu Giá
-            </Title>
-          </div>
+      <div className="w-full mx-auto relative z-10">
+        {/* Stats Section */}
+        <div className="mb-8">
+          <Row gutter={[16, 16]}>
+            {/* Tổng số phiếu */}
+            <Col xs={24} sm={12} lg={6}>
+              <Card
+                className={`!bg-gradient-to-br !from-violet-500 !via-purple-500 !to-purple-600 !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${!selectedAssetId ? '!ring-4 !ring-blue-400' : ''}`}
+                onClick={() => setSelectedAssetId(null)}
+              >
+                <div className="!flex !flex-col !items-center">
+                  <Text className="!text-white/90 !text-lg !mb-2 !font-medium">Tổng số phiếu</Text>
+                  <Title level={2} className="!text-white !mb-0 !drop-shadow-lg">
+                    {auctionRoundPriceList.length}
+                  </Title>
+                </div>
+              </Card>
+            </Col>
+
+            {/* Thống kê theo từng tài sản */}
+            {auctionAssetsToStatistic.map((asset, index) => {
+              const assetCount = auctionRoundPriceList.filter(
+                (item) => item.auctionAssetId === asset.auctionAssetsId
+              ).length;
+
+              // Mảng các gradient màu khác nhau
+              const gradients = [
+                "!bg-gradient-to-br !from-blue-500 !via-blue-600 !to-indigo-700",
+                "!bg-gradient-to-br !from-emerald-400 !via-teal-500 !to-teal-600",
+                "!bg-gradient-to-br !from-amber-400 !via-orange-500 !to-orange-600",
+                "!bg-gradient-to-br !from-rose-400 !via-pink-500 !to-pink-600"
+              ];
+
+              return (
+                <Col xs={24} sm={12} lg={6} key={asset.auctionAssetsId}>
+                  <Card
+                    className={`${gradients[index % gradients.length]} !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${selectedAssetId === asset.auctionAssetsId ? '!ring-4 !ring-blue-400' : ''}`}
+                    onClick={() => setSelectedAssetId(asset.auctionAssetsId)}
+                  >
+                    <div className="!flex !flex-col !items-center">
+                      <Text className="!text-white/90 !text-lg !mb-2 !truncate !font-medium" title={asset.tagName}>
+                        {asset.tagName}
+                      </Text>
+                      <Title level={2} className="!text-white !mb-0 !drop-shadow-lg">
+                        {assetCount}
+                      </Title>
+                    </div>
+                  </Card>
+                </Col>
+              );
+            })}
+          </Row>
         </div>
 
         <Row gutter={[24, 24]}>
           {/* Form nhập liệu bên trái */}
-          <Col xs={24} lg={12}>
+          <Col xs={24} lg={8}>
             <Card
               className="shadow-xl bg-white/90 backdrop-blur-sm border-0 transition-shadow duration-300"
               title={
@@ -336,7 +410,7 @@ const InputAuctionPrice = ({ auctionId }: props) => {
                     </Button>
                     <Button
                       type="primary"
-                      icon={<CheckOutlined />}
+                      icon={<div className="text-red-600"><CheckOutlined /></div>}
                       onClick={handleComplete}
                       className="h-12 rounded-lg font-semibold"
                     >
@@ -349,7 +423,7 @@ const InputAuctionPrice = ({ auctionId }: props) => {
           </Col>
 
           {/* Bảng dữ liệu bên phải */}
-          <Col xs={24} lg={12}>
+          <Col xs={24} lg={16}>
             <Card
               className="shadow-xl bg-white/90 backdrop-blur-sm border-0 transition-shadow duration-300 min-h-[450px]"
               title={
@@ -362,7 +436,10 @@ const InputAuctionPrice = ({ auctionId }: props) => {
               }
             >
               <Table
-                dataSource={auctionList}
+                dataSource={selectedAssetId
+                  ? auctionRoundPriceList.filter(item => item.auctionAssetId === selectedAssetId)
+                  : auctionRoundPriceList
+                }
                 columns={columns}
                 rowKey={(_, index) => index?.toString() || ""}
                 locale={{
@@ -376,7 +453,7 @@ const InputAuctionPrice = ({ auctionId }: props) => {
                   ),
                 }}
                 pagination={paginationConfig}
-                className="rounded-lg overflow-hidden"
+                className="!rounded-lg !overflow-hidden"
                 rowClassName="group hover:bg-blue-50 transition-colors duration-200"
                 scroll={{ x: 800 }}
               />
