@@ -159,12 +159,12 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({ open, onCancel }) => {
                 <div className="flex items-center justify-center gap-2">
                   <ClockCircleOutlined className="text-amber-600 text-lg" />
                   <Text className="text-amber-700 font-semibold">
-                    Gửi lại mã OTP sau <span className="text-orange-600 font-bold">{seconds}</span>{" "}
+                    Gửi lại mã OTP sau <span className="text-orange-600 font-bold">{seconds}</span>
                     giây
                   </Text>
                 </div>
               </div>
-            )}{" "}
+            )}
             {/* Form Section */}
             <Form form={form} name="verify_otp" layout="vertical" className="space-y-6">
               {/* Combined Email and OTP Section */}
@@ -178,7 +178,7 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({ open, onCancel }) => {
                     <Text className="font-semibold text-slate-700 text-lg">Địa chỉ Email</Text>
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="flex flex-col gap-3">
                     <Form.Item
                       name="email"
                       rules={[
@@ -212,7 +212,7 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({ open, onCancel }) => {
                       onClick={handleSendOTP}
                       disabled={seconds > 0 || loading}
                       loading={loading && !sendOTP}
-                      className={`!rounded-xl !px-6 !font-semibold !transition-all !duration-300 ${
+                      className={`!rounded-xl !font-semibold !transition-all !duration-300 mx-auto  ${
                         seconds > 0
                           ? "!bg-slate-200 !text-slate-500 !border-slate-300"
                           : "!bg-gradient-to-r !from-blue-500 !to-green-500 !hover:from-blue-600 !hover:to-green-600 !text-white !border-0 !shadow-lg !hover:shadow-xl !transform !hover:scale-105"
@@ -222,17 +222,6 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({ open, onCancel }) => {
                       {sendOTP ? "Gửi lại" : "Gửi OTP"}
                     </Button>
                   </div>
-
-                  {sendOTP && (
-                    <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                      <div className="flex items-center gap-2">
-                        <CheckCircleOutlined className="text-green-600" />
-                        <Text className="text-green-700 text-sm">
-                          Mã OTP đã được gửi đến email: <strong>{emailValue}</strong>
-                        </Text>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {/* Divider */}
@@ -272,7 +261,7 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({ open, onCancel }) => {
 
                     <div className="text-center">
                       <Text className="text-slate-500 text-sm">
-                        Không nhận được mã?{" "}
+                        Không nhận được mã?
                         {seconds > 0 ? (
                           `Thử lại sau ${seconds}s`
                         ) : (
@@ -292,15 +281,6 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({ open, onCancel }) => {
 
               {/* Action Buttons */}
               <div className="flex justify-center gap-4 pt-4">
-                <Button
-                  onClick={onCancel}
-                  type="primary"
-                  size="large"
-                  className="!border-slate-300 !text-slate-700 !hover:bg-slate-50 !hover:border-slate-400 !rounded-xl !px-8 !py-3 !h-auto !font-semibold !transition-all !duration-300"
-                >
-                  Hủy bỏ
-                </Button>
-
                 {sendOTP && (
                   <Button
                     onClick={verifyOTP}

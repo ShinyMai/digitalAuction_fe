@@ -139,7 +139,7 @@ const InfomationRegisterAsset = ({
           <Row gutter={[32, 32]}>
             {/* Enhanced Form Section */}
             <Col xs={24} lg={16}>
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 overflow-hidden p-8">
                 <Form form={form} layout="vertical" className="p-8">
                   {/* Personal Information Section */}
                   <div className="mb-8">
