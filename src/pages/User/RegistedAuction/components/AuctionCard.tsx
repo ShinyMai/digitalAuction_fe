@@ -145,8 +145,9 @@ const AuctionCard: React.FC<AuctionCardProps> = ({ auction, onViewDetails }) => 
         </div>
 
         {/* Registration Date */}
-        <div className="text-xs text-gray-500 border-t pt-2">
-          Hạn đăng ký: {dayjs(auction.registerEndDate).format("DD/MM/YYYY HH:mm")}
+        <div className="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
+          <div>Hạn đăng ký: {dayjs(auction.registerEndDate).format("DD/MM/YYYY HH:mm")}</div>
+          <div>Số vòng tối đa: {auction.numberRoundMax}</div>
         </div>
 
         {/* Actions */}
