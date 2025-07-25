@@ -102,7 +102,7 @@ const items: MenuItem[] = [
   {
     key: "11",
     icon: <HistoryOutlined className="text-xl" />,
-    label: "Thống kê",
+    label: "Thống kê ( Chưa API )",
     url: AUCTIONEER_ROUTES.SUB.DASHBOARD,
     roleView: ["Auctioneer"],
   },

@@ -57,6 +57,8 @@ export const AUCTIONEER_ROUTES = {
     AUCTION_DETAIL_NOW: "auction-detail-now",
     LIST_AUCTION_ASSIGNED: "list-auction-assigned",
     DASHBOARD: "dashboard",
+    AUCTION_ROUNDS: "auction-rounds",
+    AUCTION_ROUND_DETAIL: "auction-round-detail",
   },
 };
 

@@ -242,6 +242,15 @@ const DashboardAuctioneer = React.lazy(() =>
   import("../pages/Auctioneer/Dashboard/index")
 )
 
+const AuctionRound = React.lazy(() =>
+  import("../pages/Auctioneer/AuctionRounds/index")
+)
+
+const AuctionRoundDetail = React.lazy(() =>
+  import("../pages/Auctioneer/AuctionRoundDetail/index")
+)
+
+
 export const auctioneerRoutes = [
   {
     path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
@@ -258,5 +267,13 @@ export const auctioneerRoutes = [
   {
     path: AUCTIONEER_ROUTES.SUB.DASHBOARD,
     element: wrapWithLazy(DashboardAuctioneer),
+  },
+  {
+    path: AUCTIONEER_ROUTES.SUB.AUCTION_ROUNDS,
+    element: wrapWithLazy(AuctionRound),
+  },
+  {
+    path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW + "/" + AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW + `/` + AUCTIONEER_ROUTES.SUB.AUCTION_ROUND_DETAIL,
+    element: wrapWithLazy(AuctionRoundDetail),
   }
 ];
