@@ -23,6 +23,8 @@ export const getStatusString = (auction: RegisteredAuction): StatusString => {
     return "upcoming";
   } else if (now.isBetween(auctionStart, auctionEnd, "day", "[]")) {
     return "ongoing";
+  } else if (auction.status === 2) {
+    return "cancelled";
   } else {
     return "completed";
   }
