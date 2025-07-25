@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Input, Button, Table, Card, Select, Tooltip } from "antd";
+import { Input, Table, Card, Select, Tooltip, Button } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import dayjs from "dayjs";
 import type { AuctionDataList, AuctionCategory } from "../../../Staff/Modals";
@@ -11,10 +12,6 @@ interface SearchParams {
   IsAscending?: boolean;
   PageNumber?: number;
   PageSize?: number;
-  RegisterOpenDate?: string;
-  RegisterEndDate?: string;
-  AuctionStartDate?: string;
-  AuctionEndDate?: string;
   Status: number;
 }
 
@@ -120,55 +117,61 @@ const AuctionSearchList = ({
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -300, opacity: 0 }}
       transition={{ duration: 0.3 }}
+      className="space-y-8"
     >
-      <div className="mb-6 flex gap-2 justify-end">
-        <Input
-          placeholder="Nhập tên buổi đấu giá"
-          value={searchParams.AuctionName}
-          onChange={(e) => handleSearch(e.target.value, searchParams.CategoryId)}
-          size="large"
-        />
-        <Select
-          placeholder="Chọn danh mục"
-          value={searchParams.CategoryId}
-          onChange={(value) => handleSearch(searchParams.AuctionName || "", value)}
-          size="large"
-          className="w-50"
-          style={{ height: "50px" }}
-          allowClear
-          options={listAuctionCategory.map((category) => ({
-            value: category.categoryId,
-            label: category.categoryName,
-          }))}
-        />
-        <Button
-          type="primary"
-          onClick={() => handleSearch(searchParams.AuctionName || "", searchParams.CategoryId)}
-          loading={loading}
-          className="bg-blue-500 hover:bg-blue-600"
-          size="large"
-        >
-          Tìm kiếm
-        </Button>
+      <div className="space-y-8">
+        <Card className="shadow-sm bg-white/50 backdrop-blur-sm border border-gray-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <label className="mb-2 text-sm font-medium text-gray-600">Tên buổi đấu giá</label>
+              <Input
+                placeholder="Nhập tên buổi đấu giá..."
+                value={searchParams.AuctionName}
+                onChange={(e) => handleSearch(e.target.value, searchParams.CategoryId)}
+                size="large"
+                className="rounded-lg border-gray-200 hover:border-blue-400 focus:border-blue-500"
+                prefix={<SearchOutlined className="text-gray-400" />}
+                allowClear
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="mb-2 text-sm font-medium text-gray-600">Danh mục tài sản</label>
+              <Select
+                placeholder="Chọn danh mục tài sản..."
+                value={searchParams.CategoryId}
+                onChange={(value) => handleSearch(searchParams.AuctionName || "", value)}
+                size="large"
+                className="w-full"
+                style={{ height: "40px" }}
+                allowClear
+                options={listAuctionCategory.map((category) => ({
+                  value: category.categoryId,
+                  label: category.categoryName,
+                }))}
+                dropdownStyle={{ borderRadius: '8px' }}
+                popupClassName="rounded-lg shadow-lg"
+              />
+            </div>
+          </div>
+
+          <Table
+            columns={columns}
+            dataSource={auctionList}
+            loading={loading}
+            onChange={handleTableChange}
+            pagination={{
+              total: totalData,
+              pageSize: searchParams.PageSize!,
+              current: searchParams.PageNumber!,
+              showSizeChanger: true,
+            }}
+            rowKey="auctionId"
+            locale={{ emptyText: "Không có dữ liệu" }}
+            className="w-full rounded-lg overflow-hidden mt-7"
+            rowClassName="hover:bg-blue-50 transition-colors duration-200"
+          />
+        </Card>
       </div>
-      <Card className="shadow-md rounded-lg">
-        <Table
-          columns={columns}
-          dataSource={auctionList}
-          loading={loading}
-          onChange={handleTableChange}
-          pagination={{
-            total: totalData,
-            pageSize: searchParams.PageSize!,
-            current: searchParams.PageNumber!,
-            showSizeChanger: true,
-          }}
-          rowKey="auctionId"
-          locale={{ emptyText: "Không có dữ liệu" }}
-          className="w-full rounded-lg overflow-hidden"
-          rowClassName="hover:bg-blue-50 transition-colors duration-200"
-        />
-      </Card>
     </motion.div>
   );
 };

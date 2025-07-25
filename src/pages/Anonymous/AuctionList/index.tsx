@@ -16,6 +16,7 @@ interface SearchParams {
   PageNumber?: number;
   PageSize?: number;
   Status: number;
+  ConditionAuction: number
   AuctionName?: string;
   SortBy: "register_open_date";
   IsAscending: false;
@@ -31,11 +32,11 @@ const AuctionListAnonyMous = () => {
     Status: 1,
     SortBy: "register_open_date",
     IsAscending: false,
+    ConditionAuction: 1,
   });
   const [totalData, setTotalData] = useState<number>(0);
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
   console.log(location.state?.key);
-
   useEffect(() => {
     getListAuction();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -51,6 +52,7 @@ const AuctionListAnonyMous = () => {
         Status: searchParams.Status,
         SortBy: searchParams.SortBy,
         IsAscending: searchParams.IsAscending,
+        ConditionAuction: searchParams.ConditionAuction,
       };
       if (searchParams.AuctionName) {
         params.AuctionName = searchParams.AuctionName;

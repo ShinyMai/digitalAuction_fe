@@ -26,11 +26,8 @@ interface SearchParams {
   IsAscending?: boolean;
   PageNumber?: number;
   PageSize?: number;
-  RegisterOpenDate?: string;
-  RegisterEndDate?: string;
-  AuctionStartDate?: string;
-  AuctionEndDate?: string;
   Status: number;
+  ConditionAuction?: number;
 }
 
 const SupportRegisterAuction = () => {
@@ -40,6 +37,7 @@ const SupportRegisterAuction = () => {
     Status: 1,
     SortBy: "RegisterEndDate",
     IsAscending: false,
+    ConditionAuction: 1, // Chỉ lấy các phiên đấu giá đang diễn ra
   });
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
@@ -72,6 +70,9 @@ const SupportRegisterAuction = () => {
         AuctionName: searchParams.AuctionName || undefined,
         SortBy: searchParams.SortBy,
         IsAscending: searchParams.IsAscending,
+        ConditionAuction: searchParams.ConditionAuction || 1,
+        Status: searchParams.Status,
+        CategoryId: searchParams.CategoryId || undefined,
       };
       const response = await AuctionServices.getListAuction(params);
       setAuctionList(response.data.auctions);

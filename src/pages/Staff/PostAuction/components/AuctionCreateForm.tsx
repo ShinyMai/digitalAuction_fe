@@ -166,10 +166,6 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
     setLoading(true);
 
     try {
-      // Debug log để kiểm tra cấu trúc dữ liệu
-      console.log("Form values:", values);
-      console.log("AuctionAssetFile array:", values.AuctionAssetFile);
-      console.log("AuctionRulesFile array:", values.AuctionRulesFile);
 
       // Lấy file theo nhiều cách khác nhau để đảm bảo
       let auctionAssetFile = values.AuctionAssetFile?.[0]?.originFileObj;
@@ -183,11 +179,6 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
       if (!auctionRulesFile && values.AuctionRulesFile?.[0]) {
         auctionRulesFile = values.AuctionRulesFile[0] as unknown as File;
       }
-
-      // Debug log cho từng file
-      console.log("Extracted AuctionAssetFile:", auctionAssetFile);
-      console.log("Extracted AuctionRulesFile:", auctionRulesFile);
-      console.log("Extracted AuctionPlanningMap:", auctionPlanningMap);
 
       if (!auctionAssetFile || !auctionRulesFile) {
         console.error("File validation failed:", {
@@ -224,10 +215,10 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
         AuctionAssetFile: auctionAssetFile,
         AuctionRulesFile: auctionRulesFile,
         AuctionPlanningMap: auctionPlanningMap,
-        RegisterOpenDate: dayjs(registerOpenDate).format("YYYY-MM-DD"),
-        RegisterEndDate: dayjs(registerEndDate).format("YYYY-MM-DD"),
-        AuctionStartDate: dayjs(auctionStartDate).format("YYYY-MM-DD"),
-        AuctionEndDate: dayjs(auctionEndDate).format("YYYY-MM-DD"),
+        RegisterOpenDate: dayjs(registerOpenDate).format("YYYY-MM-DD HH:00:00"),
+        RegisterEndDate: dayjs(registerEndDate).format("YYYY-MM-DD HH:00:00"),
+        AuctionStartDate: dayjs(auctionStartDate).format("YYYY-MM-DD HH:00:00"),
+        AuctionEndDate: dayjs(auctionEndDate).format("YYYY-MM-DD HH:00:00"),
       };
 
       // Xóa các trường range picker
@@ -403,8 +394,9 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
             >
               <RangePicker
                 className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
-                format="DD/MM/YYYY"
-                placeholder={["Ngày mở đăng ký", "Ngày kết thúc đăng ký"]}
+                format="DD/MM/YYYY HH"
+                showTime={{ format: 'HH' }}
+                placeholder={["Ngày giờ mở đăng ký", "Ngày giờ kết thúc đăng ký"]}
                 disabledDate={disabledRegisterDate}
               />
             </Form.Item>
@@ -420,8 +412,9 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
             >
               <RangePicker
                 className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
-                format="DD/MM/YYYY"
-                placeholder={["Ngày bắt đầu đấu giá", "Ngày kết thúc đấu giá"]}
+                format="DD/MM/YYYY HH"
+                showTime={{ format: 'HH' }}
+                placeholder={["Ngày giờ bắt đầu đấu giá", "Ngày giờ kết thúc đấu giá"]}
                 disabledDate={disabledAuctionDate}
                 disabled={!registerRange}
               />

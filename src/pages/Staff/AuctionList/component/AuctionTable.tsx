@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Table, type TableProps } from "antd";
+import { Table, Tooltip, type TableProps } from "antd";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import type { AuctionDataList } from "../../Modals";
@@ -45,6 +45,14 @@ const AuctionTable = ({
       dataIndex: "auctionName",
       key: "auctionName",
       sorter: (a, b) => a.auctionName.localeCompare(b.auctionName),
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (auctionName: string) => (
+        <Tooltip placement="topLeft" title={auctionName}>
+          <span>{auctionName}</span>
+        </Tooltip>
+      ),
     },
     {
       title: "Ngày Mở - Kết thúc ĐK",
@@ -76,7 +84,11 @@ const AuctionTable = ({
       title: "Người tạo",
       dataIndex: "createdBy",
       key: "createdBy",
-      sorter: (a, b) => a.createdBy.localeCompare(b.createdBy),
+      sorter: (a, b) => {
+        if (!a.createdBy) return -1;
+        if (!b.createdBy) return 1;
+        return (a.createdBy || '').localeCompare(b.createdBy || '');
+      },
       render: (userId: string, record: AuctionDataList) => (
         <UserNameOrId
           userId={userId}

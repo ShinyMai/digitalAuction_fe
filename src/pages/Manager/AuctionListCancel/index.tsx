@@ -19,10 +19,6 @@ interface SearchParams {
   IsAscending?: boolean;
   PageNumber: number;
   PageSize: number;
-  RegisterOpenDate?: string;
-  RegisterEndDate?: string;
-  AuctionStartDate?: string;
-  AuctionEndDate?: string;
   Status: number;
   AuctionType?: string;
 }

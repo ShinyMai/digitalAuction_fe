@@ -217,7 +217,7 @@ const AuctionDetailAuctioneer = () => {
                   </div>
                 ),
                 children: (
-                  <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 min-h-[500px]">
+                  <div className="bg-white/70 backdrop-blur-sm  border-white/20  min-h-[500px]">
                     {role === "Auctioneer" ? (
                       <AuctioneerCreateAuctionRound
                         auctionRoundPrices={listAuctionRoundPice}

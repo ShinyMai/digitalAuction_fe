@@ -1,5 +1,5 @@
-import { SearchOutlined } from "@ant-design/icons";
-import { Button, DatePicker, Form, Input, Select } from "antd";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Form, Input, Select } from "antd";
 import { useForm } from "antd/es/form/Form";
 import type { AuctionCategory } from "../../../Staff/Modals";
 
@@ -22,10 +22,8 @@ const SearchAuctionTable = ({ auctionCategory, onSearch }: Props) => {
     { label: "Đấu giá theo lô", value: "2" },
   ];
 
-  const handleSearch = () => {
-    form.validateFields().then((values) => {
-      onSearch(values);
-    });
+  const handleFormChange = (_changedValues: any, allValues: any) => {
+    onSearch(allValues);
   };
 
   return (
@@ -33,25 +31,11 @@ const SearchAuctionTable = ({ auctionCategory, onSearch }: Props) => {
       <Form
         className="w-full flex flex-row flex-wrap gap-4"
         layout="vertical"
-        onFinish={handleSearch}
         form={form}
+        onValuesChange={handleFormChange}
       >
         <Form.Item name="auctionName" className="flex-1 min-w-[200px]" label="Tên buổi đấu giá">
           <Input placeholder="Tên buổi đấu giá" className="w-full h-10 rounded-lg" />
-        </Form.Item>
-        <Form.Item
-          label="Thời gian đăng ký"
-          name="registerRangeDate"
-          className="flex-1 min-w-[200px]"
-        >
-          <DatePicker.RangePicker className="w-full h-10 rounded-lg" />
-        </Form.Item>
-        <Form.Item
-          label="Thời gian đấu giá"
-          name="auctionRangeDate"
-          className="flex-1 min-w-[200px]"
-        >
-          <DatePicker.RangePicker className="w-full h-10 rounded-lg" />
         </Form.Item>
         <Form.Item name="CategoryId" className="flex-1 min-w-[200px]" label="Loại tài sản">
           <Select
@@ -74,16 +58,7 @@ const SearchAuctionTable = ({ auctionCategory, onSearch }: Props) => {
             allowClear
           />
         </Form.Item>
-        <Form.Item className="flex-1 min-w-[200px] self-end">
-          <Button
-            type="primary"
-            htmlType="submit"
-            icon={<SearchOutlined />}
-            className=" h-40 rounded-lg flex items-center justify-center"
-          >
-            Tìm kiếm
-          </Button>
-        </Form.Item>
+
       </Form>
     </div>
   );
