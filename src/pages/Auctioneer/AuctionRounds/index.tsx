@@ -1,147 +1,72 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useEffect } from 'react';
-import { message } from 'antd';
-import { mockRounds, mockStats } from './data/mockData';
-import type { ExtendedAuctionRound, RoundStatss } from './types';
-import RoundList from './components/RoundList';
-import AuctionRoundStats from './components/RoundStats';
-
-/**
- * API Endpoints Documentation
- * 
- * 1. GET /api/auctions/{auctionId}/rounds
- * Purpose: Lấy danh sách các vòng đấu giá và thống kê của một phiên đấu giá
- * Parameters:
- *   - auctionId: string (path parameter) - ID của phiên đấu giá
- * Response: {
- *   rounds: ExtendedAuctionRound[];
- *   stats: RoundStats;
- * }
- * 
- * 2. POST /api/auctions/{auctionId}/rounds
- * Purpose: Tạo một vòng đấu giá mới
- * Parameters:
- *   - auctionId: string (path parameter)
- * Request Body: {
- *   startTime: string (ISO date string);
- *   duration: number (minutes);
- *   startPrice: number;
- *   stepPrice: number;
- *   minParticipants: number;
- * }
- * Response: {
- *   round: ExtendedAuctionRound;
- * }
- * 
- * 3. GET /api/auctions/rounds/{roundId}
- * Purpose: Lấy chi tiết một vòng đấu giá
- * Parameters:
- *   - roundId: string (path parameter)
- * Response: {
- *   round: ExtendedAuctionRound;
- * }
- * 
- * 4. POST /api/auctions/rounds/{roundId}/start
- * Purpose: Bắt đầu một vòng đấu giá
- * Parameters:
- *   - roundId: string (path parameter)
- * Response: {
- *   round: ExtendedAuctionRound;
- * }
- * 
- * 5. POST /api/auctions/rounds/{roundId}/end
- * Purpose: Kết thúc một vòng đấu giá
- * Parameters:
- *   - roundId: string (path parameter)
- * Response: {
- *   round: ExtendedAuctionRound;
- * }
- * 
- * Special Notes for ModalsDatabase.ts Updates:
- * 1. Thêm các trường sau vào interface AuctionRound:
- *    - startPrice: number - Giá khởi điểm của vòng
- *    - stepPrice: number - Bước giá tối thiểu
- *    - minParticipants: number - Số người tham gia tối thiểu
- *    - remainingTime?: number - Thời gian còn lại (seconds)
- * 
- * 2. Thêm trường mới vào AuctionRoundPrice:
- *    - bidTime: string - Thời điểm trả giá
- *    - bidAmount: number - Số tiền trả
- */
-
+import { useEffect, useState } from "react";
+import type { AuctionRound, AuctionRoundPrice } from "./modalsData";
+import { fakeAuctionRounds, fakeAuctionRoundPrices } from "./fakeData";
+import { calculateStatistics, formatCurrency } from "./utils";
+import PageHeader from "./components/PageHeader";
+import StatisticsCards from "./components/StatisticsCards";
+import AuctionRoundsTable from "./components/AuctionRoundsTable";
+import { useNavigate } from "react-router-dom";
+import { AUCTIONEER_ROUTES } from "../../../routers";
 
 const AuctionRounds = () => {
-    //const { id: auctionId } = useParams<{ id: string }>();
+    const [auctionRounds, setAuctionRounds] = useState<AuctionRound[]>([]);
+    const [auctionRoundPrices, setAuctionRoundPrices] = useState<AuctionRoundPrice[]>([]);
     const [loading, setLoading] = useState(false);
-    const [rounds, setRounds] = useState<ExtendedAuctionRound[]>([]);
-    const [stats, setStats] = useState<RoundStatss | null>(null);
-
+    const navigate = useNavigate();
     useEffect(() => {
-        // Trong môi trường thực tế, thay thế bằng API call
-        setRounds(mockRounds);
-        setStats(mockStats);
+        getListAuctionRounds();
+        getAuctionRoundPrices();
     }, []);
 
-    const handleRefresh = async () => {
+    const getListAuctionRounds = () => {
         try {
             setLoading(true);
-            // TODO: Implement API call to refresh data
-            message.success('Đã cập nhật dữ liệu');
-        } catch {
-            message.error('Không thể cập nhật dữ liệu');
-        } finally {
+            // Simulate fetching data from an API
+            setTimeout(() => {
+                setAuctionRounds(fakeAuctionRounds);
+                setLoading(false);
+            }, 500);
+        } catch (error) {
+            console.error("Error fetching auction rounds:", error);
             setLoading(false);
         }
     };
 
-    const handleStartRound = async (roundId: string) => {
+    const getAuctionRoundPrices = () => {
         try {
-            setLoading(true);
-            // TODO: Implement API call to start round
-            console.log('Starting round:', roundId);
-            message.success('Đã bắt đầu vòng đấu giá');
-        } catch {
-            message.error('Không thể bắt đầu vòng đấu giá');
-        } finally {
-            setLoading(false);
+            setAuctionRoundPrices(fakeAuctionRoundPrices);
+        } catch (error) {
+            console.error("Error fetching auction round prices:", error);
         }
     };
 
-    const handleEndRound = async (roundId: string) => {
-        try {
-            setLoading(true);
-            // TODO: Implement API call to end round
-            console.log('Ending round:', roundId);
-            message.success('Đã kết thúc vòng đấu giá');
-        } catch {
-            message.error('Không thể kết thúc vòng đấu giá');
-        } finally {
-            setLoading(false);
-        }
+    const handleCreateRound = () => {
+        console.log("Creating new auction round...");
     };
 
+    const handleViewDetails = (record: AuctionRound) => {
+        console.log("View details for record:", record);
+        navigate(AUCTIONEER_ROUTES.SUB.AUCTION_ROUND_DETAIL);
+    };
 
+    // Calculate statistics
+    const stats = calculateStatistics(auctionRounds, auctionRoundPrices);
 
     return (
-        <div className="min-h-fit bg-gradient-to-br">
-            <div className="max-w-7xl mx-auto space-y-6">
-                {/* Stats */}
-                {stats && (
-                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
-                        <AuctionRoundStats stats={stats} loading={loading} />
-                    </div>
-                )}
+        <div className="!min-h-screen !bg-gray-50 !p-6">
+            <div className="!max-w-7xl !mx-auto">
+                {/* Header */}
+                <PageHeader onCreateClick={handleCreateRound} />
 
-                {/* Round List */}
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
-                    <RoundList
-                        rounds={rounds}
-                        loading={loading}
-                        onRefresh={handleRefresh}
-                        onStartRound={handleStartRound}
-                        onEndRound={handleEndRound}
-                    />
-                </div>
+                {/* Statistics Cards */}
+                <StatisticsCards stats={stats} formatCurrency={formatCurrency} />
+
+                {/* Table */}
+                <AuctionRoundsTable
+                    auctionRounds={auctionRounds}
+                    loading={loading}
+                    onViewDetails={handleViewDetails}
+                />
             </div>
         </div>
     );
