@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Table, Card, Typography, Tag, Button, Badge, Empty, message } from "antd";
 import { UserOutlined, IdcardOutlined, EnvironmentOutlined, DollarOutlined, TrophyOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import type { AuctionRoundPrice } from "../../Modals";
@@ -13,7 +13,7 @@ interface HighestBiddersTableProps {
     priceHistory: AuctionRoundPrice[];
 }
 
-const HighestBiddersTable: React.FC<HighestBiddersTableProps> = ({ priceHistory }) => {
+const HighestBiddersTable = ({ priceHistory }: HighestBiddersTableProps) => {
     const [winners, setWinners] = useState<Set<string>>(new Set());
 
     const formatPrice = (price: string) => {

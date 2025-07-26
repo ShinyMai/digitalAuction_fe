@@ -1,4 +1,3 @@
-import React from "react";
 import { Table, Card, Typography, Tag, Empty } from "antd";
 import { UserOutlined, IdcardOutlined, EnvironmentOutlined, DollarOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
@@ -10,7 +9,7 @@ interface PriceHistoryTableProps {
     priceHistory: AuctionRoundPrice[];
 }
 
-const PriceHistoryTable: React.FC<PriceHistoryTableProps> = ({ priceHistory }) => {
+const PriceHistoryTable = ({ priceHistory }: PriceHistoryTableProps) => {
     const formatPrice = (price: string) => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',

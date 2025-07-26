@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, Statistic, Badge, Row, Col, Typography, Space, Divider, Button } from "antd";
 import { UserOutlined, HomeOutlined, ClockCircleOutlined, SyncOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 
@@ -12,13 +11,13 @@ interface AuctionHeaderProps {
     onBack?: () => void;
 }
 
-const AuctionHeader: React.FC<AuctionHeaderProps> = ({
+const AuctionHeader = ({
     auctionRoundId = "AR001",
     totalParticipants,
     totalAssets,
     status = 'active',
     onBack
-}) => {
+}: AuctionHeaderProps) => {
     const handleBack = () => {
         if (onBack) {
             onBack();

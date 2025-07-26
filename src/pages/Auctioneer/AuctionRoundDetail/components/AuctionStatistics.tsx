@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, Row, Col, Statistic, Typography, List, Avatar } from "antd";
 import {
     BarChartOutlined,
@@ -20,7 +19,7 @@ interface AuctionStatisticsProps {
     priceHistory: AuctionRoundPrice[];
 }
 
-const AuctionStatistics: React.FC<AuctionStatisticsProps> = ({ priceHistory }) => {
+const AuctionStatistics = ({ priceHistory }: AuctionStatisticsProps) => {
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
@@ -213,7 +212,7 @@ const AuctionStatistics: React.FC<AuctionStatisticsProps> = ({ priceHistory }) =
                                         avatar={
                                             <Avatar
                                                 className={`!w-10 !h-10 !flex !items-center !justify-center !text-white !font-bold ${index === 0 ? '!bg-yellow-500' :
-                                                        index === 1 ? '!bg-gray-400' : '!bg-orange-500'
+                                                    index === 1 ? '!bg-gray-400' : '!bg-orange-500'
                                                     }`}
                                             >
                                                 {index + 1}
@@ -247,7 +246,7 @@ const AuctionStatistics: React.FC<AuctionStatisticsProps> = ({ priceHistory }) =
                                         avatar={
                                             <Avatar
                                                 className={`!w-10 !h-10 !flex !items-center !justify-center !text-white !font-bold ${index === 0 ? '!bg-blue-500' :
-                                                        index === 1 ? '!bg-cyan-500' : '!bg-green-500'
+                                                    index === 1 ? '!bg-cyan-500' : '!bg-green-500'
                                                     }`}
                                             >
                                                 {index + 1}
