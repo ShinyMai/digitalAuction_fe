@@ -249,6 +249,8 @@ const DashboardAuctioneer = React.lazy(() => import("../pages/Auctioneer/Dashboa
 
 const AuctionRound = React.lazy(() => import("../pages/Auctioneer/AuctionRounds/index"));
 
+const Reports = React.lazy(() => import("../pages/Auctioneer/Reports/index"));
+
 export const auctioneerRoutes = [
   {
     path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
