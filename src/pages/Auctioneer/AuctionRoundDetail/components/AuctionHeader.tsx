@@ -4,7 +4,7 @@ import { UserOutlined, HomeOutlined, ClockCircleOutlined, SyncOutlined, ArrowLef
 const { Title, Text } = Typography;
 
 interface AuctionHeaderProps {
-    auctionRoundId?: string;
+    auctionRoundId: string; // Required - no default value
     totalParticipants: number;
     totalAssets: number;
     status?: 'active' | 'completed' | 'pending';
@@ -12,7 +12,7 @@ interface AuctionHeaderProps {
 }
 
 const AuctionHeader = ({
-    auctionRoundId = "AR001",
+    auctionRoundId,
     totalParticipants,
     totalAssets,
     status = 'active',

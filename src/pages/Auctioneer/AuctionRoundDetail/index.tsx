@@ -1,30 +1,49 @@
 import { useEffect, useState } from "react";
 import { Tabs, Button, Typography } from "antd";
-import { ReloadOutlined, HistoryOutlined, TrophyOutlined, BarChartOutlined } from "@ant-design/icons";
-import type { AuctionRoundPrice } from "../Modals";
-import { fakeAuctionRoundPrices } from "./fakeData";
+import { ReloadOutlined, HistoryOutlined, BarChartOutlined, HomeOutlined } from "@ant-design/icons";
+import type { AuctionRound, AuctionRoundPrice } from "./modalsData";
+import { fakeAuctionRoundPrices, fakeAuctionRounds } from "./fakeData";
 import AuctionHeader from "./components/AuctionHeader";
 import PriceHistoryTable from "./components/PriceHistoryTable";
-import HighestBiddersTable from "./components/HighestBiddersTable";
 import AuctionStatistics from "./components/AuctionStatistics";
+import AssetAnalysisTable from "./components/AssetAnalysisTable";
 import "./styles.css";
 
 const AuctionRoundDetail = () => {
+    // Current auction round ID - single source of truth
+    const CURRENT_AUCTION_ROUND_ID = "AR001";
+
     const [auctionRoundPrice, setAuctionRoundPrice] = useState<AuctionRoundPrice[]>([]);
+    const [auctionRound, setAuctionRound] = useState<AuctionRound>();
     const [activeTab, setActiveTab] = useState<string>('history');
 
     useEffect(() => {
         // Simulate fetching auction round prices
+        getListOfAuctionRound();
         getListOfAuctionRoundPrices();
     }, []);
 
+    const getListOfAuctionRound = () => {
+        try {
+            const auctionRoundNow = fakeAuctionRounds.find(round => round.auctionRoundId === CURRENT_AUCTION_ROUND_ID);
+            setAuctionRound(auctionRoundNow);
+        } catch (error) {
+            console.error("Error fetching auction round data:", error);
+
+        }
+    }
+
     const getListOfAuctionRoundPrices = () => {
         try {
-            setAuctionRoundPrice(fakeAuctionRoundPrices);
+            // Filter chỉ lấy data của round hiện tại
+            const currentRoundPrices = fakeAuctionRoundPrices.filter(price => price.AuctionRoundId === CURRENT_AUCTION_ROUND_ID);
+            setAuctionRoundPrice(currentRoundPrices);
         } catch (error) {
             console.error("Error fetching auction round prices:", error);
         }
     };
+
+
 
     // Tính toán thống kê cơ bản
     const totalParticipants = new Set(auctionRoundPrice.map(item => item.CitizenIdentification)).size;
@@ -42,14 +61,14 @@ const AuctionRoundDetail = () => {
             children: <PriceHistoryTable priceHistory={auctionRoundPrice} />
         },
         {
-            key: 'winners',
+            key: 'assets',
             label: (
                 <span className="flex items-center gap-2">
-                    <TrophyOutlined />
-                    Người trả giá cao nhất
+                    <HomeOutlined />
+                    Phân tích tài sản
                 </span>
             ),
-            children: <HighestBiddersTable priceHistory={auctionRoundPrice} />
+            children: <AssetAnalysisTable priceHistory={auctionRoundPrice} />
         },
         {
             key: 'statistics',
@@ -59,7 +78,14 @@ const AuctionRoundDetail = () => {
                     Thống kê
                 </span>
             ),
-            children: <AuctionStatistics priceHistory={auctionRoundPrice} />
+            children: auctionRound ? (
+                <AuctionStatistics
+                    priceHistory={auctionRoundPrice}
+                    auctionRound={auctionRound}
+                />
+            ) : (
+                <div>Loading auction round data...</div>
+            )
         }
     ];
 
@@ -68,7 +94,7 @@ const AuctionRoundDetail = () => {
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <AuctionHeader
-                    auctionRoundId="AR001"
+                    auctionRoundId={CURRENT_AUCTION_ROUND_ID}
                     totalParticipants={totalParticipants}
                     totalAssets={totalAssets}
                     status="active"
