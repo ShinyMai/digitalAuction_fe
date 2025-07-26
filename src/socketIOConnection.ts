@@ -25,7 +25,7 @@ export const createSocketIOConnection = (token?: string): Socket => {
   });
 
   socketIOConnection.on("disconnect", (reason) => {
-    console.log("Socket.IO disconnected:", reason);
+    console.log("Socket.IO isconnected:", reason);
   });
 
   socketIOConnection.on("connect_error", (error) => {
