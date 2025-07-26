@@ -1,96 +1,121 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Auctions } from "../../Auctioneer/ModalsDatabase";
 import CalendarViewContent from "./components/CalendarViewContent";
 import "../../../styles/auction-tabs.css";
+import AuctionServices from "../../../services/AuctionServices";
 
 interface ListAuctionAssignedProps {
     loading?: boolean;
 }
 
+interface SearchParams {
+    AuctionName?: string;
+    CategoryId?: number;
+    SortBy?: string;
+    IsAscending?: boolean;
+    PageNumber?: number;
+    PageSize?: number;
+    Status?: number;
+    AuctionType?: string;
+    ConditionAuction?: number,
+}
+
+// Interface cho dữ liệu API thực tế
+interface ApiAuction {
+    auctionId: string;
+    auctionName: string;
+    categoryId: number;
+    status: number;
+    registerOpenDate: string;
+    registerEndDate: string;
+    auctionStartDate: string;
+    auctionEndDate: string;
+    createdByUserName: string;
+    updateByUserName: string;
+    auctioneerBy: string;
+}
+
 const ListAuctionAssigned: React.FC<ListAuctionAssignedProps> = ({ loading = false }) => {
     const navigate = useNavigate();
     const [assignedAuctions, setAssignedAuctions] = useState<Auctions[]>([]);
+    const [searchParams] = useState<SearchParams>({
+        PageNumber: 1,
+        PageSize: 8,
+        AuctionType: "1",
+        SortBy: "register_open_date",
+        IsAscending: false,
+    });
 
-    // Dữ liệu mẫu
-    useEffect(() => {
-        const fakeAuctions: Auctions[] = [
-            {
-                AuctionId: "1",
-                AuctionName: "Đấu giá Bất động sản Quận 1",
-                AuctionDescription: "Phiên đấu giá các bất động sản tại Quận 1, TP.HCM",
-                AuctionRules: "Quy tắc đấu giá theo hình thức trả giá lên",
-                AuctionPlanningMap: "map1.jpg",
-                RegisterOpenDate: "2025-07-25T08:00:00",
-                RegisterEndDate: "2025-07-30T17:00:00",
-                AuctionStartDate: "2025-08-01T09:00:00",
-                AuctionEndDate: "2025-08-01T16:00:00",
-                AuctionMap: "location1.jpg",
-                CreatedAt: "2025-07-20T10:00:00",
-                CreatedBy: "admin1",
-                UpdatedAt: "2025-07-20T10:00:00",
-                UpdatedBy: "admin1",
-                QRLink: "qr1.png",
-                NumberRoundMax: 3,
-                Status: 1,
-                WinnerData: "",
-                CategoryId: "BDS01",
-                AuctioneersId: "auctioneer1",
-                CancelReason: "",
-                CancelReasonFile: ""
-            },
-            {
-                AuctionId: "2",
-                AuctionName: "Đấu giá Xe ô tô thanh lý",
-                AuctionDescription: "Phiên đấu giá các xe ô tô thanh lý từ các cơ quan nhà nước",
-                AuctionRules: "Quy tắc đấu giá theo vòng",
-                AuctionPlanningMap: "map2.jpg",
-                RegisterOpenDate: "2025-07-26T08:00:00",
-                RegisterEndDate: "2025-08-01T17:00:00",
-                AuctionStartDate: "2025-08-03T09:00:00",
-                AuctionEndDate: "2025-08-03T16:00:00",
-                AuctionMap: "location2.jpg",
-                CreatedAt: "2025-07-21T10:00:00",
-                CreatedBy: "admin1",
-                UpdatedAt: "2025-07-21T10:00:00",
-                UpdatedBy: "admin1",
-                QRLink: "qr2.png",
-                NumberRoundMax: 4,
-                Status: 0,
-                WinnerData: "",
-                CategoryId: "XE01",
-                AuctioneersId: "",
-                CancelReason: "",
-                CancelReasonFile: ""
-            },
-            {
-                AuctionId: "3",
-                AuctionName: "Đấu giá Tài sản tịch thu",
-                AuctionDescription: "Phiên đấu giá tài sản tịch thu từ các vụ án",
-                AuctionRules: "Quy tắc đấu giá kín",
-                AuctionPlanningMap: "map3.jpg",
-                RegisterOpenDate: "2025-07-20T08:00:00",
-                RegisterEndDate: "2025-07-25T17:00:00",
-                AuctionStartDate: "2025-07-28T09:00:00",
-                AuctionEndDate: "2025-07-28T16:00:00",
-                AuctionMap: "location3.jpg",
-                CreatedAt: "2025-07-15T10:00:00",
-                CreatedBy: "admin1",
-                UpdatedAt: "2025-07-15T10:00:00",
-                UpdatedBy: "admin1",
-                QRLink: "qr3.png",
-                NumberRoundMax: 2,
-                Status: 3,
-                WinnerData: "",
-                CategoryId: "TS01",
-                AuctioneersId: "auctioneer1",
-                CancelReason: "Không đủ số lượng người đăng ký tham gia",
-                CancelReasonFile: "cancel3.pdf"
-            }
-        ];
-
-        setAssignedAuctions(fakeAuctions);
+    // Function chuyển đổi dữ liệu API sang format Auctions
+    const convertApiToAuctions = useCallback((apiData: ApiAuction[]): Auctions[] => {
+        return apiData.map(item => ({
+            AuctionId: item.auctionId,
+            AuctionName: item.auctionName,
+            AuctionDescription: "",
+            AuctionRules: "",
+            AuctionPlanningMap: "",
+            RegisterOpenDate: item.registerOpenDate,
+            RegisterEndDate: item.registerEndDate,
+            AuctionStartDate: item.auctionStartDate,
+            AuctionEndDate: item.auctionEndDate,
+            AuctionMap: "",
+            CreatedAt: "",
+            CreatedBy: item.createdByUserName,
+            UpdatedAt: "",
+            UpdatedBy: item.updateByUserName,
+            QRLink: "",
+            NumberRoundMax: 1,
+            Status: item.status,
+            WinnerData: "",
+            CategoryId: item.categoryId.toString(),
+            AuctioneersId: item.auctioneerBy,
+            CancelReason: "",
+            CancelReasonFile: ""
+        }));
     }, []);
+
+    const getListAuctionAssigned = useCallback(async () => {
+        try {
+            const baseParams = {
+                PageNumber: searchParams.PageNumber ?? 1,
+                PageSize: searchParams.PageSize ?? 8,
+                AuctionName: searchParams.AuctionName,
+                CategoryId: searchParams.CategoryId,
+                SortBy: searchParams.SortBy,
+                IsAscending: searchParams.IsAscending,
+            };
+
+            // Gọi 3 API song song để lấy tất cả ConditionAuction: 1, 2, 3
+            const [response1, response2, response3] = await Promise.all([
+                AuctionServices.getListAuction({ ...baseParams, ConditionAuction: 1 }),
+                AuctionServices.getListAuction({ ...baseParams, ConditionAuction: 2 }),
+                AuctionServices.getListAuction({ ...baseParams, ConditionAuction: 3 })
+            ]);
+
+            console.log("API Responses:", { response1, response2, response3 }); // Debug log
+
+            // Merge kết quả từ 3 API
+            const allAuctions = [
+                ...(response1.data.auctions || []),
+                ...(response2.data.auctions || []),
+                ...(response3.data.auctions || [])
+            ];
+
+            console.log("All Auctions:", allAuctions); // Debug log
+
+            const convertedData = convertApiToAuctions(allAuctions);
+            setAssignedAuctions(convertedData);
+
+        } catch (error) {
+            console.error("Error fetching assigned auctions:", error);
+            setAssignedAuctions([]);
+        }
+    }, [searchParams, convertApiToAuctions]);
+
+    useEffect(() => {
+        getListAuctionAssigned();
+    }, [getListAuctionAssigned]);
 
     return (
         <CalendarViewContent

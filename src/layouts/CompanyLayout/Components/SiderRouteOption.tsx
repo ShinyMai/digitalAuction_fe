@@ -101,8 +101,15 @@ const items: MenuItem[] = [
   },
   {
     key: "11",
+    icon: <BarChartOutlined className="text-xl" />,
+    label: "Báo cáo & Thống kê",
+    url: AUCTIONEER_ROUTES.SUB.REPORTS,
+    roleView: ["Auctioneer"],
+  },
+  {
+    key: "12",
     icon: <HistoryOutlined className="text-xl" />,
-    label: "Thống kê ( Chưa API )",
+    label: "Dashboard ( Chưa API )",
     url: AUCTIONEER_ROUTES.SUB.DASHBOARD,
     roleView: ["Auctioneer"],
   },

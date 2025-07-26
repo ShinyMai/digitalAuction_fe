@@ -8,7 +8,8 @@ import {
     CheckCircleOutlined,
     PlayCircleOutlined,
     PauseCircleOutlined,
-    ExclamationCircleOutlined
+    ExclamationCircleOutlined,
+    FileTextOutlined
 } from "@ant-design/icons";
 import type { Auctions } from "../../ModalsDatabase";
 import { formatDate } from "../utils/dateUtils";
@@ -25,14 +26,8 @@ interface AuctionTimelineProps {
 const AuctionTimeline = ({ auctions, loading = false, onNavigate }: AuctionTimelineProps) => {
     const [activeKeys, setActiveKeys] = useState<string[]>([]);
 
-    const getStatusColor = (status: number) => {
-        switch (status) {
-            case 1: return "#1890ff"; // Đang diễn ra - Blue
-            case 2: return "#52c41a"; // Hoàn thành - Green
-            case 3: return "#ff4d4f"; // Đã hủy - Red
-            default: return "#d9d9d9"; // Chờ duyệt - Gray
-        }
-    };
+    // Đảm bảo auctions luôn là array
+    const auctionList = Array.isArray(auctions) ? auctions : [];
 
     const getStatusIcon = (status: number) => {
         switch (status) {
@@ -43,17 +38,40 @@ const AuctionTimeline = ({ auctions, loading = false, onNavigate }: AuctionTimel
         }
     };
 
-    const getStatusText = (status: number) => {
-        switch (status) {
-            case 1: return "Đang diễn ra";
-            case 2: return "Hoàn thành";
-            case 3: return "Đã hủy";
-            default: return "Chờ duyệt";
+    // Function xác định giai đoạn hiện tại của cuộc đấu giá
+    const getCurrentPhase = (auction: Auctions) => {
+        const now = new Date();
+        const registerOpen = new Date(auction.RegisterOpenDate);
+        const registerEnd = new Date(auction.RegisterEndDate);
+        const auctionStart = new Date(auction.AuctionStartDate);
+        const auctionEnd = new Date(auction.AuctionEndDate);
+
+        if (now < registerOpen) {
+            return { phase: "waiting", text: "Chưa mở thu hồ sơ", color: "#d9d9d9" };
+        } else if (now >= registerOpen && now <= registerEnd) {
+            return { phase: "registration", text: "Đang thu hồ sơ", color: "#1890ff" };
+        } else if (now > registerEnd && now < auctionStart) {
+            return { phase: "preparation", text: "Chuẩn bị đấu giá", color: "#faad14" };
+        } else if (now >= auctionStart && now <= auctionEnd) {
+            return { phase: "auction", text: "Đang đấu giá", color: "#52c41a" };
+        } else {
+            return { phase: "finished", text: "Đã kết thúc", color: "#8c8c8c" };
+        }
+    };
+
+    const getPhaseIcon = (phase: string) => {
+        switch (phase) {
+            case "waiting": return <PauseCircleOutlined />;
+            case "registration": return <FileTextOutlined />;
+            case "preparation": return <ClockCircleOutlined />;
+            case "auction": return <PlayCircleOutlined />;
+            case "finished": return <CheckCircleOutlined />;
+            default: return <PauseCircleOutlined />;
         }
     };
 
     // Sắp xếp auctions theo thời gian
-    const sortedAuctions = [...auctions].sort((a, b) =>
+    const sortedAuctions = [...auctionList].sort((a, b) =>
         new Date(a.AuctionStartDate).getTime() - new Date(b.AuctionStartDate).getTime()
     );
 
@@ -141,9 +159,18 @@ const AuctionTimeline = ({ auctions, loading = false, onNavigate }: AuctionTimel
                                                 </Text>
                                             </div>
                                         </div>
-                                        <Tag color={getStatusColor(auction.Status)} className="!mr-0">
-                                            {getStatusText(auction.Status)}
-                                        </Tag>
+                                        {(() => {
+                                            const currentPhase = getCurrentPhase(auction);
+                                            return (
+                                                <Tag
+                                                    icon={getPhaseIcon(currentPhase.phase)}
+                                                    color={currentPhase.color}
+                                                    className="!mr-0"
+                                                >
+                                                    {currentPhase.text}
+                                                </Tag>
+                                            );
+                                        })()}
                                     </div>
                                 }
                                 className="!bg-white !border !border-gray-200 !rounded-lg !mb-3 hover:!border-blue-300 !transition-all"
@@ -168,23 +195,35 @@ const AuctionTimeline = ({ auctions, loading = false, onNavigate }: AuctionTimel
                                             {auction.AuctionDescription}
                                         </Text>
 
-                                        <div className="!grid !grid-cols-1 md:!grid-cols-2 !gap-3">
+                                        <div className="!grid !grid-cols-1 !gap-3">
+                                            {/* Giai đoạn Thu hồ sơ */}
+                                            <div className="!flex !items-center !gap-2">
+                                                <FileTextOutlined className="!text-blue-500" />
+                                                <span className="!text-gray-600 !text-sm">
+                                                    <strong>Thu hồ sơ:</strong> {formatDate(auction.RegisterOpenDate, 'DD/MM/YYYY HH:mm')} - {formatDate(auction.RegisterEndDate, 'DD/MM/YYYY HH:mm')}
+                                                </span>
+                                            </div>
+
+                                            {/* Giai đoạn Chuẩn bị */}
+                                            <div className="!flex !items-center !gap-2">
+                                                <ClockCircleOutlined className="!text-orange-500" />
+                                                <span className="!text-gray-600 !text-sm">
+                                                    <strong>Chuẩn bị:</strong> {formatDate(auction.RegisterEndDate, 'DD/MM/YYYY HH:mm')} - {formatDate(auction.AuctionStartDate, 'DD/MM/YYYY HH:mm')}
+                                                </span>
+                                            </div>
+
+                                            {/* Giai đoạn Đấu giá */}
+                                            <div className="!flex !items-center !gap-2">
+                                                <PlayCircleOutlined className="!text-green-500" />
+                                                <span className="!text-gray-600 !text-sm">
+                                                    <strong>Đấu giá:</strong> {formatDate(auction.AuctionStartDate, 'DD/MM/YYYY HH:mm')} - {formatDate(auction.AuctionEndDate, 'DD/MM/YYYY HH:mm')}
+                                                </span>
+                                            </div>
+
                                             <div className="!flex !items-center !gap-2">
                                                 <CalendarOutlined className="!text-purple-500" />
                                                 <span className="!text-gray-600 !text-sm">
                                                     Danh mục: {auction.CategoryId}
-                                                </span>
-                                            </div>
-                                            <div className="!flex !items-center !gap-2">
-                                                <UserOutlined className="!text-green-500" />
-                                                <span className="!text-gray-600 !text-sm">
-                                                    Số vòng tối đa: {auction.NumberRoundMax}
-                                                </span>
-                                            </div>
-                                            <div className="!flex !items-center !gap-2">
-                                                <ClockCircleOutlined className="!text-orange-500" />
-                                                <span className="!text-gray-600 !text-sm">
-                                                    Đăng ký: {formatDate(auction.RegisterOpenDate, 'DD/MM')} - {formatDate(auction.RegisterEndDate, 'DD/MM')}
                                                 </span>
                                             </div>
                                             {auction.AuctioneersId && (

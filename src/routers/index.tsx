@@ -59,6 +59,7 @@ export const AUCTIONEER_ROUTES = {
     DASHBOARD: "dashboard",
     AUCTION_ROUNDS: "auction-rounds",
     AUCTION_ROUND_DETAIL: "auction-round-detail",
+    REPORTS: "reports",
   },
 };
 

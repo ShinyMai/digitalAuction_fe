@@ -1,6 +1,5 @@
 import { Card, Statistic, Row, Col } from "antd";
 import {
-    CalendarOutlined,
     ClockCircleOutlined,
     CheckCircleOutlined,
     ExclamationCircleOutlined,
@@ -13,18 +12,31 @@ interface CalendarStatsProps {
 }
 
 const CalendarStats = ({ auctions }: CalendarStatsProps) => {
-    const stats = {
-        total: auctions.length,
-        upcoming: auctions.filter(a => new Date(a.AuctionStartDate) > new Date()).length,
-        ongoing: auctions.filter(a => {
-            const now = new Date();
-            return new Date(a.AuctionStartDate) <= now && new Date(a.AuctionEndDate) >= now;
-        }).length,
-        completed: auctions.filter(a => a.Status === 2).length,
-        cancelled: auctions.filter(a => a.Status === 3).length,
+    // Đảm bảo auctions luôn là array
+    const auctionList = Array.isArray(auctions) ? auctions : [];
+
+    // Function xác định giai đoạn hiện tại
+    const getCurrentPhase = (auction: Auctions) => {
+        const now = new Date();
+        const registerOpen = new Date(auction.RegisterOpenDate);
+        const registerEnd = new Date(auction.RegisterEndDate);
+        const auctionStart = new Date(auction.AuctionStartDate);
+        const auctionEnd = new Date(auction.AuctionEndDate);
+
+        if (now < registerOpen) return "waiting";
+        if (now >= registerOpen && now <= registerEnd) return "registration";
+        if (now > registerEnd && now < auctionStart) return "preparation";
+        if (now >= auctionStart && now <= auctionEnd) return "auction";
+        return "finished";
     };
 
-    return (
+    const stats = {
+        total: auctionList.length,
+        registration: auctionList.filter(a => getCurrentPhase(a) === "registration").length,
+        preparation: auctionList.filter(a => getCurrentPhase(a) === "preparation").length,
+        ongoing: auctionList.filter(a => getCurrentPhase(a) === "auction").length,
+        cancelled: auctionList.filter(a => a.Status === 3).length,
+    }; return (
         <Row gutter={[16, 16]} className="!mb-6">
             <Col xs={24} sm={12} md={8} lg={8} xl={4}>
                 <Card className="!border-blue-200 !bg-blue-50 hover:!shadow-md !transition-shadow">
@@ -39,30 +51,30 @@ const CalendarStats = ({ auctions }: CalendarStatsProps) => {
             <Col xs={24} sm={12} md={8} lg={8} xl={5}>
                 <Card className="!border-yellow-200 !bg-yellow-50 hover:!shadow-md !transition-shadow">
                     <Statistic
-                        title={<span className="!text-yellow-700 !font-medium">Sắp diễn ra</span>}
-                        value={stats.upcoming}
-                        prefix={<CalendarOutlined className="!text-yellow-500" />}
+                        title={<span className="!text-yellow-700 !font-medium">Thu hồ sơ</span>}
+                        value={stats.registration}
+                        prefix={<FileTextOutlined className="!text-yellow-500" />}
                         valueStyle={{ color: '#d97706' }}
+                    />
+                </Card>
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={8} xl={5}>
+                <Card className="!border-orange-200 !bg-orange-50 hover:!shadow-md !transition-shadow">
+                    <Statistic
+                        title={<span className="!text-orange-700 !font-medium">Chuẩn bị</span>}
+                        value={stats.preparation}
+                        prefix={<ClockCircleOutlined className="!text-orange-500" />}
+                        valueStyle={{ color: '#ea580c' }}
                     />
                 </Card>
             </Col>
             <Col xs={24} sm={12} md={8} lg={8} xl={5}>
                 <Card className="!border-green-200 !bg-green-50 hover:!shadow-md !transition-shadow">
                     <Statistic
-                        title={<span className="!text-green-700 !font-medium">Đang diễn ra</span>}
+                        title={<span className="!text-green-700 !font-medium">Đang đấu giá</span>}
                         value={stats.ongoing}
-                        prefix={<ClockCircleOutlined className="!text-green-500" />}
+                        prefix={<CheckCircleOutlined className="!text-green-500" />}
                         valueStyle={{ color: '#059669' }}
-                    />
-                </Card>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={8} xl={5}>
-                <Card className="!border-purple-200 !bg-purple-50 hover:!shadow-md !transition-shadow">
-                    <Statistic
-                        title={<span className="!text-purple-700 !font-medium">Hoàn thành</span>}
-                        value={stats.completed}
-                        prefix={<CheckCircleOutlined className="!text-purple-500" />}
-                        valueStyle={{ color: '#7c3aed' }}
                     />
                 </Card>
             </Col>
