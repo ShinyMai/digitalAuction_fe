@@ -8,7 +8,6 @@ import { EnvironmentOutlined } from "@ant-design/icons";
 
 interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
-  setIsOpenPopupVerifyCancel: (open: boolean) => void;
   auctionType?: string;
   onCreateAuctionRound?: () => void;
 }
@@ -28,7 +27,6 @@ const API_BASE_URL_NODE = import.meta.env.VITE_BE_URL_NODE;
 
 const AuctionDetail = ({
   auctionDetailData,
-  setIsOpenPopupVerifyCancel,
   auctionType,
   onCreateAuctionRound,
 }: AuctionDetailProps) => {
@@ -114,17 +112,6 @@ const AuctionDetail = ({
                 </div>
                 {(role === USER_ROLES.MANAGER || role === USER_ROLES.AUCTIONEER) && (
                   <div className="flex justify-center gap-4 mt-6">
-                    {role === USER_ROLES.MANAGER && (
-                      <Button
-                        type="primary"
-                        danger
-                        size="large"
-                        className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded-lg"
-                        onClick={() => setIsOpenPopupVerifyCancel(true)}
-                      >
-                        Hủy buổi đấu giá
-                      </Button>
-                    )}
                     {role === USER_ROLES.AUCTIONEER && (
                       <Button
                         type="primary"

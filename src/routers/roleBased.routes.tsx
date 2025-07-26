@@ -20,6 +20,8 @@ const AuctionResultsAnonymous = React.lazy(
 const NotFound = React.lazy(() => import("../components/Common/NotFound/index"));
 const AuctionListAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionList/index"));
 const AuctionDetailAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionDetail/index"));
+const AuctionRoundDetail = React.lazy(() => import("../pages/Auctioneer/AuctionRoundDetail/index"));
+
 
 export const guestRoutes = [
   {
@@ -237,6 +239,15 @@ export const managerRoutes = [
   },
 ];
 
+
+const DashboardAuctioneer = React.lazy(() =>
+  import("../pages/Auctioneer/Dashboard/index")
+)
+
+const AuctionRound = React.lazy(() =>
+  import("../pages/Auctioneer/AuctionRounds/index")
+)
+
 export const auctioneerRoutes = [
   {
     path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
@@ -249,5 +260,17 @@ export const auctioneerRoutes = [
   {
     path: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
     element: wrapWithLazy(ListAuctionAssigned),
+  },
+  {
+    path: AUCTIONEER_ROUTES.SUB.DASHBOARD,
+    element: wrapWithLazy(DashboardAuctioneer),
+  },
+  {
+    path: AUCTIONEER_ROUTES.SUB.AUCTION_ROUNDS,
+    element: wrapWithLazy(AuctionRound),
+  },
+  {
+    path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW + "/" + AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW + `/` + AUCTIONEER_ROUTES.SUB.AUCTION_ROUND_DETAIL,
+    element: wrapWithLazy(AuctionRoundDetail),
   }
 ];

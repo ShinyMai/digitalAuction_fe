@@ -1,7 +1,7 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Auctions } from "../../Auctioneer/ModalsDatabase";
-import ListAuctionAssignedContent from "./components/ListAuctionAssignedContent";
+import CalendarViewContent from "./components/CalendarViewContent";
 import "../../../styles/auction-tabs.css";
 
 interface ListAuctionAssignedProps {
@@ -11,22 +11,6 @@ interface ListAuctionAssignedProps {
 const ListAuctionAssigned: React.FC<ListAuctionAssignedProps> = ({ loading = false }) => {
     const navigate = useNavigate();
     const [assignedAuctions, setAssignedAuctions] = useState<Auctions[]>([]);
-    const [activeTab, setActiveTab] = useState<string>("upcoming");
-
-    const categorizedAuctions = useMemo(() => {
-        const now = new Date();
-        const validAuctions = assignedAuctions.filter(auction => auction.Status !== 0);
-
-        return {
-            upcoming: validAuctions.filter(auction => new Date(auction.AuctionStartDate) > now),
-            ongoing: validAuctions.filter(auction => {
-                const start = new Date(auction.AuctionStartDate);
-                const end = new Date(auction.AuctionEndDate);
-                return start <= now && end >= now;
-            }),
-            past: validAuctions.filter(auction => new Date(auction.AuctionEndDate) < now)
-        };
-    }, [assignedAuctions]);
 
     // Dữ liệu mẫu
     useEffect(() => {
@@ -109,11 +93,9 @@ const ListAuctionAssigned: React.FC<ListAuctionAssignedProps> = ({ loading = fal
     }, []);
 
     return (
-        <ListAuctionAssignedContent
+        <CalendarViewContent
             loading={loading}
-            categorizedAuctions={categorizedAuctions}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
+            auctions={assignedAuctions}
             onNavigate={navigate}
         />
     );

@@ -102,7 +102,7 @@ export type ModalAuctioners = {
 };
 
 export type AuctionRoundPrice = {
-  AuctionRoundId: string;
+  AuctionRoundId?: string;
   UserName: string;
   CitizenIdentification: string;
   RecentLocation: string;
@@ -115,5 +115,4 @@ export type AuctionRoundModals = {
   auctionId?: string;
   roundNumber: number
   status: number;
-  highestBid?: number
 }
