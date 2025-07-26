@@ -5,7 +5,6 @@ import { mockRounds, mockStats } from './data/mockData';
 import type { ExtendedAuctionRound, RoundStatss } from './types';
 import RoundList from './components/RoundList';
 import AuctionRoundStats from './components/RoundStats';
-import type { AuctionRoundModals } from '../Modals';
 
 /**
  * API Endpoints Documentation
@@ -70,11 +69,8 @@ import type { AuctionRoundModals } from '../Modals';
  *    - bidAmount: number - Số tiền trả
  */
 
-interface props {
-    auctionRound: AuctionRoundModals[]
-}
 
-const AuctionRounds = ({ auctionRound }: props) => {
+const AuctionRounds = () => {
     //const { id: auctionId } = useParams<{ id: string }>();
     const [loading, setLoading] = useState(false);
     const [rounds, setRounds] = useState<ExtendedAuctionRound[]>([]);
