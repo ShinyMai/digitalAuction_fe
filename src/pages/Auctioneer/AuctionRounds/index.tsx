@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { message } from 'antd';
 import { mockRounds, mockStats } from './data/mockData';
 import type { ExtendedAuctionRound, RoundStatss } from './types';
@@ -74,7 +74,7 @@ interface props {
     auctionRound: AuctionRoundModals[]
 }
 
-const AuctionRounds: React.FC<props> = ({ auctionRound }) => {
+const AuctionRounds = ({ auctionRound }: props) => {
     //const { id: auctionId } = useParams<{ id: string }>();
     const [loading, setLoading] = useState(false);
     const [rounds, setRounds] = useState<ExtendedAuctionRound[]>([]);

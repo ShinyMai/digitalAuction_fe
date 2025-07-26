@@ -1,255 +1,145 @@
 # AuctionRoundDetail Component
 
-## Overview
+## Mô tả
 
-Màn hình chi tiết vòng đấu giá hiển thị tất cả thông tin về các lượt trả giá, thống kê, và phân tích dữ liệu của một vòng đấu giá cụ thể.
+Component AuctionRoundDetail được thiết kế cho vai trò Auctioneer (người quản lý phiên đấu giá), cho phép quản lý và theo dõi chi tiết một phiên đấu giá.
 
-## Features
+## Cấu trúc thư mục
 
-### 📊 **StatsOverview Component**
-
-- Thống kê tổng quan với 8 metrics chính
-- Design card gradient với hover effects
-- Real-time loading states
-- Responsive grid layout (1-2-4 columns)
-
-**Metrics hiển thị:**
-
-- Tổng lượt trả giá & số người tham gia
-- Giá cao nhất với icon trophy
-- Giá trung bình với progress bar
-- Bước giá tối thiểu
-- Vị trí có nhiều bid nhất
-- Thời gian bid đầu tiên
-- Tốc độ trả giá (lượt/phút)
-
-### 📋 **BidList Component**
-
-- Table hiển thị tất cả lượt trả giá
-- Search & filter functionality
-- Sorting theo giá và thời gian
-- Rank system với visual indicators
-- Winner highlighting với green background
-- Responsive pagination
-- Export functionality
-
-**Columns:**
-
-- Xếp hạng (với icons đặc biệt cho top 3)
-- Thông tin người trả giá (avatar + tên + CCCD)
-- Vị trí địa lý
-- Giá trả (với currency formatting)
-- Thời gian (với relative time)
-- Trạng thái (winning/top/participate tags)
-
-### 🏆 **TopBidders Component**
-
-- Card list của top bidders
-- Gradient backgrounds cho top 3
-- Stats cho mỗi bidder:
-  - Giá cao nhất
-  - Số lượt trả giá
-  - Giá trung bình với progress bar
-  - Thời gian bid cuối
-- Special indicators cho winner
-- Responsive layout
-
-### ⏱️ **BidTimeline Component**
-
-- Timeline hiển thị chronological order
-- Milestone markers (every 5 bids)
-- Record breaker highlighting
-- Interactive events với hover
-- Color-coded timeline dots
-- Event details với formatted prices
-
-## API Integration
-
-### Endpoints Required
-
-```typescript
-// Main detail endpoint
-GET /api/auction-rounds/{roundId}/detail
-Response: RoundDetailData
-
-// Paginated bids
-GET /api/auction-rounds/{roundId}/prices?page=1&limit=20
-Response: { prices: ExtendedAuctionRoundPrice[], total: number }
-
-// Stats only
-GET /api/auction-rounds/{roundId}/stats
-Response: RoundDetailStats
-
-// Top bidders
-GET /api/auction-rounds/{roundId}/top-bidders?limit=10
-Response: BidderInfo[]
-
-// Export functionality
-POST /api/auction-rounds/{roundId}/export
-Body: { format: 'excel' | 'pdf', includeStats: boolean }
-Response: File download
+```
+AuctionRoundDetail/
+├── index.tsx                 # Component chính
+├── fakeData.ts              # Dữ liệu mẫu
+├── styles.css               # CSS tùy chỉnh
+├── README.md                # Tài liệu hướng dẫn
+└── components/              # Các component con
+    ├── index.ts             # Export components
+    ├── AuctionHeader.tsx    # Header hiển thị thông tin tổng quan
+    ├── PriceHistoryTable.tsx    # Bảng lịch sử trả giá
+    ├── HighestBiddersTable.tsx  # Bảng người trả giá cao nhất
+    └── AuctionStatistics.tsx    # Thống kê phiên đấu giá
 ```
 
-## Data Types
+## Tính năng
 
-### Core Types
+### 1. AuctionHeader
+
+- Hiển thị thông tin phiên đấu giá (ID, trạng thái)
+- Thống kê tổng số người tham gia và tài sản
+- Status badge với các trạng thái: active, completed, pending
+- Thời gian cập nhật realtime
+
+### 2. PriceHistoryTable
+
+- Bảng hiển thị toàn bộ lịch sử trả giá
+- Sắp xếp theo giá (ascending/descending)
+- Phân trang với tùy chọn số lượng hiển thị
+- Responsive design với scroll ngang
+- Tìm kiếm và lọc dữ liệu
+
+### 3. HighestBiddersTable
+
+- Hiển thị người trả giá cao nhất cho mỗi tài sản
+- **Chức năng xác nhận người chiến thắng**
+- Visual feedback với màu sắc và badge
+- Chỉ cho phép 1 người chiến thắng cho mỗi tài sản
+- Notification khi xác nhận/hủy xác nhận
+
+### 4. AuctionStatistics
+
+- Thống kê tổng quan: số lượt đấu, người tham gia, tài sản
+- Thống kê giá: trung bình, cao nhất, thấp nhất
+- Top 3 vùng có nhiều người tham gia nhất
+- Progress bar hiển thị tỷ lệ theo vùng
+- Icons và màu sắc trực quan
+
+## Công nghệ sử dụng
+
+- **React** với TypeScript
+- **Ant Design (antd)** - UI Components
+- **Tailwind CSS** - Utility-first CSS
+- **Ant Design Icons** - Icon library
+
+## Props Interface
 
 ```typescript
-interface RoundDetailData {
-  round: AuctionRound;
-  prices: ExtendedAuctionRoundPrice[];
-  stats: RoundDetailStats;
-  topBidders: BidderInfo[];
-  winningBids: ExtendedAuctionRoundPrice[];
-}
-
-interface RoundDetailStats {
-  totalBids: number;
-  uniqueBidders: number;
-  highestBid: number;
-  lowestBid: number;
-  averageBid: number;
-  bidIncrement: number;
-  timeRange: { firstBid: string; lastBid: string };
-  topBidderLocation: string;
+interface AuctionRoundPrice {
+  AuctionRoundId: string;
+  UserName: string;
+  CitizenIdentification: string;
+  RecentLocation: string;
+  TagName: string; // Tên tài sản
+  AuctionPrice: string;
 }
 ```
 
-## Design System
-
-### Color Palette
-
-- **Blue**: Primary actions, general stats
-- **Green**: Success, winners, highest bids
-- **Yellow/Gold**: Top performers, records
-- **Purple**: Timeline, milestones
-- **Orange**: Secondary metrics
-- **Red**: Urgent actions
-
-### Responsive Breakpoints
-
-- **Mobile**: < 640px (1 column layouts)
-- **Tablet**: 640px - 1024px (2 column layouts)
-- **Desktop**: > 1024px (3-4 column layouts)
-
-### Animations
-
-- **Hover Effects**: Scale, shadow, color transitions
-- **Loading States**: Skeleton animations
-- **Transitions**: 200-300ms duration
-- **Progress Bars**: Smooth value changes
-
-## Usage
-
-### Basic Implementation
+## Cách sử dụng
 
 ```tsx
-import AuctionRoundDetail from "@/pages/Auctioneer/AuctionRoundDetail";
+import AuctionRoundDetail from "./pages/Auctioneer/AuctionRoundDetail";
 
-// In routing
-<Route path="/auctioneer/rounds/:roundId" element={<AuctionRoundDetail />} />;
+function App() {
+  return <AuctionRoundDetail />;
+}
 ```
 
-### Navigation Integration
+## Tùy chỉnh
 
-```tsx
-// From rounds list
-navigate(`/auctioneer/rounds/${roundId}`);
+### CSS Classes
 
-// With state
-navigate(`/auctioneer/rounds/${roundId}`, {
-  state: { auctionId, roundNumber },
-});
-```
-
-## Customization
+- `.custom-table` - Tùy chỉnh bảng
+- `.custom-tabs` - Tùy chỉnh tabs
+- `.loading-shimmer` - Hiệu ứng loading
 
 ### Theme Colors
 
-Có thể customize colors thông qua Tailwind config:
+- Primary: #1890ff (Blue)
+- Success: #52c41a (Green)
+- Warning: #faad14 (Yellow)
+- Error: #f5222d (Red)
+- Purple: #722ed1
 
-```javascript
-// tailwind.config.js
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        auction: {
-          primary: "#3b82f6",
-          success: "#10b981",
-          warning: "#f59e0b",
-          danger: "#ef4444",
-        },
-      },
-    },
-  },
-};
-```
+## Responsive Design
 
-### Component Props
+- **Mobile (xs)**: < 576px - Stack layout, smaller fonts
+- **Tablet (sm)**: ≥ 576px - 2 columns layout
+- **Desktop (lg)**: ≥ 992px - Full layout với 3 columns
 
-```typescript
-// StatsOverview
-interface StatsOverviewProps {
-  stats: RoundDetailStats;
-  loading?: boolean;
-}
+## Performance
 
-// BidList
-interface BidListProps {
-  bids: ExtendedAuctionRoundPrice[];
-  loading?: boolean;
-  onRefresh?: () => void;
-}
-```
+- Pagination để giảm tải dữ liệu lớn
+- Memo cho các component con
+- Lazy loading cho images
+- Virtual scrolling cho bảng lớn
 
-## Performance Considerations
+## Accessibility
 
-### Optimization Features
-
-- **Virtual Scrolling**: For large bid lists (>1000 items)
-- **Memoization**: React.memo for expensive components
-- **Lazy Loading**: Components and data
-- **Debounced Search**: 300ms delay
-- **Pagination**: 20 items per page default
-
-### Bundle Size
-
-- **Main Component**: ~45KB gzipped
-- **Dependencies**: Antd icons, date formatting
-- **Total Impact**: ~60KB additional
+- ARIA labels cho screen readers
+- Keyboard navigation support
+- Color contrast tuân thủ WCAG
+- Focus indicators rõ ràng
 
 ## Browser Support
 
-- ✅ Chrome 90+
-- ✅ Firefox 88+
-- ✅ Safari 14+
-- ✅ Edge 90+
-- ✅ Mobile browsers
+- Chrome ≥ 70
+- Firefox ≥ 60
+- Safari ≥ 12
+- Edge ≥ 79
 
-## Testing
+## Phát triển tiếp
 
-### Unit Tests Required
+### Tính năng dự kiến
 
-- [ ] Stats calculations
-- [ ] Currency formatting
-- [ ] Time formatting
-- [ ] Filter functionality
-- [ ] Sort functionality
+- [ ] Export dữ liệu Excel/PDF
+- [ ] Real-time updates với WebSocket
+- [ ] Advanced filters và search
+- [ ] Audit trail cho actions
+- [ ] Email notifications
+- [ ] Mobile app version
 
-### Integration Tests
+### Optimization
 
-- [ ] API calls
-- [ ] Navigation
-- [ ] Export functionality
-- [ ] Real-time updates
-
-## Future Enhancements
-
-- [ ] Real-time updates via WebSocket
-- [ ] Advanced filtering (date range, price range)
-- [ ] Chart visualizations
-- [ ] PDF report generation
-- [ ] Mobile app optimization
-- [ ] Accessibility improvements (WCAG 2.1 AA)
-- [ ] Dark mode support
+- [ ] Code splitting
+- [ ] Bundle size optimization
+- [ ] Performance monitoring
+- [ ] Error boundary implementation

@@ -20,6 +20,8 @@ const AuctionResultsAnonymous = React.lazy(
 const NotFound = React.lazy(() => import("../components/Common/NotFound/index"));
 const AuctionListAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionList/index"));
 const AuctionDetailAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionDetail/index"));
+const AuctionRoundDetail = React.lazy(() => import("../pages/Auctioneer/AuctionRoundDetail/index"));
+
 
 export const guestRoutes = [
   {
@@ -245,11 +247,6 @@ const DashboardAuctioneer = React.lazy(() =>
 const AuctionRound = React.lazy(() =>
   import("../pages/Auctioneer/AuctionRounds/index")
 )
-
-const AuctionRoundDetail = React.lazy(() =>
-  import("../pages/Auctioneer/AuctionRoundDetail/index")
-)
-
 
 export const auctioneerRoutes = [
   {
