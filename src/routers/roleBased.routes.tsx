@@ -22,7 +22,6 @@ const AuctionListAnonymous = React.lazy(() => import("../pages/Anonymous/Auction
 const AuctionDetailAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionDetail/index"));
 const AuctionRoundDetail = React.lazy(() => import("../pages/Auctioneer/AuctionRoundDetail/index"));
 
-
 export const guestRoutes = [
   {
     path: GUEST_ROUTERS.HOME,
@@ -147,8 +146,11 @@ const SupportRegisterAuction = React.lazy(
 
 const listAcutionNow = React.lazy(() => import("../pages/Auctioneer/ListAuctionNow/index"));
 
-const ListAuctionAssigned = React.lazy(() =>
-  import("../pages/Auctioneer/ListAuctionAssigned/index"))
+const ListAuctionAssigned = React.lazy(
+  () => import("../pages/Auctioneer/ListAuctionAssigned/index")
+);
+
+const ListBlog = React.lazy(() => import("../pages/Staff/ManageBlog/index"));
 
 export const staffRoutes = [
   {
@@ -211,6 +213,10 @@ export const staffRoutes = [
     path: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_DRAFF,
     element: wrapWithLazy(AuctionDetailDraff),
   },
+  {
+    path: STAFF_ROUTES.SUB.LIST_BLOG,
+    element: wrapWithLazy(ListBlog),
+  },
 ];
 
 // Router site Admin
@@ -239,14 +245,9 @@ export const managerRoutes = [
   },
 ];
 
+const DashboardAuctioneer = React.lazy(() => import("../pages/Auctioneer/Dashboard/index"));
 
-const DashboardAuctioneer = React.lazy(() =>
-  import("../pages/Auctioneer/Dashboard/index")
-)
-
-const AuctionRound = React.lazy(() =>
-  import("../pages/Auctioneer/AuctionRounds/index")
-)
+const AuctionRound = React.lazy(() => import("../pages/Auctioneer/AuctionRounds/index"));
 
 export const auctioneerRoutes = [
   {
@@ -270,7 +271,12 @@ export const auctioneerRoutes = [
     element: wrapWithLazy(AuctionRound),
   },
   {
-    path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW + "/" + AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW + `/` + AUCTIONEER_ROUTES.SUB.AUCTION_ROUND_DETAIL,
+    path:
+      AUCTIONEER_ROUTES.SUB.AUCTION_NOW +
+      "/" +
+      AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW +
+      `/` +
+      AUCTIONEER_ROUTES.SUB.AUCTION_ROUND_DETAIL,
     element: wrapWithLazy(AuctionRoundDetail),
-  }
+  },
 ];

@@ -10,7 +10,7 @@ const { Title } = Typography;
 
 const RegistedAuctionDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  console.log("ID from params:", id);
+  console.log("RegistedAuctionDetail ID:", id);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [documents, setDocuments] = useState<AuctionDocument[]>([]);
@@ -139,7 +139,11 @@ const RegistedAuctionDetail: React.FC = () => {
       <StatisticsOverview statistics={statistics} />
 
       {/* Applications List Component */}
-      <ApplicationsList filteredDocuments={filteredDocuments} documents={documents} />
+      <ApplicationsList
+        filteredDocuments={filteredDocuments}
+        documents={documents}
+        auctionId={id || ""}
+      />
     </div>
   );
 };

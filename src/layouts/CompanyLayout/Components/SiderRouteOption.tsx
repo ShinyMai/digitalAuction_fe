@@ -11,6 +11,7 @@ import {
   StopOutlined,
   HistoryOutlined,
   FileSearchOutlined,
+  FormOutlined,
 } from "@ant-design/icons";
 import { Menu, type MenuProps, Button, Tooltip } from "antd";
 import React, { useMemo } from "react";
@@ -106,6 +107,13 @@ const items: MenuItem[] = [
     url: AUCTIONEER_ROUTES.SUB.DASHBOARD,
     roleView: ["Auctioneer"],
   },
+  {
+    key: "12",
+    icon: <FormOutlined className="text-xl" />,
+    label: "Quản lý tin tức",
+    url: STAFF_ROUTES.SUB.LIST_BLOG,
+    roleView: ["Staff", "Manager"],
+  },
 ].map((item) => ({
   ...item,
   icon: React.createElement(item.icon.type),
@@ -157,13 +165,15 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
   };
   return (
     <div
-      className={`h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm transition-all duration-300 ${collapsed ? "w-20" : "w-full"
-        }`}
+      className={`h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm transition-all duration-300 ${
+        collapsed ? "w-20" : "w-full"
+      }`}
     >
       {/* Header with Logo and Collapse Button */}
       <div
-        className={`flex items-center justify-between bg-gradient-to-r from-sky-100 to-sky-50 border-b border-sky-200 transition-all duration-300 ${collapsed ? "h-20 px-2" : "h-28 px-4"
-          }`}
+        className={`flex items-center justify-between bg-gradient-to-r from-sky-100 to-sky-50 border-b border-sky-200 transition-all duration-300 ${
+          collapsed ? "h-20 px-2" : "h-28 px-4"
+        }`}
       >
         {!collapsed && (
           <img
@@ -178,8 +188,9 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={handleCollapse}
-            className={`flex items-center justify-center text-sky-600 hover:text-sky-800 hover:bg-sky-100 border-sky-300 transition-all duration-300 ${collapsed ? "w-12 h-12 rounded-xl" : "w-10 h-10 rounded-lg ml-2"
-              }`}
+            className={`flex items-center justify-center text-sky-600 hover:text-sky-800 hover:bg-sky-100 border-sky-300 transition-all duration-300 ${
+              collapsed ? "w-12 h-12 rounded-xl" : "w-10 h-10 rounded-lg ml-2"
+            }`}
             style={{
               boxShadow: collapsed
                 ? "0 4px 12px rgba(0, 0, 0, 0.1)"
@@ -215,10 +226,11 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
               title: collapsed ? item.label : undefined,
             })) as MenuProps["items"]
           }
-          className={`w-full bg-transparent border-none transition-all duration-300 ${collapsed
-            ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
-            : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
-            } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900`}
+          className={`w-full bg-transparent border-none transition-all duration-300 ${
+            collapsed
+              ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
+              : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
+          } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900`}
           style={{
             backgroundColor: "transparent",
             border: "none",

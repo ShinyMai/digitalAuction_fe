@@ -11,9 +11,10 @@ dayjs.extend(duration);
 
 interface Props {
   dataCard: AuctionDataList;
+  onViewResults?: (auctionId: string) => void;
 }
 
-const AuctionCard = ({ dataCard }: Props) => {
+const AuctionCard = ({ dataCard, onViewResults }: Props) => {
   const navigate = useNavigate();
 
   // State để lưu thời gian đếm ngược hoặc trạng thái hết hạn
@@ -55,15 +56,10 @@ const AuctionCard = ({ dataCard }: Props) => {
     <div className="group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden hover-lift animate-slide-in-up">
       {/* Status Badge */}
       <div className="absolute top-4 right-4 z-10">
-        <div
-          className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
-            isExpired ? "bg-red-500/90 text-white" : "bg-green-500/90 text-white animate-pulse-glow"
-          }`}
-        >
-          {isExpired ? "📛 Hết hạn" : "✅ Đang mở"}
+        <div className="px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm bg-green-500/90 text-white">
+          ✅ Đã hoàn thành
         </div>
       </div>
-
       {/* Image Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -83,14 +79,12 @@ const AuctionCard = ({ dataCard }: Props) => {
           </button>
         </div>
       </div>
-
       {/* Content Section */}
       <div className="p-6 space-y-4">
         {/* Title */}
         <h3 className="text-xl font-bold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
           {dataCard.auctionName}
         </h3>
-
         {/* Info Grid */}
         <div className="space-y-3">
           {/* Auction Date */}
@@ -138,26 +132,18 @@ const AuctionCard = ({ dataCard }: Props) => {
             </div>
           </div>
         </div>
-
-        {/* Action Button */}
-        <button
-          onClick={() =>
-            navigate(STAFF_ROUTES.SUB.AUCTION_DETAIL, {
-              state: { key: dataCard.auctionId },
-              replace: true,
-            })
-          }
-          className={`w-full py-3 px-6 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 hover:-translate-y-1 ${
-            isExpired
-              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-              : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl glow-button"
-          }`}
-          disabled={isExpired}
-        >
-          {isExpired ? "Đã hết hạn" : "Xem chi tiết phiên đấu giá"}
-        </button>
+        {/* Action Buttons */}
+        <div className="space-y-2">
+          {onViewResults && (
+            <button
+              onClick={() => onViewResults(dataCard.auctionId)}
+              className="w-full py-3 px-6 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 hover:-translate-y-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl glow-button"
+            >
+              🏆 Xem kết quả đấu giá
+            </button>
+          )}
+        </div>
       </div>
-
       {/* Decorative Elements */}
       <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full -translate-y-10 translate-x-10 group-hover:scale-150 transition-transform duration-700"></div>
       <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-orange-400/20 to-pink-400/20 rounded-full translate-y-8 -translate-x-8 group-hover:scale-150 transition-transform duration-700"></div>

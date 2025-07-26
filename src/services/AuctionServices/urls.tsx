@@ -5,6 +5,8 @@ export const AuctionAPI = {
   AUCTION_LIST: "/List",
   AUCTION_LIST_PUBLIC_NODE: "/auctions/listAuctionPublic",
   AUCTION_DETAIL: "/Detail",
+  RESULT_AUCTION_DETAIL: "/AuctionAssets/highest-bids",
+  FIND_HIGHEST_PRICE_AND_FLAG: "/AuctionDocuments/find-highest-price-and-flag",
   AUCTION_DETAIL_NODE: "/auctions/getAuctionById",
   AUCTION_REGISTER_ASSET: "/RegisterAuctionDocument/Register-Auction-Document",
   AUCTION_DOCUMENT_LIST: "/ListDocuments",
@@ -22,7 +24,7 @@ export const AuctionAPI = {
   LIST_AUCTION_DOCUMENT_REGISTED: "AuctionDocumentRegisted/Auction-Document-Registed",
   CREATE_AUCTION_ROUND: "/CreateAuctionRound",
   GET_LIST_AUCTION_ROUND: "/ListAuctionRound",
-  SAVE_LIST_AUCTION_ROUND_PRICE: "/SaveListPrices"
+  SAVE_LIST_AUCTION_ROUND_PRICE: "/SaveListPrices",
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;

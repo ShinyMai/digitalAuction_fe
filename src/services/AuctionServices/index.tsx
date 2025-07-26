@@ -23,6 +23,12 @@ const getListAuctionNode = (params?: any): Promise<ApiResponse<any>> =>
 const getAuctionDetail = (params?: string): Promise<ApiResponse<any>> =>
   http.get(`${AuctionAPI.AUCTION_DETAIL}/${params}`);
 
+const getResultAuctionDetail = (auctionId: string, params?: any): Promise<ApiResponse<any>> =>
+  http.get(`${AuctionAPI.RESULT_AUCTION_DETAIL}/${auctionId}`, { params });
+
+const findHighestPriceAndFlag = (auctionId: string): Promise<ApiResponse<any>> =>
+  http.get(`${AuctionAPI.FIND_HIGHEST_PRICE_AND_FLAG}/${auctionId}`);
+
 const getAuctionDetailNode = (params?: string): Promise<ApiResponse<any>> =>
   httpNode.get(`${AuctionAPI.AUCTION_DETAIL_NODE}/${params}`);
 
@@ -76,6 +82,8 @@ const AuctionServices = {
   getListAuctionCategory,
   getListAuction,
   getAuctionDetail,
+  getResultAuctionDetail,
+  findHighestPriceAndFlag,
   registerAuctionAsset,
   getListAuctionDocument,
   assginAuctioneerAndPublicAuction,
@@ -93,7 +101,7 @@ const AuctionServices = {
   getListAuctionDocumentRegisted,
   createAuctionRound,
   getListAuctionRound,
-  saveListAuctionRoundPrice
+  saveListAuctionRoundPrice,
 };
 
 export default AuctionServices;

@@ -38,6 +38,7 @@ export const STAFF_ROUTES = {
     SUPPORT_REGISTER_AUCTION: "support-register-auction",
     AUCTION_NOW: "auction_now",
     AUCTION_DETAIL_NOW: "auction-detail-now",
+    LIST_BLOG: "list-blog",
   },
 };
 
@@ -67,5 +68,6 @@ export const MANAGER_ROUTES = {
   SUB: {
     AUCTION_LIST_CANCEL: "auction-list-cancel",
     AUCTION_DETAIL_CANCEL: "auction-detail-cancel",
+    LIST_BLOG: "list-blog",
   },
 };

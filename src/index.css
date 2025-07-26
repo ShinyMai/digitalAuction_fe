@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=WDXL+Lubrifont+TC&display=swap');
 @import "tailwindcss";
 
+/* Import auction results styles */
+@import "./styles/auction-results.css";
+
 /* Global CSS Variables for Design System */
 :root {
   --primary-gradient: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);

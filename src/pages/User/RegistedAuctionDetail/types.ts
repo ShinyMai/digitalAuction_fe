@@ -11,6 +11,22 @@ export interface AuctionDocument {
   tagName: string;
 }
 
+// Auction status data from API
+export interface AuctionStatusData {
+  price: number;
+  flag: boolean;
+}
+
+export interface AuctionStatusResponse {
+  code: number;
+  message: string;
+  data: {
+    data: {
+      [auctionDocumentsId: string]: AuctionStatusData[];
+    };
+  };
+}
+
 // Additional document interface for detail view
 export interface DocumentDetail {
   documentId: string;
