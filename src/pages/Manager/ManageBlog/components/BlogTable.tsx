@@ -10,10 +10,10 @@ import {
 } from "antd";
 import { EditOutlined, DeleteOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-import type { BlogData } from "../types";
-import { getBlogStatusTag } from "../utils";
 import NewsServices from "../../../../services/NewsService";
 import type { ApiResponse } from "../../../../types/responseAxios";
+import type { BlogData } from "../../../Staff/ManageBlog/types";
+import { getBlogStatusTag } from "../../../Staff/ManageBlog/utils";
 
 interface BlogTableProps {
   blogData: BlogData[];

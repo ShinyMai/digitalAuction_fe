@@ -233,6 +233,9 @@ export const adminRoutes = [
   },
 ];
 
+// Router site Manager
+const ListBlogManager = React.lazy(() => import("../pages/Manager/ManageBlog/index"));
+
 export const managerRoutes = [
   ...staffRoutes,
   {
@@ -243,13 +246,17 @@ export const managerRoutes = [
     path: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL + "/" + MANAGER_ROUTES.SUB.AUCTION_DETAIL_CANCEL,
     element: wrapWithLazy(AuctionDetailCancel),
   },
+  {
+    path: MANAGER_ROUTES.SUB.LIST_BLOG,
+    element: wrapWithLazy(ListBlogManager),
+  },
 ];
 
 const DashboardAuctioneer = React.lazy(() => import("../pages/Auctioneer/Dashboard/index"));
 
 const AuctionRound = React.lazy(() => import("../pages/Auctioneer/AuctionRounds/index"));
 
-const Reports = React.lazy(() => import("../pages/Auctioneer/Reports/index"));
+// const Reports = React.lazy(() => import("../pages/Auctioneer/Reports/index"));
 
 export const auctioneerRoutes = [
   {

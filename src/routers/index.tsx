@@ -69,6 +69,6 @@ export const MANAGER_ROUTES = {
   SUB: {
     AUCTION_LIST_CANCEL: "auction-list-cancel",
     AUCTION_DETAIL_CANCEL: "auction-detail-cancel",
-    LIST_BLOG: "list-blog",
+    LIST_BLOG: "list-blog-manager",
   },
 };

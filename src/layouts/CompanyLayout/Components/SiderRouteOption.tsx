@@ -119,7 +119,14 @@ const items: MenuItem[] = [
     icon: <FormOutlined className="text-xl" />,
     label: "Quản lý tin tức",
     url: STAFF_ROUTES.SUB.LIST_BLOG,
-    roleView: ["Staff", "Manager"],
+    roleView: ["Staff"],
+  },
+  {
+    key: "13",
+    icon: <FormOutlined className="text-xl" />,
+    label: "Quản lý tin tức",
+    url: MANAGER_ROUTES.SUB.LIST_BLOG,
+    roleView: ["Manager"],
   },
 ].map((item) => ({
   ...item,

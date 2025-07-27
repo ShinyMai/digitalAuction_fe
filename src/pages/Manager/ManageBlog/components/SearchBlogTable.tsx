@@ -1,7 +1,7 @@
 import { Form, Input, Select, Button } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { SearchOutlined, ClearOutlined, PlusOutlined } from "@ant-design/icons";
-import { BlogStatusOptions, BlogStatus } from "../types";
+import { BlogStatus, BlogStatusOptions } from "../../../Staff/ManageBlog/types";
 
 interface SearchValue {
   searchTitle?: string;
@@ -39,7 +39,7 @@ const SearchBlogTable = ({ onSearch, onAddNew }: Props) => {
           <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
             <SearchOutlined className="text-white text-sm" />
           </div>
-          <h3 className="text-xl font-bold text-gray-800">Tìm kiếm & Lọc bài viết</h3>
+          <h3 className="text-xl font-bold text-gray-800">Tìm kiếm & Lọc bài viết hihi</h3>
         </div>
 
         {onAddNew && (

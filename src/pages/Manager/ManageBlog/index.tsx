@@ -3,10 +3,8 @@ import { toast } from "react-toastify";
 import NewsServices from "../../../services/NewsService";
 import BlogTable from "./components/BlogTable";
 import SearchBlogTable from "./components/SearchBlogTable";
-import CreateOrEditBlog from "./modal/CreateOrEditBlog";
-import DetailBlog from "./modal/DetailBlog";
-import type { BlogData, BlogResponse, BlogParams } from "./types";
 import type { ApiResponse } from "../../../types/responseAxios";
+import type { BlogData, BlogParams, BlogResponse } from "../../Staff/ManageBlog/types";
 
 interface SearchParams {
   SearchTitle?: string;
@@ -35,10 +33,6 @@ const ManageBlog = () => {
   const [totalData, setTotalData] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useState<SearchParams>(DEFAULT_PARAMS);
-  const [createBlogOpen, setCreateBlogOpen] = useState<boolean>(false);
-  const [selectedBlogForEdit, setSelectedBlogForEdit] = useState<BlogData | undefined>(undefined);
-  const [detailBlogOpen, setDetailBlogOpen] = useState<boolean>(false);
-  const [selectedBlogForDetail, setSelectedBlogForDetail] = useState<BlogData | null>(null);
   const fetchBlogList = useCallback(async (): Promise<void> => {
     try {
       setLoading(true);
@@ -111,41 +105,6 @@ const ManageBlog = () => {
 
     setSearchParams(newParams);
   };
-  const handleView = (record: BlogData): void => {
-    setSelectedBlogForDetail(record);
-    setDetailBlogOpen(true);
-  };
-
-  const handleEdit = (record: BlogData): void => {
-    setSelectedBlogForEdit(record);
-    setCreateBlogOpen(true);
-  };
-
-  const handleAddNew = (): void => {
-    setSelectedBlogForEdit(undefined);
-    setCreateBlogOpen(true);
-  };
-  const handleModalClose = (): void => {
-    setCreateBlogOpen(false);
-    setSelectedBlogForEdit(undefined);
-  };
-
-  const handleDetailModalClose = (): void => {
-    setDetailBlogOpen(false);
-    setSelectedBlogForDetail(null);
-  };
-
-  const handleDetailModalEdit = (blog: BlogData): void => {
-    setSelectedBlogForEdit(blog);
-    setCreateBlogOpen(true);
-    setDetailBlogOpen(false);
-    setSelectedBlogForDetail(null);
-  };
-
-  const handleCreateBlogSuccess = (): void => {
-    fetchBlogList();
-    handleModalClose();
-  };
 
   return (
     <section className="w-full h-full p-6 bg-gray-50 min-h-screen">
@@ -154,34 +113,16 @@ const ManageBlog = () => {
         <div className="w-full" id="blog-table-list">
           <BlogTable
             blogData={blogList}
-            headerTable={<SearchBlogTable onSearch={onSearch} onAddNew={handleAddNew} />}
+            headerTable={<SearchBlogTable onSearch={onSearch} />}
             onChange={onChangeTable}
             total={totalData}
             loading={loading}
             pageSize={searchParams.PageSize}
             currentPage={searchParams.PageNumber}
-            onEdit={handleEdit}
-            onRowClick={handleView}
             onStatusChange={fetchBlogList}
           />
         </div>
       </div>
-
-      {/* Create/Edit Blog Modal */}
-      <CreateOrEditBlog
-        open={createBlogOpen}
-        onCancel={handleModalClose}
-        onSuccess={handleCreateBlogSuccess}
-        blogData={selectedBlogForEdit}
-      />
-
-      {/* Detail Blog Modal */}
-      <DetailBlog
-        open={detailBlogOpen}
-        onCancel={handleDetailModalClose}
-        blogData={selectedBlogForDetail}
-        onEdit={handleDetailModalEdit}
-      />
     </section>
   );
 };
