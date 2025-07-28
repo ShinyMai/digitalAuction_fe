@@ -14,12 +14,6 @@ const SearchAuctionTable = ({
 }: Props) => {
   const [form] = useForm();
 
-  const optionSearchbyStatus = [
-    { label: "Đang thu hồ sơ", value: 1 },
-    { label: "Chuẩn bị đấu giá", value: 2 },
-    { label: "Đang diễn ra", value: 3 },
-  ];
-
   const optionSearchbyType = [
     { label: "Đấu giá từng tài sản", value: "1" },
     { label: "Đấu giá theo lô", value: "2" },
@@ -65,21 +59,6 @@ const SearchAuctionTable = ({
             placeholder="Danh mục tài sản"
             options={dataAuctionCategoryList}
             onSelect={(val) => console.log(val)}
-            allowClear
-          />
-        </Form.Item>
-        <Form.Item
-          name="ConditionAuction"
-          className="flex-1 min-w-[200px]"
-          label="Tình trạng buổi đấu giá"
-        >
-          <Select
-            className="w-full rounded-lg"
-            style={{ height: "40px" }}
-            placeholder="Danh mục tài sản"
-            defaultValue={1}
-            options={optionSearchbyStatus}
-            onSelect={(val) => console.log("Check", val)}
             allowClear
           />
         </Form.Item>

@@ -33,11 +33,12 @@ export const STAFF_ROUTES = {
     PERSONNEL: "personnel",
     AUCTION_DETAIL: "auction-detail",
     NOT_FOUND: "not-found",
-
     SUPPORT_REGISTER_AUCTION: "support-register-auction",
     AUCTION_NOW: "auction_now",
     AUCTION_DETAIL_NOW: "auction-detail-now",
     LIST_BLOG: "list-blog",
+    AUCTION_LIST_DRAFF: "auction-list-draff",
+    AUCTION_DETAIL_DRAFF: "auction-detail-draff",
   },
 };
 

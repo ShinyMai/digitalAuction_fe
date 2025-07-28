@@ -5,13 +5,22 @@ import {
   UserAddOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  FileAddOutlined,
   SolutionOutlined,
+  FormOutlined,
+  PieChartOutlined,
+  LineChartOutlined,
+  DashboardOutlined,
+  FileSearchOutlined,
   ClockCircleOutlined,
+  FileAddOutlined,
+  CalendarOutlined,
   StopOutlined,
   HistoryOutlined,
-  FileSearchOutlined,
-  FormOutlined,
+  CustomerServiceOutlined,
+  ContactsOutlined,
+  UserOutlined,
+  EditOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import { Menu, type MenuProps, Button, Tooltip } from "antd";
 import React, { useMemo } from "react";
@@ -22,116 +31,161 @@ import { assets } from "../../../assets";
 
 interface MenuItem {
   key: string;
-  icon: React.ReactElement;
+  icon?: React.ReactElement;
   label: string;
   url?: string;
-  statusSubMenu?: string;
   roleView: string[];
+  children?: MenuItem[];
+  type?: 'group';
 }
 
 const items: MenuItem[] = [
   {
-    key: "1",
+    key: "dashboard",
     icon: <BarChartOutlined className="text-xl" />,
-    label: "Thống kê",
-    url: STAFF_ROUTES.SUB.STATISTICS,
-    roleView: ["Manager", "Director", "Admin"],
+    label: "Dashboard & Thống kê",
+    roleView: ["Manager", "Director", "Admin", "Auctioneer"],
+    children: [
+      {
+        key: "1",
+        icon: <PieChartOutlined />,
+        label: "Thống kê tổng quan",
+        url: STAFF_ROUTES.SUB.STATISTICS,
+        roleView: ["Manager", "Director", "Admin"],
+      },
+      {
+        key: "11",
+        icon: <LineChartOutlined />,
+        label: "Báo cáo & Thống kê",
+        url: AUCTIONEER_ROUTES.SUB.REPORTS,
+        roleView: ["Auctioneer"],
+      },
+      {
+        key: "12",
+        icon: <DashboardOutlined />,
+        label: "Dashboard ( Chưa API )",
+        url: AUCTIONEER_ROUTES.SUB.DASHBOARD,
+        roleView: ["Auctioneer"],
+      },
+    ],
   },
   {
-    key: "2",
-    icon: <FileSearchOutlined className="text-xl" />,
-    label: "Phiên đấu giá đang thu hồ sơ",
-    url: STAFF_ROUTES.SUB.AUCTION_LIST,
-    roleView: ["Staff", "Director", "Manager"],
-  },
-  {
-    key: "3",
+    key: "auction-management",
     icon: <SolutionOutlined className="text-xl" />,
-    label: "Bản nháp phiên đấu giá",
-    url: MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC,
-    roleView: ["Manager"],
+    label: "Quản lý đấu giá",
+    roleView: ["Staff", "Manager", "Director", "Auctioneer"],
+    children: [
+      {
+        key: "2",
+        icon: <FileSearchOutlined />,
+        label: "Đang thu hồ sơ",
+        url: STAFF_ROUTES.SUB.AUCTION_LIST,
+        roleView: ["Staff", "Director", "Manager"],
+      },
+      {
+        key: "3",
+        icon: <ClockCircleOutlined />,
+        label: "Đợi duyệt",
+        url: MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC,
+        roleView: ["Manager"],
+      },
+      {
+        key: "4",
+        icon: <FileAddOutlined />,
+        label: "Tạo phiên đấu giá",
+        url: STAFF_ROUTES.SUB.POST_AUCTION,
+        roleView: ["Staff"],
+      },
+      {
+        key: "8",
+        icon: <CalendarOutlined />,
+        label: "Tổ chức hôm nay",
+        url: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
+        roleView: ["Manager", "Staff", "Auctioneer"],
+      },
+      {
+        key: "9",
+        icon: <StopOutlined />,
+        label: "Đã hủy",
+        url: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL,
+        roleView: ["Manager", "Staff"],
+      },
+      {
+        key: "10",
+        icon: <HistoryOutlined />,
+        label: "Phiên đấu giá đã tham gia",
+        url: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
+        roleView: ["Auctioneer"],
+      },
+      {
+        key: "10",
+        icon: <HistoryOutlined />,
+        label: "Bản nháp đấu giá",
+        url: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF,
+        roleView: ["Staff"],
+      },
+    ],
   },
   {
-    key: "4",
-    icon: <FileAddOutlined className="text-xl" />,
-    label: "Tạo phiên đấu giá",
-    url: STAFF_ROUTES.SUB.POST_AUCTION,
-    roleView: ["Staff"],
-  },
-  {
-    key: "5",
-    icon: <SolutionOutlined className="text-xl" />,
-    label: "Hỗ trợ đăng ký tham gia đấu giá",
-    url: STAFF_ROUTES.SUB.SUPPORT_REGISTER_AUCTION,
-    roleView: ["Staff"],
-  },
-  {
-    key: "6",
+    key: "support-management",
     icon: <TeamOutlined className="text-xl" />,
-    label: "Quản lý nhân sự",
-    url: STAFF_ROUTES.SUB.PROPERTIES,
-    roleView: ["Director", "Manager"],
-  },
-  {
-    key: "7",
-    icon: <UserAddOutlined className="text-xl" />,
-    label: "Tạo tài khoản mới",
-    url: ADMIN_ROUTES.SUB.ADD_EMPLOYEES,
-    roleView: ["Admin"],
-  },
-  {
-    key: "8",
-    icon: <ClockCircleOutlined className="text-xl" />,
-    label: "Phiên đấu giá hiện tại",
-    url: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
-    roleView: ["Manager", "Staff", "Auctioneer"],
-  },
-  {
-    key: "9",
-    icon: <StopOutlined className="text-xl" />,
-    label: "Phiên đấu giá bị hủy",
-    url: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL,
-    roleView: ["Manager", "Staff"],
-  },
-  {
-    key: "10",
-    icon: <HistoryOutlined className="text-xl" />,
-    label: "Phiên đấu giá đã tham gia",
-    url: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
-    roleView: ["Auctioneer"],
-  },
-  {
-    key: "11",
-    icon: <BarChartOutlined className="text-xl" />,
-    label: "Báo cáo & Thống kê",
-    url: AUCTIONEER_ROUTES.SUB.REPORTS,
-    roleView: ["Auctioneer"],
-  },
-  {
-    key: "12",
-    icon: <HistoryOutlined className="text-xl" />,
-    label: "Dashboard ( Chưa API )",
-    url: AUCTIONEER_ROUTES.SUB.DASHBOARD,
-    roleView: ["Auctioneer"],
-  },
-  {
-    key: "12",
-    icon: <FormOutlined className="text-xl" />,
-    label: "Quản lý tin tức",
-    url: STAFF_ROUTES.SUB.LIST_BLOG,
+    label: "Hỗ trợ & Dịch vụ",
     roleView: ["Staff"],
+    children: [
+      {
+        key: "5",
+        icon: <CustomerServiceOutlined />,
+        label: "Hỗ trợ đăng ký tham gia đấu giá",
+        url: STAFF_ROUTES.SUB.SUPPORT_REGISTER_AUCTION,
+        roleView: ["Staff"],
+      },
+    ],
   },
   {
-    key: "13",
-    icon: <FormOutlined className="text-xl" />,
-    label: "Quản lý tin tức",
-    url: MANAGER_ROUTES.SUB.LIST_BLOG,
-    roleView: ["Manager"],
+    key: "user-management",
+    icon: <UserAddOutlined className="text-xl" />,
+    label: "Quản lý người dùng",
+    roleView: ["Director", "Manager", "Admin"],
+    children: [
+      {
+        key: "6",
+        icon: <ContactsOutlined />,
+        label: "Quản lý nhân sự",
+        url: STAFF_ROUTES.SUB.PROPERTIES,
+        roleView: ["Director", "Manager"],
+      },
+      {
+        key: "7",
+        icon: <UserOutlined />,
+        label: "Tạo tài khoản mới",
+        url: ADMIN_ROUTES.SUB.ADD_EMPLOYEES,
+        roleView: ["Admin"],
+      },
+    ],
   },
-].map((item) => ({
-  ...item,
-  icon: React.createElement(item.icon.type),
-}));
+  {
+    key: "content-management",
+    icon: <FormOutlined className="text-xl" />,
+    label: "Quản lý nội dung",
+    roleView: ["Staff", "Manager"],
+    children: [
+      {
+        key: "13",
+        icon: <EditOutlined />,
+        label: "Quản lý tin tức (Staff)",
+        url: STAFF_ROUTES.SUB.LIST_BLOG,
+        roleView: ["Staff"],
+      },
+      {
+        key: "14",
+        icon: <SettingOutlined />,
+        label: "Quản lý tin tức (Manager)",
+        url: MANAGER_ROUTES.SUB.LIST_BLOG,
+        roleView: ["Manager"],
+      },
+    ],
+  },
+];
 
 interface SiderRouteOptionProps {
   collapsed?: boolean;
@@ -144,10 +198,34 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
   const { user } = useSelector((state: any) => state.auth);
   const role = user?.roleName;
 
-  const filteredItems = useMemo(
-    () => items.filter((item) => role && item.roleView.includes(role)),
-    [role]
-  );
+  const filteredItems = useMemo(() => {
+    const filterMenuItems = (menuItems: MenuItem[]): MenuItem[] => {
+      return menuItems
+        .map((item) => {
+          if (item.children) {
+            // Filter children based on role
+            const filteredChildren = item.children.filter((child) =>
+              role && child.roleView.includes(role)
+            );
+
+            // Only include parent if it has visible children or if user has permission
+            if (filteredChildren.length > 0 && item.roleView.includes(role || '')) {
+              return {
+                ...item,
+                children: filteredChildren,
+              };
+            }
+            return null;
+          } else {
+            // For items without children, check role permission
+            return role && item.roleView.includes(role) ? item : null;
+          }
+        })
+        .filter((item): item is MenuItem => item !== null);
+    };
+
+    return filterMenuItems(items);
+  }, [role]);
 
   const handleCollapse = () => {
     const newCollapsed = !collapsed;
@@ -158,19 +236,61 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
     const pathname = location.pathname;
     const rolePath = role?.toLowerCase();
     const routeWithoutRole = pathname.replace(`/${rolePath}/`, "");
-    let currentKey = filteredItems[0]?.key || "1";
 
-    for (const item of filteredItems) {
-      if (routeWithoutRole === item.url || routeWithoutRole.startsWith(item.url || "/")) {
-        currentKey = item.key;
+    // Find current key in nested structure
+    let currentKey = "";
+
+    const findKeyInItems = (menuItems: MenuItem[]): string => {
+      for (const item of menuItems) {
+        if (item.children) {
+          for (const child of item.children) {
+            if (child.url && (routeWithoutRole === child.url || routeWithoutRole.startsWith(child.url))) {
+              return child.key;
+            }
+          }
+        } else if (item.url && (routeWithoutRole === item.url || routeWithoutRole.startsWith(item.url))) {
+          return item.key;
+        }
+      }
+      return "";
+    };
+
+    currentKey = findKeyInItems(filteredItems);
+
+    // Fallback to first available item
+    if (!currentKey) {
+      const firstItem = filteredItems[0];
+      if (firstItem?.children && firstItem.children.length > 0) {
+        currentKey = firstItem.children[0].key;
+      } else if (firstItem) {
+        currentKey = firstItem.key;
       }
     }
+
     return currentKey;
   };
 
   const onClick: MenuProps["onClick"] = (e) => {
-    const item = filteredItems.find((i) => i.key === e.key);
-    if (item) {
+    // Find the clicked item in nested structure
+    const findItemByKey = (menuItems: MenuItem[], key: string): MenuItem | null => {
+      for (const item of menuItems) {
+        if (item.key === key) {
+          return item;
+        }
+        if (item.children) {
+          for (const child of item.children) {
+            if (child.key === key) {
+              return child;
+            }
+          }
+        }
+      }
+      return null;
+    };
+
+    const item = findItemByKey(filteredItems, e.key);
+
+    if (item && item.url) {
       const rolePath = role?.toLowerCase();
       navigate(`/${rolePath}/${item.url}`, {
         replace: true,
@@ -228,19 +348,26 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
           theme="light"
           mode="inline"
           selectedKeys={[getCurrentKey()]}
-          defaultOpenKeys={["2"]}
+          defaultOpenKeys={filteredItems.map((item) => item.key)}
           inlineCollapsed={collapsed}
-          items={
-            filteredItems.map((item) => ({
-              ...item,
-              label: collapsed ? null : item.label,
-              title: collapsed ? item.label : undefined,
-            })) as MenuProps["items"]
-          }
+          items={filteredItems.map((item) => ({
+            key: item.key,
+            icon: item.icon,
+            label: collapsed ? null : item.label,
+            title: collapsed ? item.label : undefined,
+            children: item.children
+              ? item.children.map((child) => ({
+                key: child.key,
+                icon: child.icon,
+                label: child.label,
+                title: collapsed ? child.label : undefined,
+              }))
+              : undefined,
+          }))}
           className={`w-full bg-transparent border-none transition-all duration-300 ${collapsed
             ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
             : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
-            } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900`}
+            } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900 [&_.ant-menu-submenu-title]:text-sky-800 [&_.ant-menu-submenu-title]:font-semibold [&_.ant-menu-submenu-title:hover]:bg-sky-50 [&_.ant-menu-submenu-title:hover]:text-sky-900`}
           style={{
             backgroundColor: "transparent",
             border: "none",

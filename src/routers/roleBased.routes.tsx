@@ -151,6 +151,8 @@ const ListAuctionAssigned = React.lazy(
 );
 
 const ListBlog = React.lazy(() => import("../pages/Staff/ManageBlog/index"));
+const AuctionListDraff = React.lazy(() => import("../pages/Staff/AuctionListDraff/index"));
+const AuctionDetailDraff = React.lazy(() => import("../pages/Staff/AuctionDetailDraff/index"));
 
 export const staffRoutes = [
   {
@@ -209,6 +211,14 @@ export const staffRoutes = [
     path: STAFF_ROUTES.SUB.LIST_BLOG,
     element: wrapWithLazy(ListBlog),
   },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF,
+    element: wrapWithLazy(AuctionListDraff),
+  },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_DRAFF,
+    element: wrapWithLazy(AuctionDetailDraff),
+  }
 ];
 
 // Router site Admin
