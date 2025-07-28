@@ -148,7 +148,6 @@ const PriceHistoryTable = ({ priceHistory }: PriceHistoryTableProps) => {
                         />
                     ),
                 }}
-                scroll={{ x: 800 }}
                 size="middle"
                 className="custom-table"
             />

@@ -1,5 +1,5 @@
-import { Card, Statistic, Badge, Row, Col, Typography, Space, Divider } from "antd";
-import { UserOutlined, HomeOutlined, ClockCircleOutlined, SyncOutlined } from "@ant-design/icons";
+import { Card, Statistic, Badge, Row, Col, Typography, Space, Divider, Button } from "antd";
+import { UserOutlined, HomeOutlined, ClockCircleOutlined, SyncOutlined, StopOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
@@ -8,6 +8,7 @@ interface AuctionHeaderProps {
     totalParticipants: number;
     totalAssets: number;
     status?: 'active' | 'completed' | 'pending';
+    onEndAuction?: () => void; // Callback function for ending auction
 }
 
 const AuctionHeader = ({
@@ -15,6 +16,7 @@ const AuctionHeader = ({
     totalParticipants,
     totalAssets,
     status = 'active',
+    onEndAuction,
 }: AuctionHeaderProps) => {
     const getStatusBadge = () => {
         switch (status) {
@@ -65,24 +67,40 @@ const AuctionHeader = ({
                 </Col>
 
                 <Col xs={24} lg={8}>
-                    <Row gutter={24}>
-                        <Col xs={12} lg={24} xl={12}>
-                            <Statistic
-                                title="Người tham gia"
-                                value={totalParticipants}
-                                prefix={<UserOutlined />}
-                                valueStyle={{ color: '#1890ff' }}
-                            />
-                        </Col>
-                        <Col xs={12} lg={24} xl={12}>
-                            <Statistic
-                                title="Tài sản đấu giá"
-                                value={totalAssets}
-                                prefix={<HomeOutlined />}
-                                valueStyle={{ color: '#722ed1' }}
-                            />
-                        </Col>
-                    </Row>
+                    <Space direction="vertical" size="middle" className="!w-full">
+                        <Row gutter={24}>
+                            <Col xs={12} lg={24} xl={12}>
+                                <Statistic
+                                    title="Người tham gia"
+                                    value={totalParticipants}
+                                    prefix={<UserOutlined />}
+                                    valueStyle={{ color: '#1890ff' }}
+                                />
+                            </Col>
+                            <Col xs={12} lg={24} xl={12}>
+                                <Statistic
+                                    title="Tài sản đấu giá"
+                                    value={totalAssets}
+                                    prefix={<HomeOutlined />}
+                                    valueStyle={{ color: '#722ed1' }}
+                                />
+                            </Col>
+                        </Row>
+
+                        {/* End Auction Button - Only show when auction is active */}
+                        {status === 'active' && onEndAuction && (
+                            <Button
+                                type="primary"
+                                danger
+                                size="large"
+                                icon={<StopOutlined />}
+                                onClick={onEndAuction}
+                                className="!w-full"
+                            >
+                                Kết thúc phiên đấu giá
+                            </Button>
+                        )}
+                    </Space>
                 </Col>
             </Row>
 

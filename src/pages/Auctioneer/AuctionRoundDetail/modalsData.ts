@@ -55,3 +55,48 @@ export type AuctionAsset = {
   auctionId: string;
   auction?: string;
 };
+
+// Data types for different API endpoints
+export type AuctionHeaderData = {
+  auctionRoundId: string;
+  auctionName: string;
+  status: 'active' | 'pending' | 'completed' | 'cancelled';
+  currentRound: number;
+  totalRounds: number;
+  totalParticipants: number;
+  totalAssets: number;
+  totalBids: number;
+  highestBid: number;
+  progress: number; // percentage 0-100
+};
+
+export type AuctionStatisticsData = {
+  averageBidAmount: number;
+  participationStats: {
+    totalParticipants: number;
+    activeParticipants: number;
+    averageBidsPerParticipant: number;
+  };
+  priceDistribution: {
+    range: string;
+    count: number;
+    percentage: number;
+  }[];
+};
+
+export type AssetAnalysisData = {
+  assetId: string;
+  tagName: string;
+  startingPrice: number;
+  currentHighestBid: number;
+  winnerInfo?: {
+    userName: string;
+    citizenIdentification: string;
+    finalBid: number;
+    isConfirmed: boolean;
+  };
+  bidHistory: AuctionRoundPrice[];
+  participantCount: number;
+  priceIncrease: number;
+  priceIncreasePercent: number;
+};

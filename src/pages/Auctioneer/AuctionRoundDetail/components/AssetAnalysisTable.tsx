@@ -20,7 +20,6 @@ import {
     UserOutlined,
     TrophyOutlined,
     CheckCircleOutlined,
-    CloseCircleOutlined,
     HomeOutlined,
     DollarOutlined,
     CrownOutlined,
@@ -46,19 +45,9 @@ interface AssetAnalysis {
     competitionLevel: 'Thấp' | 'Trung bình' | 'Cao' | 'Rất cao';
 }
 
-// Định nghĩa interface cho dữ liệu highest bidder
-interface HighestBidder {
-    userName: string;
-    citizenId: string;
-    amount: number;
-    bidTime: string;
-    province: string;
-    flagWinner: boolean; // false: Not Winner, true: Winner
-}
-
 interface AssetAnalysisTableProps {
     priceHistory: AuctionRoundPrice[];
-    onUpdateWinner?: (assetName: string, citizenId: string, flagWinner: boolean) => void;
+    onUpdateWinner: (auctionRoundPriceId: string, userName: string, assetName: string) => void;
 }
 
 const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
@@ -76,7 +65,7 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
     };
 
     // Lấy danh sách người trả giá cao nhất cho mỗi tài sản
-    const getHighestBiddersForAsset = (assetName: string): HighestBidder[] => {
+    const getHighestBiddersForAsset = (assetName: string): AuctionRoundPrice[] => {
         const assetBids = priceHistory.filter(bid => bid.tagName === assetName);
 
         if (assetBids.length === 0) return [];
@@ -85,16 +74,7 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
         const maxPrice = Math.max(...assetBids.map(bid => bid.auctionPrice));
 
         // Lấy tất cả người trả giá cao nhất
-        const highestBidders = assetBids
-            .filter(bid => bid.auctionPrice === maxPrice)
-            .map(bid => ({
-                userName: bid.userName,
-                citizenId: bid.citizenIdentification,
-                amount: bid.auctionPrice,
-                bidTime: new Date().toLocaleString('vi-VN'), // Không có CreateDate trong type
-                province: bid.recentLocation, // Sử dụng recentLocation thay vì Province
-                flagWinner: bid.flagWinner || false // Từ backend data
-            }));
+        const highestBidders = assetBids.filter(bid => bid.auctionPrice === maxPrice);
 
         return highestBidders;
     };
@@ -134,51 +114,34 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
         }).sort((a, b) => b.highestPrice - a.highestPrice);
     };
 
-    // Xác nhận/hủy xác nhận người chiến thắng - cập nhật flagWinner
-    const confirmWinner = (assetName: string, citizenId: string, userName: string) => {
-        // Tìm bid record của người này cho tài sản này
-        const targetBid = priceHistory.find(bid =>
-            bid.tagName === assetName && bid.citizenIdentification === citizenId
-        );
+    // Xác nhận người chiến thắng - chỉ xác nhận, không hủy
+    const confirmWinner = async (auctionRoundPriceId: string, userName: string, assetName: string) => {
+        // Tìm bid record dựa trên auctionRoundPriceId (unique identifier)
+        const targetBid = priceHistory.find(bid => bid.auctionRoundPriceId === auctionRoundPriceId);
 
         if (!targetBid) return;
 
-        const currentFlag = targetBid.flagWinner || false;
-        const newFlag = !currentFlag;
+        // Hủy winner cũ của tài sản này (nếu có)
+        priceHistory.forEach(bid => {
+            if (bid.tagName === assetName && bid.auctionRoundPriceId !== auctionRoundPriceId) {
+                bid.flagWinner = false;
+            }
+        });
 
-        // Nếu đang xác nhận winner mới (newFlag = true), hủy winner cũ của tài sản này
-        if (newFlag) {
-            priceHistory.forEach(bid => {
-                if (bid.tagName === assetName && bid.citizenIdentification !== citizenId) {
-                    bid.flagWinner = false;
-                }
-            });
-        }
-
-        // Cập nhật flag cho người được chọn
-        targetBid.flagWinner = newFlag;
+        // Xác nhận người chiến thắng mới
+        targetBid.flagWinner = true;
 
         // Callback để parent component có thể sync với backend
         if (onUpdateWinner) {
-            onUpdateWinner(assetName, citizenId, newFlag);
+            onUpdateWinner(auctionRoundPriceId, userName, assetName);
         }
 
-        if (newFlag) {
-            message.success(`Đã xác nhận ${userName} là người chiến thắng cho tài sản ${assetName}`);
-        } else {
-            message.success(`Đã hủy xác nhận ${userName} cho tài sản ${assetName}`);
-        }
-
-        // Force re-render
-        setModalVisible(false);
-        setTimeout(() => setModalVisible(true), 100);
+        message.success(`Đã xác nhận ${userName} là người chiến thắng cho tài sản ${assetName}`);
     };
 
-    // Kiểm tra xem người này có phải người chiến thắng không dựa trên flagWinner
-    const isWinner = (assetName: string, citizenId: string) => {
-        const bid = priceHistory.find(bid =>
-            bid.tagName === assetName && bid.citizenIdentification === citizenId
-        );
+    // Kiểm tra xem người này có phải người chiến thắng không dựa trên flagWinner và auctionRoundPriceId
+    const isWinner = (auctionRoundPriceId: string) => {
+        const bid = priceHistory.find(bid => bid.auctionRoundPriceId === auctionRoundPriceId);
         return bid?.flagWinner === true;
     };
 
@@ -268,7 +231,7 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
                     ghost
                     icon={<EyeOutlined />}
                     onClick={() => showAssetDetail(record.tagName)}
-                    className="!border-blue-400 !text-blue-600 hover:!bg-blue-50"
+                    className="!border-blue-400 !text-blue-600"
                 >
                     Chi tiết
                 </Button>
@@ -405,26 +368,25 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
                                 dataSource={highestBidders}
                                 className="!max-h-96 !overflow-y-auto"
                                 renderItem={(bidder, index) => {
-                                    const isCurrentWinner = isWinner(selectedAsset!, bidder.citizenId);
+                                    const isCurrentWinner = isWinner(bidder.auctionRoundPriceId);
 
                                     return (
                                         <List.Item
                                             className={`!p-4 !border !rounded-lg !mb-2 ${isCurrentWinner ? '!bg-green-50 !border-green-300' : '!bg-white !border-gray-200'
                                                 }`}
                                             actions={[
-                                                <Button
-                                                    key="confirm"
-                                                    type={isCurrentWinner ? "default" : "primary"}
-                                                    icon={isCurrentWinner ? <CloseCircleOutlined /> : <CheckCircleOutlined />}
-                                                    onClick={() => confirmWinner(selectedAsset!, bidder.citizenId, bidder.userName)}
-                                                    className={isCurrentWinner ?
-                                                        "!border-red-400 !text-red-600 hover:!bg-red-50" :
-                                                        "!bg-green-500 !border-green-500 hover:!bg-green-600"
-                                                    }
-                                                >
-                                                    {isCurrentWinner ? 'Hủy xác nhận' : 'Xác nhận'}
-                                                </Button>
-                                            ]}
+                                                !isCurrentWinner && (
+                                                    <Button
+                                                        key="confirm"
+                                                        type="primary"
+                                                        icon={<CheckCircleOutlined />}
+                                                        onClick={() => confirmWinner(bidder.auctionRoundPriceId, bidder.userName, bidder.tagName)}
+                                                        className="!bg-green-500 !border-green-500"
+                                                    >
+                                                        Xác nhận
+                                                    </Button>
+                                                )
+                                            ].filter(Boolean)}
                                         >
                                             <List.Item.Meta
                                                 avatar={
@@ -465,20 +427,20 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
                                                     <div className="!space-y-1">
                                                         <div className="!flex !items-center !gap-2 !text-sm">
                                                             <IdcardOutlined className="!text-gray-500" />
-                                                            <span>CCCD: {bidder.citizenId}</span>
+                                                            <span>CCCD: {bidder.citizenIdentification}</span>
                                                         </div>
                                                         <div className="!flex !items-center !gap-2 !text-sm">
                                                             <EnvironmentOutlined className="!text-gray-500" />
-                                                            <span>{bidder.province}</span>
+                                                            <span>{bidder.recentLocation}</span>
                                                         </div>
                                                         <div className="!flex !items-center !gap-2 !text-sm">
                                                             <span className="!text-gray-500">Thời gian:</span>
-                                                            <span>{bidder.bidTime}</span>
+                                                            <span>{new Date().toLocaleString('vi-VN')}</span>
                                                         </div>
                                                         <div className="!flex !items-center !gap-2">
                                                             <DollarOutlined className="!text-green-500" />
                                                             <span className="!font-semibold !text-green-600 !text-base">
-                                                                {formatPrice(bidder.amount)}
+                                                                {formatPrice(bidder.auctionPrice)}
                                                             </span>
                                                         </div>
                                                     </div>

@@ -1,14 +1,14 @@
 import type { AuctionRoundPrice, AuctionRound, AuctionDataDetail, AuctionAsset } from "./modalsData";
 
-// Fake data cho AuctionAsset - Chỉ giữ lại các trường cần thiết
+// Fake data cho AuctionAsset
 export const fakeAuctionAssets: AuctionAsset[] = [
   {
     auctionAssetsId: "AA001",
     tagName: "Căn hộ chung cư cao cấp",
-    startingPrice: "150000000",
+    startingPrice: "1500000000",
     unit: "VND",
-    deposit: "15000000",
-    registrationFee: "1000000",
+    deposit: "150000000",
+    registrationFee: "10000000",
     description: "Căn hộ 3 phòng ngủ, 2 toilet, view hồ, đầy đủ nội thất cao cấp",
     createdAt: "",
     createdBy: "",
@@ -20,10 +20,10 @@ export const fakeAuctionAssets: AuctionAsset[] = [
   {
     auctionAssetsId: "AA002",
     tagName: "Nhà phố 3 tầng",
-    startingPrice: "175000000",
+    startingPrice: "1750000000",
     unit: "VND",
-    deposit: "17500000",
-    registrationFee: "1200000",
+    deposit: "175000000",
+    registrationFee: "12000000",
     description: "Nhà phố mặt tiền đường lớn, 3 tầng, 4 phòng ngủ, có gara ô tô",
     createdAt: "",
     createdBy: "",
@@ -35,10 +35,10 @@ export const fakeAuctionAssets: AuctionAsset[] = [
   {
     auctionAssetsId: "AA003",
     tagName: "Đất nền khu đô thị",
-    startingPrice: "165000000",
+    startingPrice: "1650000000",
     unit: "VND",
-    deposit: "16500000",
-    registrationFee: "1100000",
+    deposit: "165000000",
+    registrationFee: "11000000",
     description: "Lô đất 120m2, vị trí đẹp trong khu đô thị mới, đã có sổ đỏ",
     createdAt: "",
     createdBy: "",
@@ -46,225 +46,161 @@ export const fakeAuctionAssets: AuctionAsset[] = [
     updatedBy: "",
     auctionId: "AU001",
     auction: "Đấu giá tài sản tháng 1/2025"
-  },
-  {
-    auctionAssetsId: "AA004",
-    tagName: "Villa biệt thự",
-    startingPrice: "350000000",
-    unit: "VND",
-    deposit: "35000000",
-    registrationFee: "2000000",
-    description: "Villa sang trọng 2 tầng, hồ bơi riêng, sân vườn rộng 500m2",
-    createdAt: "",
-    createdBy: "",
-    updatedAt: "",
-    updatedBy: "",
-    auctionId: "AU002",
-    auction: "Đấu giá tài sản cao cấp Q1"
-  },
-  {
-    auctionAssetsId: "AA005",
-    tagName: "Shophouse thương mại",
-    startingPrice: "280000000",
-    unit: "VND",
-    deposit: "28000000",
-    registrationFee: "1500000",
-    description: "Shophouse 4 tầng mặt tiền chính, vị trí kinh doanh đắc địa",
-    createdAt: "",
-    createdBy: "",
-    updatedAt: "",
-    updatedBy: "",
-    auctionId: "AU002",
-    auction: "Đấu giá tài sản cao cấp Q1"
   }
 ];
 
-// Fake data cho AuctionDataDetail - Chỉ giữ lại các trường cần thiết
+// Fake data cho AuctionDataDetail
 export const fakeAuctionDataDetail: AuctionDataDetail = {
   auctionId: "AU001",
-  auctionName: "Đấu giá tài sản bất động sản tháng 1/2025",
+  auctionName: "Đấu giá tài sản tháng 1/2025",
   categoryName: "Bất động sản",
-  auctionDescription: "",
-  auctionRules: "",
+  auctionDescription: "Phiên đấu giá các tài sản bất động sản cao cấp",
+  auctionRules: "Quy tắc đấu giá theo luật định",
   auctionPlanningMap: "",
-  registerOpenDate: "",
-  registerEndDate: "",
-  auctionStartDate: "",
-  auctionEndDate: "",
-  createdByUserName: "",
-  createdAt: "",
-  updatedByUserName: "",
-  updatedAt: "",
+  registerOpenDate: "2025-01-10",
+  registerEndDate: "2025-01-14",
+  auctionStartDate: "2025-01-15",
+  auctionEndDate: "2025-01-16",
+  createdByUserName: "Admin",
+  createdAt: "2025-01-01",
+  updatedByUserName: "Admin",
+  updatedAt: "2025-01-01",
   qrLink: "",
   numberRoundMax: 5,
   status: "active",
   auctionMap: "",
   winnerData: "",
   auctioneer: "",
-  listAuctionAssets: fakeAuctionAssets.slice(0, 3)
+  listAuctionAssets: fakeAuctionAssets
 };
 
-// Fake data cho AuctionRound - Multiple rounds cho cùng 1 auction
+// Fake data cho AuctionRound
 export const fakeAuctionRounds: AuctionRound[] = [
   {
     auctionRoundId: "AR001",
     auction: fakeAuctionDataDetail,
     roundNumber: 1,
-    status: 2 // Completed
-  },
-  {
-    auctionRoundId: "AR002",
-    auction: fakeAuctionDataDetail,
-    roundNumber: 2,
-    status: 2 // Completed
-  },
-  {
-    auctionRoundId: "AR003",
-    auction: fakeAuctionDataDetail,
-    roundNumber: 3,
-    status: 1 // Active - Round hiện tại
-  },
-  {
-    auctionRoundId: "AR004",
-    auction: fakeAuctionDataDetail,
-    roundNumber: 4,
-    status: 0 // Pending
-  },
-  {
-    auctionRoundId: "AR005",
-    auction: fakeAuctionDataDetail,
-    roundNumber: 5,
-    status: 0 // Pending
+    status: 1 // Active
   }
 ];
 
-// Fake data cho AuctionRoundPrice - Phân theo các round khác nhau
+// Fake data cho AuctionRoundPrice - đây là data chính
 export const fakeAuctionRoundPrices: AuctionRoundPrice[] = [
-  // Round 1 - Completed
   {
-    AuctionRoundId: "AR001", // Round 1
-    UserName: "Nguyễn Văn An",
-    CitizenIdentification: "001199001234",
-    RecentLocation: "Hà Nội",
-    TagName: "Căn hộ chung cư cao cấp",
-    AuctionPrice: "150000000"
+    auctionRoundPriceId: "ARP001",
+    auctionRoundId: "AR001",
+    userName: "Nguyễn Văn A",
+    citizenIdentification: "123456789012",
+    recentLocation: "Hà Nội",
+    tagName: "Căn hộ chung cư cao cấp",
+    auctionPrice: 1600000000,
+    flagWinner: false
   },
   {
-    AuctionRoundId: "AR001", // Round 1
-    UserName: "Trần Thị Bình",
-    CitizenIdentification: "001299005678",
-    RecentLocation: "Hồ Chí Minh",
-    TagName: "Nhà phố 3 tầng",
-    AuctionPrice: "175000000",
-    FlagWinner: 1 // Winner of Round 1
+    auctionRoundPriceId: "ARP002",
+    auctionRoundId: "AR001",
+    userName: "Trần Thị B",
+    citizenIdentification: "987654321098",
+    recentLocation: "TP.HCM",
+    tagName: "Căn hộ chung cư cao cấp",
+    auctionPrice: 1700000000,
+    flagWinner: true
   },
   {
-    AuctionRoundId: "AR001", // Round 1
-    UserName: "Lê Văn Cường",
-    CitizenIdentification: "001399009012",
-    RecentLocation: "Đà Nẵng",
-    TagName: "Đất nền khu đô thị",
-    AuctionPrice: "165000000"
-  },
-
-  // Round 2 - Completed
-  {
-    AuctionRoundId: "AR002", // Round 2
-    UserName: "Phạm Thị Diệu",
-    CitizenIdentification: "001499003456",
-    RecentLocation: "Hải Phòng",
-    TagName: "Villa biệt thự",
-    AuctionPrice: "350000000"
+    auctionRoundPriceId: "ARP003",
+    auctionRoundId: "AR001",
+    userName: "Lê Văn C",
+    citizenIdentification: "456789123456",
+    recentLocation: "Đà Nẵng",
+    tagName: "Nhà phố 3 tầng",
+    auctionPrice: 1850000000,
+    flagWinner: false
   },
   {
-    AuctionRoundId: "AR002", // Round 2
-    UserName: "Hoàng Văn Em",
-    CitizenIdentification: "001599007890",
-    RecentLocation: "Cần Thơ",
-    TagName: "Shophouse thương mại",
-    AuctionPrice: "280000000",
-    FlagWinner: 1 // Winner of Round 2
+    auctionRoundPriceId: "ARP004",
+    auctionRoundId: "AR001",
+    userName: "Phạm Thị D",
+    citizenIdentification: "789123456789",
+    recentLocation: "Cần Thơ",
+    tagName: "Nhà phố 3 tầng",
+    auctionPrice: 1950000000,
+    flagWinner: true
   },
   {
-    AuctionRoundId: "AR002", // Round 2
-    UserName: "Vũ Thị Phương",
-    CitizenIdentification: "001699001234",
-    RecentLocation: "Hà Nội",
-    TagName: "Văn phòng cao ốc",
-    AuctionPrice: "195000000"
-  },
-
-  // Round 3 - Currently Active
-  {
-    AuctionRoundId: "AR003", // Round 3
-    UserName: "Đỗ Văn Giang",
-    CitizenIdentification: "001799005678",
-    RecentLocation: "Huế",
-    TagName: "Kho xưởng công nghiệp",
-    AuctionPrice: "170000000"
+    auctionRoundPriceId: "ARP005",
+    auctionRoundId: "AR001",
+    userName: "Hoàng Văn E",
+    citizenIdentification: "321654987321",
+    recentLocation: "Hải Phòng",
+    tagName: "Đất nền khu đô thị",
+    auctionPrice: 1800000000,
+    flagWinner: true
   },
   {
-    AuctionRoundId: "AR003", // Round 3
-    UserName: "Bùi Thị Hằng",
-    CitizenIdentification: "001899009012",
-    RecentLocation: "Vũng Tàu",
-    TagName: "Resort nghỉ dưỡng",
-    AuctionPrice: "160000000"
+    auctionRoundPriceId: "ARP006",
+    auctionRoundId: "AR001",
+    userName: "Vũ Thị F",
+    citizenIdentification: "654987321654",
+    recentLocation: "Nha Trang",
+    tagName: "Căn hộ chung cư cao cấp",
+    auctionPrice: 1550000000,
+    flagWinner: false
   },
   {
-    AuctionRoundId: "AR003", // Round 3
-    UserName: "Ngô Văn Inh",
-    CitizenIdentification: "001999003456",
-    RecentLocation: "Nha Trang",
-    TagName: "Khách sạn mini",
-    AuctionPrice: "185000000"
-  },
-  {
-    AuctionRoundId: "AR003", // Round 3
-    UserName: "Lý Thị Kim",
-    CitizenIdentification: "002099007890",
-    RecentLocation: "Quy Nhon",
-    TagName: "Đất nông nghiệp",
-    AuctionPrice: "172000000"
-  },
-  {
-    AuctionRoundId: "AR003", // Round 3
-    UserName: "Mai Văn Long",
-    CitizenIdentification: "002199001122",
-    RecentLocation: "Đà Nẵng",
-    TagName: "Villa biệt thự",
-    AuctionPrice: "380000000"
-  },
-  {
-    AuctionRoundId: "AR003", // Round 3
-    UserName: "Phan Thị Hoa",
-    CitizenIdentification: "002299003344",
-    RecentLocation: "Hồ Chí Minh",
-    TagName: "Shophouse thương mại",
-    AuctionPrice: "290000000"
-  },
-  {
-    AuctionRoundId: "AR003", // Round 3
-    UserName: "Võ Văn Nam",
-    CitizenIdentification: "002399005566",
-    RecentLocation: "Hà Nội",
-    TagName: "Căn hộ chung cư cao cấp",
-    AuctionPrice: "165000000"
-  },
-  {
-    AuctionRoundId: "AR003", // Round 3
-    UserName: "Đinh Thị Oanh",
-    CitizenIdentification: "002499007788",
-    RecentLocation: "Hải Phòng",
-    TagName: "Nhà phố 3 tầng",
-    AuctionPrice: "185000000"
-  },
-  {
-    AuctionRoundId: "AR003", // Round 3
-    UserName: "Tăng Văn Phú",
-    CitizenIdentification: "002599009900",
-    RecentLocation: "Cần Thơ",
-    TagName: "Resort nghỉ dưỡng",
-    AuctionPrice: "175000000"
+    auctionRoundPriceId: "ARP007",
+    auctionRoundId: "AR001",
+    userName: "Đỗ Văn G",
+    citizenIdentification: "147258369147",
+    recentLocation: "Huế",
+    tagName: "Đất nền khu đô thị",
+    auctionPrice: 1720000000,
+    flagWinner: false
   }
 ];
+
+// Fake data cho header thống kê
+export const fakeHeaderStats = {
+  auctionRoundId: "AR001",
+  auctionName: "Đấu giá tài sản tháng 1/2025",
+  status: "active" as const,
+  currentRound: 1,
+  totalRounds: 5,
+  totalParticipants: 35,
+  totalAssets: 3,
+  totalBids: 127,
+  highestBid: 2200000000,
+  progress: 75
+};
+
+// Fake data cho asset analysis
+export const fakeAssetAnalysis = {
+  assetId: "AA001",
+  tagName: "Căn hộ chung cư cao cấp",
+  startingPrice: 1500000000,
+  currentHighestBid: 1700000000,
+  winnerInfo: {
+    userName: "Trần Thị B",
+    citizenIdentification: "987654321098",
+    finalBid: 1700000000,
+    isConfirmed: true
+  },
+  bidHistory: fakeAuctionRoundPrices.filter(price => price.tagName === "Căn hộ chung cư cao cấp"),
+  participantCount: 12,
+  priceIncrease: 200000000,
+  priceIncreasePercent: 13.33
+};
+
+// Fake data cho statistics
+export const fakeStatistics = {
+  averageBidAmount: 1750000000,
+  participationStats: {
+    totalParticipants: 35,
+    activeParticipants: 28,
+    averageBidsPerParticipant: 3.6
+  },
+  priceDistribution: [
+    { range: "1-1.5 tỷ", count: 15, percentage: 11.8 },
+    { range: "1.5-2 tỷ", count: 62, percentage: 48.8 },
+    { range: "2-2.5 tỷ", count: 50, percentage: 39.4 }
+  ]
+};

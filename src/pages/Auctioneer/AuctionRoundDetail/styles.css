@@ -12,10 +12,7 @@
   display: none;
 }
 
-.custom-table .ant-table-tbody > tr:hover > td {
-  background: #f0f9ff !important;
-}
-
+/* Removed table row hover effects to reduce visual distraction */
 .custom-table .ant-table-tbody > tr.bg-green-50 > td {
   background: #f0fdf4 !important;
 }
@@ -35,14 +32,9 @@
   color: white !important;
 }
 
-/* Card Hover Effects */
+/* Removed card hover effects to reduce visual distraction */
 .ant-card {
-  transition: all 0.3s ease;
-}
-
-.ant-card:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+  transition: none;
 }
 
 /* Progress Bar Custom Colors */
@@ -50,14 +42,9 @@
   transition: all 0.3s ease;
 }
 
-/* Button Animations */
+/* Simplified button animations - removed lifting effect */
 .ant-btn {
-  transition: all 0.3s ease;
-}
-
-.ant-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Badge Pulse Animation */
