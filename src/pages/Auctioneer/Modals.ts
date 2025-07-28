@@ -102,12 +102,14 @@ export type ModalAuctioners = {
 };
 
 export type AuctionRoundPrice = {
-  AuctionRoundId?: string;
-  UserName: string;
-  CitizenIdentification: string;
-  RecentLocation: string;
-  TagName: string;
-  AuctionPrice: string;
+  auctionRoundPriceId: string;
+  auctionRoundId: string;
+  userName: string;
+  citizenIdentification: string;
+  recentLocation: string;
+  tagName: string;
+  auctionPrice: number;
+  flagWinner: boolean; // true if this price is the winning price
 };
 
 export type AuctionRoundModals = {

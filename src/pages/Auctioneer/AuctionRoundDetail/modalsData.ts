@@ -1,11 +1,12 @@
 export type AuctionRoundPrice = {
-  AuctionRoundId: string;
-  UserName: string;
-  CitizenIdentification: string;
-  RecentLocation: string;
-  TagName: string;
-  AuctionPrice: string;
-  FlagWinner?: number // 0: Not Winner, 1: Winner
+  auctionRoundPriceId: string;
+  auctionRoundId: string;
+  userName: string;
+  citizenIdentification: string;
+  recentLocation: string;
+  tagName: string;
+  auctionPrice: number;
+  flagWinner: boolean; // true if this price is the winning price
 };
 
 export type AuctionRound = {

@@ -1,5 +1,5 @@
-import { Card, Statistic, Badge, Row, Col, Typography, Space, Divider, Button } from "antd";
-import { UserOutlined, HomeOutlined, ClockCircleOutlined, SyncOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import { Card, Statistic, Badge, Row, Col, Typography, Space, Divider } from "antd";
+import { UserOutlined, HomeOutlined, ClockCircleOutlined, SyncOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
@@ -8,7 +8,6 @@ interface AuctionHeaderProps {
     totalParticipants: number;
     totalAssets: number;
     status?: 'active' | 'completed' | 'pending';
-    onBack?: () => void;
 }
 
 const AuctionHeader = ({
@@ -16,16 +15,7 @@ const AuctionHeader = ({
     totalParticipants,
     totalAssets,
     status = 'active',
-    onBack
 }: AuctionHeaderProps) => {
-    const handleBack = () => {
-        if (onBack) {
-            onBack();
-        } else {
-            // Fallback sử dụng browser history nếu không có onBack
-            window.history.back();
-        }
-    };
     const getStatusBadge = () => {
         switch (status) {
             case 'active':
@@ -63,15 +53,6 @@ const AuctionHeader = ({
                 <Col xs={24} lg={16}>
                     <Space direction="vertical" size="small" className="!w-full">
                         <Space align="center" wrap>
-                            <Button
-                                type="text"
-                                icon={<ArrowLeftOutlined />}
-                                onClick={handleBack}
-                                className="!text-gray-600 hover:!text-blue-600 !p-1"
-                                size="large"
-                            >
-                                Quay lại
-                            </Button>
                             <Title level={2} className="!mb-0">
                                 Chi tiết phiên đấu giá - {auctionRoundId}
                             </Title>

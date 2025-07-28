@@ -41,10 +41,10 @@ const AuctionStatistics = ({ priceHistory, auctionRound }: AuctionStatisticsProp
 
     // === CORE METRICS CALCULATION ===
     const totalBids = priceHistory.length;
-    const uniqueBidders = new Set(priceHistory.map(item => item.CitizenIdentification)).size;
-    const uniqueAssets = new Set(priceHistory.map(item => item.TagName)).size;
+    const uniqueBidders = new Set(priceHistory.map(item => item.citizenIdentification)).size;
+    const uniqueAssets = new Set(priceHistory.map(item => item.tagName)).size;
 
-    const prices = priceHistory.map(item => parseInt(item.AuctionPrice));
+    const prices = priceHistory.map(item => item.auctionPrice);
     const totalValue = prices.reduce((sum, price) => sum + price, 0);
     const averagePrice = prices.length > 0 ? totalValue / prices.length : 0;
     const highestPrice = prices.length > 0 ? Math.max(...prices) : 0;
@@ -66,14 +66,14 @@ const AuctionStatistics = ({ priceHistory, auctionRound }: AuctionStatisticsProp
     const totalPotentialRevenue = totalDeposits + totalRegistrationFees;
 
     // === PERFORMANCE ANALYTICS ===
-    const assetsWithBids = new Set(priceHistory.map(item => item.TagName)).size;
+    const assetsWithBids = new Set(priceHistory.map(item => item.tagName)).size;
     const assetUtilizationRate = auctionAssets.length > 0 ? (assetsWithBids / auctionAssets.length) * 100 : 0;
 
     // ROI Analysis per asset
     const assetAnalytics = auctionAssets.map(asset => {
-        const bidsForAsset = priceHistory.filter(bid => bid.TagName === asset.tagName);
+        const bidsForAsset = priceHistory.filter(bid => bid.tagName === asset.tagName);
         const currentPrice = bidsForAsset.length > 0
-            ? Math.max(...bidsForAsset.map(bid => parseInt(bid.AuctionPrice)))
+            ? Math.max(...bidsForAsset.map(bid => bid.auctionPrice))
             : parseInt(asset.startingPrice);
 
         const roi = ((currentPrice - parseInt(asset.startingPrice)) / parseInt(asset.startingPrice)) * 100;
@@ -101,11 +101,11 @@ const AuctionStatistics = ({ priceHistory, auctionRound }: AuctionStatisticsProp
 
     // === PARTICIPANT ANALYSIS ===
     const participantAnalytics = priceHistory.reduce((acc, item) => {
-        const id = item.CitizenIdentification;
+        const id = item.citizenIdentification;
         if (!acc[id]) {
             acc[id] = {
-                name: item.UserName,
-                location: item.RecentLocation,
+                name: item.userName,
+                location: item.recentLocation,
                 bidCount: 0,
                 totalValue: 0,
                 uniqueAssets: new Set(),
@@ -114,8 +114,8 @@ const AuctionStatistics = ({ priceHistory, auctionRound }: AuctionStatisticsProp
         }
 
         acc[id].bidCount++;
-        acc[id].totalValue += parseInt(item.AuctionPrice);
-        acc[id].uniqueAssets.add(item.TagName);
+        acc[id].totalValue += item.auctionPrice;
+        acc[id].uniqueAssets.add(item.tagName);
         acc[id].avgBidValue = acc[id].totalValue / acc[id].bidCount;
 
         return acc;
@@ -127,13 +127,13 @@ const AuctionStatistics = ({ priceHistory, auctionRound }: AuctionStatisticsProp
 
     // === GEOGRAPHIC ANALYSIS ===
     const locationStats = priceHistory.reduce((acc, item) => {
-        const location = item.RecentLocation;
+        const location = item.recentLocation;
         if (!acc[location]) {
             acc[location] = { count: 0, totalValue: 0, participants: new Set() };
         }
         acc[location].count++;
-        acc[location].totalValue += parseInt(item.AuctionPrice);
-        acc[location].participants.add(item.CitizenIdentification);
+        acc[location].totalValue += item.auctionPrice;
+        acc[location].participants.add(item.citizenIdentification);
         return acc;
     }, {} as Record<string, any>);
 
@@ -333,8 +333,8 @@ const AuctionStatistics = ({ priceHistory, auctionRound }: AuctionStatisticsProp
                                         avatar={
                                             <Avatar
                                                 className={`!w-10 !h-10 !font-bold !text-white ${asset.roi >= 20 ? '!bg-red-500' :
-                                                        asset.roi >= 10 ? '!bg-orange-500' :
-                                                            asset.roi >= 0 ? '!bg-green-500' : '!bg-gray-500'
+                                                    asset.roi >= 10 ? '!bg-orange-500' :
+                                                        asset.roi >= 0 ? '!bg-green-500' : '!bg-gray-500'
                                                     }`}
                                             >
                                                 {index + 1}
@@ -379,8 +379,8 @@ const AuctionStatistics = ({ priceHistory, auctionRound }: AuctionStatisticsProp
                                         avatar={
                                             <Avatar
                                                 className={`!w-10 !h-10 !font-bold !text-white ${index === 0 ? '!bg-gold' :
-                                                        index === 1 ? '!bg-gray-400' :
-                                                            index === 2 ? '!bg-orange-500' : '!bg-blue-500'
+                                                    index === 1 ? '!bg-gray-400' :
+                                                        index === 2 ? '!bg-orange-500' : '!bg-blue-500'
                                                     }`}
                                             >
                                                 {index + 1}

@@ -53,12 +53,12 @@ interface HighestBidder {
     amount: number;
     bidTime: string;
     province: string;
-    flagWinner: number; // 0: Not Winner, 1: Winner
+    flagWinner: boolean; // false: Not Winner, true: Winner
 }
 
 interface AssetAnalysisTableProps {
     priceHistory: AuctionRoundPrice[];
-    onUpdateWinner?: (assetName: string, citizenId: string, flagWinner: number) => void;
+    onUpdateWinner?: (assetName: string, citizenId: string, flagWinner: boolean) => void;
 }
 
 const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
@@ -77,23 +77,23 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
 
     // Lấy danh sách người trả giá cao nhất cho mỗi tài sản
     const getHighestBiddersForAsset = (assetName: string): HighestBidder[] => {
-        const assetBids = priceHistory.filter(bid => bid.TagName === assetName);
+        const assetBids = priceHistory.filter(bid => bid.tagName === assetName);
 
         if (assetBids.length === 0) return [];
 
-        // Tìm giá cao nhất - sử dụng AuctionPrice từ AuctionRoundPrice
-        const maxPrice = Math.max(...assetBids.map(bid => parseFloat(bid.AuctionPrice)));
+        // Tìm giá cao nhất - sử dụng auctionPrice từ AuctionRoundPrice
+        const maxPrice = Math.max(...assetBids.map(bid => bid.auctionPrice));
 
         // Lấy tất cả người trả giá cao nhất
         const highestBidders = assetBids
-            .filter(bid => parseFloat(bid.AuctionPrice) === maxPrice)
+            .filter(bid => bid.auctionPrice === maxPrice)
             .map(bid => ({
-                userName: bid.UserName,
-                citizenId: bid.CitizenIdentification,
-                amount: parseFloat(bid.AuctionPrice),
+                userName: bid.userName,
+                citizenId: bid.citizenIdentification,
+                amount: bid.auctionPrice,
                 bidTime: new Date().toLocaleString('vi-VN'), // Không có CreateDate trong type
-                province: bid.RecentLocation, // Sử dụng RecentLocation thay vì Province
-                flagWinner: bid.FlagWinner || 0 // Từ backend data
+                province: bid.recentLocation, // Sử dụng recentLocation thay vì Province
+                flagWinner: bid.flagWinner || false // Từ backend data
             }));
 
         return highestBidders;
@@ -101,17 +101,17 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
 
     // Phân tích dữ liệu cho từng tài sản
     const getAssetAnalysis = (): AssetAnalysis[] => {
-        const assets = [...new Set(priceHistory.map(bid => bid.TagName))];
+        const assets = [...new Set(priceHistory.map(bid => bid.tagName))];
 
         return assets.map(assetName => {
-            const assetBids = priceHistory.filter(bid => bid.TagName === assetName);
-            const prices = assetBids.map(bid => parseFloat(bid.AuctionPrice));
-            const uniqueBidders = new Set(assetBids.map(bid => bid.CitizenIdentification));
+            const assetBids = priceHistory.filter(bid => bid.tagName === assetName);
+            const prices = assetBids.map(bid => bid.auctionPrice);
+            const uniqueBidders = new Set(assetBids.map(bid => bid.citizenIdentification));
 
             const highestPrice = Math.max(...prices);
             const lowestPrice = Math.min(...prices);
             const averagePrice = prices.reduce((sum: number, price: number) => sum + price, 0) / prices.length;
-            const highestPriceBidders = assetBids.filter(bid => parseFloat(bid.AuctionPrice) === highestPrice).length;
+            const highestPriceBidders = assetBids.filter(bid => bid.auctionPrice === highestPrice).length;
 
             // Xác định mức độ cạnh tranh
             let competitionLevel: 'Thấp' | 'Trung bình' | 'Cao' | 'Rất cao' = 'Thấp';
@@ -134,36 +134,36 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
         }).sort((a, b) => b.highestPrice - a.highestPrice);
     };
 
-    // Xác nhận/hủy xác nhận người chiến thắng - cập nhật FlagWinner
+    // Xác nhận/hủy xác nhận người chiến thắng - cập nhật flagWinner
     const confirmWinner = (assetName: string, citizenId: string, userName: string) => {
         // Tìm bid record của người này cho tài sản này
         const targetBid = priceHistory.find(bid =>
-            bid.TagName === assetName && bid.CitizenIdentification === citizenId
+            bid.tagName === assetName && bid.citizenIdentification === citizenId
         );
 
         if (!targetBid) return;
 
-        const currentFlag = targetBid.FlagWinner || 0;
-        const newFlag = currentFlag === 1 ? 0 : 1;
+        const currentFlag = targetBid.flagWinner || false;
+        const newFlag = !currentFlag;
 
-        // Nếu đang xác nhận winner mới (newFlag = 1), hủy winner cũ của tài sản này
-        if (newFlag === 1) {
+        // Nếu đang xác nhận winner mới (newFlag = true), hủy winner cũ của tài sản này
+        if (newFlag) {
             priceHistory.forEach(bid => {
-                if (bid.TagName === assetName && bid.CitizenIdentification !== citizenId) {
-                    bid.FlagWinner = 0;
+                if (bid.tagName === assetName && bid.citizenIdentification !== citizenId) {
+                    bid.flagWinner = false;
                 }
             });
         }
 
         // Cập nhật flag cho người được chọn
-        targetBid.FlagWinner = newFlag;
+        targetBid.flagWinner = newFlag;
 
         // Callback để parent component có thể sync với backend
         if (onUpdateWinner) {
             onUpdateWinner(assetName, citizenId, newFlag);
         }
 
-        if (newFlag === 1) {
+        if (newFlag) {
             message.success(`Đã xác nhận ${userName} là người chiến thắng cho tài sản ${assetName}`);
         } else {
             message.success(`Đã hủy xác nhận ${userName} cho tài sản ${assetName}`);
@@ -174,12 +174,12 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
         setTimeout(() => setModalVisible(true), 100);
     };
 
-    // Kiểm tra xem người này có phải người chiến thắng không dựa trên FlagWinner
+    // Kiểm tra xem người này có phải người chiến thắng không dựa trên flagWinner
     const isWinner = (assetName: string, citizenId: string) => {
         const bid = priceHistory.find(bid =>
-            bid.TagName === assetName && bid.CitizenIdentification === citizenId
+            bid.tagName === assetName && bid.citizenIdentification === citizenId
         );
-        return bid?.FlagWinner === 1;
+        return bid?.flagWinner === true;
     };
 
     const showAssetDetail = (assetName: string) => {

@@ -1,43 +1,38 @@
 import { useEffect, useState } from "react";
 import { Tabs, Button, Typography } from "antd";
-import { ReloadOutlined, HistoryOutlined, BarChartOutlined, HomeOutlined } from "@ant-design/icons";
+import { ReloadOutlined, HistoryOutlined, BarChartOutlined, HomeOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import type { AuctionRound, AuctionRoundPrice } from "./modalsData";
-import { fakeAuctionRoundPrices, fakeAuctionRounds } from "./fakeData";
 import AuctionHeader from "./components/AuctionHeader";
 import PriceHistoryTable from "./components/PriceHistoryTable";
 import AuctionStatistics from "./components/AuctionStatistics";
 import AssetAnalysisTable from "./components/AssetAnalysisTable";
 import "./styles.css";
+import AuctionServices from "../../../services/AuctionServices";
 
-const AuctionRoundDetail = () => {
+interface AuctionRoundDetailProps {
+    auctionRound?: AuctionRound
+    onBackToList?: () => void;
+}
+
+const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailProps) => {
     // Current auction round ID - single source of truth
     const CURRENT_AUCTION_ROUND_ID = "AR001";
 
     const [auctionRoundPrice, setAuctionRoundPrice] = useState<AuctionRoundPrice[]>([]);
-    const [auctionRound, setAuctionRound] = useState<AuctionRound>();
     const [activeTab, setActiveTab] = useState<string>('history');
 
     useEffect(() => {
-        // Simulate fetching auction round prices
-        getListOfAuctionRound();
         getListOfAuctionRoundPrices();
-    }, []);
+    }, [auctionRound]);
 
-    const getListOfAuctionRound = () => {
+
+    const getListOfAuctionRoundPrices = async () => {
         try {
-            const auctionRoundNow = fakeAuctionRounds.find(round => round.auctionRoundId === CURRENT_AUCTION_ROUND_ID);
-            setAuctionRound(auctionRoundNow);
-        } catch (error) {
-            console.error("Error fetching auction round data:", error);
+            if (auctionRound) {
+                const response = await AuctionServices.getListAuctionRoundPrices(auctionRound?.auctionRoundId);
+                setAuctionRoundPrice(response.data.listAuctionRoundPrices);
+            }
 
-        }
-    }
-
-    const getListOfAuctionRoundPrices = () => {
-        try {
-            // Filter chỉ lấy data của round hiện tại
-            const currentRoundPrices = fakeAuctionRoundPrices.filter(price => price.AuctionRoundId === CURRENT_AUCTION_ROUND_ID);
-            setAuctionRoundPrice(currentRoundPrices);
         } catch (error) {
             console.error("Error fetching auction round prices:", error);
         }
@@ -46,8 +41,8 @@ const AuctionRoundDetail = () => {
 
 
     // Tính toán thống kê cơ bản
-    const totalParticipants = new Set(auctionRoundPrice.map(item => item.CitizenIdentification)).size;
-    const totalAssets = new Set(auctionRoundPrice.map(item => item.TagName)).size;
+    const totalParticipants = new Set(auctionRoundPrice.map(item => item.citizenIdentification)).size;
+    const totalAssets = new Set(auctionRoundPrice.map(item => item.tagName)).size;
 
     const tabItems = [
         {
@@ -92,6 +87,20 @@ const AuctionRoundDetail = () => {
     return (
         <div className="min-h-fit bg-gray-50 p-6 w-full">
             <div className="max-w-7xl mx-auto">
+                {/* Back Button */}
+                {onBackToList && (
+                    <div className="mb-4">
+                        <Button
+                            icon={<ArrowLeftOutlined />}
+                            onClick={onBackToList}
+                            className="bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                            size="large"
+                        >
+                            Quay lại danh sách
+                        </Button>
+                    </div>
+                )}
+
                 {/* Header */}
                 <AuctionHeader
                     auctionRoundId={CURRENT_AUCTION_ROUND_ID}

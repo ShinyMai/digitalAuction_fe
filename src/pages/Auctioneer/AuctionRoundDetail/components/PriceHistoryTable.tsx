@@ -1,5 +1,5 @@
 import { Table, Card, Typography, Tag, Empty } from "antd";
-import { UserOutlined, IdcardOutlined, EnvironmentOutlined, DollarOutlined } from "@ant-design/icons";
+import { UserOutlined, IdcardOutlined, EnvironmentOutlined, DollarOutlined, TrophyOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type { AuctionRoundPrice } from "../../Modals";
 
@@ -10,11 +10,11 @@ interface PriceHistoryTableProps {
 }
 
 const PriceHistoryTable = ({ priceHistory }: PriceHistoryTableProps) => {
-    const formatPrice = (price: string) => {
+    const formatPrice = (price: number) => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
             currency: 'VND'
-        }).format(parseInt(price));
+        }).format(price);
     };
 
     type DataType = AuctionRoundPrice & { key: number };
@@ -27,8 +27,8 @@ const PriceHistoryTable = ({ priceHistory }: PriceHistoryTableProps) => {
                     Tên tài sản
                 </span>
             ),
-            dataIndex: 'TagName',
-            key: 'TagName',
+            dataIndex: 'tagName',
+            key: 'tagName',
             render: (text: string) => (
                 <Tag color="blue" className="!text-sm !py-1 !px-3">
                     {text}
@@ -42,8 +42,8 @@ const PriceHistoryTable = ({ priceHistory }: PriceHistoryTableProps) => {
                     Người đấu giá
                 </span>
             ),
-            dataIndex: 'UserName',
-            key: 'UserName',
+            dataIndex: 'userName',
+            key: 'userName',
             render: (text: string) => (
                 <span className="!font-medium !text-gray-900">{text}</span>
             ),
@@ -55,8 +55,8 @@ const PriceHistoryTable = ({ priceHistory }: PriceHistoryTableProps) => {
                     CCCD
                 </span>
             ),
-            dataIndex: 'CitizenIdentification',
-            key: 'CitizenIdentification',
+            dataIndex: 'citizenIdentification',
+            key: 'citizenIdentification',
             render: (text: string) => (
                 <span className="!font-mono !text-gray-600">{text}</span>
             ),
@@ -68,8 +68,8 @@ const PriceHistoryTable = ({ priceHistory }: PriceHistoryTableProps) => {
                     Địa điểm
                 </span>
             ),
-            dataIndex: 'RecentLocation',
-            key: 'RecentLocation',
+            dataIndex: 'recentLocation',
+            key: 'recentLocation',
             render: (text: string) => (
                 <Tag color="green">{text}</Tag>
             ),
@@ -81,16 +81,42 @@ const PriceHistoryTable = ({ priceHistory }: PriceHistoryTableProps) => {
                     Giá trả
                 </span>
             ),
-            dataIndex: 'AuctionPrice',
-            key: 'AuctionPrice',
-            render: (price: string) => (
+            dataIndex: 'auctionPrice',
+            key: 'auctionPrice',
+            render: (price: number) => (
                 <span className="!font-bold !text-green-600 !text-lg">
                     {formatPrice(price)}
                 </span>
             ),
             sorter: (a: DataType, b: DataType) =>
-                parseInt(a.AuctionPrice) - parseInt(b.AuctionPrice),
+                (a.auctionPrice) - (b.auctionPrice),
             sortDirections: ['ascend', 'descend'],
+        },
+        {
+            title: (
+                <span className="flex items-center gap-2">
+                    <TrophyOutlined />
+                    Trạng thái
+                </span>
+            ),
+            dataIndex: 'flagWinner',
+            key: 'flagWinner',
+            render: (isWinner: boolean) => (
+                isWinner ? (
+                    <Tag color="gold" className="!text-sm !py-1 !px-3 !font-medium">
+                        🏆 Thắng cuộc
+                    </Tag>
+                ) : (
+                    <Tag color="default" className="!text-sm !py-1 !px-3">
+                        Tham gia
+                    </Tag>
+                )
+            ),
+            filters: [
+                { text: 'Thắng cuộc', value: true },
+                { text: 'Tham gia', value: false },
+            ],
+            onFilter: (value, record) => record.flagWinner === value,
         },
     ];
 
