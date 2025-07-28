@@ -8,17 +8,43 @@ import StatisticsCards from "./components/StatisticsCards";
 import AuctionRoundsTable from "./components/AuctionRoundsTable";
 import AuctionRoundDetail from "../AuctionRoundDetail";
 import AuctionServices from "../../../services/AuctionServices";
+import InputAuctionPrice from "../AuctionDetail/components/InputAuctionPrice";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../store/store";
+
+interface AuctionAsset {
+    auctionAssetsId: string;
+    tagName: string;
+}
 
 interface props {
     auctionId: string;
+    auctionAsset: AuctionAsset[];
 }
 
-const AuctionRounds = ({ auctionId }: props) => {
+const USER_ROLES = {
+    USER: "Customer",
+    ADMIN: "Admin",
+    STAFF: "Staff",
+    AUCTIONEER: "Auctioneer",
+    MANAGER: "Manager",
+    DIRECTOR: "Director",
+} as const;
+
+type UserRole =
+    (typeof USER_ROLES)[keyof typeof USER_ROLES];
+
+const AuctionRounds = ({ auctionId, auctionAsset }: props) => {
     const [auctionRounds, setAuctionRounds] = useState<AuctionRound[]>([]);
     const [auctionRoundPrices, setAuctionRoundPrices] = useState<AuctionRoundPrice[]>([]);
     const [loading, setLoading] = useState(false);
     const [showDetail, setShowDetail] = useState(false);
     const [selectedRound, setSelectedRound] = useState<AuctionRound>();
+    const { user } = useSelector(
+        (state: RootState) => state.auth
+    );
+    const role = user?.roleName as UserRole | undefined;
+
     useEffect(() => {
         getListAuctionRounds();
         getAuctionRoundPrices();
@@ -133,9 +159,24 @@ const AuctionRounds = ({ auctionId }: props) => {
                             exit={{ opacity: 0, x: 50 }}
                             transition={{ duration: 0.5, ease: "easeInOut" }}
                         >
-                            <AuctionRoundDetail
-                                auctionRound={selectedRound}
-                                onBackToList={handleBackToList} />
+                            {
+                                role === USER_ROLES.AUCTIONEER && (
+                                    <AuctionRoundDetail
+                                        auctionRound={selectedRound}
+                                        onBackToList={handleBackToList} />
+                                )
+                            }
+                            {
+                                role === USER_ROLES.STAFF && (
+                                    <InputAuctionPrice
+                                        auctionId={auctionId}
+                                        roundData={selectedRound}
+                                        auctionAssetsToStatistic={auctionAsset}
+                                    />
+                                )
+                            }
+
+
                         </motion.div>
                     )}
                 </AnimatePresence>

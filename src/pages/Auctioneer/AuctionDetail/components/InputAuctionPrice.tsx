@@ -11,7 +11,7 @@ import {
   TrophyOutlined,
 } from "@ant-design/icons";
 import AuctionServices from "../../../../services/AuctionServices";
-import type { AuctionDataDetail, AuctionRoundModals } from "../../Modals";
+import type { AuctionRoundModals } from "../../Modals";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import { toast } from "react-toastify";
@@ -40,9 +40,9 @@ interface UserInfo {
 }
 
 interface props {
-  auctionId?: AuctionDataDetail;
+  auctionId?: string;
   roundData?: AuctionRoundModals;
-  auctionAssetsToStatistic: AuctionAsset[];
+  auctionAssetsToStatistic?: AuctionAsset[];
 }
 
 const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic }: props) => {
@@ -282,7 +282,7 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic }: p
             </Col>
 
             {/* Thống kê theo từng tài sản */}
-            {auctionAssetsToStatistic.map((asset, index) => {
+            {auctionAssetsToStatistic?.map((asset, index) => {
               const assetCount = auctionRoundPriceList.filter(
                 (item) => item.auctionAssetId === asset.auctionAssetsId
               ).length;
