@@ -37,7 +37,7 @@ const SupportRegisterAuction = () => {
     Status: 1,
     SortBy: "RegisterEndDate",
     IsAscending: false,
-    ConditionAuction: 1, // Chỉ lấy các phiên đấu giá đang diễn ra
+    ConditionAuction: 1,
   });
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
   const [totalData, setTotalData] = useState<number>(0);

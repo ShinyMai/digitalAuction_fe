@@ -26,7 +26,7 @@ const BlogDetailView = ({ blog, onClose }: BlogDetailViewProps) => {
     return views.toString();
   };
   return (
-    <div className="max-h-fit bg-white rounded-2xl shadow-2xl overflow-hidden animate-slide-in-right">
+    <div className="fixed inset-0 top-1/12 lg:relative lg:max-h-fit lg:top-0 bg-white md:rounded-2xl shadow-2xl overflow-hidden animate-slide-in-right z-50 md:z-auto">
       {/* Header with Close Button */}
       <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-100 p-4 z-10">
         <div className="flex items-center justify-between">
