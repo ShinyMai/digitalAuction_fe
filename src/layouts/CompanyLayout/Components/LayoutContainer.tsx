@@ -11,11 +11,12 @@ interface Props {
 const siderStyle: React.CSSProperties = {
   overflow: "auto",
   height: "100vh",
-  position: "sticky",
+  position: "fixed",
   insetInlineStart: 0,
   top: 0,
   bottom: 0,
   scrollbarWidth: "thin",
+  zIndex: 999,
 };
 
 const LayoutContainer = ({ children }: Props) => {
@@ -42,35 +43,36 @@ const LayoutContainer = ({ children }: Props) => {
         className="bg-slate-100 transition-all duration-300"
       >
         <SiderRouteOption collapsed={collapsed} onCollapse={setCollapsed} />
-      </Sider>
-      <Layout
+      </Sider>      <Layout
         style={{
+          marginLeft: siderWidth,
           marginTop: 64,
           padding: "0px 10px",
-          transition: "all 0.3s ease",
+          transition: "margin-left 0.3s ease",
+          minHeight: "100vh",
         }}
-      >
-        <Header
+      >        
+      <Header
           style={{
             position: "fixed",
             top: 0,
+            left: siderWidth,
             backgroundColor: "white",
             width: headerWidth,
             zIndex: 1000,
             padding: 0,
-            transition: "width 0.3s ease",
+            transition: "left 0.3s ease, width 0.3s ease",
           }}
         >
           <HeaderCompany />
-        </Header>
-        <Content
+        </Header>        <Content
           style={{
-            minHeight: "calc(100vh - 128px)",
+            minHeight: "calc(100vh - 94px)",
             boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
             marginTop: "30px",
           }}
         >
-          <div className="h-full bg-gradient-to-b from-blue-50 to-teal-50">{children}</div>
+          <div className="min-h-full bg-gradient-to-b from-blue-50 to-teal-50">{children}</div>
         </Content>
       </Layout>
     </Layout>

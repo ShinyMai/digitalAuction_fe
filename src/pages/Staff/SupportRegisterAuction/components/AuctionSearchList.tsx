@@ -120,56 +120,65 @@ const AuctionSearchList = ({
       className="space-y-8"
     >
       <div className="space-y-8">
-        <Card className="shadow-sm bg-white/50 backdrop-blur-sm border border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label className="mb-2 text-sm font-medium text-gray-600">Tên buổi đấu giá</label>
+        <Card className="!shadow-lg !bg-white !border-0 !rounded-2xl">
+          <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
+            <div className="flex-1">
+              <label className="mb-2 text-sm font-semibold text-gray-700 block">
+                Tên buổi đấu giá
+              </label>
               <Input
                 placeholder="Nhập tên buổi đấu giá..."
                 value={searchParams.AuctionName}
-                onChange={(e) => handleSearch(e.target.value, searchParams.CategoryId)}
+                onChange={(e) =>
+                  handleSearch(e.target.value, searchParams.CategoryId)
+                }
                 size="large"
-                className="rounded-lg border-gray-200 hover:border-blue-400 focus:border-blue-500"
-                prefix={<SearchOutlined className="text-gray-400" />}
+                className="rounded-xl border-gray-200 hover:border-blue-400 focus:border-blue-500 shadow-sm"
+                prefix={<SearchOutlined className="text-blue-400" />}
                 allowClear
               />
             </div>
-            <div className="flex flex-col">
-              <label className="mb-2 text-sm font-medium text-gray-600">Danh mục tài sản</label>
+            <div className="flex-1">
+              <label className="mb-2 text-sm font-semibold text-gray-700 block">
+                Danh mục tài sản
+              </label>
               <Select
                 placeholder="Chọn danh mục tài sản..."
                 value={searchParams.CategoryId}
-                onChange={(value) => handleSearch(searchParams.AuctionName || "", value)}
+                onChange={(value) =>
+                  handleSearch(searchParams.AuctionName || "", value)
+                }
                 size="large"
-                className="w-full"
-                style={{ height: "40px" }}
+                className="w-full rounded-xl shadow-sm"
                 allowClear
                 options={listAuctionCategory.map((category) => ({
                   value: category.categoryId,
                   label: category.categoryName,
                 }))}
-                dropdownStyle={{ borderRadius: '8px' }}
-                popupClassName="rounded-lg shadow-lg"
+                dropdownStyle={{ borderRadius: "12px" }}
+                popupClassName="rounded-xl shadow-lg"
               />
             </div>
           </div>
-
-          <Table
-            columns={columns}
-            dataSource={auctionList}
-            loading={loading}
-            onChange={handleTableChange}
-            pagination={{
-              total: totalData,
-              pageSize: searchParams.PageSize!,
-              current: searchParams.PageNumber!,
-              showSizeChanger: true,
-            }}
-            rowKey="auctionId"
-            locale={{ emptyText: "Không có dữ liệu" }}
-            className="w-full rounded-lg overflow-hidden mt-7"
-            rowClassName="hover:bg-blue-50 transition-colors duration-200"
-          />
+          <div className="overflow-x-auto">
+            <Table
+              columns={columns}
+              dataSource={auctionList}
+              loading={loading}
+              onChange={handleTableChange}
+              pagination={{
+                total: totalData,
+                pageSize: searchParams.PageSize!,
+                current: searchParams.PageNumber!,
+                showSizeChanger: true,
+              }}
+              rowKey="auctionId"
+              locale={{ emptyText: "Không có dữ liệu" }}
+              className="w-full rounded-xl overflow-hidden mt-2 border border-gray-100"
+              rowClassName="hover:bg-blue-50 transition-colors duration-200"
+              scroll={{ x: 800 }}
+            />
+          </div>
         </Card>
       </div>
     </motion.div>
