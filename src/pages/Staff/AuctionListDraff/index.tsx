@@ -5,6 +5,8 @@ import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
 import type { AuctionCategory, AuctionDataList } from "../Modals.ts";
 import type { ApiResponse } from "../../../types/responseAxios";
+import type { RootState } from "../../../store/store.tsx";
+import { useSelector } from "react-redux";
 
 interface SearchParams {
   AuctionName?: string;
@@ -16,6 +18,7 @@ interface SearchParams {
   Status: number;
   AuctionType?: string;
   ConditionAuction?: number;
+  CreatedBy?: string;
 }
 
 interface SearchValue {
@@ -30,21 +33,26 @@ interface PaginationChangeParams {
   pageSize?: number;
 }
 
-const DEFAULT_PARAMS: SearchParams = {
-  PageNumber: 1,
-  PageSize: 8,
-  Status: 0,
-  AuctionType: "1",
-  SortBy: "register_open_date",
-  IsAscending: false,
-};
+
 
 const AuctionListDraff = () => {
   const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [searchParams, setSearchParams] = useState<SearchParams>(DEFAULT_PARAMS);
+  const { user } = useSelector(
+    (state: RootState) => state.auth
+  );
+  console.log("user", user);
+  const [searchParams, setSearchParams] = useState<SearchParams>({
+    PageNumber: 1,
+    PageSize: 8,
+    Status: 0,
+    AuctionType: "1",
+    SortBy: "register_open_date",
+    IsAscending: false,
+    CreatedBy: user?.id,
+  });
 
   const fetchAuctionCategories = useCallback(async (): Promise<void> => {
     try {
@@ -72,6 +80,7 @@ const AuctionListDraff = () => {
         CategoryId: searchParams.CategoryId,
         SortBy: searchParams.SortBy,
         IsAscending: searchParams.IsAscending,
+        CreatedBy: searchParams.CreatedBy,
       };
       const response =
         params.AuctionType === "2"

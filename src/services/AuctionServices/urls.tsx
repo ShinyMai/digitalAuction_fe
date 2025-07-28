@@ -27,6 +27,8 @@ export const AuctionAPI = {
   SAVE_LIST_AUCTION_ROUND_PRICE: "/SaveListPrices",
   GET_LIST_AUCTION_ROUND_PRICE: "/ListEnteredPrices",
   UPDATE_WINNER_FLAG: "/UpdateWinnerFlag",
+  UPDATE_AUCTION_WAITING_PUBLIC: "/Auctions/waiting-public",
+  UPDATE_STATUS_AUCTION_ROUND: "/ChangeStatusAuctionRound/Change-Status-Auction-Round"
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;

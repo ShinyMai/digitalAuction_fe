@@ -10,6 +10,7 @@ import UpdateAuction from "./components/UpdateAuction";
 import type { AuctionDataDetail } from "../Modals";
 import { STAFF_ROUTES } from "../../../routers";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const AuctionDetailAnonymous = () => {
   const { state } = useLocation();
@@ -48,10 +49,17 @@ const AuctionDetailAnonymous = () => {
     setIsEditMode(!isEditMode);
   };
 
-  const handleSendToManager = () => {
-    // Logic to send auction to manager for approval
-    console.log("Sending auction to manager for approval");
-    // You can add API call here
+  const handleSendToManager = async () => {
+    try {
+      const response = await AuctionServices.waitingPublicAuction(auctionId);
+      if (response.code === 200) {
+        toast.success(response.message);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      console.error("Error sending auction to manager:", error);
+    }
   };
 
   console.log("auctionDetailData", auctionDetailData);

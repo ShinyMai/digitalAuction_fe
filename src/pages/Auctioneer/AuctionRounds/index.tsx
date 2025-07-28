@@ -86,6 +86,10 @@ const AuctionRounds = ({ auctionId, auctionAsset }: props) => {
         console.log("Creating new auction round...");
     };
 
+    const handleEndAuctionRound = () => {
+        console.log("Creating new auction round...");
+    };
+
     const handleViewDetails = (record: AuctionRound) => {
         console.log("View details for record:", record);
         setSelectedRound(record);
@@ -126,7 +130,7 @@ const AuctionRounds = ({ auctionId, auctionAsset }: props) => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2, duration: 0.4 }}
                             >
-                                <PageHeader onCreateClick={handleCreateRound} />
+                                <PageHeader onCreateClick={handleCreateRound} onEndAuction={handleEndAuctionRound} />
                             </motion.div>
 
                             {/* Statistics Cards */}

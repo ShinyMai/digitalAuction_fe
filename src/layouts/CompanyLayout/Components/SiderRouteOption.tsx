@@ -54,14 +54,14 @@ const items: MenuItem[] = [
         roleView: ["Manager", "Director", "Admin"],
       },
       {
-        key: "11",
+        key: "2",
         icon: <LineChartOutlined />,
         label: "Báo cáo & Thống kê",
         url: AUCTIONEER_ROUTES.SUB.REPORTS,
         roleView: ["Auctioneer"],
       },
       {
-        key: "12",
+        key: "3",
         icon: <DashboardOutlined />,
         label: "Dashboard ( Chưa API )",
         url: AUCTIONEER_ROUTES.SUB.DASHBOARD,
@@ -76,42 +76,42 @@ const items: MenuItem[] = [
     roleView: ["Staff", "Manager", "Director", "Auctioneer"],
     children: [
       {
-        key: "2",
+        key: "4",
         icon: <FileSearchOutlined />,
         label: "Đang thu hồ sơ",
         url: STAFF_ROUTES.SUB.AUCTION_LIST,
         roleView: ["Staff", "Director", "Manager"],
       },
       {
-        key: "3",
+        key: "5",
         icon: <ClockCircleOutlined />,
         label: "Đợi duyệt",
         url: MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC,
         roleView: ["Manager"],
       },
       {
-        key: "4",
+        key: "6",
         icon: <FileAddOutlined />,
         label: "Tạo phiên đấu giá",
         url: STAFF_ROUTES.SUB.POST_AUCTION,
         roleView: ["Staff"],
       },
       {
-        key: "8",
+        key: "7",
         icon: <CalendarOutlined />,
         label: "Tổ chức hôm nay",
         url: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
         roleView: ["Manager", "Staff", "Auctioneer"],
       },
       {
-        key: "9",
+        key: "8",
         icon: <StopOutlined />,
         label: "Đã hủy",
         url: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL,
         roleView: ["Manager", "Staff"],
       },
       {
-        key: "10",
+        key: "9",
         icon: <HistoryOutlined />,
         label: "Phiên đấu giá đã tham gia",
         url: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
@@ -133,7 +133,7 @@ const items: MenuItem[] = [
     roleView: ["Staff"],
     children: [
       {
-        key: "5",
+        key: "11",
         icon: <CustomerServiceOutlined />,
         label: "Hỗ trợ đăng ký tham gia đấu giá",
         url: STAFF_ROUTES.SUB.SUPPORT_REGISTER_AUCTION,
@@ -148,14 +148,14 @@ const items: MenuItem[] = [
     roleView: ["Director", "Manager", "Admin"],
     children: [
       {
-        key: "6",
+        key: "12",
         icon: <ContactsOutlined />,
         label: "Quản lý nhân sự",
         url: STAFF_ROUTES.SUB.PROPERTIES,
         roleView: ["Director", "Manager"],
       },
       {
-        key: "7",
+        key: "13",
         icon: <UserOutlined />,
         label: "Tạo tài khoản mới",
         url: ADMIN_ROUTES.SUB.ADD_EMPLOYEES,
@@ -170,14 +170,14 @@ const items: MenuItem[] = [
     roleView: ["Staff", "Manager"],
     children: [
       {
-        key: "13",
+        key: "14",
         icon: <EditOutlined />,
         label: "Quản lý tin tức (Staff)",
         url: STAFF_ROUTES.SUB.LIST_BLOG,
         roleView: ["Staff"],
       },
       {
-        key: "14",
+        key: "15",
         icon: <SettingOutlined />,
         label: "Quản lý tin tức (Manager)",
         url: MANAGER_ROUTES.SUB.LIST_BLOG,

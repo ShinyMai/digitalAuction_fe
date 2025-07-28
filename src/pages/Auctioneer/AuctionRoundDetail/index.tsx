@@ -148,19 +148,17 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
         }
     };
 
-    // API Function 6: End auction (MISSING API)
+    // API Function 6: End auction (MISSING API) Chưa test
     const endAuction = async () => {
         try {
             // TODO: THIẾU API - Cần thêm vào AuctionServices
-            // const response = await AuctionServices.endAuction(auctionRound?.auctionRoundId);
-            // if (response.data.success) {
-            //     toast.success("Phiên đấu giá đã được kết thúc");
-            //     await loadAllData(); // Refresh data
-            // }
-
-            console.log('⚠️ MISSING API: endAuction - Ending auction round:', auctionRound?.auctionRoundId || 'AR001');
-            toast.success("Phiên đấu giá đã được kết thúc");
-            return Promise.resolve({ success: true });
+            const response = await AuctionServices.updateStatusAuctionRound({ auctionRoundId: auctionRound?.auctionRoundId, status: 2 });
+            if (response.data) {
+                toast.success("Phiên đấu giá đã được kết thúc");
+                //await loadAllData(); // Refresh data
+            } else {
+                toast.error("Kết thúc phiên đấu giá thất bại");
+            }
         } catch (error) {
             console.error('Error ending auction:', error);
             toast.error("Có lỗi xảy ra khi kết thúc phiên đấu giá");

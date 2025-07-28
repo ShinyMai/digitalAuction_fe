@@ -1,5 +1,5 @@
 import { Button, Typography } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, StopOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 
@@ -7,6 +7,7 @@ const { Title } = Typography;
 
 interface PageHeaderProps {
     onCreateClick: () => void;
+    onEndAuction?: () => void;
 }
 
 const USER_ROLES = {
@@ -20,7 +21,7 @@ const USER_ROLES = {
 
 type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
-const PageHeader = ({ onCreateClick }: PageHeaderProps) => {
+const PageHeader = ({ onCreateClick, onEndAuction }: PageHeaderProps) => {
 
     const { user } = useSelector((state: RootState) => state.auth);
     const role = user?.roleName as UserRole | undefined;
@@ -32,15 +33,29 @@ const PageHeader = ({ onCreateClick }: PageHeaderProps) => {
                 </Title>
                 {
                     role === USER_ROLES.AUCTIONEER && (
-                        <Button
-                            type="primary"
-                            icon={<PlusOutlined />}
-                            size="large"
-                            onClick={onCreateClick}
-                            className="!bg-green-500 !border-green-500 hover:!bg-green-600 !h-10 !px-6"
-                        >
-                            Tạo vòng đấu giá
-                        </Button>
+                        <div className="flex gap-3">
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                size="large"
+                                onClick={onCreateClick}
+                                className="!bg-green-500 !border-green-500 hover:!bg-green-600 !h-10 !px-6"
+                            >
+                                Tạo vòng đấu giá
+                            </Button>
+
+
+                            <Button
+                                danger
+                                icon={<StopOutlined />}
+                                size="large"
+                                onClick={onEndAuction}
+                                className="!h-10 !px-6"
+                            >
+                                Kết thúc phiên đấu giá
+                            </Button>
+
+                        </div>
                     )
                 }
 
