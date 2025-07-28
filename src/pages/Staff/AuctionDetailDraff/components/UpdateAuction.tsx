@@ -18,7 +18,7 @@ interface UpdateAuctionProps {
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 
-const UpdateAuction = ({ auctionDetailData, auctionType, auctionId }: UpdateAuctionProps) => {
+const UpdateAuction = ({ auctionDetailData }: UpdateAuctionProps) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [listAuctionCategory, setListAuctionCategory] = useState<{ label: string, value: number }[]>();

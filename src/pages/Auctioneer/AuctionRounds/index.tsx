@@ -172,6 +172,7 @@ const AuctionRounds = ({ auctionId, auctionAsset }: props) => {
                                         auctionId={auctionId}
                                         roundData={selectedRound}
                                         auctionAssetsToStatistic={auctionAsset}
+                                        onBackToList={handleBackToList}
                                     />
                                 )
                             }

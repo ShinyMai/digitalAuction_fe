@@ -9,6 +9,7 @@ import {
   IdcardOutlined,
   HomeOutlined,
   TrophyOutlined,
+  ArrowLeftOutlined,
 } from "@ant-design/icons";
 import AuctionServices from "../../../../services/AuctionServices";
 import type { AuctionRoundModals } from "../../Modals";
@@ -43,9 +44,10 @@ interface props {
   auctionId?: string;
   roundData?: AuctionRoundModals;
   auctionAssetsToStatistic?: AuctionAsset[];
+  onBackToList?: () => void;
 }
 
-const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic }: props) => {
+const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onBackToList }: props) => {
   // State cho danh sách dữ liệu
   const [auctionRoundPriceList, setAuctionRoundPriceList] = useState<InputAuctionPriceModals[]>([]);
   const [loading, setLoading] = useState(false);
@@ -263,6 +265,20 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic }: p
       </div>
 
       <div className="w-full mx-auto relative z-10">
+        {/* Back Button */}
+        {onBackToList && (
+          <div className="mb-6">
+            <Button
+              icon={<ArrowLeftOutlined />}
+              onClick={onBackToList}
+              className="bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              size="large"
+            >
+              Quay lại danh sách
+            </Button>
+          </div>
+        )}
+
         {/* Stats Section */}
         <div className="mb-8">
           <Row gutter={[16, 16]}>
