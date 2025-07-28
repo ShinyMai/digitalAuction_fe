@@ -132,7 +132,7 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
                     </span>
                   </div>
                 </div>
-                {role === USER_ROLES.STAFF && (
+                {role === USER_ROLES.MANAGER && (
                   <div className="text-center mt-6">
                     <Button
                       type="primary"
@@ -158,7 +158,7 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
                 Danh sách tài sản đấu giá
               </h3>
               {auctionDetailData.listAuctionAssets &&
-              auctionDetailData.listAuctionAssets.length > 0 ? (
+                auctionDetailData.listAuctionAssets.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {auctionDetailData.listAuctionAssets.map((asset) => (
                     <Card

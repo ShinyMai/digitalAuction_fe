@@ -33,8 +33,7 @@ export const STAFF_ROUTES = {
     PERSONNEL: "personnel",
     AUCTION_DETAIL: "auction-detail",
     NOT_FOUND: "not-found",
-    AUCTION_LIST_DRAFF: "auction-list-draff",
-    AUCTION_DETAIL_DRAFF: "auction-detail-draff",
+
     SUPPORT_REGISTER_AUCTION: "support-register-auction",
     AUCTION_NOW: "auction_now",
     AUCTION_DETAIL_NOW: "auction-detail-now",
@@ -61,6 +60,7 @@ export const AUCTIONEER_ROUTES = {
     AUCTION_ROUNDS: "auction-rounds",
     AUCTION_ROUND_DETAIL: "auction-round-detail",
     REPORTS: "reports",
+
   },
 };
 
@@ -70,5 +70,7 @@ export const MANAGER_ROUTES = {
     AUCTION_LIST_CANCEL: "auction-list-cancel",
     AUCTION_DETAIL_CANCEL: "auction-detail-cancel",
     LIST_BLOG: "list-blog-manager",
+    AUCTION_LIST_WAITING_PUBLIC: "auction-list-waiting-public",
+    AUCTION_DETAIL_WAITING_PUBLIC: "auction-detail-waiting-public",
   },
 };

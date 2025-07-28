@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import AuctionServices from "../../../../services/AuctionServices";
 import type { AuctionDocument, AuctionDateModal } from "../../Modals";
 import { Table, Input, Tag, Button, Dropdown, Menu } from "antd";
 import { SearchOutlined, SettingOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
 import DepositConfirmationPopup from "./DepositConfirmationPopup";
 
 interface SearchParams {
@@ -25,7 +24,7 @@ interface Props {
   auctionDateModals?: AuctionDateModal;
 }
 
-const ListAuctionDocument = ({ auctionId, auctionDateModals }: Props) => {
+const ListAuctionDocument = ({ auctionId }: Props) => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
     PageSize: 8,
@@ -36,25 +35,10 @@ const ListAuctionDocument = ({ auctionId, auctionDateModals }: Props) => {
   const [auctionDocuments, setAuctionDocuments] = useState<AuctionDocument[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [searchValues, setSearchValues] = useState<{
-    name?: string;
-    CitizenIdentification?: string;
-    TagName?: string;
-  }>({});
   const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
   const [selectedRecord, setSelectedRecord] = useState<AuctionDocument | null>(null);
 
-  const isWithinRegistrationPeriod =
-    auctionDateModals?.registerOpenDate && auctionDateModals?.registerEndDate
-      ? dayjs().isAfter(dayjs(auctionDateModals.registerOpenDate)) &&
-      dayjs().isBefore(dayjs(auctionDateModals.registerEndDate))
-      : false;
-
-  useEffect(() => {
-    getListAuctionDocument();
-  }, [searchParams, auctionId]);
-
-  const getListAuctionDocument = async () => {
+  const getListAuctionDocument = useCallback(async () => {
     try {
       setLoading(true);
       const params: SearchParams = {
@@ -76,20 +60,26 @@ const ListAuctionDocument = ({ auctionId, auctionDateModals }: Props) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchParams, auctionId]);
 
-  const handleSearch = () => {
-    setSearchParams((prev) => ({
-      ...prev,
-      ...searchValues,
-      PageNumber: 1,
-    }));
-  };
+  useEffect(() => {
+    getListAuctionDocument();
+  }, [getListAuctionDocument]);
+
+  // Debounce effect cho search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      // Trigger search sau 500ms delay
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchParams.Name, searchParams.CitizenIdentification, searchParams.TagName]);
 
   const handleInputChange = (key: keyof SearchParams, value: string) => {
-    setSearchValues((prev) => ({
+    setSearchParams((prev) => ({
       ...prev,
       [key]: value || undefined,
+      PageNumber: 1, // Reset về trang 1 khi search
     }));
   };
 
@@ -131,12 +121,6 @@ const ListAuctionDocument = ({ auctionId, auctionDateModals }: Props) => {
   };
 
   const columns = [
-    {
-      title: "Số báo danh",
-      dataIndex: "numericalOrder",
-      key: "numericalOrder",
-      render: (numericalOrder: number | null) => numericalOrder || "-",
-    },
     {
       title: "Tên",
       dataIndex: "name",
@@ -184,14 +168,14 @@ const ListAuctionDocument = ({ auctionId, auctionDateModals }: Props) => {
                 <Menu.Item
                   key="receiveTicket"
                   onClick={() => handleAction("receiveTicket", record)}
-                  disabled={record.statusTicket !== 1 || !isWithinRegistrationPeriod}
+                  disabled={record.statusTicket !== 1}
                 >
                   Đã nhận phiếu
                 </Menu.Item>
                 <Menu.Item
                   key="receiveDeposit"
                   onClick={() => handleAction("receiveDeposit", record)}
-                // disabled={record.statusDeposit || !isWithinRegistrationPeriod}
+                  disabled={record.statusTicket !== 2 || record.statusDeposit !== 0}
                 >
                   Đã nhận cọc
                 </Menu.Item>
@@ -220,33 +204,26 @@ const ListAuctionDocument = ({ auctionId, auctionDateModals }: Props) => {
               placeholder="Tìm kiếm theo tên"
               prefix={<SearchOutlined />}
               allowClear
-              value={searchValues.name}
+              value={searchParams.Name}
               onChange={(e) => handleInputChange("Name", e.target.value)}
-              className="w-full sm:w-1/4"
+              className="w-full sm:w-1/3"
             />
             <Input
               placeholder="Tìm kiếm theo CMND/CCCD"
               prefix={<SearchOutlined />}
               allowClear
-              value={searchValues.CitizenIdentification}
+              value={searchParams.CitizenIdentification}
               onChange={(e) => handleInputChange("CitizenIdentification", e.target.value)}
-              className="w-full sm:w-1/4"
+              className="w-full sm:w-1/3"
             />
             <Input
               placeholder="Tìm kiếm theo tên tài sản"
               prefix={<SearchOutlined />}
               allowClear
-              value={searchValues.TagName}
+              value={searchParams.TagName}
               onChange={(e) => handleInputChange("TagName", e.target.value)}
-              className="w-full sm:w-1/4"
+              className="w-full sm:w-1/3"
             />
-            <Button
-              type="primary"
-              onClick={handleSearch}
-              className="bg-teal-500 hover:bg-teal-600 w-full sm:w-auto"
-            >
-              Tìm kiếm
-            </Button>
           </div>
         </div>
         <Table

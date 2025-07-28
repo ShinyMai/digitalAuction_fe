@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import AuctionServices from "../../../../services/AuctionServices";
 import type {
@@ -52,11 +52,6 @@ const ListAuctionDocumentSuccesRegister = ({
     >([]);
     const [totalCount, setTotalCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
-    const [searchValues, setSearchValues] = useState<{
-        name?: string;
-        CitizenIdentification?: string;
-        TagName?: string;
-    }>({});
     const [isRefundMode, setIsRefundMode] = useState<boolean>(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
@@ -73,11 +68,7 @@ const ListAuctionDocumentSuccesRegister = ({
             ? dayjs().isAfter(dayjs(auctionDateModals.registerEndDate))
             : false;
 
-    useEffect(() => {
-        getListAuctionDocument();
-    }, [searchParams, auctionId]);
-
-    const getListAuctionDocument = async () => {
+    const getListAuctionDocument = useCallback(async () => {
         try {
             setLoading(true);
             const params: SearchParams = {
@@ -101,23 +92,29 @@ const ListAuctionDocumentSuccesRegister = ({
         } finally {
             setLoading(false);
         }
-    };
+    }, [searchParams, auctionId]);
 
-    const handleSearch = () => {
-        setSearchParams((prev) => ({
-            ...prev,
-            ...searchValues,
-            PageNumber: 1, // Reset về trang 1 khi tìm kiếm
-        }));
-    };
+    useEffect(() => {
+        getListAuctionDocument();
+    }, [getListAuctionDocument]);
+
+    // Debounce effect cho search
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            // Trigger search sau 500ms delay
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [searchParams.Name, searchParams.CitizenIdentification, searchParams.TagName]);
 
     const handleInputChange = (
         key: keyof SearchParams,
         value: string
     ) => {
-        setSearchValues((prev) => ({
+        setSearchParams((prev) => ({
             ...prev,
             [key]: value || undefined,
+            PageNumber: 1, // Reset về trang 1 khi search
         }));
     };
 
@@ -200,7 +197,7 @@ const ListAuctionDocumentSuccesRegister = ({
 
     const columns = [
         {
-            title: "STT",
+            title: "Số báo danh",
             dataIndex: "numericalOrder",
             key: "numericalOrder",
             render: (numericalOrder: number | null) => numericalOrder || "-",
@@ -271,39 +268,32 @@ const ListAuctionDocumentSuccesRegister = ({
                             placeholder="Tìm kiếm theo tên"
                             prefix={<SearchOutlined />}
                             allowClear
-                            value={searchValues.name}
+                            value={searchParams.Name}
                             onChange={(e) =>
                                 handleInputChange("Name", e.target.value)
                             }
-                            className="w-full sm:w-1/4"
+                            className="w-full sm:w-1/5"
                         />
                         <Input
                             placeholder="Tìm kiếm theo CMND/CCCD"
                             prefix={<SearchOutlined />}
                             allowClear
-                            value={searchValues.CitizenIdentification}
+                            value={searchParams.CitizenIdentification}
                             onChange={(e) =>
                                 handleInputChange("CitizenIdentification", e.target.value)
                             }
-                            className="w-full sm:w-1/4"
+                            className="w-full sm:w-1/5"
                         />
                         <Input
                             placeholder="Tìm kiếm theo tên tài sản"
                             prefix={<SearchOutlined />}
                             allowClear
-                            value={searchValues.TagName}
+                            value={searchParams.TagName}
                             onChange={(e) =>
                                 handleInputChange("TagName", e.target.value)
                             }
-                            className="w-full sm:w-1/4"
+                            className="w-full sm:w-1/5"
                         />
-                        <Button
-                            type="primary"
-                            onClick={handleSearch}
-                            className="bg-teal-500 hover:bg-teal-600 w-full sm:w-auto"
-                        >
-                            Tìm kiếm
-                        </Button>
                         <Button
                             type="primary"
                             onClick={handleDownload}

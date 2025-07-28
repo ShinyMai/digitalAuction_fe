@@ -94,7 +94,7 @@ const AuctionDetailAnonymous = () => {
               ),
               children: (
                 <Card className="shadow-xl bg-white/70 backdrop-blur-sm border-0 rounded-2xl">
-                  <ListAuctionDocument auctionId={auctionId} auctionDateModals={auctionDateModal} />
+                  <ListAuctionDocument auctionId={auctionId} />
                 </Card>
               ),
             },
