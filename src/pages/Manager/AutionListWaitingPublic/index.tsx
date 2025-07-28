@@ -33,7 +33,7 @@ interface PaginationChangeParams {
 const DEFAULT_PARAMS: SearchParams = {
   PageNumber: 1,
   PageSize: 8,
-  Status: 0,
+  Status: 4,
   AuctionType: "1",
   SortBy: "register_open_date",
   IsAscending: false,
