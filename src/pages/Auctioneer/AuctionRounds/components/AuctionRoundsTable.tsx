@@ -2,15 +2,17 @@ import { Card, Table } from "antd";
 import { FileTextOutlined } from "@ant-design/icons";
 import type { AuctionRound } from "../modalsData";
 import { getAuctionRoundsColumns } from "./tableColumns";
+import type { AuctionDataDetail } from "../../Modals";
 
 interface AuctionRoundsTableProps {
     auctionRounds: AuctionRound[];
     loading: boolean;
+    auction?: AuctionDataDetail;
     onViewDetails?: (record: AuctionRound) => void;
 }
 
-const AuctionRoundsTable = ({ auctionRounds, loading, onViewDetails }: AuctionRoundsTableProps) => {
-    const columns = getAuctionRoundsColumns({ onViewDetails });
+const AuctionRoundsTable = ({ auctionRounds, loading, auction, onViewDetails }: AuctionRoundsTableProps) => {
+    const columns = getAuctionRoundsColumns({ onViewDetails, auction });
 
     return (
         <Card

@@ -16,15 +16,17 @@ import {
     fakeAssetAnalysis,
     fakeStatistics
 } from "./fakeData";
+import type { AuctionDataDetail } from "../Modals";
 
 interface AuctionRoundDetailProps {
-    auctionRound?: AuctionRound
+    auctionRound?: AuctionRound,
+    auction?: AuctionDataDetail,
     onBackToList?: () => void;
 }
 
 const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailProps) => {
     // Current auction round ID - single source of truth
-    const CURRENT_AUCTION_ROUND_ID = "AR001";
+
 
     // State management
     const [auctionRoundPrice, setAuctionRoundPrice] = useState<AuctionRoundPrice[]>([]);
@@ -215,6 +217,7 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
                 </span>
             ),
             children: <AssetAnalysisTable
+                auctionRound={auctionRound}
                 priceHistory={auctionRoundPrice}
                 onUpdateWinner={onUpdateWinnerFlag}
             />
@@ -257,10 +260,10 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
 
                 {/* Header */}
                 <AuctionHeader
-                    auctionRoundId={CURRENT_AUCTION_ROUND_ID}
+                    auctionRoundId={auctionRound?.auctionRoundId}
                     totalParticipants={totalParticipants}
                     totalAssets={totalAssets}
-                    status="active"
+                    status={auctionRound?.status}
                     onEndAuction={endAuction}
                 />
 
@@ -270,15 +273,17 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
                         <Typography.Title level={4} className="m-0">
                             Quản lý phiên đấu giá
                         </Typography.Title>
-                        <Button
-                            type="primary"
-                            icon={<ReloadOutlined />}
-                            onClick={refreshAllData}
-                            className="flex items-center"
-                            loading={loading}
-                        >
-                            Làm mới dữ liệu
-                        </Button>
+                        {auctionRound?.status !== 2 && (
+                            <Button
+                                type="primary"
+                                icon={<ReloadOutlined />}
+                                onClick={refreshAllData}
+                                className="flex items-center"
+                                loading={loading}
+                            >
+                                Làm mới dữ liệu
+                            </Button>
+                        )}
                     </div>
 
                     <Tabs

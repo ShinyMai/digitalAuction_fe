@@ -3,8 +3,7 @@ import {
     FileTextOutlined,
     PlayCircleOutlined,
     UserOutlined,
-    DollarOutlined,
-    TrophyOutlined
+    DollarOutlined
 } from "@ant-design/icons";
 
 interface StatisticsData {
@@ -13,7 +12,6 @@ interface StatisticsData {
     completedRounds: number;
     totalBidders: number;
     totalBids: number;
-    winners: number;
     totalBidValue: number;
     averageBidValue: number;
 }
@@ -72,17 +70,7 @@ const StatisticsCards = ({ stats, formatCurrency }: StatisticsCardsProps) => {
 
             {/* Additional Statistics */}
             <Row gutter={[16, 16]} className="!mb-6">
-                <Col xs={24} sm={12} md={8}>
-                    <Card className="!border-yellow-200 !bg-yellow-50 hover:!shadow-md !transition-shadow">
-                        <Statistic
-                            title={<span className="!text-yellow-700 !font-medium">Người chiến thắng</span>}
-                            value={stats.winners}
-                            prefix={<TrophyOutlined className="!text-yellow-500" />}
-                            valueStyle={{ color: '#d97706' }}
-                        />
-                    </Card>
-                </Col>
-                <Col xs={24} sm={12} md={8}>
+                <Col xs={24} sm={12} md={12}>
                     <Card className="!border-red-200 !bg-red-50 hover:!shadow-md !transition-shadow">
                         <Statistic
                             title={<span className="!text-red-700 !font-medium">Tổng giá trị đấu giá</span>}
@@ -91,7 +79,7 @@ const StatisticsCards = ({ stats, formatCurrency }: StatisticsCardsProps) => {
                         />
                     </Card>
                 </Col>
-                <Col xs={24} sm={12} md={8}>
+                <Col xs={24} sm={12} md={12}>
                     <Card className="!border-indigo-200 !bg-indigo-50 hover:!shadow-md !transition-shadow">
                         <Statistic
                             title={<span className="!text-indigo-700 !font-medium">Giá trị trung bình</span>}

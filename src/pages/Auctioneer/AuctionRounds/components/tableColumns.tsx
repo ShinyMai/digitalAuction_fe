@@ -8,6 +8,7 @@ import {
     FileTextOutlined
 } from "@ant-design/icons";
 import type { AuctionRound } from "../modalsData";
+import type { AuctionDataDetail } from "../../Modals";
 
 const { Text } = Typography;
 
@@ -26,9 +27,10 @@ const getStatusInfo = (status: number) => {
 
 interface ColumnProps {
     onViewDetails?: (record: AuctionRound) => void;
+    auction?: AuctionDataDetail;
 }
 
-export const getAuctionRoundsColumns = ({ onViewDetails }: ColumnProps = {}) => [
+export const getAuctionRoundsColumns = ({ onViewDetails, auction }: ColumnProps = {}) => [
     {
         title: 'Vòng đấu giá',
         dataIndex: 'roundNumber',
@@ -44,14 +46,17 @@ export const getAuctionRoundsColumns = ({ onViewDetails }: ColumnProps = {}) => 
     },
     {
         title: 'Tên cuộc đấu giá',
-        dataIndex: ['auction', 'auctionName'],
+        dataIndex: 'roundNumber',
         key: 'auctionName',
         ellipsis: true,
-        render: (text: string) => (
-            <Tooltip title={text}>
-                <Text strong className="!text-gray-800">{text}</Text>
-            </Tooltip>
-        ),
+        render: (roundNumber: number) => {
+            const displayName = auction?.auctionName ? `${auction.auctionName} - Vòng ${roundNumber}` : `Vòng ${roundNumber}`;
+            return (
+                <Tooltip title={displayName}>
+                    <Text strong className="!text-gray-800">{displayName}</Text>
+                </Tooltip>
+            );
+        },
     },
     {
         title: 'Danh mục',
@@ -60,7 +65,7 @@ export const getAuctionRoundsColumns = ({ onViewDetails }: ColumnProps = {}) => 
         width: 120,
         render: (category: string) => (
             <Tag color="blue" className="!border-blue-300 !bg-blue-50 !text-blue-700">
-                {category}
+                {auction?.categoryName || category}
             </Tag>
         ),
     },
@@ -83,26 +88,14 @@ export const getAuctionRoundsColumns = ({ onViewDetails }: ColumnProps = {}) => 
         },
     },
     {
-        title: 'Tổng vòng tối đa',
-        dataIndex: ['auction', 'numberRoundMax'],
-        key: 'numberRoundMax',
-        width: 140,
-        align: 'center' as const,
-        render: (maxRounds: number) => (
-            <Tag color="purple" className="!border-purple-300 !bg-purple-50 !text-purple-700">
-                {maxRounds} vòng
-            </Tag>
-        ),
-    },
-    {
-        title: 'Người đấu giá',
+        title: 'Đấu giá viên',
         dataIndex: ['auction', 'auctioneer'],
         key: 'auctioneer',
         width: 150,
         render: (auctioneer: string) => (
             <Space>
                 <UserOutlined className="!text-green-500" />
-                <Text className="!text-gray-700">{auctioneer}</Text>
+                <Text className="!text-gray-700">{auction?.auctioneer || auctioneer}</Text>
             </Space>
         ),
     },

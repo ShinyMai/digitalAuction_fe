@@ -54,3 +54,23 @@ export type AuctionAsset = {
   auctionId: string;
   auction?: string;
 };
+
+export type AuctionRoundPriceWinner = {
+  auctionRoundPriceId: string;
+  auctionRound: {
+    auctionRoundId: string;
+    auctionId: string;
+    roundNumber: number;
+    status: number;
+    createdAt: string;
+    createdBy: string;
+  }
+  userName: string;
+  citizenIdentification: string;
+  recentLocation: string;
+  tagName: string;
+  auctionPrice: number;
+  createdAt: string;
+  createdBy: string;
+  flagWinner: boolean
+}
