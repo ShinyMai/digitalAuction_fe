@@ -8,12 +8,18 @@ import {
   message,
   type PopconfirmProps,
 } from "antd";
-import { EditOutlined, DeleteOutlined, ArrowUpOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import NewsServices from "../../../../services/NewsService";
 import type { ApiResponse } from "../../../../types/responseAxios";
 import type { BlogData } from "../../../Staff/ManageBlog/types";
 import { getBlogStatusTag } from "../../../Staff/ManageBlog/utils";
+import { useState } from "react";
+import ReasonReject from "../modal/ReasonReject";
 
 interface BlogTableProps {
   blogData: BlogData[];
@@ -36,7 +42,6 @@ const BlogTable = ({
   loading,
   pageSize = 8,
   currentPage = 1,
-  onEdit,
   onRowClick,
   onStatusChange,
 }: BlogTableProps) => {
@@ -50,35 +55,43 @@ const BlogTable = ({
     });
   };
   const truncateText = (text: string, maxLength: number = 100) => {
-    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
   };
-  // Handle submit for approval (status = 2)
-  const handleSubmitForApproval = async (record: BlogData) => {
+
+  const [openModal, setOpenModal] = useState<string>("");
+  console.log("Open Modal:", openModal);
+
+  const handleApprove = async (record: BlogData) => {
     try {
-      const response: ApiResponse<unknown> = await NewsServices.changeStatusBlog({
-        BlogId: record.blogId,
-        Status: 1,
-      });
+      const response: ApiResponse<unknown> =
+        await NewsServices.changeStatusBlog({
+          BlogId: record.blogId,
+          Status: 2,
+          Note: "",
+        });
 
       if (response.code === 200) {
-        message.success("Gửi duyệt bài viết thành công!");
-        onStatusChange?.();
+        message.success("Duyệt bài viết thành công!");
+        onStatusChange?.(); // Refresh the list
       } else {
-        message.error(response.message || "Lỗi khi gửi duyệt bài viết!");
+        message.error(response.message || "Lỗi khi duyệt bài viết!");
       }
     } catch (error) {
-      console.error("Error submitting blog for approval:", error);
-      message.error("Lỗi khi gửi duyệt bài viết!");
+      console.error("Error deleting blog:", error);
+      message.error("Lỗi khi xóa bài viết!");
     }
   };
 
-  // Handle delete (status = 3)
-  const handleDeleteBlog = async (record: BlogData) => {
+  const handleHideBlog = async (record: BlogData) => {
     try {
-      const response: ApiResponse<unknown> = await NewsServices.changeStatusBlog({
-        BlogId: record.blogId,
-        Status: 3,
-      });
+      const response: ApiResponse<unknown> =
+        await NewsServices.changeStatusBlog({
+          BlogId: record.blogId,
+          Status: 3,
+          Note: "",
+        });
 
       if (response.code === 200) {
         message.success("Xóa bài viết thành công!");
@@ -131,7 +144,9 @@ const BlogTable = ({
       width: 200,
       render: (title: string) => (
         <Tooltip title={title}>
-          <div className="font-medium text-gray-800">{truncateText(title, 50)}</div>
+          <div className="font-medium text-gray-800">
+            {truncateText(title, 50)}
+          </div>
         </Tooltip>
       ),
     },
@@ -184,43 +199,48 @@ const BlogTable = ({
       fixed: "right",
       render: (_: unknown, record: BlogData) => (
         <Space size="small" onClick={(e) => e.stopPropagation()}>
-          {record.status === 0 && (
-            <Tooltip title="Gửi duyệt">
-              <Popconfirm
-                title="Xác nhận gửi duyệt"
-                description={`Bạn có chắc chắn muốn gửi duyệt bài viết "${record.title}"?`}
-                onConfirm={() => handleSubmitForApproval(record)}
-                onCancel={cancel}
-                okText="Xác nhận"
-                cancelText="Hủy"
-              >
-                <Button
-                  type="text"
-                  icon={<ArrowUpOutlined />}
-                  className="!text-blue-600 !hover:bg-blue-50"
-                />
-              </Popconfirm>
-            </Tooltip>
+          {record.status === 1 && (
+            <>
+              <Tooltip title="Duyệt bài viết">
+                <Popconfirm
+                  title="Xác nhận duyệt bài viết"
+                  description={`Bạn có chắc chắn muốn duyệt bài viết "${record.title}"?`}
+                  onConfirm={() => handleApprove(record)}
+                  onCancel={cancel}
+                  okText="Xác nhận"
+                  cancelText="Hủy"
+                >
+                  <Button
+                    type="text"
+                    icon={<CheckOutlined />}
+                    className="!text-green-600 !hover:bg-green-50"
+                  />
+                </Popconfirm>
+              </Tooltip>
+              <Tooltip title="Từ chối bài viết">
+                <Popconfirm
+                  title="Xác nhận từ chối bài viết"
+                  description={`Bạn có chắc chắn muốn từ chối bài viết "${record.title}"?`}
+                  onConfirm={() => setOpenModal(record.blogId)}
+                  onCancel={cancel}
+                  okText="Xác nhận"
+                  cancelText="Hủy"
+                >
+                  <Button
+                    type="text"
+                    icon={<CloseOutlined />}
+                    className="!text-red-600 !hover:bg-red-50"
+                  />
+                </Popconfirm>
+              </Tooltip>
+            </>
           )}
-          {(record.status === 0 || record.status === 5) && (
-            <Tooltip title="Chỉnh sửa">
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit?.(record);
-                }}
-                className="!text-green-600 !hover:bg-green-50"
-              />
-            </Tooltip>
-          )}
-          {(record.status === 0 || record.status === 1 || record.status === 2) && (
+          {record.status === 2 && (
             <Tooltip title="Ẩn bài viết">
               <Popconfirm
                 title="Xác nhận ẩn bài viết"
                 description={`Bạn có chắc chắn muốn ẩn bài viết "${record.title}"?`}
-                onConfirm={() => handleDeleteBlog(record)}
+                onConfirm={() => handleHideBlog(record)}
                 onCancel={cancel}
                 okText="Xác nhận"
                 cancelText="Hủy"
@@ -254,7 +274,8 @@ const BlogTable = ({
             total: total,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} bài viết`,
+            showTotal: (total, range) =>
+              `${range[0]}-${range[1]} của ${total} bài viết`,
             pageSizeOptions: ["6", "12", "24", "32"],
           }}
           onChange={onChange}
@@ -306,6 +327,13 @@ const BlogTable = ({
           transform: none !important;
         }
       `}</style>
+
+      <ReasonReject
+        open={!!openModal}
+        onCancel={() => setOpenModal("")}
+        blogId={openModal}
+        onStatusChange={onStatusChange}
+      />
     </div>
   );
 };

@@ -4,7 +4,11 @@ import NewsServices from "../../../services/NewsService";
 import BlogTable from "./components/BlogTable";
 import SearchBlogTable from "./components/SearchBlogTable";
 import type { ApiResponse } from "../../../types/responseAxios";
-import type { BlogData, BlogParams, BlogResponse } from "../../Staff/ManageBlog/types";
+import type {
+  BlogData,
+  BlogParams,
+  BlogResponse,
+} from "../../Staff/ManageBlog/types";
 
 interface SearchParams {
   SearchTitle?: string;
@@ -26,13 +30,15 @@ interface PaginationChangeParams {
 const DEFAULT_PARAMS: SearchParams = {
   PageNumber: 1,
   PageSize: 6,
+  Status: 4,
 };
 
 const ManageBlog = () => {
   const [blogList, setBlogList] = useState<BlogData[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [searchParams, setSearchParams] = useState<SearchParams>(DEFAULT_PARAMS);
+  const [searchParams, setSearchParams] =
+    useState<SearchParams>(DEFAULT_PARAMS);
   const fetchBlogList = useCallback(async (): Promise<void> => {
     try {
       setLoading(true);
@@ -50,7 +56,8 @@ const ManageBlog = () => {
         }
       });
 
-      const response: ApiResponse<BlogResponse> = await NewsServices.getListNews(params);
+      const response: ApiResponse<BlogResponse> =
+        await NewsServices.getListNews(params);
 
       if (response.code === 200 && response.data) {
         const data = response.data;
