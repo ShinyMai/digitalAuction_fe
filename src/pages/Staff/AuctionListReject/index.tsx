@@ -35,7 +35,7 @@ interface PaginationChangeParams {
 
 
 
-const AuctionListDraff = () => {
+const AuctionListReject = () => {
   const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
@@ -43,11 +43,11 @@ const AuctionListDraff = () => {
   const { user } = useSelector(
     (state: RootState) => state.auth
   );
-  console.log("user", user);
+
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
     PageSize: 8,
-    Status: 0,
+    Status: 6,
     AuctionType: "1",
     SortBy: "register_open_date",
     IsAscending: false,
@@ -172,4 +172,4 @@ const AuctionListDraff = () => {
   );
 };
 
-export default AuctionListDraff;
+export default AuctionListReject;

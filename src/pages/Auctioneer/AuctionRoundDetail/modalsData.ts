@@ -100,3 +100,4 @@ export type AssetAnalysisData = {
   priceIncrease: number;
   priceIncreasePercent: number;
 };
+

@@ -1,49 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
-import { Table, type TableProps, Button, Tooltip } from "antd";
-import { CheckCircleOutlined } from "@ant-design/icons";
+import { Table, Tooltip, type TableProps } from "antd";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import type { AuctionDataList } from "../../Modals";
+import { AUCTIONEER_ROUTES, STAFF_ROUTES } from "../../../../routers";
 import { useSelector } from "react-redux";
-import type { AuctionDataList } from "../../../Staff/Modals";
-import { STAFF_ROUTES } from "../../../../routers";
 import UserNameOrId from "../../../../components/Common/UserNameOrId";
 
-interface AuctionTableProps {
+interface Props {
   auctionData?: AuctionDataList[];
-  headerTable: React.ReactElement;
+  headerTable: React.JSX.Element;
   onChange: (pagination: any, sorter: any) => void;
   total: number;
   loading: boolean;
-  pageSize?: number;
-  currentPage?: number;
+  pageSize: number;
+  currentPage: number;
   selectedAuctionType?: string;
 }
 
-interface UserState {
-  roleName?: string;
-}
-
-interface RootState {
-  auth: {
-    user?: UserState;
-  };
-}
-
-const AuctionTable: React.FC<AuctionTableProps> = ({
+const AuctionTable = ({
   auctionData,
   headerTable,
   onChange,
   total,
   loading,
-  pageSize = 10,
-  currentPage = 1,
+  pageSize,
+  currentPage,
   selectedAuctionType,
-}) => {
+}: Props) => {
   const navigate = useNavigate();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: any) => state.auth);
   const role = user?.roleName;
-
   const formatDate = (dateString: string): string => {
     return dateString ? dayjs(dateString).format("DD/MM/YYYY") : "-";
   };
@@ -71,32 +58,6 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
     </Tooltip>
   );
 
-  const getNavigationParams = (record: AuctionDataList) => {
-    const navigationKey = record.auctionId || record._id;
-    const auctionType = record.auctionId ? "SQL" : "NODE";
-    return { navigationKey, auctionType };
-  };
-
-  const handleNavigateToDetail = (record: AuctionDataList) => {
-    const rolePath = role?.toLowerCase();
-    const { navigationKey, auctionType } = getNavigationParams(record);
-
-    navigate(
-      `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC}/${STAFF_ROUTES.SUB.AUCTION_DETAIL_WAITING_PUBLIC}`,
-      {
-        state: {
-          key: navigationKey,
-          type: auctionType,
-          status: record.status,
-        },
-        replace: true,
-      }
-    );
-  };
-
-  const isApprovalDisabled = (record: AuctionDataList): boolean => {
-    return !record.registerEndDate || !dayjs().isBefore(dayjs(record.registerEndDate));
-  };
   const columns: TableProps<AuctionDataList>["columns"] = [
     {
       title: "STT",
@@ -109,7 +70,7 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
       key: "auctionName",
       sorter: true,
       width: 250,
-      render: (text: string) => <TruncatedText text={text} maxWidth={450} />,
+      render: (text: string) => <TruncatedText text={text} maxWidth={700} />,
     },
     {
       title: "Ngày Mở - Kết thúc ĐK",
@@ -152,48 +113,51 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
         );
       },
     },
-    {
-      title: "Hành động",
-      key: "action",
-      width: 120,
-      align: "center" as const,
-      render: (_, record: AuctionDataList) => (
-        <Tooltip title={role === "MANAGER" ? "Duyệt thông tin đấu giá" : "Xem chi tiết đấu giá"}>
-          <Button
-            type="primary"
-            icon={<CheckCircleOutlined />}
-            onClick={(e) => {
-              e.stopPropagation(); // Ngăn event bubbling
-              handleNavigateToDetail(record);
-            }}
-            className="!bg-blue-500 hover:!bg-blue-600 !border-blue-500 hover:!border-blue-600 !shadow-md hover:!shadow-lg !transition-all !duration-300"
-            disabled={isApprovalDisabled(record)}
-            size="small"
-          >
-            {role === "MANAGER" ? "Duyệt" : "Chi tiết"}
-          </Button>
-        </Tooltip>
-      ),
-    },
   ];
+
   return (
     <div className="w-full h-full flex flex-col gap-4 bg-white rounded-xl p-4 sm:p-6">
       <div className="w-full">{headerTable}</div>
-
       <Table<AuctionDataList>
         columns={columns}
         dataSource={auctionData}
         onChange={onChange}
-        loading={loading}
         pagination={{
           total,
           pageSize,
           current: currentPage,
+          // showSizeChanger: true,
+          // pageSizeOptions: ["10", "20", "50"],
           className: "bg-white rounded-b-lg",
         }}
+        loading={loading}
         locale={{ emptyText: "Không có dữ liệu" }}
         className="w-full border border-white rounded-lg overflow-hidden"
-        rowClassName="hover:bg-blue-50 transition-colors duration-200"
+        onRow={(record) => ({
+          onClick: () => {
+            const rolePath = role?.toLowerCase();
+
+            if (rolePath == STAFF_ROUTES.PATH) {
+              navigate(
+                `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL}/${STAFF_ROUTES.SUB.AUCTION_DETAIL_SUCCESSFULL}`,
+                {
+                  state: { key: record.auctionId },
+                  replace: true,
+                }
+              );
+            } else if (rolePath == AUCTIONEER_ROUTES.PATH) {
+              console.log("RolePath", rolePath);
+              navigate(
+                `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_NOW}/${STAFF_ROUTES.SUB.AUCTION_DETAIL_NOW}`,
+                {
+                  state: { key: record.auctionId },
+                  replace: true,
+                }
+              );
+            }
+          },
+        })}
+        rowClassName="cursor-pointer hover:bg-blue-50 transition-colors duration-200"
       />
     </div>
   );

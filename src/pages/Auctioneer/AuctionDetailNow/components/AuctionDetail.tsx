@@ -9,6 +9,7 @@ import { EnvironmentOutlined } from "@ant-design/icons";
 interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
   auctionType?: string;
+  isHaveAuctionRound?: boolean;
   onCreateAuctionRound?: () => void;
 }
 
@@ -29,6 +30,7 @@ const AuctionDetail = ({
   auctionDetailData,
   auctionType,
   onCreateAuctionRound,
+  isHaveAuctionRound,
 }: AuctionDetailProps) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
@@ -112,7 +114,7 @@ const AuctionDetail = ({
                 </div>
                 {(role === USER_ROLES.MANAGER || role === USER_ROLES.AUCTIONEER) && (
                   <div className="flex justify-center gap-4 mt-6">
-                    {role === USER_ROLES.AUCTIONEER && (
+                    {role === USER_ROLES.AUCTIONEER && !isHaveAuctionRound && (
                       <Button
                         type="primary"
                         size="large"

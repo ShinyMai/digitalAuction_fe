@@ -10,9 +10,8 @@ import AuctionServices from "../../../../services/AuctionServices/index.tsx";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import * as XLSX from "xlsx";
-import { QuestionCircleOutlined } from "@ant-design/icons";
-
-const { RangePicker } = DatePicker;
+import { QuestionCircleOutlined, SaveOutlined } from "@ant-design/icons";
+import { motion } from "framer-motion";
 
 // Định nghĩa interface cho dữ liệu form
 interface AuctionFormValues {
@@ -40,11 +39,12 @@ interface AuctionFormValues {
 interface Props {
   auctionCategoryList: AuctionCategory[];
   auctionType: "NODE" | "SQL";
+  handleBackToSelection: () => void;
 }
 
 const REAL_ESTATE_CATEGORY_ID = 2; // Hằng số cho danh mục bất động sản
 
-const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
+const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelection }: Props) => {
   const [form] = useForm<AuctionFormValues>();
   const [isRealEstate, setIsRealEstate] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -304,264 +304,378 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType }: Props) => {
   };
 
   return (
-    <Form
-      form={form}
-      className="space-y-6"
-      layout="vertical"
-      onFinish={onFinish}
-      onFinishFailed={() => {
-        message.error("Vui lòng kiểm tra các trường bắt buộc!");
-      }}
-      onValuesChange={(changedValues) => {
-        if (changedValues.RegisterTimeRange) {
-          setRegisterRange(changedValues.RegisterTimeRange);
-        }
-      }}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="!p-6"
     >
-      <Row gutter={[24, 24]}>
-        <Col xs={24} md={12} lg={8}>
-          <Card
-            title="Thông Tin Đấu Giá"
-            className="bg-blue-50 border border-teal-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+      <Card
+        className="!shadow-lg !border-0 !bg-gradient-to-r !from-blue-50 !to-teal-50"
+      >
+        <div className="flex items-center justify-between mb-8">
+          <Button
+            onClick={handleBackToSelection}
+            className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
           >
-            <Form.Item
-              label="Tên đấu giá"
-              name="AuctionName"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập tên đấu giá!",
-                },
-              ]}
-            >
-              <Input
-                className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
-                placeholder="Nhập tên đấu giá"
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
               />
-            </Form.Item>
-            <Form.Item
-              label="Danh mục tài sản"
-              name="CategoryId"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn danh mục!",
-                },
-              ]}
-            >
-              <Select
-                className="w-full border-teal-200 bg-white rounded-lg"
-                placeholder="Chọn danh mục"
-                options={dataAuctionCategoryList}
-                onSelect={(val) => setIsRealEstate(val === REAL_ESTATE_CATEGORY_ID)}
-              />
-            </Form.Item>
-            <Form.Item
-              label="Số vòng tối đa"
-              name="NumberRoundMax"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập số vòng tối đa!",
-                },
-              ]}
-            >
-              <Input
-                className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
-                placeholder="Nhập số vòng tối đa"
-                type="number"
-                max={5}
-                min={1}
-              />
-            </Form.Item>
-          </Card>
-        </Col>
-
-        <Col xs={24} md={12} lg={8}>
-          <Card
-            title="Thời Gian"
-            className="bg-blue-50 border border-teal-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
-          >
-            <Form.Item
-              label="Thời gian đăng ký"
-              name="RegisterTimeRange"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn thời gian đăng ký!",
-                },
-              ]}
-            >
-              <RangePicker
-                className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
-                format="DD/MM/YYYY HH"
-                showTime={{ format: 'HH' }}
-                placeholder={["Ngày giờ mở đăng ký", "Ngày giờ kết thúc đăng ký"]}
-                disabledDate={disabledRegisterDate}
-              />
-            </Form.Item>
-            <Form.Item
-              label="Thời gian đấu giá"
-              name="AuctionTimeRange"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn thời gian đấu giá!",
-                },
-              ]}
-            >
-              <RangePicker
-                className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
-                format="DD/MM/YYYY HH"
-                showTime={{ format: 'HH' }}
-                placeholder={["Ngày giờ bắt đầu đấu giá", "Ngày giờ kết thúc đấu giá"]}
-                disabledDate={disabledAuctionDate}
-                disabled={!registerRange}
-              />
-            </Form.Item>
-          </Card>
-        </Col>
-
-        <Col xs={24} md={12} lg={8}>
-          <Card
-            title="Tệp Tài Liệu"
-            className="bg-blue-50 border border-teal-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
-          >
-            {" "}
-            <Form.Item
-              label={
-                <span>
-                  Tệp tài sản đấu giá
-                  <Tooltip title="Chỉ nhận file đúng định dạng như file mẫu" placement="top">
-                    <span className="ml-2 text-blue-500 cursor-pointer">
-                      <QuestionCircleOutlined />
-                    </span>
-                  </Tooltip>
-                </span>
-              }
-              name="AuctionAssetFile"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng tải lên tệp tài sản!",
-                },
-                {
-                  validator: (_, value) => {
-                    if (!value || value.length === 0) {
-                      return Promise.reject(new Error("Vui lòng tải lên tệp tài sản!"));
-                    }
-                    const file = value[0];
-                    if (!file.originFileObj && !file.name) {
-                      return Promise.reject(new Error("File không hợp lệ!"));
-                    }
-                    return Promise.resolve();
-                  },
-                },
-              ]}
-            >
-              <UploadFile contentName="AuctionAssetFile" onChange={auctionAssetUpload.onChange} />
-              <div
-                className="cursor-pointer mt-2 text-blue-400 underline"
-                onClick={handleDownloadTemplate}
-              >
-                Tải mẫu danh sách tải sản
-              </div>
-            </Form.Item>{" "}
-            <Form.Item
-              label="Tệp quy tắc đấu giá"
-              name="AuctionRulesFile"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng tải lên tệp quy tắc!",
-                },
-                {
-                  validator: (_, value) => {
-                    if (!value || value.length === 0) {
-                      return Promise.reject(new Error("Vui lòng tải lên tệp quy tắc!"));
-                    }
-                    const file = value[0];
-                    if (!file.originFileObj && !file.name) {
-                      return Promise.reject(new Error("File không hợp lệ!"));
-                    }
-                    return Promise.resolve();
-                  },
-                },
-              ]}
-            >
-              <UploadFile contentName="AuctionRulesFile" onChange={auctionRulesUpload.onChange} />
-            </Form.Item>
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={[24, 24]} className="mt-6">
-        <Col xs={24} lg={isRealEstate ? 12 : 24}>
-          <Card
-            title="Mô tả Đấu Giá"
-            className="bg-blue-50 border border-teal-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
-          >
-            <Form.Item
-              name="AuctionDescription"
-              label="Người có tài sản"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập mô tả!",
-                },
-              ]}
-            >
-              <Input.TextArea
-                rows={2}
-                className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
-                placeholder="Nhập mô tả đấu giá"
-              />
-            </Form.Item>
-          </Card>
-        </Col>
-        {isRealEstate && (
-          <Col xs={24} lg={12}>
-            <Card
-              title="Bản Đồ Kế Hoạch"
-              className="bg-blue-50 border border-teal-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
-            >
-              <Form.Item
-                label="Bản đồ kế hoạch đấu giá"
-                name="AuctionPlanningMap"
-                valuePropName="fileList"
-                required={isRealEstate ? true : false}
-              >
-                <UploadFile
-                  contentName="AuctionPlanningMap"
-                  onChange={auctionPlanningUpload.onChange}
-                />
-              </Form.Item>
-              <Form.Item
-                label="Vị trí trên bản đồ"
-                name="AuctionMap"
-                required={isRealEstate ? true : false}
-              >
-                <Input
-                  className="w-full border-teal-200 bg-white rounded-lg p-2 focus:border-teal-300"
-                  placeholder="Nhập vị trí trên bản đồ"
-                />
-              </Form.Item>
-            </Card>
-          </Col>
-        )}
-      </Row>
-
-      <Form.Item className="text-center mt-6">
-        <Button
-          htmlType="submit"
-          type="primary"
-          loading={loading}
-          className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+            </svg>
+            Quay lại
+          </Button>
+          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-center flex-1">
+            Tạo Đấu Giá Mới - {auctionType === "NODE" ? "Theo lô" : "Từng tài sản"}
+          </h1>
+          <div className="w-20"></div>
+        </div>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          className="!space-y-4"
+          onFinishFailed={() => {
+            message.error("Vui lòng kiểm tra các trường bắt buộc!");
+          }}
+          onValuesChange={(changedValues) => {
+            if (changedValues.RegisterTimeRange) {
+              setRegisterRange(changedValues.RegisterTimeRange);
+            }
+          }}
         >
-          Tạo Đấu Giá
-        </Button>
-      </Form.Item>
-    </Form>
+          <Row gutter={[24, 16]}>
+            {/* Basic Information */}
+            <Col span={24}>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <h3 className="!text-lg !font-semibold !text-blue-800 !mb-4 !border-b !border-blue-200 !pb-2">
+                  Thông tin cơ bản
+                </h3>
+              </motion.div>
+            </Col>
+
+            <Col xs={24} lg={12}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Form.Item
+                  name="AuctionName"
+                  label={<span className="!font-medium !text-blue-900">Tên đấu giá</span>}
+                  rules={[{ required: true, message: "Vui lòng nhập tên đấu giá!" }]}
+                >
+                  <Input
+                    placeholder="Nhập tên đấu giá"
+                    className="!rounded-lg !border-blue-200 hover:!border-blue-400 focus:!border-blue-500"
+                    size="large"
+                  />
+                </Form.Item>
+              </motion.div>
+            </Col>
+
+            <Col xs={24} lg={12}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Form.Item
+                  name="CategoryId"
+                  label={<span className="!font-medium !text-blue-900">Danh mục tài sản</span>}
+                  rules={[{ required: true, message: "Vui lòng chọn danh mục!" }]}
+                >
+                  <Select
+                    placeholder="Chọn danh mục"
+                    options={dataAuctionCategoryList}
+                    className="!rounded-lg"
+                    size="large"
+                    onSelect={(val) => setIsRealEstate(val === REAL_ESTATE_CATEGORY_ID)}
+                  />
+                </Form.Item>
+              </motion.div>
+            </Col>
+
+            <Col xs={24} lg={12}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 }}
+              >
+                <Form.Item
+                  name="NumberRoundMax"
+                  label={<span className="!font-medium !text-blue-900">Số vòng tối đa</span>}
+                  rules={[
+                    { required: true, message: "Vui lòng nhập số vòng tối đa!" },
+                    {
+                      validator: (_, value) => {
+                        const num = Number(value);
+                        if (isNaN(num) || num < 1 || num > 5) {
+                          return Promise.reject(new Error('Số vòng tối đa phải từ 1 đến 5 vòng!'));
+                        }
+                        return Promise.resolve();
+                      }
+                    }
+                  ]}
+                >
+                  <Input
+                    type="number"
+                    placeholder="Nhập số vòng tối đa (1-5)"
+                    className="!rounded-lg !border-blue-200 hover:!border-blue-400 focus:!border-blue-500"
+                    size="large"
+                    min={1}
+                    max={5}
+                  />
+                </Form.Item>
+              </motion.div>
+            </Col>
+
+            <Col span={24}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Form.Item
+                  name="AuctionDescription"
+                  label={<span className="!font-medium !text-blue-900">Thông tin chi tiết tài sản</span>}
+                  rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
+                >
+                  <Input.TextArea
+                    rows={4}
+                    placeholder="Nhập thông tin chi tiết tài sản"
+                    className="!rounded-lg !border-blue-200 hover:!border-blue-400 focus:!border-blue-500"
+                  />
+                </Form.Item>
+              </motion.div>
+            </Col>
+
+            {/* Date Settings */}
+            <Col span={24}>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <h3 className="!text-lg !font-semibold !text-blue-800 !mb-4 !border-b !border-blue-200 !pb-2">
+                  Thiết lập thời gian
+                </h3>
+              </motion.div>
+            </Col>
+
+            <Col xs={24} lg={12}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                <Form.Item
+                  name="RegisterTimeRange"
+                  label={<span className="!font-medium !text-blue-900">Thời gian đăng ký (Từ - Đến)</span>}
+                  rules={[{ required: true, message: "Vui lòng chọn thời gian đăng ký!" }]}
+                >
+                  <DatePicker.RangePicker
+                    placeholder={["Ngày mở đăng ký", "Hạn đăng ký"]}
+                    className="!w-full !rounded-lg !border-blue-200 hover:!border-blue-400 focus:!border-blue-500"
+                    size="large"
+                    format="DD/MM/YYYY HH:mm"
+                    showTime={{ format: 'HH' }}
+                    disabledDate={disabledRegisterDate}
+                  />
+                </Form.Item>
+              </motion.div>
+            </Col>
+
+            <Col xs={24} lg={12}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+              >
+                <Form.Item
+                  name="AuctionTimeRange"
+                  label={<span className="!font-medium !text-blue-900">Thời gian đấu giá (Từ - Đến)</span>}
+                  rules={[{ required: true, message: "Vui lòng chọn thời gian đấu giá!" }]}
+                >
+                  <DatePicker.RangePicker
+                    placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
+                    className="!w-full !rounded-lg !border-blue-200 hover:!border-blue-400 focus:!border-blue-500"
+                    size="large"
+                    format="DD/MM/YYYY HH:mm"
+                    showTime={{ format: 'HH' }}
+                    disabledDate={disabledAuctionDate}
+                    disabled={!registerRange}
+                  />
+                </Form.Item>
+              </motion.div>
+            </Col>
+
+            {/* File Uploads */}
+            <Col span={24}>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.8 }}
+              >
+                <h3 className="!text-lg !font-semibold !text-blue-800 !mb-4 !border-b !border-blue-200 !pb-2">
+                  Tải lên tài liệu
+                </h3>
+              </motion.div>
+            </Col>
+
+            <Col xs={24} lg={12}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+              >
+                <Form.Item
+                  name="AuctionAssetFile"
+                  label={
+                    <div className="flex items-center justify-between">
+                      <span className="!font-medium !text-blue-900 flex items-center">
+                        Tệp tài sản đấu giá
+                        <Tooltip title="Chỉ nhận file đúng định dạng như file mẫu" placement="top">
+                          <QuestionCircleOutlined className="ml-2 text-blue-500 cursor-pointer" />
+                        </Tooltip>
+                      </span>
+                    </div>
+                  }
+                  rules={[
+                    { required: true, message: "Vui lòng tải lên tệp tài sản!" },
+                    {
+                      validator: (_, value) => {
+                        if (!value || value.length === 0) {
+                          return Promise.reject(new Error("Vui lòng tải lên tệp tài sản!"));
+                        }
+                        const file = value[0];
+                        if (!file.originFileObj && !file.name) {
+                          return Promise.reject(new Error("File không hợp lệ!"));
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
+                >
+                  <div className="space-y-3">
+                    <UploadFile contentName="AuctionAssetFile" onChange={auctionAssetUpload.onChange} />
+                    <div
+                      className="cursor-pointer text-blue-500 hover:text-blue-700 underline text-sm"
+                      onClick={handleDownloadTemplate}
+                    >
+                      📁 Tải mẫu danh sách tài sản
+                    </div>
+                  </div>
+                </Form.Item>
+              </motion.div>
+            </Col>
+
+            <Col xs={24} lg={12}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.0 }}
+              >
+                <Form.Item
+                  name="AuctionRulesFile"
+                  label={<span className="!font-medium !text-blue-900">Tệp quy tắc đấu giá</span>}
+                  rules={[
+                    { required: true, message: "Vui lòng tải lên tệp quy tắc!" },
+                    {
+                      validator: (_, value) => {
+                        if (!value || value.length === 0) {
+                          return Promise.reject(new Error("Vui lòng tải lên tệp quy tắc!"));
+                        }
+                        const file = value[0];
+                        if (!file.originFileObj && !file.name) {
+                          return Promise.reject(new Error("File không hợp lệ!"));
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
+                >
+                  <UploadFile contentName="AuctionRulesFile" onChange={auctionRulesUpload.onChange} />
+                </Form.Item>
+              </motion.div>
+            </Col>
+
+            {/* Conditional Real Estate Fields */}
+            {isRealEstate && (
+              <>
+                <Col xs={24} lg={12}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.1 }}
+                  >
+                    <Form.Item
+                      name="AuctionPlanningMap"
+                      label={<span className="!font-medium !text-blue-900">Bản đồ kế hoạch đấu giá</span>}
+                      valuePropName="fileList"
+                      rules={[{ required: true, message: "Vui lòng tải lên bản đồ kế hoạch!" }]}
+                    >
+                      <UploadFile
+                        contentName="AuctionPlanningMap"
+                        onChange={auctionPlanningUpload.onChange}
+                      />
+                    </Form.Item>
+                  </motion.div>
+                </Col>
+
+                <Col xs={24} lg={12}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.2 }}
+                  >
+                    <Form.Item
+                      name="AuctionMap"
+                      label={<span className="!font-medium !text-blue-900">Vị trí trên bản đồ</span>}
+                      rules={[{ required: true, message: "Vui lòng nhập vị trí trên bản đồ!" }]}
+                    >
+                      <Input
+                        placeholder="Nhập vị trí trên bản đồ"
+                        className="!rounded-lg !border-blue-200 hover:!border-blue-400 focus:!border-blue-500"
+                        size="large"
+                      />
+                    </Form.Item>
+                  </motion.div>
+                </Col>
+              </>
+            )}
+
+            {/* Submit Button */}
+            <Col span={24}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.3 }}
+                className="!flex !justify-center !mt-8"
+              >
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  icon={<SaveOutlined />}
+                  size="large"
+                  className="!bg-gradient-to-r !from-blue-500 !to-teal-500 !border-0 hover:!from-blue-600 hover:!to-teal-600 !shadow-lg hover:!shadow-xl !transition-all !duration-300 !px-12 !h-12 !rounded-lg !font-semibold"
+                >
+                  Tạo Đấu Giá
+                </Button>
+              </motion.div>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+    </motion.div>
   );
 };
 

@@ -16,15 +16,17 @@ import {
     fakeAssetAnalysis,
     fakeStatistics
 } from "./fakeData";
+import type { AuctionDataDetail } from "../Modals";
 
 interface AuctionRoundDetailProps {
-    auctionRound?: AuctionRound
+    auctionRound?: AuctionRound,
+    auction?: AuctionDataDetail,
     onBackToList?: () => void;
 }
 
 const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailProps) => {
     // Current auction round ID - single source of truth
-    const CURRENT_AUCTION_ROUND_ID = "AR001";
+
 
     // State management
     const [auctionRoundPrice, setAuctionRoundPrice] = useState<AuctionRoundPrice[]>([]);
@@ -148,19 +150,17 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
         }
     };
 
-    // API Function 6: End auction (MISSING API)
+    // API Function 6: End auction (MISSING API) Chưa test
     const endAuction = async () => {
         try {
             // TODO: THIẾU API - Cần thêm vào AuctionServices
-            // const response = await AuctionServices.endAuction(auctionRound?.auctionRoundId);
-            // if (response.data.success) {
-            //     toast.success("Phiên đấu giá đã được kết thúc");
-            //     await loadAllData(); // Refresh data
-            // }
-
-            console.log('⚠️ MISSING API: endAuction - Ending auction round:', auctionRound?.auctionRoundId || 'AR001');
-            toast.success("Phiên đấu giá đã được kết thúc");
-            return Promise.resolve({ success: true });
+            const response = await AuctionServices.updateStatusAuctionRound({ auctionRoundId: auctionRound?.auctionRoundId, status: 2 });
+            if (response.data) {
+                toast.success("Phiên đấu giá đã được kết thúc");
+                //await loadAllData(); // Refresh data
+            } else {
+                toast.error("Kết thúc phiên đấu giá thất bại");
+            }
         } catch (error) {
             console.error('Error ending auction:', error);
             toast.error("Có lỗi xảy ra khi kết thúc phiên đấu giá");
@@ -217,6 +217,7 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
                 </span>
             ),
             children: <AssetAnalysisTable
+                auctionRound={auctionRound}
                 priceHistory={auctionRoundPrice}
                 onUpdateWinner={onUpdateWinnerFlag}
             />
@@ -259,10 +260,10 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
 
                 {/* Header */}
                 <AuctionHeader
-                    auctionRoundId={CURRENT_AUCTION_ROUND_ID}
+                    auctionRoundId={auctionRound?.auctionRoundId}
                     totalParticipants={totalParticipants}
                     totalAssets={totalAssets}
-                    status="active"
+                    status={auctionRound?.status}
                     onEndAuction={endAuction}
                 />
 
@@ -272,15 +273,17 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
                         <Typography.Title level={4} className="m-0">
                             Quản lý phiên đấu giá
                         </Typography.Title>
-                        <Button
-                            type="primary"
-                            icon={<ReloadOutlined />}
-                            onClick={refreshAllData}
-                            className="flex items-center"
-                            loading={loading}
-                        >
-                            Làm mới dữ liệu
-                        </Button>
+                        {auctionRound?.status !== 2 && (
+                            <Button
+                                type="primary"
+                                icon={<ReloadOutlined />}
+                                onClick={refreshAllData}
+                                className="flex items-center"
+                                loading={loading}
+                            >
+                                Làm mới dữ liệu
+                            </Button>
+                        )}
                     </div>
 
                     <Tabs

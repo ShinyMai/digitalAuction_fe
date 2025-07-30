@@ -81,6 +81,16 @@ const getListAuctionRoundPrices = (auctionRoundId: string): Promise<ApiResponse<
   http.get(`${AuctionAPI.GET_LIST_AUCTION_ROUND_PRICE}/${auctionRoundId}`);
 const updateWinnerFlag = (body: any): Promise<ApiResponse<any>> =>
   http.post(AuctionAPI.UPDATE_WINNER_FLAG, body);
+const waitingPublicAuction = (params: any): Promise<ApiResponse<any>> =>
+  http.put(`${AuctionAPI.UPDATE_AUCTION_WAITING_PUBLIC}/${params}`);
+const updateStatusAuctionRound = (body: any): Promise<ApiResponse<any>> =>
+  http.post(AuctionAPI.UPDATE_STATUS_AUCTION_ROUND, body);
+const getListAuctionRoundPriceWinnerByAuctionId = (auctionId: string): Promise<ApiResponse<any>> =>
+  http.get(`${AuctionAPI.GET_LIST_AUCTION_ROUND_PRICE_WINNER_BY_AUCTION_ID}/${auctionId}`);
+const updateAuctionRejected = (params: any, body: any): Promise<ApiResponse<any>> =>
+  http.put(`${AuctionAPI.UPDATE_AUCTION_REJECTED}/${params}`, body);
+const updateAuction = (body: any): Promise<ApiResponse<any>> =>
+  http.put(AuctionAPI.UPDATE_AUCTION, body);
 const AuctionServices = {
   addAuction,
   getListAuctionCategory,
@@ -107,7 +117,12 @@ const AuctionServices = {
   getListAuctionRounds,
   saveListAuctionRoundPrice,
   getListAuctionRoundPrices,
-  updateWinnerFlag
+  updateWinnerFlag,
+  waitingPublicAuction,
+  updateStatusAuctionRound,
+  getListAuctionRoundPriceWinnerByAuctionId,
+  updateAuctionRejected,
+  updateAuction
 };
 
 export default AuctionServices;
