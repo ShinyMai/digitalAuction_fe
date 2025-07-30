@@ -82,7 +82,7 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
     const { navigationKey, auctionType } = getNavigationParams(record);
 
     navigate(
-      `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF}/${STAFF_ROUTES.SUB.AUCTION_DETAIL_DRAFF}`,
+      `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC}/${STAFF_ROUTES.SUB.AUCTION_DETAIL_WAITING_PUBLIC}`,
       {
         state: {
           key: navigationKey,
@@ -155,16 +155,24 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
     {
       title: "Hành động",
       key: "action",
+      width: 120,
+      align: "center" as const,
       render: (_, record: AuctionDataList) => (
-        <Button
-          type="primary"
-          icon={<CheckCircleOutlined />}
-          onClick={() => handleNavigateToDetail(record)}
-          className="bg-green-500 hover:bg-green-600"
-          disabled={isApprovalDisabled(record)}
-        >
-          {role === "MANAGER" ? "Duyệt thông tin" : "Xem chi tiết"}
-        </Button>
+        <Tooltip title={role === "MANAGER" ? "Duyệt thông tin đấu giá" : "Xem chi tiết đấu giá"}>
+          <Button
+            type="primary"
+            icon={<CheckCircleOutlined />}
+            onClick={(e) => {
+              e.stopPropagation(); // Ngăn event bubbling
+              handleNavigateToDetail(record);
+            }}
+            className="!bg-blue-500 hover:!bg-blue-600 !border-blue-500 hover:!border-blue-600 !shadow-md hover:!shadow-lg !transition-all !duration-300"
+            disabled={isApprovalDisabled(record)}
+            size="small"
+          >
+            {role === "MANAGER" ? "Duyệt" : "Chi tiết"}
+          </Button>
+        </Tooltip>
       ),
     },
   ];
@@ -183,9 +191,6 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
           current: currentPage,
           className: "bg-white rounded-b-lg",
         }}
-        onRow={(record) => ({
-          onClick: () => handleNavigateToDetail(record),
-        })}
         locale={{ emptyText: "Không có dữ liệu" }}
         className="w-full border border-white rounded-lg overflow-hidden"
         rowClassName="hover:bg-blue-50 transition-colors duration-200"

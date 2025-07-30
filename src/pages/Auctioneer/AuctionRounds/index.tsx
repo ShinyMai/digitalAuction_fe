@@ -127,6 +127,13 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
                 console.error("No auction detail data available");
                 return;
             }
+
+            // Kiểm tra giới hạn số vòng đấu giá
+            if (auction?.numberRoundMax && auctionRounds.length >= auction.numberRoundMax) {
+                toast.warning(`Số lượng vòng đấu giá đã đạt giới hạn tối đa (${auction.numberRoundMax} vòng)`);
+                return;
+            }
+
             const dataRequest = {
                 auctionId: auctionId,
                 createdBy: user?.id
@@ -147,7 +154,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
             console.error("Error creating auction round:", error);
             toast.error("Error creating auction round");
         }
-    }, [auctionId, user?.id, getListAuctionRounds]);
+    }, [auctionId, user?.id, getListAuctionRounds, auction?.numberRoundMax, auctionRounds.length]);
 
     useEffect(() => {
         getListAuctionRounds();

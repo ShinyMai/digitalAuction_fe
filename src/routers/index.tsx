@@ -39,6 +39,8 @@ export const STAFF_ROUTES = {
     LIST_BLOG: "list-blog",
     AUCTION_LIST_DRAFF: "auction-list-draff",
     AUCTION_DETAIL_DRAFF: "auction-detail-draff",
+    AUCTION_LIST_WAITING_PUBLIC: "auction-list-waiting-public",
+    AUCTION_DETAIL_WAITING_PUBLIC: "auction-detail-waiting-public",
   },
 };
 

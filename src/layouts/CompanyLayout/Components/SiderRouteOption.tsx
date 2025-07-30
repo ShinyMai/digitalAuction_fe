@@ -87,7 +87,7 @@ const items: MenuItem[] = [
         icon: <ClockCircleOutlined />,
         label: "Đợi duyệt",
         url: MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC,
-        roleView: ["Manager"],
+        roleView: ["Manager", "Staff"],
       },
       {
         key: "6",
@@ -239,20 +239,36 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
 
     // Find current key in nested structure
     let currentKey = "";
+    let exactMatch = "";
+    let partialMatch = "";
 
     const findKeyInItems = (menuItems: MenuItem[]): string => {
       for (const item of menuItems) {
         if (item.children) {
           for (const child of item.children) {
-            if (child.url && (routeWithoutRole === child.url || routeWithoutRole.startsWith(child.url))) {
-              return child.key;
+            if (child.url) {
+              // Exact match has highest priority
+              if (routeWithoutRole === child.url) {
+                exactMatch = child.key;
+              }
+              // Partial match as fallback (only if no exact match found)
+              else if (!exactMatch && routeWithoutRole.startsWith(child.url)) {
+                partialMatch = child.key;
+              }
             }
           }
-        } else if (item.url && (routeWithoutRole === item.url || routeWithoutRole.startsWith(item.url))) {
-          return item.key;
+        } else if (item.url) {
+          // Exact match has highest priority
+          if (routeWithoutRole === item.url) {
+            exactMatch = item.key;
+          }
+          // Partial match as fallback (only if no exact match found)
+          else if (!exactMatch && routeWithoutRole.startsWith(item.url)) {
+            partialMatch = item.key;
+          }
         }
       }
-      return "";
+      return exactMatch || partialMatch;
     };
 
     currentKey = findKeyInItems(filteredItems);

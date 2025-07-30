@@ -102,7 +102,7 @@ const PostAuction = React.lazy(() => import("../pages/Staff/PostAuction/index"))
 
 const AuctionList = React.lazy(() => import("../pages/Staff/AuctionList/index"));
 
-const AuctionListWaitingPublic = React.lazy(() => import("../pages/Manager/AuctionWaitingPublicDetail/index"));
+const AuctionListWaitingPublic = React.lazy(() => import("../pages/Manager/AutionListWaitingPublic/index"));
 
 const AuctionDetail = React.lazy(() => import("../pages/Staff/AuctionDetail/index"));
 
@@ -217,7 +217,15 @@ export const staffRoutes = [
   {
     path: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_DRAFF,
     element: wrapWithLazy(AuctionDetailDraff),
-  }
+  },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC,
+    element: wrapWithLazy(AuctionListWaitingPublic),
+  },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_WAITING_PUBLIC,
+    element: wrapWithLazy(AuctionDetailWaitingPublic),
+  },
 ];
 
 // Router site Admin
@@ -252,7 +260,7 @@ export const managerRoutes = [
     element: wrapWithLazy(ListBlogManager),
   },
   {
-    path: MANAGER_ROUTES.SUB.AUCTION_DETAIL_WAITING_PUBLIC,
+    path: MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC,
     element: wrapWithLazy(AuctionListWaitingPublic),
   },
   {

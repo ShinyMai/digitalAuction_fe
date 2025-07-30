@@ -4,13 +4,14 @@ import dayjs from "dayjs";
 import type { AuctionDataDetail } from "../../Modals";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
-import { EnvironmentOutlined } from "@ant-design/icons";
+import { EnvironmentOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 
 interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
   auctionType?: string;
   auctionId?: string;
   onApprove?: () => void; // Prop để xử lý sự kiện duyệt
+  onReject?: () => void; // Prop để xử lý sự kiện hủy
 }
 
 const USER_ROLES = {
@@ -26,7 +27,7 @@ type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 const API_BASE_URL_NODE = import.meta.env.VITE_BE_URL_NODE;
 
-const AuctionDetail = ({ auctionDetailData, auctionType, onApprove }: AuctionDetailProps) => {
+const AuctionDetail = ({ auctionDetailData, auctionType, onApprove, onReject }: AuctionDetailProps) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
 
@@ -109,21 +110,28 @@ const AuctionDetail = ({ auctionDetailData, auctionType, onApprove }: AuctionDet
                   </div>
                 </div>
                 {role === USER_ROLES.MANAGER && (
-                  <div className="text-center mt-6 space-x-4">
+                  <div className="flex justify-center items-center mt-8 gap-6">
                     <Button
                       type="primary"
                       size="large"
-                      className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
-                      onClick={onApprove} // Gắn sự kiện onApprove vào nút
+                      icon={<CheckCircleOutlined />}
+                      onClick={onApprove}
+                      className="!bg-gradient-to-r !from-emerald-50 !to-teal-50 !border !border-emerald-200 !text-emerald-700 hover:!bg-gradient-to-r hover:!from-emerald-100 hover:!to-teal-100 hover:!border-emerald-300 hover:!text-emerald-800 !transition-all !duration-300 !rounded-xl !px-8 !py-3 !h-auto !font-medium !shadow-sm hover:!shadow-md"
                     >
-                      Duyệt thông tin
+                      <span className="flex items-center gap-2">
+                        Duyệt thông tin
+                      </span>
                     </Button>
+
                     <Button
-                      type="primary"
                       size="large"
-                      className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
+                      icon={<CloseCircleOutlined />}
+                      onClick={onReject}
+                      className="!bg-gradient-to-r !from-rose-50 !to-pink-50 !border !border-rose-200 !text-rose-700 hover:!bg-gradient-to-r hover:!from-rose-100 hover:!to-pink-100 hover:!border-rose-300 hover:!text-rose-800 !transition-all !duration-300 !rounded-xl !px-8 !py-3 !h-auto !font-medium !shadow-sm hover:!shadow-md"
                     >
-                      Hủy thông tin
+                      <span className="flex items-center gap-2">
+                        Hủy thông tin
+                      </span>
                     </Button>
                   </div>
                 )}
@@ -141,7 +149,7 @@ const AuctionDetail = ({ auctionDetailData, auctionType, onApprove }: AuctionDet
                 Danh sách tài sản đấu giá
               </h3>
               {auctionDetailData.listAuctionAssets &&
-              auctionDetailData.listAuctionAssets.length > 0 ? (
+                auctionDetailData.listAuctionAssets.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {auctionDetailData.listAuctionAssets.map((asset) => (
                     <Card

@@ -1,27 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { Card, Typography } from "antd";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Card, Typography, Button } from "antd";
 import AuctionServices from "../../../services/AuctionServices";
 import AuctionDetail from "./components/AuctionDetail";
 import type { AuctionDataDetail, ModalAuctioners } from "../Modals";
 import { toast } from "react-toastify";
 import ModalsSelectAuctioners from "./components/ModalsSelectAuctionners";
-import { TrophyOutlined } from "@ant-design/icons";
+import RejectReasonModal from "./components/RejectReasonModal";
+import { TrophyOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
+import { MANAGER_ROUTES } from "../../../routers";
 
 const { Title } = Typography;
 
 const AuctionDetailDraff = () => {
   const { state } = useLocation();
+  const navigate = useNavigate();
   const auctionId = state?.key;
   const auctionType = state?.type;
   const { user } = useSelector((state: any) => state.auth);
-
+  const role = user?.roleName;
   const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState<boolean>(false);
   const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(null);
   const [listAuctioners, setListAuctioners] = useState<ModalAuctioners[]>([]);
+  const [rejectLoading, setRejectLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (auctionId) {
@@ -89,6 +94,47 @@ const AuctionDetailDraff = () => {
     }
   };
 
+  // Hàm xử lý khi nhấn nút "Hủy thông tin"
+  const handleReject = () => {
+    if (auctionId) {
+      setIsRejectModalOpen(true); // Mở modal để nhập lý do từ chối
+    } else {
+      toast.error("Không tìm thấy ID phiên đấu giá!");
+    }
+  };
+
+  // Hàm xử lý xác nhận từ chối với lý do
+  const handleConfirmReject = async (reason: string) => {
+    if (!auctionId) {
+      toast.error("Không tìm thấy ID phiên đấu giá!");
+      return;
+    }
+
+    setRejectLoading(true);
+    try {
+      const response = await AuctionServices.updateAuctionRejected(auctionId, { rejectReason: reason });
+      if (response.code === 200) {
+        toast.success("Đã từ chối đăng tải phiên đấu giá thành công!");
+        setIsRejectModalOpen(false);
+      } else {
+        toast.error(response.message || "Lỗi khi từ chối đăng tải phiên đấu giá!");
+      }
+
+      // Có thể redirect về trang danh sách sau khi từ chối
+      // navigate(`/${role.toLowerCase()}/${MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC}`);
+    } catch (error: any) {
+      toast.error(error.message || "Lỗi khi từ chối đăng tải phiên đấu giá!");
+      console.error(error);
+    } finally {
+      setRejectLoading(false);
+    }
+  };
+
+  // Hàm đóng modal từ chối
+  const handleCloseRejectModal = () => {
+    setIsRejectModalOpen(false);
+  };
+
   return (
     <section className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -102,11 +148,24 @@ const AuctionDetailDraff = () => {
       <div className="w-full mx-auto rounded-xl relative z-10">
         {/* Header Section */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white mb-4">
-            <TrophyOutlined className="text-xl" />
-            <Title level={2} className="!text-white !mb-0">
-              {user?.roleName?.toLowerCase() === "manager" ? "Duyệt Phiên Đấu Giá" : "Đang Chờ Duyệt"}
-            </Title>
+          <div className="flex items-center justify-between mb-4">
+            <Button
+              type="text"
+              icon={<ArrowLeftOutlined />}
+              onClick={() => navigate(`/${role.toLowerCase()}/${MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC}`)}
+              className="!text-slate-600 hover:!text-slate-800 hover:!bg-slate-100 !font-medium !px-4 !py-2 !h-auto !rounded-lg !transition-all !duration-200"
+            >
+              Quay lại
+            </Button>
+
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-full text-slate-700 shadow-sm">
+              <TrophyOutlined className="text-xl text-slate-600" />
+              <Title level={2} className="!text-slate-700 !mb-0">
+                {user?.roleName?.toLowerCase() === "manager" ? "Duyệt Phiên Đấu Giá" : "Đang Chờ Duyệt"}
+              </Title>
+            </div>
+
+            <div className="w-20"></div> {/* Spacer for centering */}
           </div>
         </div>
 
@@ -117,6 +176,7 @@ const AuctionDetailDraff = () => {
             auctionType={auctionType}
             auctionId={auctionId}
             onApprove={handleApprove} // Truyền hàm xử lý vào AuctionDetail
+            onReject={handleReject} // Truyền hàm xử lý hủy vào AuctionDetail
           />
         </Card>
 
@@ -125,6 +185,13 @@ const AuctionDetailDraff = () => {
           listAuctioners={listAuctioners}
           onClose={handleCloseModal}
           onSelect={handleSelectAuctioner}
+        />
+
+        <RejectReasonModal
+          isOpen={isRejectModalOpen}
+          onClose={handleCloseRejectModal}
+          onConfirm={handleConfirmReject}
+          loading={rejectLoading}
         />
       </div>
 
