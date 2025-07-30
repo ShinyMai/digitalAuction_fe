@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { Form, Input, DatePicker, Select, Upload, Button, Card, message, Row, Col, Typography } from "antd";
-import { SaveOutlined, UploadOutlined, FileTextOutlined, EyeOutlined, ArrowRightOutlined } from "@ant-design/icons";
+import { Form, Input, DatePicker, Select, Upload, Button, Card, Row, Col, Typography } from "antd";
+import { SaveOutlined, UploadOutlined, FileTextOutlined, EyeOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import dayjs from "dayjs";
 import type { AuctionCategory, AuctionDataDetail } from "../../Modals";
