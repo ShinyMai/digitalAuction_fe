@@ -8,7 +8,12 @@ import {
   message,
   type PopconfirmProps,
 } from "antd";
-import { EditOutlined, DeleteOutlined, ArrowUpOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  ArrowUpOutlined,
+  EyeInvisibleOutlined,
+} from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type { BlogData } from "../types";
 import { getBlogStatusTag } from "../utils";
@@ -50,15 +55,19 @@ const BlogTable = ({
     });
   };
   const truncateText = (text: string, maxLength: number = 100) => {
-    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
   };
   // Handle submit for approval (status = 2)
   const handleSubmitForApproval = async (record: BlogData) => {
     try {
-      const response: ApiResponse<unknown> = await NewsServices.changeStatusBlog({
-        BlogId: record.blogId,
-        Status: 1,
-      });
+      const response: ApiResponse<unknown> =
+        await NewsServices.changeStatusBlog({
+          BlogId: record.blogId,
+          Status: 1,
+          Note: "",
+        });
 
       if (response.code === 200) {
         message.success("Gửi duyệt bài viết thành công!");
@@ -72,13 +81,15 @@ const BlogTable = ({
     }
   };
 
-  // Handle delete (status = 3)
-  const handleDeleteBlog = async (record: BlogData) => {
+  // Handle hide (status = 3)
+  const handleHideBlog = async (record: BlogData) => {
     try {
-      const response: ApiResponse<unknown> = await NewsServices.changeStatusBlog({
-        BlogId: record.blogId,
-        Status: 3,
-      });
+      const response: ApiResponse<unknown> =
+        await NewsServices.changeStatusBlog({
+          BlogId: record.blogId,
+          Status: 3,
+          Note: "",
+        });
 
       if (response.code === 200) {
         message.success("Xóa bài viết thành công!");
@@ -131,7 +142,9 @@ const BlogTable = ({
       width: 200,
       render: (title: string) => (
         <Tooltip title={title}>
-          <div className="font-medium text-gray-800">{truncateText(title, 50)}</div>
+          <div className="font-medium text-gray-800">
+            {truncateText(title, 50)}
+          </div>
         </Tooltip>
       ),
     },
@@ -177,6 +190,17 @@ const BlogTable = ({
       ),
     },
     {
+      title: "Ghi chú",
+      dataIndex: "note",
+      key: "note",
+      width: 150,
+      render: (note: string) => (
+        <div className="text-sm text-gray-600">
+          {note ? truncateText(note, 50) : "Không có ghi chú"}
+        </div>
+      ),
+    },
+    {
       title: "Thao tác",
       key: "action",
       width: 150,
@@ -184,7 +208,7 @@ const BlogTable = ({
       fixed: "right",
       render: (_: unknown, record: BlogData) => (
         <Space size="small" onClick={(e) => e.stopPropagation()}>
-          {record.status === 0 && (
+          {(record.status === 0 || record.status === 5) && (
             <Tooltip title="Gửi duyệt">
               <Popconfirm
                 title="Xác nhận gửi duyệt"
@@ -215,12 +239,30 @@ const BlogTable = ({
               />
             </Tooltip>
           )}
-          {(record.status === 0 || record.status === 1 || record.status === 2) && (
+          {record.status === 2 && (
             <Tooltip title="Ẩn bài viết">
               <Popconfirm
                 title="Xác nhận ẩn bài viết"
                 description={`Bạn có chắc chắn muốn ẩn bài viết "${record.title}"?`}
-                onConfirm={() => handleDeleteBlog(record)}
+                onConfirm={() => handleHideBlog(record)}
+                onCancel={cancel}
+                okText="Xác nhận"
+                cancelText="Hủy"
+              >
+                <Button
+                  type="text"
+                  icon={<EyeInvisibleOutlined />}
+                  className="!text-gray-600 !hover:bg-red-50"
+                />
+              </Popconfirm>
+            </Tooltip>
+          )}
+          {record.status === 0 && (
+            <Tooltip title="Xóa bản nháp">
+              <Popconfirm
+                title="Xác nhận xóa bản nháp"
+                description={`Bạn có chắc chắn muốn xóa bản nháp "${record.title}"?`}
+                // onConfirm={() => handleDeleteBlog(record)}
                 onCancel={cancel}
                 okText="Xác nhận"
                 cancelText="Hủy"
@@ -254,7 +296,8 @@ const BlogTable = ({
             total: total,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} bài viết`,
+            showTotal: (total, range) =>
+              `${range[0]}-${range[1]} của ${total} bài viết`,
             pageSizeOptions: ["6", "12", "24", "32"],
           }}
           onChange={onChange}
