@@ -21,7 +21,8 @@ export const AuctionAPI = {
   AUCTION_CANCEL: "/Auctions/cancel",
   USER_REGISTER_AUCTION: "/UserRegisteredAuction/User-Registered-Auction",
   LIST_AUCTION_REGISTED: "ListAuctionRegisted/List-Auction-Registed",
-  LIST_AUCTION_DOCUMENT_REGISTED: "AuctionDocumentRegisted/Auction-Document-Registed",
+  LIST_AUCTION_DOCUMENT_REGISTED:
+    "AuctionDocumentRegisted/Auction-Document-Registed",
   CREATE_AUCTION_ROUND: "/CreateAuctionRound",
   GET_LIST_AUCTION_ROUND: "/ListAuctionRound",
   SAVE_LIST_AUCTION_ROUND_PRICE: "/SaveListPrices",

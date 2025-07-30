@@ -26,9 +26,18 @@ const getUserInfo = (param: {
 const sendPasswordToUser = (body: any): Promise<ApiResponse> =>
   http.post(UserAPI.SEND_PASSWORD_TO_USER, body);
 
+const getUserByCccd = (citizenIdentification: string): Promise<ApiResponse> =>
+  http.get(
+    UserAPI.GET_USER_BY_CCCD.replace(
+      "{citizenIdentification}",
+      citizenIdentification
+    )
+  );
+
 const UserServices = {
   getUserInfo,
   sendPasswordToUser,
+  getUserByCccd,
 };
 
 export default UserServices;

@@ -103,6 +103,25 @@ const BlogTable = ({
     }
   };
 
+  // Handle delete draft (status = 0)
+  const handleDeleteBlog = async (record: BlogData) => {
+    try {
+      const response: ApiResponse<unknown> = await NewsServices.deleteBlog({
+        BlogId: record.blogId,
+      });
+
+      if (response.code === 200) {
+        message.success("Xóa bài viết thành công!");
+        onStatusChange?.(); // Refresh the list
+      } else {
+        message.error(response.message || "Lỗi khi xóa bài viết!");
+      }
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+      message.error("Lỗi khi xóa bài viết!");
+    }
+  };
+
   const cancel: PopconfirmProps["onCancel"] = () => {
     console.log("Operation cancelled");
   };
@@ -262,7 +281,7 @@ const BlogTable = ({
               <Popconfirm
                 title="Xác nhận xóa bản nháp"
                 description={`Bạn có chắc chắn muốn xóa bản nháp "${record.title}"?`}
-                // onConfirm={() => handleDeleteBlog(record)}
+                onConfirm={() => handleDeleteBlog(record)}
                 onCancel={cancel}
                 okText="Xác nhận"
                 cancelText="Hủy"

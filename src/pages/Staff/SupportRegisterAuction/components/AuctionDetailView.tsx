@@ -1,49 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react"; // Thêm useEffect
+import { useState } from "react"; // Thêm useEffect
 import { Button, Card, Form, Input, Table, Typography, Spin } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import type { AuctionDataDetail, AuctionAsset } from "../../../Staff/Modals";
 import { formatNumber } from "../../../../utils/numberFormat";
+import { toast } from "react-toastify";
+import AuctionServices from "../../../../services/AuctionServices";
+import UserServices from "../../../../services/UserServices";
 
 const { Title, Text } = Typography;
-
-// interface RegisterForm {
-//   bankAccount: string;
-//   citizenIdentification: string;
-//   phoneNumber: string;
-//   bankAccountNumber: string;
-//   bankBranch: string;
-// }
 
 const AuctionDetailView = ({
   auctionDetail,
   loading,
   onBack,
-  account, // Thêm prop account
+  auctionId,
 }: {
   auctionDetail: AuctionDataDetail | null;
   loading: boolean;
   onBack: () => void;
-  account: any; // Có thể định nghĩa interface cụ thể hơn dựa trên EkycResult
+  auctionId: string | null;
 }) => {
   const [form] = Form.useForm();
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(5);
+  const [isUserRegistered, setIsUserRegistered] = useState<boolean>(false);
 
-  // Điền sẵn dữ liệu từ account vào form
-  useEffect(() => {
-    if (account) {
-      form.setFieldsValue({
-        bankAccount: account.name || "",
-        citizenIdentification: account.citizenIdentification || "",
-        phoneNumber: "", // phoneNumber không có trong EkycResult, để trống
-        bankAccountNumber: "", // Không có trong EkycResult, để trống
-        bankBranch: account.issueBy || "", // Sử dụng issueBy hoặc để trống
-      });
-    }
-  }, [account, form]);
+  console.log(auctionId);
+  console.log("Selected Auction ID:", selectedRowKeys);
 
   const columns = [
     {
@@ -60,12 +46,49 @@ const AuctionDetailView = ({
     },
   ];
 
-  //   const handleSubmit = async (values: RegisterForm) => {
-  //     if (selectedRowKeys.length === 0) {
-  //       toast.error("Vui lòng chọn ít nhất một tài sản đấu giá!");
-  //       return;
-  //     }
-  //   };
+  const handleSubmit = async () => {
+    if (selectedRowKeys.length === 0) {
+      toast.error("Vui lòng chọn ít nhất một tài sản đấu giá!");
+      return;
+    }
+    const formData = form.getFieldsValue();
+    const requestData = {
+      ...formData,
+      auctionId,
+      auctionAssetsIds: selectedRowKeys,
+    };
+    try {
+      const res = await AuctionServices.supportRegisterAuction(requestData);
+      if (res.code === 200) {
+        toast.success("Đăng ký thành công!");
+        onBack();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Đăng ký thất bại! Vui lòng thử lại."
+      );
+    } finally {
+      setSelectedRowKeys([]);
+    }
+  };
+
+  const checkUserRegistered = async (citizenIdentification: string) => {
+    try {
+      const res = await UserServices.getUserByCccd(citizenIdentification);
+      if (res.code === 200) {
+        setIsUserRegistered(true);
+        toast.success("Người dùng đã đăng ký!");
+      } else {
+        toast.error("Người dùng chưa đăng ký!");
+        setIsUserRegistered(false);
+      }
+    } catch (error) {
+      toast.error("Lỗi khi kiểm tra đăng ký người dùng!");
+      console.error(error);
+    }
+  };
 
   const paginatedAssets = auctionDetail?.listAuctionAssets
     ? auctionDetail.listAuctionAssets.slice(
@@ -157,20 +180,28 @@ const AuctionDetailView = ({
               Thông Tin Đăng Ký
             </Title>
             <Form form={form} layout="vertical" className="w-full">
-              <Form.Item
-                name="bankAccount"
-                label="Tên người thụ hưởng"
-                rules={[
-                  { required: true, message: "Vui lòng nhập họ và tên!" },
-                ]}
+              <Button
+                onClick={() =>
+                  checkUserRegistered(
+                    form.getFieldValue("citizenIdentification")
+                  )
+                }
               >
-                <Input placeholder="Nhập họ và tên" size="large" />
-              </Form.Item>
+                Kiểm tra
+              </Button>
               <Form.Item
                 name="citizenIdentification"
                 label="Số căn cước"
                 rules={[
                   { required: true, message: "Vui lòng nhập số căn cước!" },
+                  {
+                    validator: async () => {
+                      if (isUserRegistered === true) {
+                        return Promise.reject("Người dùng đã đăng ký!");
+                      }
+                      return Promise.resolve();
+                    },
+                  },
                   {
                     pattern: /^[0-9]{12}$/,
                     message: "Số căn cước phải có 12 chữ số!",
@@ -180,13 +211,13 @@ const AuctionDetailView = ({
                 <Input placeholder="Nhập số căn cước" size="large" />
               </Form.Item>
               <Form.Item
-                name="phoneNumber"
-                label="Số điện thoại"
+                name="bankAccount"
+                label="Tên người thụ hưởng"
                 rules={[
-                  { required: true, message: "Vui lòng nhập số điện thoại!" },
+                  { required: true, message: "Vui lòng nhập họ và tên!" },
                 ]}
               >
-                <Input placeholder="Nhập số điện thoại" size="large" />
+                <Input placeholder="Nhập họ và tên" size="large" />
               </Form.Item>
               <Form.Item
                 name="bankAccountNumber"
@@ -212,10 +243,12 @@ const AuctionDetailView = ({
               <Form.Item>
                 <Button
                   type="primary"
-                  htmlType="submit"
+                  onClick={handleSubmit}
                   className="w-full bg-blue-500 hover:bg-blue-600"
                   size="large"
-                  disabled={selectedRowKeys.length === 0}
+                  disabled={
+                    selectedRowKeys.length === 0 || isUserRegistered === false
+                  }
                 >
                   Đăng ký
                 </Button>

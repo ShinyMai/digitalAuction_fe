@@ -21,12 +21,16 @@ const changeStatusBlog = (body: {
   Note: string;
 }): Promise<ApiResponse<any>> => http.post(NewsAPI.CHANGE_STATUS_BLOG, body);
 
+const deleteBlog = (body: { BlogId: string }): Promise<ApiResponse<any>> =>
+  http.post(NewsAPI.DELETE_BLOG, body);
+
 const NewsServices = {
   getListNews,
   createBlog,
   updateBlog,
   getBlogDetail,
   changeStatusBlog,
+  deleteBlog,
 };
 
 export default NewsServices;

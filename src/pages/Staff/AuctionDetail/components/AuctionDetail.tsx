@@ -27,7 +27,11 @@ type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 const API_BASE_URL_NODE = import.meta.env.VITE_BE_URL_NODE;
 
-const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDetailProps) => {
+const AuctionDetail = ({
+  auctionDetailData,
+  auctionType,
+  auctionId,
+}: AuctionDetailProps) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,8 +45,6 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
   };
 
   const handleModalConfirm = () => {
-    // Logic để xác nhận hủy đấu giá (ví dụ: gọi API)
-    console.log("Đã xác nhận hủy buổi đấu giá");
     setIsModalOpen(false);
   };
 
@@ -68,22 +70,31 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
                   XEM CHI TIẾT THÔNG BÁO ĐẤU GIÁ TÀI SẢN
                 </h1>
                 <p className="text-teal-700 mb-4">
-                  {auctionDetailData.auctionName || "Ngân hàng TMCP Quốc tế Việt Nam"}
+                  {auctionDetailData.auctionName ||
+                    "Ngân hàng TMCP Quốc tế Việt Nam"}
                 </p>
                 <div className="space-y-2 bg-blue-50 p-4 rounded-lg">
                   <div className="flex justify-between">
-                    <span className="font-medium text-blue-900">Ngày mở đăng ký:</span>
+                    <span className="font-medium text-blue-900">
+                      Ngày mở đăng ký:
+                    </span>
                     <span className="text-teal-800">
                       {auctionDetailData.registerOpenDate
-                        ? dayjs(auctionDetailData.registerOpenDate).format("DD/MM/YYYY")
+                        ? dayjs(auctionDetailData.registerOpenDate).format(
+                            "DD/MM/YYYY"
+                          )
                         : "-"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-blue-900">Hạn đăng ký:</span>
+                    <span className="font-medium text-blue-900">
+                      Hạn đăng ký:
+                    </span>
                     <span className="text-teal-800">
                       {auctionDetailData.registerEndDate
-                        ? dayjs(auctionDetailData.registerEndDate).format("DD/MM/YYYY")
+                        ? dayjs(auctionDetailData.registerEndDate).format(
+                            "DD/MM/YYYY"
+                          )
                         : "-"}
                     </span>
                   </div>
@@ -93,7 +104,9 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
                     </span>
                     <span className="text-teal-800">
                       {auctionDetailData.auctionStartDate
-                        ? dayjs(auctionDetailData.auctionStartDate).format("DD/MM/YYYY")
+                        ? dayjs(auctionDetailData.auctionStartDate).format(
+                            "DD/MM/YYYY"
+                          )
                         : "-"}
                     </span>
                   </div>
@@ -103,28 +116,42 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
                     </span>
                     <span className="text-teal-800">
                       {auctionDetailData.auctionEndDate
-                        ? dayjs(auctionDetailData.auctionEndDate).format("DD/MM/YYYY")
+                        ? dayjs(auctionDetailData.auctionEndDate).format(
+                            "DD/MM/YYYY"
+                          )
                         : "-"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-blue-900">Số vòng quy định:</span>
-                    <span className="text-teal-800">{auctionDetailData.numberRoundMax || "-"}</span>
+                    <span className="font-medium text-blue-900">
+                      Số vòng quy định:
+                    </span>
+                    <span className="text-teal-800">
+                      {auctionDetailData.numberRoundMax || "-"}
+                    </span>
                   </div>
                   {auctionDetailData.winnerData && (
                     <div className="flex justify-between">
-                      <span className="font-medium text-blue-900">Giá trúng:</span>
-                      <span className="text-teal-800">{auctionDetailData.winnerData}</span>
+                      <span className="font-medium text-blue-900">
+                        Giá trúng:
+                      </span>
+                      <span className="text-teal-800">
+                        {auctionDetailData.winnerData}
+                      </span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="font-medium text-blue-900">Tiền đặt trước:</span>
+                    <span className="font-medium text-blue-900">
+                      Tiền đặt trước:
+                    </span>
                     <span className="text-teal-800">
                       {auctionDetailData.qrLink ? "500,000 VND" : "-"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-blue-900">Đấu giá viên:</span>
+                    <span className="font-medium text-blue-900">
+                      Đấu giá viên:
+                    </span>
                     <span className="text-teal-800">
                       {auctionDetailData.auctioneer
                         ? auctionDetailData.auctioneer
@@ -149,7 +176,9 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
 
             {/* Mô tả tài sản và danh sách tài sản */}
             <div>
-              <h3 className="text-lg font-semibold text-blue-800 mb-4">Mô tả chung</h3>
+              <h3 className="text-lg font-semibold text-blue-800 mb-4">
+                Mô tả chung
+              </h3>
               <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg">
                 {auctionDetailData.auctionDescription || "Không có mô tả."}
               </p>
@@ -158,7 +187,7 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
                 Danh sách tài sản đấu giá
               </h3>
               {auctionDetailData.listAuctionAssets &&
-                auctionDetailData.listAuctionAssets.length > 0 ? (
+              auctionDetailData.listAuctionAssets.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {auctionDetailData.listAuctionAssets.map((asset) => (
                     <Card
@@ -177,39 +206,57 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
                     >
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="font-medium text-blue-900">Giá khởi điểm:</span>
+                          <span className="font-medium text-blue-900">
+                            Giá khởi điểm:
+                          </span>
                           <span className="text-teal-800">
                             {asset.startingPrice
-                              ? `${parseFloat(asset.startingPrice).toLocaleString("vi-VN")} VND`
+                              ? `${parseFloat(
+                                  asset.startingPrice
+                                ).toLocaleString("vi-VN")} VND`
                               : "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="font-medium text-blue-900">Tiền đặt trước:</span>
+                          <span className="font-medium text-blue-900">
+                            Tiền đặt trước:
+                          </span>
                           <span className="text-teal-800">
                             {asset.deposit
-                              ? `${parseFloat(asset.deposit).toLocaleString("vi-VN")} VND`
+                              ? `${parseFloat(asset.deposit).toLocaleString(
+                                  "vi-VN"
+                                )} VND`
                               : "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="font-medium text-blue-900">Phí đăng ký:</span>
+                          <span className="font-medium text-blue-900">
+                            Phí đăng ký:
+                          </span>
                           <span className="text-teal-800">
                             {asset.registrationFee
-                              ? `${parseFloat(asset.registrationFee).toLocaleString("vi-VN")} VND`
+                              ? `${parseFloat(
+                                  asset.registrationFee
+                                ).toLocaleString("vi-VN")} VND`
                               : "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="font-medium text-blue-900">Mô tả:</span>
+                          <span className="font-medium text-blue-900">
+                            Mô tả:
+                          </span>
                           <span className="text-teal-700 text-right">
                             {asset.description || "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="font-medium text-blue-900">Ngày tạo:</span>
+                          <span className="font-medium text-blue-900">
+                            Ngày tạo:
+                          </span>
                           <span className="text-teal-800">
-                            {asset.createdAt ? dayjs(asset.createdAt).format("DD/MM/YYYY") : "-"}
+                            {asset.createdAt
+                              ? dayjs(asset.createdAt).format("DD/MM/YYYY")
+                              : "-"}
                           </span>
                         </div>
                       </div>
@@ -225,14 +272,18 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
 
             {/* Điều khoản tuân thủ */}
             <div className="mt-8">
-              <h3 className="text-lg font-semibold text-blue-800 mb-4">Điều khoản tuân thủ</h3>
+              <h3 className="text-lg font-semibold text-blue-800 mb-4">
+                Điều khoản tuân thủ
+              </h3>
               <div className="bg-blue-50 p-4 rounded-lg">
                 {auctionDetailData.auctionRules ? (
                   <Typography.Link
                     href={
                       auctionType === "SQL"
                         ? auctionDetailData.auctionRules
-                        : API_BASE_URL_NODE + "/" + auctionDetailData.auctionRules
+                        : API_BASE_URL_NODE +
+                          "/" +
+                          auctionDetailData.auctionRules
                     }
                     target="_blank"
                     className="text-teal-600"
@@ -245,7 +296,8 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
               </div>
             </div>
             {/* Thông tin bản đồ */}
-            {auctionDetailData.auctionMap || auctionDetailData.auctionPlanningMap ? (
+            {auctionDetailData.auctionMap ||
+            auctionDetailData.auctionPlanningMap ? (
               <div className="mt-8">
                 <h3 className="text-lg font-semibold text-blue-800 mb-4">
                   Thông tin bản đồ tài sản
@@ -259,7 +311,9 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
                           href={
                             auctionType === "SQL"
                               ? auctionDetailData.auctionPlanningMap
-                              : API_BASE_URL_NODE + "/" + auctionDetailData.auctionPlanningMap
+                              : API_BASE_URL_NODE +
+                                "/" +
+                                auctionDetailData.auctionPlanningMap
                           }
                           target="_blank"
                           className="text-teal-600 font-medium hover:text-teal-800 "
@@ -275,7 +329,9 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
                           href={
                             auctionType === "SQL"
                               ? auctionDetailData.auctionMap
-                              : API_BASE_URL_NODE + "/" + auctionDetailData.auctionMap
+                              : API_BASE_URL_NODE +
+                                "/" +
+                                auctionDetailData.auctionMap
                           }
                           target="_blank"
                           className="text-teal-600 font-medium hover:text-teal-800"

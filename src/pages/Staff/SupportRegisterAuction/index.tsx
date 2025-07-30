@@ -52,6 +52,7 @@ const SupportRegisterAuction = () => {
   const [pendingAuctionId, setPendingAuctionId] = useState<string | null>(null);
   const [userType, setUserType] = useState<"old" | "new" | null>(null);
   const [formRegisterUserOpen, setFormRegisterUserOpen] = useState(false);
+  const [auctionId, setAuctionId] = useState<string | null>(null);
 
   console.log(userType);
 
@@ -61,6 +62,7 @@ const SupportRegisterAuction = () => {
       getListAuctionCategory();
     } else if (step === "detail" && selectedAuctionId) {
       fetchAuctionDetail(selectedAuctionId);
+      setAuctionId(selectedAuctionId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, step, selectedAuctionId]);
@@ -166,7 +168,7 @@ const SupportRegisterAuction = () => {
               auctionDetail={auctionDetail}
               loading={loading}
               onBack={handleBack}
-              account={null}
+              auctionId={auctionId}
             />
           )}
         </AnimatePresence>
