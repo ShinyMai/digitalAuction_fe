@@ -28,7 +28,7 @@ import {
     EnvironmentOutlined,
     CheckOutlined
 } from '@ant-design/icons';
-import type { AuctionRoundPrice } from '../modalsData';
+import type { AuctionRound, AuctionRoundPrice } from '../modalsData';
 
 const { Title, Text } = Typography;
 
@@ -46,13 +46,15 @@ interface AssetAnalysis {
 }
 
 interface AssetAnalysisTableProps {
+    auctionRound?: AuctionRound;
     priceHistory: AuctionRoundPrice[];
     onUpdateWinner: (auctionRoundPriceId: string, userName: string, assetName: string) => void;
 }
 
 const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
     priceHistory,
-    onUpdateWinner
+    onUpdateWinner,
+    auctionRound
 }) => {
     const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
@@ -228,10 +230,9 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
             render: (_: unknown, record: AssetAnalysis) => (
                 <Button
                     type="primary"
-                    ghost
                     icon={<EyeOutlined />}
                     onClick={() => showAssetDetail(record.tagName)}
-                    className="!border-blue-400 !text-blue-600"
+                    className="!bg-gradient-to-r !from-cyan-50 !to-blue-50 !border !border-blue-200 !text-blue-600 !shadow-sm hover:!from-cyan-100 hover:!to-blue-100 hover:!border-blue-300 hover:!text-blue-700 !transition-all !duration-300 !rounded-lg !px-6 !py-2 !h-10 !font-medium hover:!shadow-md"
                 >
                     Chi tiết
                 </Button>
@@ -375,7 +376,7 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
                                             className={`!p-4 !border !rounded-lg !mb-2 ${isCurrentWinner ? '!bg-green-50 !border-green-300' : '!bg-white !border-gray-200'
                                                 }`}
                                             actions={[
-                                                !isCurrentWinner && (
+                                                !isCurrentWinner || auctionRound?.status !== 2 && (
                                                     <Button
                                                         key="confirm"
                                                         type="primary"
@@ -415,11 +416,10 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
                                                     <div className="!flex !items-center !gap-2">
                                                         <span className="!font-semibold !text-base">{bidder.userName}</span>
                                                         {isCurrentWinner && (
-                                                            <Badge
-                                                                text="Người chiến thắng"
-                                                                color="green"
-                                                                className="!text-green-600 !font-medium"
-                                                            />
+                                                            <div className="!inline-flex !items-center !gap-1 !px-3 !py-1 !bg-gradient-to-r !from-emerald-400 !to-green-500 !text-white !rounded-full !shadow-lg !border-2 !border-white !font-bold !text-xs !animate-pulse">
+                                                                <CrownOutlined className="!text-yellow-200" />
+                                                                <span>Người chiến thắng</span>
+                                                            </div>
                                                         )}
                                                     </div>
                                                 }

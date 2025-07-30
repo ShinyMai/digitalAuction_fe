@@ -1,13 +1,13 @@
-import { Card, Statistic, Badge, Row, Col, Typography, Space, Divider, Button } from "antd";
+import { Card, Statistic, Row, Col, Typography, Space, Divider, Button } from "antd";
 import { UserOutlined, HomeOutlined, ClockCircleOutlined, SyncOutlined, StopOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
 interface AuctionHeaderProps {
-    auctionRoundId: string; // Required - no default value
+    auctionRoundId?: string; // Required - no default value
     totalParticipants: number;
     totalAssets: number;
-    status?: 'active' | 'completed' | 'pending';
+    status?: number;
     onEndAuction?: () => void; // Callback function for ending auction
 }
 
@@ -15,34 +15,24 @@ const AuctionHeader = ({
     auctionRoundId,
     totalParticipants,
     totalAssets,
-    status = 'active',
+    status,
     onEndAuction,
 }: AuctionHeaderProps) => {
     const getStatusBadge = () => {
         switch (status) {
-            case 'active':
+            case 1:
                 return (
-                    <Badge
-                        status="processing"
-                        text="Đang diễn ra"
-                        className="!text-green-600"
-                    />
+                    <div className="!inline-flex !items-center !gap-2 !px-4 !py-2 !bg-gradient-to-r !from-emerald-50 !to-green-50 !border !border-emerald-200 !rounded-full !shadow-sm">
+                        <div className="!w-2 !h-2 !bg-emerald-400 !rounded-full !animate-pulse"></div>
+                        <span className="!text-emerald-700 !font-semibold !text-sm">Đang diễn ra</span>
+                    </div>
                 );
-            case 'completed':
+            case 2:
                 return (
-                    <Badge
-                        status="default"
-                        text="Đã kết thúc"
-                        className="!text-gray-600"
-                    />
-                );
-            case 'pending':
-                return (
-                    <Badge
-                        status="warning"
-                        text="Sắp diễn ra"
-                        className="!text-yellow-600"
-                    />
+                    <div className="!inline-flex !items-center !gap-2 !px-4 !py-2 !bg-gradient-to-r !from-slate-50 !to-gray-50 !border !border-slate-200 !rounded-full !shadow-sm">
+                        <div className="!w-2 !h-2 !bg-slate-400 !rounded-full"></div>
+                        <span className="!text-slate-600 !font-semibold !text-sm">Đã kết thúc</span>
+                    </div>
                 );
             default:
                 return null;
@@ -88,7 +78,7 @@ const AuctionHeader = ({
                         </Row>
 
                         {/* End Auction Button - Only show when auction is active */}
-                        {status === 'active' && onEndAuction && (
+                        {status === 1 && onEndAuction && (
                             <Button
                                 type="primary"
                                 danger
@@ -97,7 +87,7 @@ const AuctionHeader = ({
                                 onClick={onEndAuction}
                                 className="!w-full"
                             >
-                                Kết thúc phiên đấu giá
+                                Kết thúc vòng đấu giá
                             </Button>
                         )}
                     </Space>

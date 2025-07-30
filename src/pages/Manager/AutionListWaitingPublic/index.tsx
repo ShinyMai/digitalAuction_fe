@@ -17,6 +17,7 @@ interface SearchParams {
   PageSize?: number;
   Status: number;
   AuctionType?: string;
+  CreateBy?: string;
 }
 
 interface SearchValue {
@@ -39,7 +40,7 @@ const DEFAULT_PARAMS: SearchParams = {
   IsAscending: false,
 };
 
-const AuctionListDraff = () => {
+const AuctionListWaittingPublic = () => {
   const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
   const [listAuctioners, setListAuctioners] = useState<ModalAuctioners[]>([]);
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
@@ -48,6 +49,9 @@ const AuctionListDraff = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // State cho modal
   const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(null); // Lưu auction được chọn
   const [searchParams, setSearchParams] = useState<SearchParams>(DEFAULT_PARAMS);
+
+
+
   useEffect(() => {
     fetchAuctionCategories();
     fetchAuctioners();
@@ -204,4 +208,4 @@ const AuctionListDraff = () => {
   );
 };
 
-export default AuctionListDraff;
+export default AuctionListWaittingPublic;

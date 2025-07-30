@@ -52,7 +52,7 @@ export type AuctionDataDetail = {
   updatedAt: string;
   qrLink: string;
   numberRoundMax: number;
-  status: string;
+  status: number;
   auctionMap?: string;
   winnerData: string;
   auctioneer?: string;
@@ -100,3 +100,10 @@ export type ModalAuctioners = {
   id: string;
   name: string;
 };
+
+export type AuctionRoundModals = {
+  auctionRoundId: string;
+  auctionId?: string;
+  roundNumber: number
+  status: number;
+}

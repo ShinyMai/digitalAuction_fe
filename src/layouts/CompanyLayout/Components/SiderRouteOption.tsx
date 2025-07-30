@@ -59,14 +59,14 @@ const items: MenuItem[] = [
         roleView: ["Manager", "Director", "Admin"],
       },
       {
-        key: "11",
+        key: "2",
         icon: <LineChartOutlined />,
         label: "Báo cáo & Thống kê",
         url: AUCTIONEER_ROUTES.SUB.REPORTS,
         roleView: ["Auctioneer"],
       },
       {
-        key: "12",
+        key: "3",
         icon: <DashboardOutlined />,
         label: "Dashboard ( Chưa API )",
         url: AUCTIONEER_ROUTES.SUB.DASHBOARD,
@@ -81,42 +81,28 @@ const items: MenuItem[] = [
     roleView: ["Staff", "Manager", "Director", "Auctioneer"],
     children: [
       {
-        key: "2",
+        key: "4",
         icon: <FileSearchOutlined />,
         label: "Đang thu hồ sơ",
         url: STAFF_ROUTES.SUB.AUCTION_LIST,
         roleView: ["Staff", "Director", "Manager"],
       },
       {
-        key: "3",
+        key: "5",
         icon: <ClockCircleOutlined />,
         label: "Đợi duyệt",
         url: MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC,
-        roleView: ["Manager"],
+        roleView: ["Manager", "Staff"],
       },
       {
-        key: "4",
+        key: "6",
         icon: <FileAddOutlined />,
         label: "Tạo phiên đấu giá",
         url: STAFF_ROUTES.SUB.POST_AUCTION,
         roleView: ["Staff"],
       },
       {
-        key: "8",
-        icon: <CalendarOutlined />,
-        label: "Tổ chức hôm nay",
-        url: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
-        roleView: ["Manager", "Staff", "Auctioneer"],
-      },
-      {
         key: "9",
-        icon: <StopOutlined />,
-        label: "Đã hủy",
-        url: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL,
-        roleView: ["Manager", "Staff"],
-      },
-      {
-        key: "10",
         icon: <HistoryOutlined />,
         label: "Phiên đấu giá đã tham gia",
         url: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
@@ -129,6 +115,49 @@ const items: MenuItem[] = [
         url: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF,
         roleView: ["Staff"],
       },
+      {
+        key: "16",
+        icon: <HistoryOutlined />,
+        label: "Bị từ chối",
+        url: STAFF_ROUTES.SUB.AUCTION_LIST_REJECT,
+        roleView: ["Staff"],
+      },
+    ],
+  },
+  {
+    key: "auction-prepare",
+    icon: <SolutionOutlined className="text-xl" />,
+    label: "Tổ chức đấu giá",
+    roleView: ["Staff", "Manager", "Director", "Auctioneer"],
+    children: [
+      {
+        key: "7",
+        icon: <CalendarOutlined />,
+        label: "Tổ chức hôm nay",
+        url: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
+        roleView: ["Manager", "Staff", "Auctioneer"],
+      },
+      {
+        key: "9",
+        icon: <HistoryOutlined />,
+        label: "Phiên đấu giá đã tham gia",
+        url: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
+        roleView: ["Auctioneer"],
+      },
+      {
+        key: "8",
+        icon: <StopOutlined />,
+        label: "Đã hủy",
+        url: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL,
+        roleView: ["Manager", "Staff"],
+      },
+      {
+        key: "9",
+        icon: <StopOutlined />,
+        label: "Đã tổ chức thành công",
+        url: STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL,
+        roleView: ["Manager", "Staff", "Auctioneer"],
+      },
     ],
   },
   {
@@ -138,7 +167,7 @@ const items: MenuItem[] = [
     roleView: ["Staff"],
     children: [
       {
-        key: "5",
+        key: "11",
         icon: <CustomerServiceOutlined />,
         label: "Hỗ trợ đăng ký tham gia đấu giá",
         url: STAFF_ROUTES.SUB.SUPPORT_REGISTER_AUCTION,
@@ -153,14 +182,14 @@ const items: MenuItem[] = [
     roleView: ["Director", "Manager", "Admin"],
     children: [
       {
-        key: "6",
+        key: "12",
         icon: <ContactsOutlined />,
         label: "Quản lý nhân sự",
         url: STAFF_ROUTES.SUB.PROPERTIES,
         roleView: ["Director", "Manager"],
       },
       {
-        key: "7",
+        key: "13",
         icon: <UserOutlined />,
         label: "Tạo tài khoản mới",
         url: ADMIN_ROUTES.SUB.ADD_EMPLOYEES,
@@ -175,14 +204,14 @@ const items: MenuItem[] = [
     roleView: ["Staff", "Manager"],
     children: [
       {
-        key: "13",
+        key: "14",
         icon: <EditOutlined />,
         label: "Quản lý tin tức (Staff)",
         url: STAFF_ROUTES.SUB.LIST_BLOG,
         roleView: ["Staff"],
       },
       {
-        key: "14",
+        key: "15",
         icon: <SettingOutlined />,
         label: "Quản lý tin tức (Manager)",
         url: MANAGER_ROUTES.SUB.LIST_BLOG,
@@ -250,28 +279,36 @@ const SiderRouteOption = ({
 
     // Find current key in nested structure
     let currentKey = "";
+    let exactMatch = "";
+    let partialMatch = "";
 
     const findKeyInItems = (menuItems: MenuItem[]): string => {
       for (const item of menuItems) {
         if (item.children) {
           for (const child of item.children) {
-            if (
-              child.url &&
-              (routeWithoutRole === child.url ||
-                routeWithoutRole.startsWith(child.url))
-            ) {
-              return child.key;
+            if (child.url) {
+              // Exact match has highest priority
+              if (routeWithoutRole === child.url) {
+                exactMatch = child.key;
+              }
+              // Partial match as fallback (only if no exact match found)
+              else if (!exactMatch && routeWithoutRole.startsWith(child.url)) {
+                partialMatch = child.key;
+              }
             }
           }
-        } else if (
-          item.url &&
-          (routeWithoutRole === item.url ||
-            routeWithoutRole.startsWith(item.url))
-        ) {
-          return item.key;
+        } else if (item.url) {
+          // Exact match has highest priority
+          if (routeWithoutRole === item.url) {
+            exactMatch = item.key;
+          }
+          // Partial match as fallback (only if no exact match found)
+          else if (!exactMatch && routeWithoutRole.startsWith(item.url)) {
+            partialMatch = item.key;
+          }
         }
       }
-      return "";
+      return exactMatch || partialMatch;
     };
 
     currentKey = findKeyInItems(filteredItems);
@@ -318,7 +355,8 @@ const SiderRouteOption = ({
         replace: true,
       });
     }
-  };  return (
+  };
+  return (
     <div
       className={`h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm transition-all duration-300 flex flex-col ${
         collapsed ? "w-20" : "w-full"
@@ -356,7 +394,8 @@ const SiderRouteOption = ({
             }}
           />
         </Tooltip>
-      </div>      {/* User Role Badge - only show when not collapsed */}
+      </div>{" "}
+      {/* User Role Badge - only show when not collapsed */}
       {!collapsed && role && (
         <div className="px-4 py-3 border-b border-sky-200 flex-shrink-0">
           <div className="bg-gradient-to-r from-sky-100 to-blue-100 rounded-lg p-3 text-center shadow-sm">
@@ -366,12 +405,13 @@ const SiderRouteOption = ({
             <span className="font-bold text-sky-800 text-sm">{role}</span>
           </div>
         </div>
-      )}      {/* Navigation Menu */}
-      <div 
+      )}{" "}
+      {/* Navigation Menu */}
+      <div
         className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar"
         style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: '#7dd3fc #e0f2fe'
+          scrollbarWidth: "thin",
+          scrollbarColor: "#7dd3fc #e0f2fe",
         }}
       >
         <Menu
@@ -405,7 +445,8 @@ const SiderRouteOption = ({
             border: "none",
           }}
         />
-      </div>      {/* Footer - Version info when expanded */}
+      </div>{" "}
+      {/* Footer - Version info when expanded */}
       {!collapsed && (
         <div className="flex-shrink-0 p-4 border-t border-sky-200">
           <div className="bg-gradient-to-r from-sky-50 to-blue-50 rounded-lg p-3 text-center shadow-sm">

@@ -45,30 +45,11 @@ const PostAuction = () => {
   // Hiển thị form tạo đấu giá với type đã chọn
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-white py-4 sm:py-6 md:py-8">
-      <div className="w-full max-w-5xl">
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={handleBackToSelection}
-            className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Quay lại
-          </button>
-          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-center flex-1">
-            Tạo Đấu Giá Mới - {selectedType === "NODE" ? "Theo lô" : "Từng tài sản"}
-          </h1>
-          <div className="w-20"></div>
-        </div>
+      <div className="w-full">
         <div className="w-full transition-shadow duration-300">
           {listAuctionCategory && (
             <AuctionCreateForm
+              handleBackToSelection={handleBackToSelection}
               auctionCategoryList={listAuctionCategory}
               auctionType={selectedType}
             />

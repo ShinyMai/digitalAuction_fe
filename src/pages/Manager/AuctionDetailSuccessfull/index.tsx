@@ -2,7 +2,7 @@
 import { useLocation } from "react-router-dom";
 import AuctionServices from "../../../services/AuctionServices";
 import { useEffect, useState } from "react";
-import type { AuctionDataDetail, AuctionDateModal, AuctionRoundModals } from "../Modals";
+import type { AuctionDataDetail, AuctionDateModal } from "../Modals";
 import AuctionDetail from "./components/AuctionDetail";
 import { Tabs } from "antd";
 import ListAuctionDocument from "./components/ListAuctionDocument";
@@ -10,8 +10,9 @@ import { TeamOutlined, FileTextOutlined } from "@ant-design/icons";
 import "./styles.css";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store";
-import AuctionRounds from "../AuctionRounds";
 import { toast } from "react-toastify";
+import AuctionRounds from "../../Auctioneer/AuctionRounds";
+import type { AuctionRoundModals } from "../../Auctioneer/Modals";
 
 // Thêm interface cho auction asset
 interface AuctionAsset {
@@ -19,13 +20,28 @@ interface AuctionAsset {
   tagName: string;
 }
 
-const AuctionDetailAuctioneer = () => {
+const USER_ROLES = {
+  USER: "Customer",
+  ADMIN: "Admin",
+  STAFF: "Staff",
+  AUCTIONEER: "Auctioneer",
+  MANAGER: "Manager",
+  DIRECTOR: "Director",
+} as const;
+
+type UserRole =
+  (typeof USER_ROLES)[keyof typeof USER_ROLES];
+
+
+const AuctionDetailSuccesfull = () => {
   const location = useLocation();
   const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
   const [auctionDateModal, setAuctionDateModal] = useState<AuctionDateModal>();
   const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
   const { user } = useSelector((state: RootState) => state.auth);
+  const role = user?.roleName as UserRole | undefined;
   const [auctionRounds, setAuctionRounds] = useState<AuctionRoundModals[]>([]);
+  const [isHaveAucationRound, setIsHaveAuctionRound] = useState(false);
   useEffect(() => {
     getAuctionDetailById(location.state.key);
     onGetListAuctionRound(location.state.key);
@@ -63,6 +79,7 @@ const AuctionDetailAuctioneer = () => {
     try {
       const response = await AuctionServices.getListAuctionRounds(auctionId);
       setAuctionRounds(response.data.auctionRounds);
+      setIsHaveAuctionRound(true)
       console.log("Auction rounds fetched successfully:", response.data);
     } catch (error) {
       console.error("Error fetching auction rounds:", error);
@@ -120,6 +137,7 @@ const AuctionDetailAuctioneer = () => {
                   <AuctionDetail
                     auctionDetailData={auctionDetailData}
                     onCreateAuctionRound={onCreateAuctionRound}
+                    isHaveAuctionRound={isHaveAucationRound}
                   />
                 </div>
               ),
@@ -147,13 +165,14 @@ const AuctionDetailAuctioneer = () => {
               label: (
                 <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-purple-50 hover:scale-105 hover:shadow-md">
                   <TeamOutlined className="text-purple-600 text-lg transition-colors duration-300" />
-                  <span className="font-semibold text-gray-700 transition-colors duration-300">Quản lý phiên đấu giá</span>
+                  <span className="font-semibold text-gray-700 transition-colors duration-300">{role == USER_ROLES.AUCTIONEER ? 'Quản lý phiên đấu giá' : role == USER_ROLES.STAFF ? "Tham gia phiên đấu giá" : "Theo dõi phiên đấu giá"}</span>
                 </div>
               ),
               children: (
                 <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 min-h-[500px] transition-all duration-300 hover:shadow-2xl">
                   <AuctionRounds
                     auctionId={location.state.key}
+                    auction={auctionDetailData}
                     auctionAsset={auctionAssets}
                   />
                 </div>
@@ -166,4 +185,4 @@ const AuctionDetailAuctioneer = () => {
   );
 };
 
-export default AuctionDetailAuctioneer;
+export default AuctionDetailSuccesfull;

@@ -1,35 +1,19 @@
-import { Button, Image, Typography, Card } from "antd";
+import { Image, Typography, Card } from "antd";
 import MINPHAPLOGO from "../../../../assets/LOGO-MINH-PHAP.jpg";
 import dayjs from "dayjs";
 import type { AuctionDataDetail } from "../../Modals";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../../store/store";
 import { EnvironmentOutlined } from "@ant-design/icons";
 
 interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
   auctionType?: string;
   auctionId?: string;
-  onApprove?: () => void; // Prop để xử lý sự kiện duyệt
-  onReject?: () => void; // Prop để xử lý sự kiện từ chối
 }
-
-const USER_ROLES = {
-  USER: "Customer",
-  ADMIN: "Admin",
-  STAFF: "Staff",
-  AUCTIONEER: "Auctioneer",
-  MANAGER: "Manager",
-  DIRECTOR: "Director",
-} as const;
-
-type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 const API_BASE_URL_NODE = import.meta.env.VITE_BE_URL_NODE;
 
-const AuctionDetail = ({ auctionDetailData, auctionType, onApprove, onReject }: AuctionDetailProps) => {
-  const { user } = useSelector((state: RootState) => state.auth);
-  const role = user?.roleName as UserRole | undefined;
+const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDetailProps) => {
+  console.log("auctionDetailData", auctionId);
 
   return (
     <section className="bg-gradient-to-b from-blue-50 to-teal-50 min-h-screen">
@@ -108,27 +92,15 @@ const AuctionDetail = ({ auctionDetailData, auctionType, onApprove, onReject }: 
                       {auctionDetailData.qrLink ? "500,000 VND" : "-"}
                     </span>
                   </div>
-                </div>
-                {role === USER_ROLES.MANAGER && (
-                  <div className="text-center mt-6 space-x-4">
-                    <Button
-                      type="primary"
-                      size="large"
-                      className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
-                      onClick={onApprove} // Gắn sự kiện onApprove vào nút
-                    >
-                      Duyệt thông tin
-                    </Button>
-                    <Button
-                      type="primary"
-                      size="large"
-                      className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
-                      onClick={onReject}
-                    >
-                      Hủy thông tin
-                    </Button>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-blue-900">Đấu giá viên:</span>
+                    <span className="text-teal-800">
+                      {auctionDetailData.auctioneer
+                        ? auctionDetailData.auctioneer
+                        : "Chưa chọn đấu giá viên"}
+                    </span>
                   </div>
-                )}
+                </div>
               </div>
             </div>
 

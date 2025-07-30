@@ -50,7 +50,6 @@ const ListAuctionDocument = ({
     useState<SearchParams>({
       PageNumber: 1,
       PageSize: 8,
-
       SortBy: 'numericalorder',
       IsAscending: true,
     });
@@ -158,12 +157,14 @@ const ListAuctionDocument = ({
         const statusMap: {
           [key: number]: { color: string; text: string };
         } = {
-          0: { color: "gray", text: "Chưa xác nhận" },
-          1: { color: "blue", text: "Đã xác nhận" },
+          0: { color: "gray", text: "Chưa chuyển tiền" },
+          1: { color: "blue", text: "Đã chuyển tiền" },
+          2: { color: "green", text: "Đã nhận phiếu" },
+          3: { color: "orange", text: "Đã hoàn tiền" },
         };
         const { color, text } = statusMap[statusTicket] || {
           color: "gray",
-          text: "Chưa nhận đơn",
+          text: "Không xác định",
         };
         return <Tag color={color}>{text}</Tag>;
       },

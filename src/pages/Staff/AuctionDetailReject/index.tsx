@@ -12,7 +12,7 @@ import { STAFF_ROUTES } from "../../../routers";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-const AuctionDetailAnonymous = () => {
+const AuctionDetailReject = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const auctionId = state?.key;
@@ -182,4 +182,4 @@ const AuctionDetailAnonymous = () => {
   );
 };
 
-export default AuctionDetailAnonymous;
+export default AuctionDetailReject;

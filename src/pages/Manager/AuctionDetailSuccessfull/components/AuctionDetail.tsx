@@ -9,9 +9,8 @@ import { EnvironmentOutlined } from "@ant-design/icons";
 interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
   auctionType?: string;
-  auctionId?: string;
-  onApprove?: () => void; // Prop để xử lý sự kiện duyệt
-  onReject?: () => void; // Prop để xử lý sự kiện từ chối
+  isHaveAuctionRound?: boolean;
+  onCreateAuctionRound?: () => void;
 }
 
 const USER_ROLES = {
@@ -27,12 +26,16 @@ type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 const API_BASE_URL_NODE = import.meta.env.VITE_BE_URL_NODE;
 
-const AuctionDetail = ({ auctionDetailData, auctionType, onApprove, onReject }: AuctionDetailProps) => {
+const AuctionDetail = ({
+  auctionDetailData,
+  auctionType,
+  onCreateAuctionRound,
+  isHaveAuctionRound,
+}: AuctionDetailProps) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
-
   return (
-    <section className="bg-gradient-to-b from-blue-50 to-teal-50 min-h-screen">
+    <section className="bg-gradient-to-b from-blue-50 to-teal-50 overflow-auto">
       <div className="w-full mx-auto bg-white shadow-lg rounded-xl p-6">
         {auctionDetailData ? (
           <div className="space-y-8">
@@ -109,24 +112,18 @@ const AuctionDetail = ({ auctionDetailData, auctionType, onApprove, onReject }: 
                     </span>
                   </div>
                 </div>
-                {role === USER_ROLES.MANAGER && (
-                  <div className="text-center mt-6 space-x-4">
-                    <Button
-                      type="primary"
-                      size="large"
-                      className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
-                      onClick={onApprove} // Gắn sự kiện onApprove vào nút
-                    >
-                      Duyệt thông tin
-                    </Button>
-                    <Button
-                      type="primary"
-                      size="large"
-                      className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
-                      onClick={onReject}
-                    >
-                      Hủy thông tin
-                    </Button>
+                {(role === USER_ROLES.MANAGER || role === USER_ROLES.AUCTIONEER) && (
+                  <div className="flex justify-center gap-4 mt-6">
+                    {role === USER_ROLES.AUCTIONEER && !isHaveAuctionRound && (
+                      <Button
+                        type="primary"
+                        size="large"
+                        className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
+                        onClick={onCreateAuctionRound}
+                      >
+                        Tạo vòng đấu giá
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>
@@ -214,11 +211,7 @@ const AuctionDetail = ({ auctionDetailData, auctionType, onApprove, onReject }: 
               <div className="bg-blue-50 p-4 rounded-lg">
                 {auctionDetailData.auctionRules ? (
                   <Typography.Link
-                    href={
-                      auctionType === "SQL"
-                        ? auctionDetailData.auctionRules
-                        : API_BASE_URL_NODE + "/" + auctionDetailData.auctionRules
-                    }
+                    href={auctionDetailData.auctionRules}
                     target="_blank"
                     className="text-teal-600"
                   >
