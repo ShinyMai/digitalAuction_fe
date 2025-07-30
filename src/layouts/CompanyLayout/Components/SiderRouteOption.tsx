@@ -124,6 +124,13 @@ const items: MenuItem[] = [
         url: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF,
         roleView: ["Staff"],
       },
+      {
+        key: "16",
+        icon: <HistoryOutlined />,
+        label: "Bị từ chối",
+        url: STAFF_ROUTES.SUB.AUCTION_LIST_REJECT,
+        roleView: ["Staff"],
+      },
     ],
   },
   {

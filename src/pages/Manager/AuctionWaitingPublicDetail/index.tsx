@@ -112,7 +112,7 @@ const AuctionDetailDraff = () => {
 
     setRejectLoading(true);
     try {
-      const response = await AuctionServices.updateAuctionRejected(auctionId, { rejectReason: reason });
+      const response = await AuctionServices.updateAuctionRejected(auctionId, reason);
       if (response.code === 200) {
         toast.success("Đã từ chối đăng tải phiên đấu giá thành công!");
         setIsRejectModalOpen(false);

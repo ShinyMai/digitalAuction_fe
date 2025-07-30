@@ -89,6 +89,8 @@ const getListAuctionRoundPriceWinnerByAuctionId = (auctionId: string): Promise<A
   http.get(`${AuctionAPI.GET_LIST_AUCTION_ROUND_PRICE_WINNER_BY_AUCTION_ID}/${auctionId}`);
 const updateAuctionRejected = (params: any, body: any): Promise<ApiResponse<any>> =>
   http.put(`${AuctionAPI.UPDATE_AUCTION_REJECTED}/${params}`, body);
+const updateAuction = (body: any): Promise<ApiResponse<any>> =>
+  http.put(AuctionAPI.UPDATE_AUCTION, body);
 const AuctionServices = {
   addAuction,
   getListAuctionCategory,
@@ -119,7 +121,8 @@ const AuctionServices = {
   waitingPublicAuction,
   updateStatusAuctionRound,
   getListAuctionRoundPriceWinnerByAuctionId,
-  updateAuctionRejected
+  updateAuctionRejected,
+  updateAuction
 };
 
 export default AuctionServices;

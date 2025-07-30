@@ -114,6 +114,8 @@ const AuctionDetailCancel = React.lazy(() => import("../pages/Manager/AuctionDet
 
 const AuctionDetailWaitingPublic = React.lazy(() => import("../pages/Manager/AuctionWaitingPublicDetail/index"));
 
+const AuctionListReject = React.lazy(() => import("../pages/Staff/AuctionListReject/index"));
+
 // Placeholder components for missing routes
 const Statistics = React.lazy(() =>
   Promise.resolve({
@@ -226,6 +228,10 @@ export const staffRoutes = [
     path: STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_WAITING_PUBLIC,
     element: wrapWithLazy(AuctionDetailWaitingPublic),
   },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_REJECT,
+    element: wrapWithLazy(AuctionListReject),
+  }
 ];
 
 // Router site Admin

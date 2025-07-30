@@ -30,7 +30,8 @@ export const AuctionAPI = {
   UPDATE_AUCTION_WAITING_PUBLIC: "/Auctions/waiting-public",
   UPDATE_STATUS_AUCTION_ROUND: "/ChangeStatusAuctionRound/Change-Status-Auction-Round",
   GET_LIST_AUCTION_ROUND_PRICE_WINNER_BY_AUCTION_ID: "/ListUserWinner",
-  UPDATE_AUCTION_REJECTED: "/Auctions/reject-auction"
+  UPDATE_AUCTION_REJECTED: "/Auctions/reject-auction",
+  UPDATE_AUCTION: '/Auctions'
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;
