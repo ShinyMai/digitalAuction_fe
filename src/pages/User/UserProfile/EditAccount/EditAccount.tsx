@@ -3,7 +3,12 @@ import { Col, Form, Input } from "antd";
 import { useEffect, useState } from "react";
 import CustomModal from "../../../../components/Common/CustomModal";
 import AuthServices from "../../../../services/AuthServices";
-import { PhoneOutlined, MailOutlined, LockOutlined, CheckCircleOutlined } from "@ant-design/icons";
+import {
+  PhoneOutlined,
+  MailOutlined,
+  LockOutlined,
+  CheckCircleOutlined,
+} from "@ant-design/icons";
 import { toast } from "react-toastify";
 
 interface EditAccountProps {
@@ -101,30 +106,13 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
       width={700}
       footer={null}
       title={
-        <div className="flex items-center space-x-3 pb-2 border-b border-gray-100">
-          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center animate-pulse-glow">
-            {isSendOTP ? (
-              <CheckCircleOutlined className="text-white text-lg" />
-            ) : (
-              <LockOutlined className="text-white text-lg" />
-            )}
-          </div>
-          <div>
-            <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {isSendOTP ? "Xác minh OTP" : "Chỉnh sửa thông tin liên lạc"}
-            </h3>
-            <p className="text-sm text-gray-500 mt-1">
-              {isSendOTP
-                ? "Nhập mã OTP đã được gửi đến email của bạn"
-                : "Cập nhật số điện thoại và email"}
-            </p>
-          </div>
+        <div className="text-xl font-bold text-white bg-clip-text text-left">
+          {isSendOTP ? "Xác minh OTP" : "Chỉnh sửa thông tin liên lạc"}
         </div>
       }
     >
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-4 -right-4 w-32 h-32 bg-blue-200/20 rounded-full blur-2xl animate-float"></div>
         <div
           className="absolute -bottom-4 -left-4 w-24 h-24 bg-purple-300/20 rounded-full blur-xl animate-float"
           style={{ animationDelay: "1s" }}
@@ -134,7 +122,7 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
       <div className="relative">
         {/* Loading Overlay */}
         {loading && (
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-2xl z-50 flex items-center justify-center">
+          <div className="absolute inset-0 backdrop-blur-sm rounded-2xl z-50 flex items-center justify-center">
             <div className="text-center">
               <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
               <p className="text-blue-600 font-semibold">
@@ -144,7 +132,7 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
           </div>
         )}
 
-        <div className="bg-white/95 backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-2xl">
+        <div className=" rounded-2xl p-8 border border-white/20 shadow-2xl">
           {isSendOTP ? (
             // OTP Form
             <div className="text-center">
@@ -152,13 +140,19 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
                 <CheckCircleOutlined className="text-3xl text-white" />
               </div>
 
-              <h4 className="text-2xl font-bold text-gray-800 mb-2">Xác minh OTP</h4>
+              <h4 className="text-2xl font-bold text-gray-800 mb-2">
+                Xác minh OTP
+              </h4>
               <p className="text-gray-600 mb-8">
-                Chúng tôi đã gửi mã xác minh đến email của bạn. Vui lòng nhập mã để hoàn tất việc
-                cập nhật.
+                Chúng tôi đã gửi mã xác minh đến email của bạn. Vui lòng nhập mã
+                để hoàn tất việc cập nhật.
               </p>
 
-              <Form form={formOTP} onFinish={handleSubmitOTP} className="max-w-md mx-auto">
+              <Form
+                form={formOTP}
+                onFinish={handleSubmitOTP}
+                className="max-w-md mx-auto"
+              >
                 <Form.Item
                   name="otpCode"
                   rules={[
@@ -241,10 +235,15 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
                     <Col span={24}>
                       <Form.Item
                         name="phoneNumber"
-                        label={<span className="font-semibold text-gray-700">Số điện thoại</span>}
+                        label={
+                          <span className="font-semibold text-gray-700">
+                            Số điện thoại
+                          </span>
+                        }
                         rules={[
                           {
-                            pattern: /^0(3[2-9]|5[6|8|9]|7[06-9]|8[1-6|8|9]|9[0-9])[0-9]{7}$/,
+                            pattern:
+                              /^0(3[2-9]|5[6|8|9]|7[06-9]|8[1-6|8|9]|9[0-9])[0-9]{7}$/,
                             message: "Số điện thoại không hợp lệ",
                           },
                         ]}
@@ -260,7 +259,11 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
                     <Col span={24}>
                       <Form.Item
                         name="email"
-                        label={<span className="font-semibold text-gray-700">Email</span>}
+                        label={
+                          <span className="font-semibold text-gray-700">
+                            Email
+                          </span>
+                        }
                         rules={[
                           {
                             type: "email",

@@ -4,6 +4,7 @@ export const NewsAPI = {
   CREATE_BLOG: "/Blog/Create-Blog",
   UPDATE_BLOG: "/Blog/Update-Blog",
   CHANGE_STATUS_BLOG: "/Blog/Change-Status-Blog",
+  DELETE_BLOG: "/Blog/Delete-Blog",
 } as const;
 
 export type NewsAPIKey = keyof typeof NewsAPI;

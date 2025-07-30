@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { http } from "../../utils/axiosConfigs";
 import type { ApiResponse } from "../../types/responseAxios.ts";
 import { UserAPI } from "./urls.tsx";
@@ -20,13 +21,23 @@ const getUserInfo = (param: {
     phoneNumber?: string;
     roleName?: string;
   }>
-> =>
+> => http.get(UserAPI.userProfile.replace("{user_id}", param.user_id));
+
+const sendPasswordToUser = (body: any): Promise<ApiResponse> =>
+  http.post(UserAPI.SEND_PASSWORD_TO_USER, body);
+
+const getUserByCccd = (citizenIdentification: string): Promise<ApiResponse> =>
   http.get(
-    UserAPI.userProfile.replace("{user_id}", param.user_id)
+    UserAPI.GET_USER_BY_CCCD.replace(
+      "{citizenIdentification}",
+      citizenIdentification
+    )
   );
 
 const UserServices = {
   getUserInfo,
+  sendPasswordToUser,
+  getUserByCccd,
 };
 
 export default UserServices;

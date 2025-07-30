@@ -68,7 +68,9 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
     <CustomModal
       title={
         <div className="flex items-center space-x-3">
-          <span className="text-2xl font-bold text-gray-800">Thông tin cá nhân</span>
+          <span className="text-2xl font-bold text-gray-800">
+            Thông tin cá nhân
+          </span>
         </div>
       }
       open={open}
@@ -84,12 +86,14 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
           <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-2xl z-50 flex items-center justify-center">
             <div className="text-center">
               <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-blue-600 font-semibold">Đang tải thông tin...</p>
+              <p className="text-blue-600 font-semibold">
+                Đang tải thông tin...
+              </p>
             </div>
           </div>
         )}
 
-        <div className="space-y-6 p-4">
+        <div className="space-y-6">
           {/* Personal Info Section */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100 relative overflow-hidden">
             {/* Edit Button */}
@@ -119,7 +123,9 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Họ và tên</p>
+                    <p className="text-sm text-gray-600 font-medium">
+                      Họ và tên
+                    </p>
                     <p className="text-lg font-bold text-gray-800">
                       {userInfo?.name || "Chưa cập nhật"}
                     </p>
@@ -137,7 +143,9 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Số điện thoại</p>
+                    <p className="text-sm text-gray-600 font-medium">
+                      Số điện thoại
+                    </p>
                     <p className="text-lg font-bold text-gray-800">
                       {userInfo?.phoneNumber || "Chưa cập nhật"}
                     </p>
@@ -172,7 +180,9 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Giới tính</p>
+                    <p className="text-sm text-gray-600 font-medium">
+                      Giới tính
+                    </p>
                     <p className="text-lg font-bold text-gray-800">
                       {userInfo?.gender === true ? "Nam" : "Nữ"}
                     </p>
@@ -181,16 +191,21 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Ngày sinh</p>
+                    <p className="text-sm text-gray-600 font-medium">
+                      Ngày sinh
+                    </p>
                     <p className="text-lg font-bold text-gray-800">
-                      {convertToVietnamTime(userInfo?.birthDay) || "Chưa cập nhật"}
+                      {convertToVietnamTime(userInfo?.birthDay) ||
+                        "Chưa cập nhật"}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Địa chỉ hiện tại</p>
+                    <p className="text-sm text-gray-600 font-medium">
+                      Địa chỉ hiện tại
+                    </p>
                     <p className="text-lg font-bold text-gray-800">
                       {userInfo?.recentLocation || "Chưa cập nhật"}
                     </p>
@@ -199,7 +214,9 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Quê quán</p>
+                    <p className="text-sm text-gray-600 font-medium">
+                      Quê quán
+                    </p>
                     <p className="text-lg font-bold text-gray-800">
                       {userInfo?.originLocation || "Chưa cập nhật"}
                     </p>
@@ -234,25 +251,33 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Ngày cấp</p>
+                    <p className="text-sm text-gray-600 font-medium">
+                      Ngày cấp
+                    </p>
                     <p className="text-lg font-bold text-gray-800">
-                      {convertToVietnamTime(userInfo?.issueDate) || "Chưa cập nhật"}
+                      {convertToVietnamTime(userInfo?.issueDate) ||
+                        "Chưa cập nhật"}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Ngày hết hạn</p>
+                    <p className="text-sm text-gray-600 font-medium">
+                      Ngày hết hạn
+                    </p>
                     <p className="text-lg font-bold text-gray-800">
-                      {convertToVietnamTime(userInfo?.validDate) || "Chưa cập nhật"}
+                      {convertToVietnamTime(userInfo?.validDate) ||
+                        "Chưa cập nhật"}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Quốc tịch</p>
+                    <p className="text-sm text-gray-600 font-medium">
+                      Quốc tịch
+                    </p>
                     <p className="text-lg font-bold text-gray-800">
                       {userInfo?.nationality || "Chưa cập nhật"}
                     </p>
@@ -273,7 +298,10 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
         </div>
       </div>
 
-      <EditAccount open={editAccountOpen} onCancel={() => setEditAccountOpen(false)} />
+      <EditAccount
+        open={editAccountOpen}
+        onCancel={() => setEditAccountOpen(false)}
+      />
     </CustomModal>
   );
 };
