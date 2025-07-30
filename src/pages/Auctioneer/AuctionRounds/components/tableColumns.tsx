@@ -118,7 +118,7 @@ export const getAuctionRoundsColumns = ({ onViewDetails, onInputPrice, auction, 
                         onClick={() => onViewDetails?.(record)}
                     />
                 </Tooltip>
-                {userRole === 'Staff' && (
+                {userRole === 'Staff' && record.status == 1 && (
                     <Tooltip title="Nhập giá">
                         <Button
                             type="default"

@@ -77,45 +77,47 @@ const items: MenuItem[] = [
     children: [
       {
         key: "4",
-        icon: <FileSearchOutlined />,
-        label: "Đang thu hồ sơ",
-        url: STAFF_ROUTES.SUB.AUCTION_LIST,
-        roleView: ["Staff", "Director", "Manager"],
-      },
-      {
-        key: "5",
-        icon: <ClockCircleOutlined />,
-        label: "Đợi duyệt",
-        url: MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC,
-        roleView: ["Manager", "Staff"],
-      },
-      {
-        key: "6",
         icon: <FileAddOutlined />,
         label: "Tạo phiên đấu giá",
         url: STAFF_ROUTES.SUB.POST_AUCTION,
         roleView: ["Staff"],
       },
       {
-        key: "9",
-        icon: <HistoryOutlined />,
-        label: "Phiên đấu giá đã tham gia",
-        url: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
-        roleView: ["Auctioneer"],
-      },
-      {
-        key: "10",
+        key: "5",
         icon: <HistoryOutlined />,
         label: "Bản nháp đấu giá",
         url: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF,
         roleView: ["Staff"],
       },
       {
-        key: "16",
+        key: "6",
+        icon: <ClockCircleOutlined />,
+        label: "Đợi duyệt",
+        url: MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC,
+        roleView: ["Manager", "Staff"],
+      },
+
+      {
+        key: "7",
+        icon: <HistoryOutlined />,
+        label: "Phiên đấu giá đã tham gia",
+        url: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
+        roleView: ["Auctioneer"],
+      },
+
+      {
+        key: "8",
         icon: <HistoryOutlined />,
         label: "Bị từ chối",
         url: STAFF_ROUTES.SUB.AUCTION_LIST_REJECT,
         roleView: ["Staff"],
+      },
+      {
+        key: "9",
+        icon: <StopOutlined />,
+        label: "Đã hủy",
+        url: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL,
+        roleView: ["Manager", "Staff"],
       },
     ],
   },
@@ -126,28 +128,29 @@ const items: MenuItem[] = [
     roleView: ["Staff", "Manager", "Director", "Auctioneer"],
     children: [
       {
-        key: "7",
+        key: "10",
+        icon: <FileSearchOutlined />,
+        label: "Đang thu hồ sơ",
+        url: STAFF_ROUTES.SUB.AUCTION_LIST,
+        roleView: ["Staff", "Director", "Manager"],
+      },
+      {
+        key: "11",
         icon: <CalendarOutlined />,
         label: "Tổ chức hôm nay",
         url: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
         roleView: ["Manager", "Staff", "Auctioneer"],
       },
       {
-        key: "9",
+        key: "12",
         icon: <HistoryOutlined />,
         label: "Phiên đấu giá đã tham gia",
         url: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
         roleView: ["Auctioneer"],
       },
+
       {
-        key: "8",
-        icon: <StopOutlined />,
-        label: "Đã hủy",
-        url: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL,
-        roleView: ["Manager", "Staff"],
-      },
-      {
-        key: "9",
+        key: "13",
         icon: <StopOutlined />,
         label: "Đã tổ chức thành công",
         url: STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL,
@@ -162,7 +165,7 @@ const items: MenuItem[] = [
     roleView: ["Staff"],
     children: [
       {
-        key: "11",
+        key: "14",
         icon: <CustomerServiceOutlined />,
         label: "Hỗ trợ đăng ký tham gia đấu giá",
         url: STAFF_ROUTES.SUB.SUPPORT_REGISTER_AUCTION,
@@ -177,14 +180,14 @@ const items: MenuItem[] = [
     roleView: ["Director", "Manager", "Admin"],
     children: [
       {
-        key: "12",
+        key: "15",
         icon: <ContactsOutlined />,
         label: "Quản lý nhân sự",
         url: STAFF_ROUTES.SUB.PROPERTIES,
         roleView: ["Director", "Manager"],
       },
       {
-        key: "13",
+        key: "16",
         icon: <UserOutlined />,
         label: "Tạo tài khoản mới",
         url: ADMIN_ROUTES.SUB.ADD_EMPLOYEES,
@@ -199,14 +202,14 @@ const items: MenuItem[] = [
     roleView: ["Staff", "Manager"],
     children: [
       {
-        key: "14",
+        key: "17",
         icon: <EditOutlined />,
         label: "Quản lý tin tức (Staff)",
         url: STAFF_ROUTES.SUB.LIST_BLOG,
         roleView: ["Staff"],
       },
       {
-        key: "15",
+        key: "18",
         icon: <SettingOutlined />,
         label: "Quản lý tin tức (Manager)",
         url: MANAGER_ROUTES.SUB.LIST_BLOG,

@@ -187,7 +187,7 @@ export const staffRoutes = [
     element: wrapWithLazy(Personnel),
   },
   {
-    path: STAFF_ROUTES.SUB.AUCTION_DETAIL,
+    path: STAFF_ROUTES.SUB.AUCTION_LIST + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL,
     element: wrapWithLazy(AuctionDetail),
   },
   {
@@ -317,5 +317,13 @@ export const auctioneerRoutes = [
   {
     path: AUCTIONEER_ROUTES.SUB.REPORTS,
     element: wrapWithLazy(Reports),
+  },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL,
+    element: wrapWithLazy(AuctionListSuccessfull),
+  },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_SUCCESSFULL,
+    element: wrapWithLazy(AuctionDetailSuccessfull),
   }
 ];

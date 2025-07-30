@@ -376,7 +376,7 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
                                             className={`!p-4 !border !rounded-lg !mb-2 ${isCurrentWinner ? '!bg-green-50 !border-green-300' : '!bg-white !border-gray-200'
                                                 }`}
                                             actions={[
-                                                !isCurrentWinner || auctionRound?.status !== 2 && (
+                                                !isCurrentWinner && auctionRound?.status !== 2 && (
                                                     <Button
                                                         key="confirm"
                                                         type="primary"

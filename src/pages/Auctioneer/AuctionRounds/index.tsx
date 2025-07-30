@@ -111,7 +111,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
             if (auction?.status == 2) {
                 const response = await AuctionServices.getListAuctionRoundPriceWinnerByAuctionId(auctionId);
                 if (response.code === 200) {
-                    setAuctionRoundPriceWinners(response.data);
+                    setAuctionRoundPriceWinners(response.data.auctionRoundPrices);
                 }
                 console.log("Auction round price winners:", response.data);
             }

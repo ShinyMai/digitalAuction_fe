@@ -15,14 +15,14 @@ interface SearchParams {
   PageSize?: number;
   Status: number;
   AuctionType?: string;
-  ConditionAuction?: number;
+  ConditionAuction?: number[] | number;
 }
 
 interface SearchValue {
   auctionName?: string;
   CategoryId?: number;
   AuctionType?: string;
-  ConditionAuction?: number;
+  ConditionAuction?: number[] | number;
 }
 
 interface PaginationChangeParams {
@@ -37,7 +37,7 @@ const DEFAULT_PARAMS: SearchParams = {
   AuctionType: "1",
   SortBy: "register_open_date",
   IsAscending: false,
-  ConditionAuction: 1,
+  ConditionAuction: [],
 };
 
 const AuctionList = () => {
@@ -126,9 +126,19 @@ const AuctionList = () => {
     }
 
     if (searchValue.ConditionAuction) {
-      newParams.ConditionAuction = searchValue.ConditionAuction;
+      // Kiểm tra nếu là array và có elements, hoặc là number và khác 0
+      if (Array.isArray(searchValue.ConditionAuction)) {
+        if (searchValue.ConditionAuction.length > 0) {
+          // Gửi dưới dạng array - nếu API cần string thì dùng: searchValue.ConditionAuction.join(',')
+          newParams.ConditionAuction = searchValue.ConditionAuction;
+        } else {
+          delete newParams.ConditionAuction;
+        }
+      } else {
+        newParams.ConditionAuction = searchValue.ConditionAuction;
+      }
     } else {
-      delete newParams.AuctionType;
+      delete newParams.ConditionAuction;
     }
 
     setSearchParams(newParams);

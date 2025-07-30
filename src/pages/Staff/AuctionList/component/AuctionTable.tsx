@@ -162,7 +162,7 @@ const AuctionTable = ({
             const navigationKey = record.auctionId || record._id;
             const auctionType = record.auctionId ? "SQL" : "NODE";
 
-            navigate(`/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_DETAIL}`, {
+            navigate(`/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_LIST}/${STAFF_ROUTES.SUB.AUCTION_DETAIL}`, {
               state: {
                 key: navigationKey,
                 type: auctionType,

@@ -11,7 +11,6 @@ import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 // Import fake data - sẽ thay thế bằng API calls thật
 import {
-    fakeAuctionRoundPrices,
     fakeHeaderStats,
     fakeAssetAnalysis,
     fakeStatistics
@@ -71,15 +70,9 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
                 const response = await AuctionServices.getListAuctionRoundPrices(auctionRound?.auctionRoundId);
                 setAuctionRoundPrice(response.data.listAuctionRoundPrices);
                 console.log('Using real API data for auction round prices:', auctionRound?.auctionRoundId);
-            } else {
-                // For now, return fake data
-                console.log('Using fake data for auction round prices');
-                setAuctionRoundPrice(fakeAuctionRoundPrices);
             }
         } catch (error) {
             console.error("Error fetching auction round prices:", error);
-            // Fallback to fake data on error
-            setAuctionRoundPrice(fakeAuctionRoundPrices);
         }
     };
 
@@ -137,7 +130,7 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
             const response = await AuctionServices.updateWinnerFlag({
                 auctionRoundPriceId: auctionRoundPriceId
             });
-            if (response.data.success) {
+            if (response.data.statusUpdate) {
                 toast.success(`Đã cập nhật ${userName} là người chiến thắng cho tài sản ${assetName}`);
                 // Refresh price history after update
                 await getListOfAuctionRoundPrices();
