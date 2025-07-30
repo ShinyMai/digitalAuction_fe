@@ -8,11 +8,13 @@ interface AuctionRoundsTableProps {
     auctionRounds: AuctionRound[];
     loading: boolean;
     auction?: AuctionDataDetail;
+    userRole?: string;
     onViewDetails?: (record: AuctionRound) => void;
+    onInputPrice?: (record: AuctionRound) => void;
 }
 
-const AuctionRoundsTable = ({ auctionRounds, loading, auction, onViewDetails }: AuctionRoundsTableProps) => {
-    const columns = getAuctionRoundsColumns({ onViewDetails, auction });
+const AuctionRoundsTable = ({ auctionRounds, loading, auction, userRole, onViewDetails, onInputPrice }: AuctionRoundsTableProps) => {
+    const columns = getAuctionRoundsColumns({ onViewDetails, onInputPrice, auction, userRole });
 
     return (
         <Card

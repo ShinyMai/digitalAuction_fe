@@ -5,7 +5,8 @@ import {
     PauseCircleOutlined,
     CheckCircleOutlined,
     UserOutlined,
-    FileTextOutlined
+    FileTextOutlined,
+    DollarOutlined
 } from "@ant-design/icons";
 import type { AuctionRound } from "../modalsData";
 import type { AuctionDataDetail } from "../../Modals";
@@ -27,10 +28,12 @@ const getStatusInfo = (status: number) => {
 
 interface ColumnProps {
     onViewDetails?: (record: AuctionRound) => void;
+    onInputPrice?: (record: AuctionRound) => void;
     auction?: AuctionDataDetail;
+    userRole?: string;
 }
 
-export const getAuctionRoundsColumns = ({ onViewDetails, auction }: ColumnProps = {}) => [
+export const getAuctionRoundsColumns = ({ onViewDetails, onInputPrice, auction, userRole }: ColumnProps = {}) => [
     {
         title: 'Vòng đấu giá',
         dataIndex: 'roundNumber',
@@ -102,7 +105,7 @@ export const getAuctionRoundsColumns = ({ onViewDetails, auction }: ColumnProps 
     {
         title: 'Thao tác',
         key: 'action',
-        width: 120,
+        width: userRole === 'Staff' ? 180 : 120,
         align: 'center' as const,
         render: (_text: unknown, record: AuctionRound) => (
             <Space>
@@ -115,6 +118,17 @@ export const getAuctionRoundsColumns = ({ onViewDetails, auction }: ColumnProps 
                         onClick={() => onViewDetails?.(record)}
                     />
                 </Tooltip>
+                {userRole === 'Staff' && (
+                    <Tooltip title="Nhập giá">
+                        <Button
+                            type="default"
+                            icon={<DollarOutlined />}
+                            size="small"
+                            className="!bg-green-500 !border-green-500 !text-white hover:!bg-green-600 hover:!border-green-600"
+                            onClick={() => onInputPrice?.(record)}
+                        />
+                    </Tooltip>
+                )}
             </Space>
         ),
     },

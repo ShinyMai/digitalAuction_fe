@@ -43,6 +43,8 @@ export const STAFF_ROUTES = {
     AUCTION_DETAIL_WAITING_PUBLIC: "auction-detail-waiting-public",
     AUCTION_LIST_REJECT: "auction-list-reject",
     AUCTION_DETAIL_REJECT: "auction-detail-reject",
+    AUCTION_LIST_SUCCESSFULL: "auction-list-successfull",
+    AUCTION_DETAIL_SUCCESSFULL: "auction-detail-successfull",
   },
 };
 

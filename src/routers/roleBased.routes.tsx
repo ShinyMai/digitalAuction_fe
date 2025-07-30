@@ -106,7 +106,7 @@ const AuctionListWaitingPublic = React.lazy(() => import("../pages/Manager/Autio
 
 const AuctionDetail = React.lazy(() => import("../pages/Staff/AuctionDetail/index"));
 
-const AuctionDetailAuctioneer = React.lazy(() => import("../pages/Auctioneer/AuctionDetail/index"));
+const AuctionDetailAuctioneer = React.lazy(() => import("../pages/Auctioneer/AuctionDetailNow/index"));
 
 const AuctionListCancel = React.lazy(() => import("../pages/Manager/AuctionListCancel/index"));
 
@@ -115,6 +115,12 @@ const AuctionDetailCancel = React.lazy(() => import("../pages/Manager/AuctionDet
 const AuctionDetailWaitingPublic = React.lazy(() => import("../pages/Manager/AuctionWaitingPublicDetail/index"));
 
 const AuctionListReject = React.lazy(() => import("../pages/Staff/AuctionListReject/index"));
+
+const AuctionDetailReject = React.lazy(() => import("../pages/Staff/AuctionDetailReject/index"));
+
+const AuctionListSuccessfull = React.lazy(() => import("../pages/Manager/AuctionListSuccessfull/index"));
+
+const AuctionDetailSuccessfull = React.lazy(() => import("../pages/Manager/AuctionDetailSuccessfull/index"));
 
 // Placeholder components for missing routes
 const Statistics = React.lazy(() =>
@@ -231,6 +237,18 @@ export const staffRoutes = [
   {
     path: STAFF_ROUTES.SUB.AUCTION_LIST_REJECT,
     element: wrapWithLazy(AuctionListReject),
+  },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_REJECT + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_REJECT,
+    element: wrapWithLazy(AuctionDetailReject),
+  },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL,
+    element: wrapWithLazy(AuctionListSuccessfull),
+  },
+  {
+    path: STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_SUCCESSFULL,
+    element: wrapWithLazy(AuctionDetailSuccessfull),
   }
 ];
 

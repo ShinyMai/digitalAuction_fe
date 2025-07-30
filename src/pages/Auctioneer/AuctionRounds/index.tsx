@@ -8,7 +8,7 @@ import AuctionRoundsTable from "./components/AuctionRoundsTable";
 import AuctionResults from "./components/AuctionResults";
 import AuctionRoundDetail from "../AuctionRoundDetail";
 import AuctionServices from "../../../services/AuctionServices";
-import InputAuctionPrice from "../AuctionDetail/components/InputAuctionPrice";
+import InputAuctionPrice from "../AuctionDetailNow/components/InputAuctionPrice";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store";
 import { toast } from "react-toastify";
@@ -77,6 +77,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
     const [loading, setLoading] = useState(false);
     const [showDetail, setShowDetail] = useState(false);
     const [showResults, setShowResults] = useState(false);
+    const [showInputPrice, setShowInputPrice] = useState(false);
     const [selectedRound, setSelectedRound] = useState<AuctionRound>();
     const { user } = useSelector(
         (state: RootState) => state.auth
@@ -176,11 +177,19 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
     const handleViewDetails = (record: AuctionRound) => {
         setSelectedRound(record);
         setShowDetail(true);
+        setShowInputPrice(false);
+    };
+
+    const handleInputPrice = (record: AuctionRound) => {
+        setSelectedRound(record);
+        setShowInputPrice(true);
+        setShowDetail(false);
     };
 
     const handleBackToList = () => {
         setShowDetail(false);
         setShowResults(false);
+        setShowInputPrice(false);
         setSelectedRound(undefined);
     };
 
@@ -199,7 +208,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
 
             <div className="!max-w-7xl !mx-auto relative z-10">
                 <AnimatePresence mode="wait">
-                    {!showDetail && !showResults ? (
+                    {!showDetail && !showResults && !showInputPrice ? (
                         <motion.div
                             key="list"
                             initial={{ opacity: 0, x: -50 }}
@@ -240,7 +249,9 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
                                     auctionRounds={auctionRounds}
                                     loading={loading}
                                     auction={auction}
+                                    userRole={role}
                                     onViewDetails={handleViewDetails}
+                                    onInputPrice={handleInputPrice}
                                 />
                             </motion.div>
                         </motion.div>
@@ -257,7 +268,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
                                 onBack={handleBackToList}
                             />
                         </motion.div>
-                    ) : (
+                    ) : showDetail ? (
                         <motion.div
                             key="detail"
                             initial={{ opacity: 0, x: 50 }}
@@ -275,16 +286,29 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
                             }
                             {
                                 role === USER_ROLES.STAFF && (
-                                    <InputAuctionPrice
-                                        auctionId={auctionId}
-                                        roundData={selectedRound}
-                                        auctionAssetsToStatistic={auctionAsset}
-                                        onBackToList={handleBackToList}
-                                    />
+                                    <AuctionRoundDetail
+                                        auctionRound={selectedRound}
+                                        auction={auction}
+                                        onBackToList={handleBackToList} />
                                 )
                             }
                         </motion.div>
-                    )}
+                    ) : showInputPrice ? (
+                        <motion.div
+                            key="input-price"
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 50 }}
+                            transition={{ duration: 0.5, ease: "easeInOut" }}
+                        >
+                            <InputAuctionPrice
+                                auctionId={auctionId}
+                                roundData={selectedRound}
+                                auctionAssetsToStatistic={auctionAsset}
+                                onBackToList={handleBackToList}
+                            />
+                        </motion.div>
+                    ) : null}
                 </AnimatePresence>
             </div>
 
