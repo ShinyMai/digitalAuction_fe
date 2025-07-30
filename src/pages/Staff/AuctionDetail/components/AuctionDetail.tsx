@@ -1,12 +1,14 @@
 import { Button, Image, Typography, Card } from "antd";
+import { QRCodeCanvas } from "qrcode.react";
 import MINPHAPLOGO from "../../../../assets/LOGO-MINH-PHAP.jpg";
 import dayjs from "dayjs";
 import type { AuctionDataDetail } from "../../Modals";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import PopupVerifyCancelAuction from "./PopupVerifyCancelAuction";
 import { EnvironmentOutlined } from "@ant-design/icons";
+import CustomModal from "../../../../components/Common/CustomModal";
 
 interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
@@ -35,6 +37,10 @@ const AuctionDetail = ({
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpenQR, setIsOpenQR] = useState(false);
+  const DateNow = dayjs().format("YYYY-MM-DDTHH:mm:ss");
+  const qrRef = useRef<HTMLDivElement>(null);
+
   console.log("check", auctionDetailData);
   const handleCancelClick = () => {
     setIsModalOpen(true);
@@ -46,6 +52,19 @@ const AuctionDetail = ({
 
   const handleModalConfirm = () => {
     setIsModalOpen(false);
+  };
+
+  const downloadQRCode = () => {
+    if (qrRef.current) {
+      const canvas = qrRef.current.querySelector("canvas");
+      if (canvas) {
+        const url = canvas.toDataURL("image/png");
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "qr-code.png";
+        a.click();
+      }
+    }
   };
 
   return (
@@ -171,6 +190,19 @@ const AuctionDetail = ({
                     </Button>
                   </div>
                 )}
+                {auctionDetailData.registerEndDate < DateNow &&
+                  auctionDetailData.auctionStartDate > DateNow && (
+                    <div className="text-center mt-6">
+                      <Button
+                        type="primary"
+                        size="large"
+                        className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
+                        onClick={() => setIsOpenQR(!isOpenQR)}
+                      >
+                        QR Điểm danh
+                      </Button>
+                    </div>
+                  )}
               </div>
             </div>
 
@@ -358,6 +390,36 @@ const AuctionDetail = ({
           onCancel={handleModalCancel}
           onConfirm={handleModalConfirm}
         />
+        {isOpenQR && (
+          <CustomModal
+            open={isOpenQR}
+            onCancel={() => setIsOpenQR(false)}
+            footer={null}
+            width={400}
+            title="QR Điểm danh phiên đấu giá"
+            style={{ top: 60 }}
+          >
+            <div ref={qrRef}>
+              <div className="flex flex-col items-center justify-center">
+                <QRCodeCanvas
+                  value={
+                    "http://161.248.147.123:4000/find-numberical-order?auctionId=" +
+                    auctionId
+                  }
+                  size={256}
+                />
+                <Button
+                  type="primary"
+                  size="large"
+                  className="bg-teal-500 hover:bg-teal-600 text-white font-semibold !px-6 !py-2 rounded-lg !mt-4"
+                  onClick={downloadQRCode}
+                >
+                  Tải xuống mã QR
+                </Button>
+              </div>
+            </div>
+          </CustomModal>
+        )}
       </div>
     </section>
   );

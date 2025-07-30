@@ -21,6 +21,7 @@ import {
   UserOutlined,
   EditOutlined,
   SettingOutlined,
+  CheckCircleOutlined,
 } from "@ant-design/icons";
 import { Menu, type MenuProps, Button, Tooltip } from "antd";
 import React, { useMemo } from "react";
@@ -153,7 +154,7 @@ const items: MenuItem[] = [
       },
       {
         key: "9",
-        icon: <StopOutlined />,
+        icon: <CheckCircleOutlined />,
         label: "Đã tổ chức thành công",
         url: STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL,
         roleView: ["Manager", "Staff", "Auctioneer"],
