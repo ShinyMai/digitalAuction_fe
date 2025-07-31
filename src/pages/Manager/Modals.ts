@@ -33,6 +33,7 @@ export type AuctionDataList = {
   createdByUserName?: string;
   updateByUserName?: string;
   status: number;
+  cancelReason?: string;
 };
 
 export type AuctionDataDetail = {

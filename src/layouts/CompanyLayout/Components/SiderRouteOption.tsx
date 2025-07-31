@@ -21,7 +21,6 @@ import {
   UserOutlined,
   EditOutlined,
   SettingOutlined,
-  CheckCircleOutlined,
 } from "@ant-design/icons";
 import { Menu, type MenuProps, Button, Tooltip } from "antd";
 import React, { useMemo } from "react";
@@ -284,7 +283,8 @@ const SiderRouteOption = ({
     // Find current key in nested structure
     let currentKey = "";
     let exactMatch = "";
-    let partialMatch = "";
+    let bestPartialMatch = "";
+    let bestPartialMatchLength = 0;
 
     const findKeyInItems = (menuItems: MenuItem[]): string => {
       for (const item of menuItems) {
@@ -295,9 +295,10 @@ const SiderRouteOption = ({
               if (routeWithoutRole === child.url) {
                 exactMatch = child.key;
               }
-              // Partial match as fallback (only if no exact match found)
-              else if (!exactMatch && routeWithoutRole.startsWith(child.url)) {
-                partialMatch = child.key;
+              // For partial match, prioritize longer URL paths (more specific)
+              else if (routeWithoutRole.startsWith(child.url + "/") && child.url.length > bestPartialMatchLength) {
+                bestPartialMatch = child.key;
+                bestPartialMatchLength = child.url.length;
               }
             }
           }
@@ -306,13 +307,14 @@ const SiderRouteOption = ({
           if (routeWithoutRole === item.url) {
             exactMatch = item.key;
           }
-          // Partial match as fallback (only if no exact match found)
-          else if (!exactMatch && routeWithoutRole.startsWith(item.url)) {
-            partialMatch = item.key;
+          // For partial match, prioritize longer URL paths (more specific)
+          else if (routeWithoutRole.startsWith(item.url + "/") && item.url.length > bestPartialMatchLength) {
+            bestPartialMatch = item.key;
+            bestPartialMatchLength = item.url.length;
           }
         }
       }
-      return exactMatch || partialMatch;
+      return exactMatch || bestPartialMatch;
     };
 
     currentKey = findKeyInItems(filteredItems);
@@ -437,8 +439,8 @@ const SiderRouteOption = ({
               : undefined,
           }))}
           className={`w-full bg-transparent border-none transition-all duration-300 ${collapsed
-              ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
-              : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
+            ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
+            : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
             } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900 [&_.ant-menu-submenu-title]:text-sky-800 [&_.ant-menu-submenu-title]:font-semibold [&_.ant-menu-submenu-title:hover]:bg-sky-50 [&_.ant-menu-submenu-title:hover]:text-sky-900`}
           style={{
             backgroundColor: "transparent",

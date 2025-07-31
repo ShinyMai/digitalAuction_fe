@@ -42,7 +42,7 @@ const AuctionDetailReject = () => {
   };
 
   const handleGoBack = () => {
-    navigate(`/${role.toLowerCase()}/${STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF}`);
+    navigate(`/${role.toLowerCase()}/${STAFF_ROUTES.SUB.AUCTION_LIST_REJECT}`);
   };
 
   const handleEditToggle = () => {
@@ -61,8 +61,6 @@ const AuctionDetailReject = () => {
       console.error("Error sending auction to manager:", error);
     }
   };
-
-  console.log("auctionDetailData", auctionDetailData);
 
   return (
     <section className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">

@@ -112,16 +112,17 @@ const AuctionDetailDraff = () => {
 
     setRejectLoading(true);
     try {
-      const response = await AuctionServices.updateAuctionRejected(auctionId, reason);
+      const response = await AuctionServices.updateAuctionRejected({ auctionId: auctionId, rejectReason: reason });
       if (response.code === 200) {
         toast.success("Đã từ chối đăng tải phiên đấu giá thành công!");
         setIsRejectModalOpen(false);
+        navigate(`/${role.toLowerCase()}/${MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC}`);
       } else {
         toast.error(response.message || "Lỗi khi từ chối đăng tải phiên đấu giá!");
       }
 
       // Có thể redirect về trang danh sách sau khi từ chối
-      // navigate(`/${role.toLowerCase()}/${MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC}`);
+
     } catch (error: any) {
       toast.error(error.message || "Lỗi khi từ chối đăng tải phiên đấu giá!");
       console.error(error);

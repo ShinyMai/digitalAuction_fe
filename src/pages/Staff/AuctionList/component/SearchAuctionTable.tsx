@@ -17,7 +17,7 @@ const SearchAuctionTable = ({
   const optionSearchbyStatus = [
     { label: "Chưa thu hồ sơ", value: 0 },
     { label: "Đang thu hồ sơ", value: 1 },
-    { label: "Chuẩn bị đấu giá", value: 2 },
+    { label: "Chuẩn bị tổ chức", value: 2 },
   ];
 
   const optionSearchbyType = [
@@ -74,14 +74,12 @@ const SearchAuctionTable = ({
           label="Tình trạng buổi đấu giá"
         >
           <Select
-            mode="multiple"
             className="w-full rounded-lg"
             style={{ height: "40px" }}
             placeholder="Chọn tình trạng đấu giá"
             options={optionSearchbyStatus}
-            onChange={(val) => console.log("Selected conditions:", val)}
+            onSelect={(val) => console.log("Selected condition:", val)}
             allowClear
-            maxTagCount="responsive"
             showSearch={false}
           />
         </Form.Item>

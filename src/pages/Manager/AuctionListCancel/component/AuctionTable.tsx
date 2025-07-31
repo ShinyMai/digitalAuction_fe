@@ -93,7 +93,7 @@ const AuctionTable = ({
       key: "auctionName",
       sorter: true,
       width: 250,
-      render: (text: string) => <TruncatedText text={text} maxWidth={450} />,
+      render: (text: string) => <TruncatedText text={text} maxWidth={300} />,
     },
     {
       title: "Ngày Mở - Kết thúc ĐK",
@@ -156,6 +156,14 @@ const AuctionTable = ({
           </Tooltip>
         );
       },
+    },
+    {
+      title: "Lý do hủy",
+      dataIndex: "cancelReason",
+      key: "cancelReason",
+      sorter: true,
+      width: 250,
+      render: (text: string) => <TruncatedText text={text} maxWidth={450} />,
     },
   ];
 

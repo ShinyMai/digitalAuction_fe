@@ -22,7 +22,7 @@ interface SearchValue {
   auctionName?: string;
   CategoryId?: number;
   AuctionType?: string;
-  ConditionAuction?: number[] | number;
+  ConditionAuction?: number;
 }
 
 interface PaginationChangeParams {
