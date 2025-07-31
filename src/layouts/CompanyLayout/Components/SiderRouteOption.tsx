@@ -21,12 +21,18 @@ import {
   UserOutlined,
   EditOutlined,
   SettingOutlined,
+  CheckCircleOutlined,
 } from "@ant-design/icons";
 import { Menu, type MenuProps, Button, Tooltip } from "antd";
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ADMIN_ROUTES, AUCTIONEER_ROUTES, MANAGER_ROUTES, STAFF_ROUTES } from "../../../routers";
+import {
+  ADMIN_ROUTES,
+  AUCTIONEER_ROUTES,
+  MANAGER_ROUTES,
+  STAFF_ROUTES,
+} from "../../../routers";
 import { assets } from "../../../assets";
 
 interface MenuItem {
@@ -36,7 +42,7 @@ interface MenuItem {
   url?: string;
   roleView: string[];
   children?: MenuItem[];
-  type?: 'group';
+  type?: "group";
 }
 
 const items: MenuItem[] = [
@@ -224,7 +230,10 @@ interface SiderRouteOptionProps {
   onCollapse?: (collapsed: boolean) => void;
 }
 
-const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionProps) => {
+const SiderRouteOption = ({
+  collapsed = false,
+  onCollapse,
+}: SiderRouteOptionProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSelector((state: any) => state.auth);
@@ -236,12 +245,15 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
         .map((item) => {
           if (item.children) {
             // Filter children based on role
-            const filteredChildren = item.children.filter((child) =>
-              role && child.roleView.includes(role)
+            const filteredChildren = item.children.filter(
+              (child) => role && child.roleView.includes(role)
             );
 
             // Only include parent if it has visible children or if user has permission
-            if (filteredChildren.length > 0 && item.roleView.includes(role || '')) {
+            if (
+              filteredChildren.length > 0 &&
+              item.roleView.includes(role || "")
+            ) {
               return {
                 ...item,
                 children: filteredChildren,
@@ -320,7 +332,10 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
 
   const onClick: MenuProps["onClick"] = (e) => {
     // Find the clicked item in nested structure
-    const findItemByKey = (menuItems: MenuItem[], key: string): MenuItem | null => {
+    const findItemByKey = (
+      menuItems: MenuItem[],
+      key: string
+    ): MenuItem | null => {
       for (const item of menuItems) {
         if (item.key === key) {
           return item;
@@ -347,8 +362,8 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
   };
   return (
     <div
-      className={`h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm transition-all duration-300 ${collapsed ? "w-20" : "w-full"
-        }`}
+      className={`h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm transition-all duration-300 flex flex-col ${collapsed ? "w-20" : "w-full"
+        } `}
     >
       {/* Header with Logo and Collapse Button */}
       <div
@@ -363,7 +378,10 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
           />
         )}
         {/* Collapse/Expand Button */}{" "}
-        <Tooltip title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"} placement="right">
+        <Tooltip
+          title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
+          placement="right"
+        >
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -377,20 +395,26 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
             }}
           />
         </Tooltip>
-      </div>
-
+      </div>{" "}
       {/* User Role Badge - only show when not collapsed */}
       {!collapsed && role && (
-        <div className="px-4 py-3 border-b border-sky-200">
+        <div className="px-4 py-3 border-b border-sky-200 flex-shrink-0">
           <div className="bg-gradient-to-r from-sky-100 to-blue-100 rounded-lg p-3 text-center shadow-sm">
-            <span className="text-xs text-sky-600 font-medium block">Vai trò hiện tại</span>
+            <span className="text-xs text-sky-600 font-medium block">
+              Vai trò hiện tại
+            </span>
             <span className="font-bold text-sky-800 text-sm">{role}</span>
           </div>
         </div>
-      )}
-
+      )}{" "}
       {/* Navigation Menu */}
-      <div className="w-full">
+      <div
+        className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar"
+        style={{
+          scrollbarWidth: "thin",
+          scrollbarColor: "#7dd3fc #e0f2fe",
+        }}
+      >
         <Menu
           onClick={onClick}
           theme="light"
@@ -413,21 +437,22 @@ const SiderRouteOption = ({ collapsed = false, onCollapse }: SiderRouteOptionPro
               : undefined,
           }))}
           className={`w-full bg-transparent border-none transition-all duration-300 ${collapsed
-            ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
-            : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
+              ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
+              : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
             } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900 [&_.ant-menu-submenu-title]:text-sky-800 [&_.ant-menu-submenu-title]:font-semibold [&_.ant-menu-submenu-title:hover]:bg-sky-50 [&_.ant-menu-submenu-title:hover]:text-sky-900`}
           style={{
             backgroundColor: "transparent",
             border: "none",
           }}
         />
-      </div>
-
+      </div>{" "}
       {/* Footer - Version info when expanded */}
       {!collapsed && (
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-sky-200">
+        <div className="flex-shrink-0 p-4 border-t border-sky-200">
           <div className="bg-gradient-to-r from-sky-50 to-blue-50 rounded-lg p-3 text-center shadow-sm">
-            <span className="text-xs text-sky-600 font-medium block">Phiên bản</span>
+            <span className="text-xs text-sky-600 font-medium block">
+              Phiên bản
+            </span>
             <span className="font-semibold text-sky-800 text-sm">v1.0.0</span>
           </div>
         </div>

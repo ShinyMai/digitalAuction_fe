@@ -4,21 +4,17 @@ import { Typography } from "antd";
 import { AnimatePresence } from "framer-motion";
 import AuctionServices from "../../../services/AuctionServices/index.tsx";
 import { toast } from "react-toastify";
-import type { AuctionCategory, AuctionDataDetail, AuctionDataList } from "../Modals.ts";
+import type {
+  AuctionCategory,
+  AuctionDataDetail,
+  AuctionDataList,
+} from "../Modals.ts";
 import AuctionSearchList from "./components/AuctionSearchList.tsx";
 import AuctionDetailView from "./components/AuctionDetailView.tsx";
-import EkycSDK from "../../../components/Ekyc/EkycSDK.tsx";
+import ChooseUserType from "./components/ChooseUserType";
+import FormRegisterUser from "./components/FormRegisterUser";
 
 const { Title } = Typography;
-
-interface RegisterForm {
-  bankAccount: string;
-  citizenIdentification: string;
-  phoneNumber: string;
-  bankAccountNumber: string;
-  bankBranch: string;
-}
-
 interface SearchParams {
   AuctionName?: string;
   CategoryId?: number;
@@ -37,19 +33,28 @@ const SupportRegisterAuction = () => {
     Status: 1,
     SortBy: "RegisterEndDate",
     IsAscending: false,
-    ConditionAuction: 1, // Chỉ lấy các phiên đấu giá đang diễn ra
+    ConditionAuction: 1,
   });
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [submitting, setSubmitting] = useState<boolean>(false);
-  const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(null);
-  const [auctionDetail, setAuctionDetail] = useState<AuctionDataDetail | null>(null);
-  const [account, setAccount] = useState({});
-  const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
-  const [step, setStep] = useState<"list" | "ekyc" | "detail">("list"); // Thêm bước ekyc
+  const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(
+    null
+  );
+  const [auctionDetail, setAuctionDetail] = useState<AuctionDataDetail | null>(
+    null
+  );
+  const [listAuctionCategory, setListAuctionCategory] = useState<
+    AuctionCategory[]
+  >([]);
+  const [step, setStep] = useState<"list" | "detail">("list");
+  const [chooseUserTypeOpen, setChooseUserTypeOpen] = useState(false);
+  const [pendingAuctionId, setPendingAuctionId] = useState<string | null>(null);
+  const [userType, setUserType] = useState<"old" | "new" | null>(null);
+  const [formRegisterUserOpen, setFormRegisterUserOpen] = useState(false);
+  const [auctionId, setAuctionId] = useState<string | null>(null);
 
-  console.log(submitting);
+  console.log(userType);
 
   useEffect(() => {
     if (step === "list") {
@@ -57,6 +62,7 @@ const SupportRegisterAuction = () => {
       getListAuctionCategory();
     } else if (step === "detail" && selectedAuctionId) {
       fetchAuctionDetail(selectedAuctionId);
+      setAuctionId(selectedAuctionId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, step, selectedAuctionId]);
@@ -99,19 +105,31 @@ const SupportRegisterAuction = () => {
   };
 
   const handleSelectAuction = (auctionId: string) => {
-    setSelectedAuctionId(auctionId);
-    setStep("ekyc"); // Chuyển sang bước ekyc
+    setPendingAuctionId(auctionId);
+    setChooseUserTypeOpen(true);
   };
 
-  const handleEkycSuccess = () => {
-    setStep("detail"); // Chuyển sang bước detail sau khi eKYC thành công
+  const handleChooseUserType = (type: "old" | "new") => {
+    setUserType(type);
+    setChooseUserTypeOpen(false);
+    if (type === "new") {
+      setFormRegisterUserOpen(true);
+    } else {
+      setSelectedAuctionId(pendingAuctionId);
+      setStep("detail");
+    }
+  };
+
+  const handleRegisterUserSuccess = () => {
+    setFormRegisterUserOpen(false);
+    setSelectedAuctionId(pendingAuctionId);
+    setStep("detail");
   };
 
   const handleBack = () => {
-    setStep("list"); // Quay lại bước list
+    setStep("list");
     setSelectedAuctionId(null);
     setAuctionDetail(null);
-    setAccount({}); // Reset account để yêu cầu eKYC lại nếu cần
   };
 
   const getListAuctionCategory = async () => {
@@ -127,33 +145,10 @@ const SupportRegisterAuction = () => {
     }
   };
 
-  const handleSubmit = async (values: RegisterForm, selectedAssetIds: string[]) => {
-    if (!auctionDetail) {
-      toast.error("Không tìm thấy thông tin đấu giá!");
-      return;
-    }
-    try {
-      setSubmitting(true);
-      const payload = {
-        auctionId: selectedAuctionId,
-        auctionAssetsIds: selectedAssetIds,
-        ...values,
-      };
-      console.log("Check: ", payload);
-      await AuctionServices.supportRegisterAuction(payload);
-      toast.success("Đăng ký tham gia đấu giá thành công!");
-    } catch (error: any) {
-      toast.error("Lỗi khi đăng ký tham gia đấu giá!");
-      console.error(error);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   return (
-    <div className="w-full max-h-screen p-4 sm:p-6">
+    <div className="w-full min-h-screen p-4 sm:p-6">
       <div className="max-w-full mx-auto">
-        <Title level={4} className="text-center mb-6 text-gray-800">
+        <Title level={4} className="!text-center !mb-6 !text-gray-800">
           Hỗ Trợ Đăng Ký Tham Gia Đấu Giá
         </Title>
         <AnimatePresence mode="wait">
@@ -168,24 +163,25 @@ const SupportRegisterAuction = () => {
               listAuctionCategory={listAuctionCategory}
             />
           )}
-          {step === "ekyc" && (
-            <EkycSDK
-              setCurrent={handleEkycSuccess}
-              setAccount={setAccount}
-              face={true}
-              className="w-full"
-            />
-          )}
           {step === "detail" && (
             <AuctionDetailView
               auctionDetail={auctionDetail}
               loading={loading}
               onBack={handleBack}
-              onSubmit={handleSubmit}
-              account={account}
+              auctionId={auctionId}
             />
           )}
         </AnimatePresence>
+        <ChooseUserType
+          open={chooseUserTypeOpen}
+          onClose={() => setChooseUserTypeOpen(false)}
+          onSelect={handleChooseUserType}
+        />
+        <FormRegisterUser
+          open={formRegisterUserOpen}
+          onClose={() => setFormRegisterUserOpen(false)}
+          onSuccess={handleRegisterUserSuccess}
+        />
       </div>
     </div>
   );
