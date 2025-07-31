@@ -9,17 +9,34 @@ import {
 import wrapWithLazy from "../utils/wrapWithLazy";
 import React from "react";
 
-const HomePage = React.lazy(() => import("../pages/Anonymous/HomePage/HomePage"));
-const Introduction = React.lazy(() => import("../pages/Anonymous/Introduction/Introduction"));
-const Register = React.lazy(() => import("../pages/Anonymous/Register/Register"));
+const HomePage = React.lazy(
+  () => import("../pages/Anonymous/HomePage/HomePage")
+);
+const Introduction = React.lazy(
+  () => import("../pages/Anonymous/Introduction/Introduction")
+);
+const Register = React.lazy(
+  () => import("../pages/Anonymous/Register/Register")
+);
 const News = React.lazy(() => import("../pages/Anonymous/News/News"));
-const Guidance = React.lazy(() => import("../pages/Anonymous/Guidance/Guidance"));
+const Guidance = React.lazy(
+  () => import("../pages/Anonymous/Guidance/Guidance")
+);
 const AuctionResultsAnonymous = React.lazy(
   () => import("../pages/Anonymous/ResultAuction/ResultAuction")
 );
-const NotFound = React.lazy(() => import("../components/Common/NotFound/index"));
-const AuctionListAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionList/index"));
-const AuctionDetailAnonymous = React.lazy(() => import("../pages/Anonymous/AuctionDetail/index"));
+const NotFound = React.lazy(
+  () => import("../components/Common/NotFound/index")
+);
+const AuctionListAnonymous = React.lazy(
+  () => import("../pages/Anonymous/AuctionList/index")
+);
+const AuctionDetailAnonymous = React.lazy(
+  () => import("../pages/Anonymous/AuctionDetail/index")
+);
+const FindNumbericalOrder = React.lazy(
+  () => import("../pages/Anonymous/FindNumbericalOrder/index")
+);
 
 export const guestRoutes = [
   {
@@ -60,11 +77,19 @@ export const guestRoutes = [
     path: GUEST_ROUTERS.AUCTION_RESULTS,
     element: wrapWithLazy(AuctionResultsAnonymous),
   },
+  {
+    path: GUEST_ROUTERS.FIND_NUMBERICAL_ORDER,
+    element: wrapWithLazy(FindNumbericalOrder),
+  },
 ];
 
 // Router site User
-const AuctionRegister = React.lazy(() => import("../pages/User/AuctionRegister/index"));
-const RegistedAuction = React.lazy(() => import("../pages/User/RegistedAuction/RegistedAuction"));
+const AuctionRegister = React.lazy(
+  () => import("../pages/User/AuctionRegister/index")
+);
+const RegistedAuction = React.lazy(
+  () => import("../pages/User/RegistedAuction/RegistedAuction")
+);
 const RegistedAuctionDetail = React.lazy(
   () => import("../pages/User/RegistedAuctionDetail/RegistedAuctionDetail")
 );
@@ -98,29 +123,53 @@ export const userRoutes = [
 ];
 
 // Router site TuanLinh
-const PostAuction = React.lazy(() => import("../pages/Staff/PostAuction/index"));
+const PostAuction = React.lazy(
+  () => import("../pages/Staff/PostAuction/index")
+);
 
-const AuctionList = React.lazy(() => import("../pages/Staff/AuctionList/index"));
+const AuctionList = React.lazy(
+  () => import("../pages/Staff/AuctionList/index")
+);
 
-const AuctionListWaitingPublic = React.lazy(() => import("../pages/Manager/AutionListWaitingPublic/index"));
+const AuctionListWaitingPublic = React.lazy(
+  () => import("../pages/Manager/AutionListWaitingPublic/index")
+);
 
-const AuctionDetail = React.lazy(() => import("../pages/Staff/AuctionDetail/index"));
+const AuctionDetail = React.lazy(
+  () => import("../pages/Staff/AuctionDetail/index")
+);
 
-const AuctionDetailAuctioneer = React.lazy(() => import("../pages/Auctioneer/AuctionDetailNow/index"));
+const AuctionDetailAuctioneer = React.lazy(
+  () => import("../pages/Auctioneer/AuctionDetailNow/index")
+);
 
-const AuctionListCancel = React.lazy(() => import("../pages/Manager/AuctionListCancel/index"));
+const AuctionListCancel = React.lazy(
+  () => import("../pages/Manager/AuctionListCancel/index")
+);
 
-const AuctionDetailCancel = React.lazy(() => import("../pages/Manager/AuctionDetailCancel/index"));
+const AuctionDetailCancel = React.lazy(
+  () => import("../pages/Manager/AuctionDetailCancel/index")
+);
 
-const AuctionDetailWaitingPublic = React.lazy(() => import("../pages/Manager/AuctionWaitingPublicDetail/index"));
+const AuctionDetailWaitingPublic = React.lazy(
+  () => import("../pages/Manager/AuctionWaitingPublicDetail/index")
+);
 
-const AuctionListReject = React.lazy(() => import("../pages/Staff/AuctionListReject/index"));
+const AuctionListReject = React.lazy(
+  () => import("../pages/Staff/AuctionListReject/index")
+);
 
-const AuctionDetailReject = React.lazy(() => import("../pages/Staff/AuctionDetailReject/index"));
+const AuctionDetailReject = React.lazy(
+  () => import("../pages/Staff/AuctionDetailReject/index")
+);
 
-const AuctionListSuccessfull = React.lazy(() => import("../pages/Manager/AuctionListSuccessfull/index"));
+const AuctionListSuccessfull = React.lazy(
+  () => import("../pages/Manager/AuctionListSuccessfull/index")
+);
 
-const AuctionDetailSuccessfull = React.lazy(() => import("../pages/Manager/AuctionDetailSuccessfull/index"));
+const AuctionDetailSuccessfull = React.lazy(
+  () => import("../pages/Manager/AuctionDetailSuccessfull/index")
+);
 
 // Placeholder components for missing routes
 const Statistics = React.lazy(() =>
@@ -151,15 +200,21 @@ const SupportRegisterAuction = React.lazy(
   () => import("../pages/Staff/SupportRegisterAuction/index")
 );
 
-const listAcutionNow = React.lazy(() => import("../pages/Auctioneer/ListAuctionNow/index"));
+const listAcutionNow = React.lazy(
+  () => import("../pages/Auctioneer/ListAuctionNow/index")
+);
 
 const ListAuctionAssigned = React.lazy(
   () => import("../pages/Auctioneer/ListAuctionAssigned/index")
 );
 
 const ListBlog = React.lazy(() => import("../pages/Staff/ManageBlog/index"));
-const AuctionListDraff = React.lazy(() => import("../pages/Staff/AuctionListDraff/index"));
-const AuctionDetailDraff = React.lazy(() => import("../pages/Staff/AuctionDetailDraff/index"));
+const AuctionListDraff = React.lazy(
+  () => import("../pages/Staff/AuctionListDraff/index")
+);
+const AuctionDetailDraff = React.lazy(
+  () => import("../pages/Staff/AuctionDetailDraff/index")
+);
 
 export const staffRoutes = [
   {
@@ -203,7 +258,8 @@ export const staffRoutes = [
     element: wrapWithLazy(listAcutionNow),
   },
   {
-    path: STAFF_ROUTES.SUB.AUCTION_NOW + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_NOW,
+    path:
+      STAFF_ROUTES.SUB.AUCTION_NOW + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_NOW,
     element: wrapWithLazy(AuctionDetailAuctioneer),
   },
   {
@@ -211,7 +267,10 @@ export const staffRoutes = [
     element: wrapWithLazy(AuctionListCancel),
   },
   {
-    path: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL + "/" + MANAGER_ROUTES.SUB.AUCTION_DETAIL_CANCEL,
+    path:
+      MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL +
+      "/" +
+      MANAGER_ROUTES.SUB.AUCTION_DETAIL_CANCEL,
     element: wrapWithLazy(AuctionDetailCancel),
   },
   {
@@ -223,7 +282,10 @@ export const staffRoutes = [
     element: wrapWithLazy(AuctionListDraff),
   },
   {
-    path: STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_DRAFF,
+    path:
+      STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF +
+      "/" +
+      STAFF_ROUTES.SUB.AUCTION_DETAIL_DRAFF,
     element: wrapWithLazy(AuctionDetailDraff),
   },
   {
@@ -231,7 +293,10 @@ export const staffRoutes = [
     element: wrapWithLazy(AuctionListWaitingPublic),
   },
   {
-    path: STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_WAITING_PUBLIC,
+    path:
+      STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC +
+      "/" +
+      STAFF_ROUTES.SUB.AUCTION_DETAIL_WAITING_PUBLIC,
     element: wrapWithLazy(AuctionDetailWaitingPublic),
   },
   {
@@ -239,7 +304,10 @@ export const staffRoutes = [
     element: wrapWithLazy(AuctionListReject),
   },
   {
-    path: STAFF_ROUTES.SUB.AUCTION_LIST_REJECT + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_REJECT,
+    path:
+      STAFF_ROUTES.SUB.AUCTION_LIST_REJECT +
+      "/" +
+      STAFF_ROUTES.SUB.AUCTION_DETAIL_REJECT,
     element: wrapWithLazy(AuctionDetailReject),
   },
   {
@@ -247,13 +315,18 @@ export const staffRoutes = [
     element: wrapWithLazy(AuctionListSuccessfull),
   },
   {
-    path: STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_SUCCESSFULL,
+    path:
+      STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL +
+      "/" +
+      STAFF_ROUTES.SUB.AUCTION_DETAIL_SUCCESSFULL,
     element: wrapWithLazy(AuctionDetailSuccessfull),
-  }
+  },
 ];
 
 // Router site Admin
-const AddAccountStaff = React.lazy(() => import("../pages/Admin/ManagerAccount/AddEmployees"));
+const AddAccountStaff = React.lazy(
+  () => import("../pages/Admin/ManagerAccount/AddEmployees")
+);
 
 export const adminRoutes = [
   {
@@ -267,7 +340,9 @@ export const adminRoutes = [
 ];
 
 // Router site Manager
-const ListBlogManager = React.lazy(() => import("../pages/Manager/ManageBlog/index"));
+const ListBlogManager = React.lazy(
+  () => import("../pages/Manager/ManageBlog/index")
+);
 
 export const managerRoutes = [
   ...staffRoutes,
@@ -276,7 +351,10 @@ export const managerRoutes = [
     element: wrapWithLazy(AuctionListCancel),
   },
   {
-    path: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL + "/" + MANAGER_ROUTES.SUB.AUCTION_DETAIL_CANCEL,
+    path:
+      MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL +
+      "/" +
+      MANAGER_ROUTES.SUB.AUCTION_DETAIL_CANCEL,
     element: wrapWithLazy(AuctionDetailCancel),
   },
   {
@@ -288,12 +366,17 @@ export const managerRoutes = [
     element: wrapWithLazy(AuctionListWaitingPublic),
   },
   {
-    path: MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC + "/" + MANAGER_ROUTES.SUB.AUCTION_DETAIL_WAITING_PUBLIC,
+    path:
+      MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC +
+      "/" +
+      MANAGER_ROUTES.SUB.AUCTION_DETAIL_WAITING_PUBLIC,
     element: wrapWithLazy(AuctionDetailWaitingPublic),
   },
 ];
 
-const DashboardAuctioneer = React.lazy(() => import("../pages/Auctioneer/Dashboard/index"));
+const DashboardAuctioneer = React.lazy(
+  () => import("../pages/Auctioneer/Dashboard/index")
+);
 
 const Reports = React.lazy(() => import("../pages/Auctioneer/Reports/index"));
 
@@ -303,7 +386,10 @@ export const auctioneerRoutes = [
     element: wrapWithLazy(listAcutionNow),
   },
   {
-    path: AUCTIONEER_ROUTES.SUB.AUCTION_NOW + "/" + AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW,
+    path:
+      AUCTIONEER_ROUTES.SUB.AUCTION_NOW +
+      "/" +
+      AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW,
     element: wrapWithLazy(AuctionDetailAuctioneer),
   },
   {
@@ -317,5 +403,5 @@ export const auctioneerRoutes = [
   {
     path: AUCTIONEER_ROUTES.SUB.REPORTS,
     element: wrapWithLazy(Reports),
-  }
+  },
 ];

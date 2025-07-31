@@ -34,10 +34,22 @@ const getUserByCccd = (citizenIdentification: string): Promise<ApiResponse> =>
     )
   );
 
+const getNumbericalOrder = (
+  auctionId: string,
+  citizenIdentification: string
+): Promise<ApiResponse> =>
+  http.get(
+    UserAPI.GET_NUMBERICAL_ORDER.replace("{auctionId}", auctionId).replace(
+      "{citizenIdentification}",
+      citizenIdentification
+    )
+  );
+
 const UserServices = {
   getUserInfo,
   sendPasswordToUser,
   getUserByCccd,
+  getNumbericalOrder,
 };
 
 export default UserServices;

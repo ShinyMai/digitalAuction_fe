@@ -3,6 +3,8 @@ export const UserAPI = {
   SEND_PASSWORD_TO_USER: "/SendMessage",
   GET_USER_BY_CCCD:
     "AuctionDocuments/user-by-citizen-identification?citizenIdentification={citizenIdentification}",
+  GET_NUMBERICAL_ORDER:
+    "/SearchUserAttendance/Search-User-Attendance?auctionId={auctionId}&citizenIdentification={citizenIdentification}",
 } as const;
 
 export type UserAPIKey = keyof typeof UserAPI;

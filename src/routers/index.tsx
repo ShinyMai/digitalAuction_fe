@@ -9,6 +9,7 @@ export const GUEST_ROUTERS = {
   AUCTION_LIST: "auction-list",
   AUCTION_DETAIL: "auction-detail",
   AUCTION_RESULTS: "auction-results",
+  FIND_NUMBERICAL_ORDER: "find-numberical-order",
 };
 
 export const USER_ROUTERS = {
@@ -67,7 +68,6 @@ export const AUCTIONEER_ROUTES = {
     AUCTION_ROUNDS: "auction-rounds",
     AUCTION_ROUND_DETAIL: "auction-round-detail",
     REPORTS: "reports",
-
   },
 };
 
