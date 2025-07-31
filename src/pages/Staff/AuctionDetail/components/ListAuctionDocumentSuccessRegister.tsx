@@ -15,8 +15,6 @@ import {
 import {
     SearchOutlined,
     DownloadOutlined,
-    CheckOutlined,
-    CloseOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 
@@ -52,15 +50,6 @@ const ListAuctionDocumentSuccesRegister = ({
     >([]);
     const [totalCount, setTotalCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
-    const [isRefundMode, setIsRefundMode] = useState<boolean>(false);
-    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-
-    // Kiểm tra nếu ngày hiện tại lớn hơn hoặc bằng auctionStartDate
-    const isAfterOrOnAuctionStartDate =
-        auctionDateModals?.auctionStartDate
-            ? dayjs().isAfter(dayjs(auctionDateModals.auctionStartDate)) ||
-            dayjs().isSame(dayjs(auctionDateModals.auctionStartDate), "day")
-            : false;
 
     // Kiểm tra nếu ngày hiện tại lớn hơn registerEndDate
     const isAfterRegisterEndDate =
@@ -165,35 +154,6 @@ const ListAuctionDocumentSuccesRegister = ({
             console.error(error);
         }
     };
-
-
-    const handleRefundModeToggle = () => {
-        setIsRefundMode(true);
-    };
-
-    const handleConfirmRefund = () => {
-        console.log("Selected auction document IDs:", selectedRowKeys);
-        // Reset trạng thái sau khi xác nhận
-        setIsRefundMode(false);
-        setSelectedRowKeys([]);
-    };
-
-    const handleCancelRefund = () => {
-        setIsRefundMode(false);
-        setSelectedRowKeys([]);
-    };
-
-    const rowSelection = isRefundMode
-        ? {
-            selectedRowKeys,
-            onChange: (newSelectedRowKeys: React.Key[]) => {
-                setSelectedRowKeys(newSelectedRowKeys);
-            },
-            getCheckboxProps: (record: AuctionDocument) => ({
-                disabled: record.statusTicket === 3, // Vô hiệu hóa checkbox cho các bản ghi đã hoàn tiền
-            }),
-        }
-        : undefined;
 
     const columns = [
         {
@@ -301,41 +261,11 @@ const ListAuctionDocumentSuccesRegister = ({
                             className="bg-green-500 hover:bg-green-600 w-full sm:w-auto"
                             disabled={!isAfterRegisterEndDate || auctionDocuments.length === 0}
                         >
-                            Tải danh sách
+                            Tải danh sách điểm danh
                         </Button>
-                        {isRefundMode ? (
-                            <div className="flex w-full sm:w-auto">
-                                <Button
-                                    type="primary"
-                                    onClick={handleConfirmRefund}
-                                    icon={<CheckOutlined />}
-                                    className="bg-blue-500 hover:bg-blue-600 rounded-r-none border-r-0 flex-1 mr-2"
-                                    disabled={!isAfterOrOnAuctionStartDate || auctionDocuments.length === 0}
-                                >
-                                    Xác nhận
-                                </Button>
-                                <Button
-                                    type="link"
-                                    onClick={handleCancelRefund}
-                                    icon={<CloseOutlined />}
-                                    className="bg-red-500 hover:bg-red-600 rounded-l-none flex-1"
-                                    disabled={!isAfterOrOnAuctionStartDate || auctionDocuments.length === 0}
-                                />
-                            </div>
-                        ) : (
-                            <Button
-                                type="primary"
-                                onClick={handleRefundModeToggle}
-                                className="bg-yellow-500 hover:bg-yellow-600 w-full sm:w-auto"
-                                disabled={!isAfterOrOnAuctionStartDate || auctionDocuments.length === 0}
-                            >
-                                Hoàn tiền
-                            </Button>
-                        )}
                     </div>
                 </div>
                 <Table
-                    rowSelection={rowSelection}
                     columns={columns}
                     dataSource={auctionDocuments}
                     rowKey="auctionDocumentsId"
