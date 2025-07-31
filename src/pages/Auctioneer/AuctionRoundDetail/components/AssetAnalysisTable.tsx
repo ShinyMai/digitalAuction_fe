@@ -29,6 +29,8 @@ import {
     CheckOutlined
 } from '@ant-design/icons';
 import type { AuctionRound, AuctionRoundPrice } from '../modalsData';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../../store/store';
 
 const { Title, Text } = Typography;
 
@@ -51,6 +53,18 @@ interface AssetAnalysisTableProps {
     onUpdateWinner: (auctionRoundPriceId: string, userName: string, assetName: string) => void;
 }
 
+const USER_ROLES = {
+    USER: "Customer",
+    ADMIN: "Admin",
+    STAFF: "Staff",
+    AUCTIONEER: "Auctioneer",
+    MANAGER: "Manager",
+    DIRECTOR: "Director",
+} as const;
+
+type UserRole =
+    (typeof USER_ROLES)[keyof typeof USER_ROLES];
+
 const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
     priceHistory,
     onUpdateWinner,
@@ -58,6 +72,10 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
 }) => {
     const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const { user } = useSelector(
+        (state: RootState) => state.auth
+    );
+    const role = user?.roleName as UserRole | undefined;
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -376,7 +394,7 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
                                             className={`!p-4 !border !rounded-lg !mb-2 ${isCurrentWinner ? '!bg-green-50 !border-green-300' : '!bg-white !border-gray-200'
                                                 }`}
                                             actions={[
-                                                !isCurrentWinner && auctionRound?.status !== 2 && (
+                                                !isCurrentWinner && auctionRound?.status !== 2 && role === USER_ROLES.AUCTIONEER && (
                                                     <Button
                                                         key="confirm"
                                                         type="primary"

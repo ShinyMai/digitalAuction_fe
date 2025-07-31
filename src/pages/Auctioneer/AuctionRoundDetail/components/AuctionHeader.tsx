@@ -1,5 +1,7 @@
 import { Card, Statistic, Row, Col, Typography, Space, Divider, Button } from "antd";
 import { UserOutlined, HomeOutlined, ClockCircleOutlined, SyncOutlined, StopOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../store/store";
 
 const { Title, Text } = Typography;
 
@@ -10,6 +12,18 @@ interface AuctionHeaderProps {
     status?: number;
     onEndAuction?: () => void; // Callback function for ending auction
 }
+
+const USER_ROLES = {
+    USER: "Customer",
+    ADMIN: "Admin",
+    STAFF: "Staff",
+    AUCTIONEER: "Auctioneer",
+    MANAGER: "Manager",
+    DIRECTOR: "Director",
+} as const;
+
+type UserRole =
+    (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 const AuctionHeader = ({
     auctionRoundId,
@@ -38,6 +52,11 @@ const AuctionHeader = ({
                 return null;
         }
     };
+
+    const { user } = useSelector(
+        (state: RootState) => state.auth
+    );
+    const role = user?.roleName as UserRole | undefined;
 
     return (
         <Card className="!mb-6 !shadow-md">
@@ -78,7 +97,7 @@ const AuctionHeader = ({
                         </Row>
 
                         {/* End Auction Button - Only show when auction is active */}
-                        {status === 1 && onEndAuction && (
+                        {status === 1 && onEndAuction && role === USER_ROLES.AUCTIONEER && (
                             <Button
                                 type="primary"
                                 danger

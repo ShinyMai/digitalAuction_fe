@@ -85,8 +85,11 @@ const AuctionStatistics = ({ priceHistory, auctionRound }: AuctionStatisticsProp
         : 0;
 
     const activeAssets = assetAnalytics.filter(asset => asset.isActive);
-    const topPerformingAssets = [...assetAnalytics]
-        .sort((a, b) => b.roi - a.roi)
+
+    // === WINNERS ANALYSIS ===
+    const winners = priceHistory.filter(item => item.flagWinner === true);
+    const topWinners = winners
+        .sort((a, b) => b.auctionPrice - a.auctionPrice)
         .slice(0, 5);
 
     // === PARTICIPANT ANALYSIS ===
@@ -277,29 +280,45 @@ const AuctionStatistics = ({ priceHistory, auctionRound }: AuctionStatisticsProp
                 <Card className="shadow-sm border-0">
                     <Title level={4} className="!mb-4 !flex !items-center !gap-2 !text-gray-800">
                         <TrophyOutlined className="!text-orange-500" />
-                        Tài sản hiệu suất cao
+                        Danh sách người chiến thắng
                     </Title>
-                    <div className="space-y-3">
-                        {topPerformingAssets.slice(0, 3).map((asset, index) => (
-                            <div key={asset.tagName} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : 'bg-orange-500'
-                                        }`}>
-                                        {index + 1}
+                    {winners.length > 0 ? (
+                        <div className="space-y-3">
+                            {topWinners.map((winner, index) => (
+                                <div key={`${winner.citizenIdentification}-${winner.tagName}`} className="flex items-center justify-between p-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : 'bg-orange-500'
+                                            }`}>
+                                            🏆
+                                        </div>
+                                        <div>
+                                            <Text strong className="text-gray-900">{winner.userName}</Text>
+                                            <div className="text-sm text-gray-600">
+                                                {winner.tagName} • {winner.recentLocation}
+                                            </div>
+                                            <div className="text-xs text-gray-500">
+                                                CMND: {winner.citizenIdentification}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <Text strong className="text-gray-900">{asset.tagName}</Text>
-                                        <div className="text-sm text-gray-500">
-                                            {formatPrice(asset.currentPrice)} • {asset.bidCount} lượt
+                                    <div className="text-right">
+                                        <Tag color="gold" className="font-bold mb-1">
+                                            CHIẾN THẮNG
+                                        </Tag>
+                                        <div className="text-lg font-bold text-orange-600">
+                                            {formatPrice(winner.auctionPrice)}
                                         </div>
                                     </div>
                                 </div>
-                                <Tag color={asset.roi >= 10 ? 'red' : asset.roi >= 5 ? 'orange' : 'green'} className="font-bold">
-                                    {asset.roi >= 0 ? '+' : ''}{formatPercent(asset.roi)}
-                                </Tag>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-gray-500">
+                            <TrophyOutlined className="text-4xl mb-2 opacity-30" />
+                            <div>Chưa có người chiến thắng</div>
+                            <div className="text-sm">Kết quả sẽ được cập nhật sau khi phiên đấu giá kết thúc</div>
+                        </div>
+                    )}
                 </Card>
 
                 <Card className="shadow-sm border-0">

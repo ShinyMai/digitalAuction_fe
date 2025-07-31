@@ -135,12 +135,21 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
       // Thêm dữ liệu vào danh sách
       setAuctionRoundPriceList([...auctionRoundPriceList, formattedValues]);
 
-      // Reset form và các state liên quan
+      // Lưu lại số CMND/CCCD để giữ lại sau khi submit
+      const currentCitizenId = values.citizenIdentification;
+
+      // Reset form nhưng giữ lại số CMND/CCCD
       form.resetFields();
-      setAuctionAssets([]);
-      setUserInfo(null);
+      form.setFieldsValue({
+        citizenIdentification: currentCitizenId
+      });
+
+      // Không clear auctionAssets và userInfo để có thể tiếp tục chọn tài sản khác
+      // setAuctionAssets([]);
+      // setUserInfo(null);
       setErrorMessage(null);
-      setCitizenOptions([]);
+      // Giữ lại citizenOptions với giá trị hiện tại
+      setCitizenOptions(currentCitizenId ? [{ value: currentCitizenId }] : []);
     } catch (error) {
       console.error("Error:", error);
       setErrorMessage("Đã xảy ra lỗi khi thêm giá đấu");
