@@ -283,6 +283,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
                             transition={{ duration: 0.5, ease: "easeInOut" }}
                         >
                             <AuctionResults
+                                auctionID={auctionId}
                                 auctionRoundPriceWinners={auctionRoundPriceWinners}
                                 onBack={handleBackToList}
                             />
