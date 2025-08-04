@@ -37,7 +37,6 @@ const DEFAULT_PARAMS: SearchParams = {
   AuctionType: "1",
   SortBy: "register_open_date",
   IsAscending: false,
-  ConditionAuction: [],
 };
 
 const AuctionList = () => {

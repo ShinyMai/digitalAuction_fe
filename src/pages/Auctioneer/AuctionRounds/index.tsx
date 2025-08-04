@@ -17,6 +17,7 @@ import type { AuctionDataDetail } from "../Modals";
 interface AuctionAsset {
     auctionAssetsId: string;
     tagName: string;
+    startingPrice?: number;
 }
 
 interface props {
@@ -186,6 +187,24 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
         setShowDetail(false);
     };
 
+    // Tìm auctionRoundId của vòng liền trước
+    const getPreviousRoundId = (currentRound: AuctionRound | undefined) => {
+        if (!currentRound || !auctionRounds.length) return undefined;
+
+        // Sắp xếp các vòng theo roundNumber tăng dần
+        const sortedRounds = [...auctionRounds].sort((a, b) => a.roundNumber - b.roundNumber);
+
+        // Tìm index của vòng hiện tại
+        const currentIndex = sortedRounds.findIndex(round => round.auctionRoundId === currentRound.auctionRoundId);
+
+        // Nếu có vòng trước đó, trả về auctionRoundId của vòng đó
+        if (currentIndex > 0) {
+            return sortedRounds[currentIndex - 1].auctionRoundId;
+        }
+
+        return undefined;
+    };
+
     const handleBackToList = () => {
         setShowDetail(false);
         setShowResults(false);
@@ -264,6 +283,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
                             transition={{ duration: 0.5, ease: "easeInOut" }}
                         >
                             <AuctionResults
+                                auctionID={auctionId}
                                 auctionRoundPriceWinners={auctionRoundPriceWinners}
                                 onBack={handleBackToList}
                             />
@@ -304,6 +324,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
                             <InputAuctionPrice
                                 auctionId={auctionId}
                                 roundData={selectedRound}
+                                auctionRoundIdBefore={getPreviousRoundId(selectedRound)}
                                 auctionAssetsToStatistic={auctionAsset}
                                 onBackToList={handleBackToList}
                             />

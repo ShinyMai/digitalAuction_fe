@@ -91,6 +91,10 @@ const updateAuctionRejected = (body: any): Promise<ApiResponse<any>> =>
   http.put(AuctionAPI.UPDATE_AUCTION_REJECTED, body);
 const updateAuction = (body: any): Promise<ApiResponse<any>> =>
   http.put(AuctionAPI.UPDATE_AUCTION, body);
+const exportHandbook = (body: any): Promise<ApiResponse<any>> =>
+  http.post(AuctionAPI.EXPORT_HANDBOOK, body);
+const exportRefundList = (params: any): Promise<ApiResponse<any>> =>
+  http.get(`${AuctionAPI.EXPORT_REFUNDLIST}`, { params });
 const AuctionServices = {
   addAuction,
   getListAuctionCategory,
@@ -122,7 +126,9 @@ const AuctionServices = {
   updateStatusAuctionRound,
   getListAuctionRoundPriceWinnerByAuctionId,
   updateAuctionRejected,
-  updateAuction
+  updateAuction,
+  exportHandbook,
+  exportRefundList
 };
 
 export default AuctionServices;

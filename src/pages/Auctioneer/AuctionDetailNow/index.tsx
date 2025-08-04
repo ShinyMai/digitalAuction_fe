@@ -88,17 +88,14 @@ const AuctionDetailAuctioneer = () => {
   const onCreateAuctionRound = async () => {
     // Logic to create a new auction round
     try {
-      if (!auctionDetailData) {
-        console.error("No auction detail data available");
-        return;
-      }
       const dataRequest = {
-        auctionId: auctionDetailData.auctionId,
+        auctionId: location.state.key,
         createdBy: user?.id
       }
+      console.log("Creating auction round with data:", dataRequest);
       const response = await AuctionServices.createAuctionRound(dataRequest);
       toast.success(response.data);
-      onGetListAuctionRound(auctionDetailData.auctionId)
+      onGetListAuctionRound(location.state.key);
     } catch (error) {
       console.error("Error creating auction round:", error);
       toast.error("Error creating auction round");

@@ -18,19 +18,8 @@ import type { AuctionRoundModals } from "../../Auctioneer/Modals";
 interface AuctionAsset {
   auctionAssetsId: string;
   tagName: string;
+  startingPrice: number; // Thêm trường startingPrice
 }
-
-const USER_ROLES = {
-  USER: "Customer",
-  ADMIN: "Admin",
-  STAFF: "Staff",
-  AUCTIONEER: "Auctioneer",
-  MANAGER: "Manager",
-  DIRECTOR: "Director",
-} as const;
-
-type UserRole =
-  (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 
 const AuctionDetailSuccesfull = () => {
@@ -39,7 +28,6 @@ const AuctionDetailSuccesfull = () => {
   const [auctionDateModal, setAuctionDateModal] = useState<AuctionDateModal>();
   const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
   const { user } = useSelector((state: RootState) => state.auth);
-  const role = user?.roleName as UserRole | undefined;
   const [auctionRounds, setAuctionRounds] = useState<AuctionRoundModals[]>([]);
   const [isHaveAucationRound, setIsHaveAuctionRound] = useState(false);
   useEffect(() => {
@@ -165,7 +153,7 @@ const AuctionDetailSuccesfull = () => {
               label: (
                 <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-purple-50 hover:scale-105 hover:shadow-md">
                   <TeamOutlined className="text-purple-600 text-lg transition-colors duration-300" />
-                  <span className="font-semibold text-gray-700 transition-colors duration-300">{role == USER_ROLES.AUCTIONEER ? 'Quản lý phiên đấu giá' : role == USER_ROLES.STAFF ? "Tham gia phiên đấu giá" : "Theo dõi phiên đấu giá"}</span>
+                  <span className="font-semibold text-gray-700 transition-colors duration-300">Kết quả phiên đấu giá</span>
                 </div>
               ),
               children: (

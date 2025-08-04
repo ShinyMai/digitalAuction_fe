@@ -122,7 +122,7 @@ const AuctionDetail = ({ auctionDetailData, auctionType, onApprove, onReject }: 
                     <Button
                       type="primary"
                       size="large"
-                      className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
+                      className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg !ml-2"
                       onClick={onReject}
                     >
                       Hủy thông tin

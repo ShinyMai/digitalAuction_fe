@@ -12,8 +12,8 @@ interface AuctionDetailProps {
 
 const API_BASE_URL_NODE = import.meta.env.VITE_BE_URL_NODE;
 
-const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDetailProps) => {
-  console.log("auctionDetailData", auctionId);
+const AuctionDetail = ({ auctionDetailData, auctionType }: AuctionDetailProps) => {
+  console.log("auctionDetailData", auctionDetailData);
 
   return (
     <section className="bg-gradient-to-b from-blue-50 to-teal-50 min-h-screen">
@@ -202,14 +202,15 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
               </div>
             </div>
             {/* Thông tin bản đồ */}
-            {auctionDetailData.auctionMap || auctionDetailData.auctionPlanningMap ? (
+            {(auctionDetailData.auctionMap && auctionDetailData.auctionMap !== "No file uploaded") ||
+              (auctionDetailData.auctionPlanningMap && auctionDetailData.auctionPlanningMap !== "No file uploaded") ? (
               <div className="mt-8">
                 <h3 className="text-lg font-semibold text-blue-800 mb-4">
                   Thông tin bản đồ tài sản
                 </h3>
                 <div className="bg-blue-50 border border-teal-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
                   <div>
-                    {auctionDetailData.auctionPlanningMap && (
+                    {auctionDetailData.auctionPlanningMap && auctionDetailData.auctionPlanningMap !== "No file uploaded" && (
                       <div className="flex items-center bg-blue-50 pt-4 pl-4 rounded-lg">
                         <EnvironmentOutlined className="text-teal-600 mr-2" />
                         <Typography.Link
@@ -225,7 +226,7 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
                         </Typography.Link>
                       </div>
                     )}
-                    {auctionDetailData.auctionMap && (
+                    {auctionDetailData.auctionMap && auctionDetailData.auctionMap !== "No file uploaded" && (
                       <div className="flex items-center bg-blue-50 p-4 rounded-lg">
                         <EnvironmentOutlined className="text-teal-600 mr-2" />
                         <Typography.Link

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, Table, Typography, Statistic, Tag, Space, Avatar, Badge, Button } from "antd";
 import {
     TrophyOutlined,
@@ -8,19 +9,134 @@ import {
     CalendarOutlined,
     StarOutlined,
     CrownOutlined,
-    ArrowLeftOutlined
+    ArrowLeftOutlined,
+    DownloadOutlined
 } from "@ant-design/icons";
 import type { AuctionRoundPriceWinner } from "../modalsData";
 import type { ColumnsType } from "antd/es/table";
+import { toast } from "react-toastify";
+import AuctionServices from "../../../../services/AuctionServices";
+import { useState } from "react";
 
 const { Title, Text } = Typography;
 
 interface AuctionResultsProps {
+    auctionID: string;
     auctionRoundPriceWinners: AuctionRoundPriceWinner[];
     onBack: () => void;
 }
 
-const AuctionResults = ({ auctionRoundPriceWinners, onBack }: AuctionResultsProps) => {
+const AuctionResults = ({ auctionID, auctionRoundPriceWinners, onBack }: AuctionResultsProps) => {
+    const [downloading, setDownloading] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<any>();
+
+    // Function to handle file selection and auto download
+    const handleFileSelect = (file: File) => {
+        console.log("File selected:", file);
+        setSelectedFile(file);
+
+        // Auto process download after file selection
+        processDownload(file);
+    };
+
+    // Function to handle download handbook with file picker
+    const handleDownloadHandbook = () => {
+        // Create a hidden file input
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.pdf,.docx,.doc,.xlsx,.xls';
+        input.style.display = 'none';
+
+        input.onchange = (event: any) => {
+            const file = event.target.files?.[0];
+            if (file) {
+                handleFileSelect(file);
+            }
+        };
+
+        // Trigger file picker
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
+    };
+
+    // Function to process the download
+    const processDownload = async (fileToProcess?: File) => {
+        const fileToUse = fileToProcess || selectedFile;
+
+        if (!fileToUse) {
+            toast.error('Vui lòng chọn file template');
+            return;
+        }
+
+        setDownloading(true);
+        try {
+            // Create FormData
+            const formData = new FormData();
+            formData.append('auctionId', auctionID);
+            formData.append('TemplateFile', fileToUse);
+
+            console.log("Processing download with file:", {
+                name: fileToUse.name,
+                size: fileToUse.size,
+                type: fileToUse.type
+            });
+
+            console.log("Sending FormData to API...");
+            const response = await AuctionServices.exportHandbook(formData);
+
+            if (response && response.data) {
+                console.log("API Response:", response);
+
+                // Check if response contains base64 data
+                if (response.data.base64 && response.data.fileName && response.data.contentType) {
+                    // Convert base64 to blob
+                    const base64Data = response.data.base64;
+                    const byteCharacters = atob(base64Data);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: response.data.contentType });
+
+                    // Create download link
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = response.data.fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+
+                    toast.success('Tải sổ tay đấu giá thành công!');
+                }
+                // Fallback: if response contains direct blob data
+                else if (response.data instanceof Blob) {
+                    const url = window.URL.createObjectURL(response.data);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `So_tay_dau_gia_${new Date().toISOString().split('T')[0]}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+
+                    toast.success('Tải sổ tay đấu giá thành công!');
+                }
+                else {
+                    toast.success(response.message || 'Xuất file thành công!');
+                }
+            }
+        } catch (error: any) {
+            console.error('Download error:', error);
+            toast.error('Lỗi khi tải sổ tay: ' + (error.message || 'Không xác định'));
+        } finally {
+            setDownloading(false);
+        }
+    };
+
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
@@ -167,15 +283,27 @@ const AuctionResults = ({ auctionRoundPriceWinners, onBack }: AuctionResultsProp
                             </Text>
                         </div>
                     </div>
-                    <Button
-                        type="primary"
-                        size="large"
-                        icon={<ArrowLeftOutlined />}
-                        onClick={onBack}
-                        className="!bg-gradient-to-r !from-blue-500 !to-blue-600 !border-none !shadow-lg hover:!from-blue-600 hover:!to-blue-700 !transition-all !duration-300 !h-12 !px-8"
-                    >
-                        Quay lại
-                    </Button>
+                    <Space size="middle">
+                        <Button
+                            type="default"
+                            size="large"
+                            icon={<DownloadOutlined />}
+                            onClick={handleDownloadHandbook}
+                            loading={downloading}
+                            className="!bg-white !border-green-500 !text-green-600 hover:!bg-green-50 hover:!border-green-600 !shadow-md hover:!shadow-lg !transition-all !duration-300 !h-12 !px-6"
+                        >
+                            {downloading ? 'Đang xử lý...' : 'Chọn template và tải sổ tay'}
+                        </Button>
+                        <Button
+                            type="primary"
+                            size="large"
+                            icon={<ArrowLeftOutlined />}
+                            onClick={onBack}
+                            className="!bg-gradient-to-r !from-blue-500 !to-blue-600 !border-none !shadow-lg hover:!from-blue-600 hover:!to-blue-700 !transition-all !duration-300 !h-12 !px-8"
+                        >
+                            Quay lại
+                        </Button>
+                    </Space>
                 </div>
             </Card>
 
