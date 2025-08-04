@@ -78,7 +78,7 @@ const items: MenuItem[] = [
     key: "auction-management",
     icon: <SolutionOutlined className="text-xl" />,
     label: "Quản lý đấu giá",
-    roleView: ["Staff", "Manager", "Director", "Auctioneer"],
+    roleView: ["Staff", "Manager", "Director"],
     children: [
       {
         key: "4",
@@ -101,15 +101,6 @@ const items: MenuItem[] = [
         url: MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC,
         roleView: ["Manager", "Staff"],
       },
-
-      {
-        key: "7",
-        icon: <HistoryOutlined />,
-        label: "Phiên đấu giá đã tham gia",
-        url: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
-        roleView: ["Auctioneer"],
-      },
-
       {
         key: "8",
         icon: <HistoryOutlined />,
@@ -144,12 +135,12 @@ const items: MenuItem[] = [
         icon: <CalendarOutlined />,
         label: "Tổ chức hôm nay",
         url: AUCTIONEER_ROUTES.SUB.AUCTION_NOW,
-        roleView: ["Manager", "Staff", "Auctioneer"],
+        roleView: ["Manager", "Staff"],
       },
       {
         key: "12",
         icon: <HistoryOutlined />,
-        label: "Phiên đấu giá đã tham gia",
+        label: "Phiên đấu giá tham gia",
         url: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
         roleView: ["Auctioneer"],
       },
