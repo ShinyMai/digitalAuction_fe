@@ -56,7 +56,10 @@ const Header = memo(() => {
       <div className="relative flex items-center justify-between px-4 py-4 md:px-6 lg:px-12">
         {/* Enhanced Logo */}
         <div className="flex items-center gap-3">
-          <div className="relative group cursor-pointer" onClick={() => navigate("/")}>
+          <div
+            className="relative group cursor-pointer"
+            onClick={() => navigate("/")}
+          >
             <div className="absolute inset-0 bg-white/20 rounded-2xl blur-sm group-hover:blur-md transition-all duration-300"></div>
             <img
               src={assets.logo}
@@ -68,7 +71,9 @@ const Header = memo(() => {
             <h1 className="text-xl font-bold text-white gradient-text bg-gradient-to-r from-white to-blue-100 bg-clip-text">
               Digital Auction
             </h1>
-            <p className="text-xs text-blue-100 opacity-80">Nền tảng đấu giá số #1</p>
+            <p className="text-xs text-blue-100 opacity-80">
+              Nền tảng đấu giá số #1
+            </p>
           </div>
         </div>
 
@@ -115,7 +120,9 @@ const Header = memo(() => {
               {/* Enhanced User Name Display */}
               <div className="hidden sm:flex items-center gap-2 bg-white/10 rounded-full px-4 py-2 backdrop-blur-sm">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="font-medium text-white text-sm">{user?.name}</span>
+                <span className="font-medium text-white text-sm">
+                  {user?.name}
+                </span>
               </div>
             </div>
           ) : (
@@ -150,7 +157,8 @@ const Header = memo(() => {
             menu={{
               items: items2.map((item) => ({
                 ...item,
-                className: "hover:bg-blue-50 rounded-lg transition-colors duration-200",
+                className:
+                  "hover:bg-blue-50 rounded-lg transition-colors duration-200",
               })),
             }}
             trigger={["click"]}
@@ -170,9 +178,14 @@ const Header = memo(() => {
 
       {/* Enhanced Modals */}
       {login && <Login open={login} onCancel={() => setLogin(false)} />}
-      {showInfo && <UserProfile open={showInfo} onCancel={() => setShowInfo(false)} />}
+      {showInfo && (
+        <UserProfile open={showInfo} onCancel={() => setShowInfo(false)} />
+      )}
       {changePassword && (
-        <ChangePassword open={changePassword} onCancel={() => setChangePassword(false)} />
+        <ChangePassword
+          open={changePassword}
+          onCancel={() => setChangePassword(false)}
+        />
       )}
     </header>
   );

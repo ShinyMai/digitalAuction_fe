@@ -8,14 +8,14 @@ const Introduction = () => {
         <div className="container mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           <div className="flex-1 max-w-2xl text-center lg:text-left order-2 lg:order-1">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-              Chào mừng đến với {""}
+              CHÀO MỪNG ĐẾN VỚI {""}
               <span className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent font-extrabold">
-                Digital Auction
+                DIGITAL AUCTION
               </span>
             </h1>
             <p className="text-lg sm:text-xl lg:text-2xl mb-6 sm:mb-8 opacity-90 leading-relaxed">
-              Hệ thống đăng ký tham gia đấu giá trực tuyến - Kết nối bạn với các phiên đấu giá chính
-              thức
+              Hệ thống đăng ký tham gia đấu giá trực tuyến - Kết nối bạn với các
+              phiên đấu giá chính thức
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
               <Link
@@ -60,7 +60,8 @@ const Introduction = () => {
                 Bảo mật tuyệt đối
               </h3>
               <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                Hệ thống bảo mật tiên tiến, đảm bảo mọi giao dịch an toàn và minh bạch
+                Hệ thống bảo mật tiên tiến, đảm bảo mọi giao dịch an toàn và
+                minh bạch
               </p>
             </div>
             <div className="bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 text-center">
@@ -69,7 +70,8 @@ const Introduction = () => {
                 Đăng ký nhanh chóng
               </h3>
               <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                Đăng ký tham gia đấu giá trực tuyến một cách nhanh chóng và thuận tiện
+                Đăng ký tham gia đấu giá trực tuyến một cách nhanh chóng và
+                thuận tiện
               </p>
             </div>
             <div className="bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 text-center">
@@ -78,7 +80,8 @@ const Introduction = () => {
                 Đa dạng sản phẩm
               </h3>
               <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                Từ nghệ thuật, đồ cổ đến hàng hiệu - tất cả đều có tại Digital Auction
+                Từ nghệ thuật, đồ cổ đến hàng hiệu - tất cả đều có tại Digital
+                Auction
               </p>
             </div>
             <div className="bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 text-center">
@@ -87,7 +90,8 @@ const Introduction = () => {
                 Uy tín hàng đầu
               </h3>
               <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                Được tin tưởng bởi hàng nghìn người dùng và đối tác trên toàn quốc
+                Được tin tưởng bởi hàng nghìn người dùng và đối tác trên toàn
+                quốc
               </p>
             </div>
           </div>
@@ -155,25 +159,33 @@ const Introduction = () => {
               <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 text-yellow-400">
                 10,000+
               </h3>
-              <p className="text-sm sm:text-base lg:text-lg opacity-90">Người dùng tin tưởng</p>
+              <p className="text-sm sm:text-base lg:text-lg opacity-90">
+                Người dùng tin tưởng
+              </p>
             </div>
             <div className="text-center">
               <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 text-yellow-400">
                 50,000+
               </h3>
-              <p className="text-sm sm:text-base lg:text-lg opacity-90">Lượt đăng ký thành công</p>
+              <p className="text-sm sm:text-base lg:text-lg opacity-90">
+                Lượt đăng ký thành công
+              </p>
             </div>
             <div className="text-center">
               <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 text-yellow-400">
                 99.9%
               </h3>
-              <p className="text-sm sm:text-base lg:text-lg opacity-90">Tỷ lệ hài lòng</p>
+              <p className="text-sm sm:text-base lg:text-lg opacity-90">
+                Tỷ lệ hài lòng
+              </p>
             </div>
             <div className="text-center">
               <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 text-yellow-400">
                 24/7
               </h3>
-              <p className="text-sm sm:text-base lg:text-lg opacity-90">Hỗ trợ khách hàng</p>
+              <p className="text-sm sm:text-base lg:text-lg opacity-90">
+                Hỗ trợ khách hàng
+              </p>
             </div>
           </div>
         </div>
