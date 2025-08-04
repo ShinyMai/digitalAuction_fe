@@ -32,7 +32,7 @@ export interface InputAuctionPriceModals {
 interface AuctionAsset {
   auctionAssetsId: string;
   tagName: string;
-  startingPrice: number;
+  startingPrice?: number;
 }
 
 interface UserInfo {
@@ -125,7 +125,7 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
     setLoading(true);
     try {
       // Kiểm tra giá đấu so với giá khởi điểm của tài sản được chọn
-      if (selectedAsset && values.price < selectedAsset.startingPrice) {
+      if (selectedAsset?.startingPrice && values.price < selectedAsset.startingPrice) {
         setErrorMessage(`Giá đấu phải lớn hơn hoặc bằng giá khởi điểm ${selectedAsset.startingPrice.toLocaleString("vi-VN")} VND`);
         setLoading(false);
         return;
@@ -432,7 +432,7 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                       <DollarOutlined className="text-blue-500" />
                       <span className="font-medium">Giá khởi điểm:</span>
                       <span className="font-bold text-lg">
-                        {selectedAsset.startingPrice.toLocaleString("vi-VN")} VND
+                        {selectedAsset.startingPrice && selectedAsset.startingPrice.toLocaleString("vi-VN")} VND
                       </span>
                     </div>
                     <div className="text-sm text-blue-600 mt-1">

@@ -17,7 +17,7 @@ import type { AuctionDataDetail } from "../Modals";
 interface AuctionAsset {
     auctionAssetsId: string;
     tagName: string;
-    startingPrice: number;
+    startingPrice?: number;
 }
 
 interface props {
