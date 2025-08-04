@@ -18,6 +18,7 @@ import type { AuctionRoundModals } from "../../Auctioneer/Modals";
 interface AuctionAsset {
   auctionAssetsId: string;
   tagName: string;
+  startingPrice: number; // Thêm trường startingPrice
 }
 
 const USER_ROLES = {

@@ -32,6 +32,7 @@ export interface InputAuctionPriceModals {
 interface AuctionAsset {
   auctionAssetsId: string;
   tagName: string;
+  startingPrice: number;
 }
 
 interface UserInfo {
@@ -43,11 +44,12 @@ interface UserInfo {
 interface props {
   auctionId?: string;
   roundData?: AuctionRoundModals;
+  auctionRoundIdBefore?: string;
   auctionAssetsToStatistic?: AuctionAsset[];
   onBackToList?: () => void;
 }
 
-const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onBackToList }: props) => {
+const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onBackToList, auctionRoundIdBefore }: props) => {
   // State cho danh sách dữ liệu
   const [auctionRoundPriceList, setAuctionRoundPriceList] = useState<InputAuctionPriceModals[]>([]);
   const [loading, setLoading] = useState(false);
@@ -56,6 +58,8 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [selectedAsset, setSelectedAsset] = useState<AuctionAsset | null>(null);
+  console.log("Auction Round ID Before:", auctionRoundIdBefore);
   // Form instance từ antd
   const [form] = Form.useForm();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -66,7 +70,7 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
         toast.error("Không có thông tin đấu giá");
         return;
       }
-      const response = await AuctionServices.userRegistedAuction({ citizenIdentification, auctionId: auctionId });
+      const response = await AuctionServices.userRegistedAuction({ citizenIdentification, auctionId: auctionId, auctionRoundId: auctionRoundIdBefore || null });
       if (
         response.data &&
         response.data.auctionAssets &&
@@ -83,12 +87,14 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
       } else {
         setAuctionAssets([]);
         setUserInfo(null);
+        setSelectedAsset(null);
         setErrorMessage("Không tìm thấy dữ liệu với số CMND/CCCD này");
       }
     } catch (error) {
       console.error("Error fetching user registration:", error);
       setAuctionAssets([]);
       setUserInfo(null);
+      setSelectedAsset(null);
       setErrorMessage("Không tìm thấy dữ liệu với số CMND/CCCD này");
     }
   };
@@ -101,15 +107,30 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
     } else {
       setAuctionAssets([]);
       setUserInfo(null);
+      setSelectedAsset(null);
       setErrorMessage(null);
       setCitizenOptions(value ? [{ value }] : []);
     }
+  };
+
+  // Xử lý khi chọn tài sản
+  const handleAssetSelect = (assetId: string) => {
+    const asset = auctionAssets.find(a => a.auctionAssetsId === assetId);
+    setSelectedAsset(asset || null);
+    form.setFieldsValue({ auctionAssetId: assetId });
   };
 
   // Xử lý submit form
   const onFinish = async (values: InputAuctionPriceModals) => {
     setLoading(true);
     try {
+      // Kiểm tra giá đấu so với giá khởi điểm của tài sản được chọn
+      if (selectedAsset && values.price < selectedAsset.startingPrice) {
+        setErrorMessage(`Giá đấu phải lớn hơn hoặc bằng giá khởi điểm ${selectedAsset.startingPrice.toLocaleString("vi-VN")} VND`);
+        setLoading(false);
+        return;
+      }
+
       // Chuyển price thành number và thêm id ngẫu nhiên
       const formattedValues = {
         ...values,
@@ -143,6 +164,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
       form.setFieldsValue({
         citizenIdentification: currentCitizenId
       });
+
+      // Reset selected asset khi submit thành công
+      setSelectedAsset(null);
 
       // Không clear auctionAssets và userInfo để có thể tiếp tục chọn tài sản khác
       // setAuctionAssets([]);
@@ -391,6 +415,7 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                     placeholder="Chọn tài sản đấu giá"
                     className="rounded-lg h-12"
                     disabled={!auctionAssets.length}
+                    onChange={handleAssetSelect}
                   >
                     {auctionAssets.map(asset => (
                       <Select.Option key={asset.auctionAssetsId} value={asset.auctionAssetsId}>
@@ -399,6 +424,22 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                     ))}
                   </Select>
                 </Form.Item>
+
+                {/* Hiển thị giá khởi điểm khi đã chọn tài sản */}
+                {selectedAsset && (
+                  <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center gap-2 text-blue-700">
+                      <DollarOutlined className="text-blue-500" />
+                      <span className="font-medium">Giá khởi điểm:</span>
+                      <span className="font-bold text-lg">
+                        {selectedAsset.startingPrice.toLocaleString("vi-VN")} VND
+                      </span>
+                    </div>
+                    <div className="text-sm text-blue-600 mt-1">
+                      Giá đấu phải lớn hơn hoặc bằng giá khởi điểm
+                    </div>
+                  </div>
+                )}
 
                 <Form.Item
                   name="price"
@@ -410,13 +451,11 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                   }
                   rules={[
                     { required: true, message: "Vui lòng nhập giá đấu" },
-                    { type: "number", min: 1000, message: "Giá đấu phải lớn hơn 1,000 VND" },
                   ]}
                 >
                   <InputNumber
                     placeholder="Nhập giá đấu"
                     className="w-full rounded-lg h-12 border-gray-300 hover:border-blue-500 focus:border-blue-500"
-                    min={1000}
                     step={1000}
                     style={{ width: "100%" }}
                   />
