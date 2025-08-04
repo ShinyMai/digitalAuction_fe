@@ -64,11 +64,15 @@ const AuctionDetailDraff = () => {
   const handleSelectAuctioner = async (auctionerId: string) => {
     if (selectedAuctionId && auctionerId) {
       try {
-        await AuctionServices.assginAuctioneerAndPublicAuction({
+        const response = await AuctionServices.assginAuctioneerAndPublicAuction({
           auctionId: selectedAuctionId,
           auctioneer: auctionerId,
         });
-        toast.success(`Gán đấu giá viên và công khai phiên đấu giá thành công!`);
+        if (response.code === 200) {
+          toast.success(`Gán đấu giá viên và công khai phiên đấu giá thành công!`);
+        } else {
+          toast.warning(response.message)
+        }
         handleCloseModal();
         // Tải lại chi tiết phiên đấu giá sau khi gán thành công
         fetchAuctionDetail(auctionId);

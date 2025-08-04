@@ -109,58 +109,40 @@ const ListAuctionDocumentCancelRefund = ({
         }));
     };
 
-    const handleDownload = () => {
+    const handleDownload = async () => {
+        console.log("Downloading refund list for auction ID:", auctionId);
         try {
-            const headers = [
-                "STT",
-                "Tên",
-                "CMND/CCCD",
-                "Tên tài sản",
-                "Phí đăng ký",
-                "Trạng thái cọc",
-                "Trạng thái đơn",
-            ];
+            const response = await AuctionServices.exportRefundList({ auctionId });
+            console.log("Response data:", response);
 
-            const csvRows = [
-                headers.join(","), // Header row
-                ...auctionDocuments.map((doc) => {
-                    const statusText = doc.statusTicket === 0
-                        ? "Chưa chuyển tiền"
-                        : doc.statusTicket === 1
-                            ? "Đã chuyển tiền"
-                            : doc.statusTicket === 2
-                                ? "Đã ký phiếu"
-                                : "Đã hoàn tiền";
-                    const depositStatusText = doc.statusDeposit === true
-                        ? "Chưa cọc"
-                        : "Đã cọc";
-                    const row = [
-                        doc.numericalOrder || "-",
-                        `"${doc.name}"`,
-                        doc.citizenIdentification,
-                        `"${doc.tagName}"`,
-                        `${doc.registrationFee.toLocaleString("vi-VN")} VND`,
-                        depositStatusText,
-                        statusText,
-                    ];
-                    return row.join(",");
-                }),
-            ];
+            if (response && response.data) {
+                // Check if response contains base64 data
+                if (response.data.base64 && response.data.fileName && response.data.contentType) {
+                    // Convert base64 to blob
+                    const base64Data = response.data.base64;
+                    const byteCharacters = atob(base64Data);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: response.data.contentType });
 
-            const csvContent = csvRows.join("\n");
-            const blob = new Blob([csvContent], {
-                type: "text/csv;charset=utf-8;",
-            });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", "auction_documents.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+                    // Create download link
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = response.data.fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
 
-            toast.success("Tải danh sách thành công!");
+                    toast.success("Tải danh sách thành công!");
+                } else {
+                    toast.success(response.message || "Xuất file thành công!");
+                }
+            }
         } catch (error) {
             toast.error("Lỗi khi tải danh sách!");
             console.error(error);
