@@ -3,7 +3,6 @@ import {
   KeyOutlined,
   LogoutOutlined,
   UserOutlined,
-  SettingOutlined,
   CrownOutlined,
 } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
@@ -17,7 +16,11 @@ interface Props {
   onLogout: () => void;
 }
 
-const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout }) => {
+const UserDropdown: React.FC<Props> = ({
+  onShowInfo,
+  onChangePassword,
+  onLogout,
+}) => {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const navigate = useNavigate();
@@ -45,21 +48,6 @@ const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout 
         return "from-green-500 to-emerald-600";
       default:
         return "from-gray-500 to-slate-600";
-    }
-  };
-
-  const getRoleIcon = (role: string) => {
-    switch (role?.toLowerCase()) {
-      case "admin":
-        return <CrownOutlined className="text-red-500" />;
-      case "manager":
-        return <SettingOutlined className="text-purple-500" />;
-      case "staff":
-        return <UserOutlined className="text-blue-500" />;
-      case "auctioneer":
-        return <CrownOutlined className="text-green-500" />;
-      default:
-        return <UserOutlined className="text-gray-500" />;
     }
   };
 
@@ -102,16 +90,14 @@ const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout 
               <UserOutlined className="text-white text-lg" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-white text-base truncate">
+              <div className="font-bold text-white text-base truncate">
                 {user?.name || "Người dùng"}
-              </h3>
-              <div className="flex items-center gap-2 mt-1">
-                {getRoleIcon(user?.roleName || "")}
-                <span className="text-white/90 text-sm font-medium">
-                  {user?.roleName || "Khách"}
-                </span>
               </div>
-              {user?.email && <p className="text-white/70 text-xs mt-1 truncate">{user.email}</p>}
+              {user?.email && (
+                <p className="text-white/70 text-xs mt-1 truncate">
+                  {user.email}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -130,9 +116,9 @@ const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout 
               <UserOutlined className="text-blue-600" />
             </div>
             <div className="relative">
-              <p className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
+              <div className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 mb-1">
                 Thông tin cá nhân
-              </p>
+              </div>
               <p className="text-xs text-gray-500">Xem và chỉnh sửa hồ sơ</p>
             </div>
           </div>
@@ -148,12 +134,12 @@ const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout 
               <KeyOutlined className="text-purple-600" />
             </div>
             <div className="relative">
-              <p className="font-semibold text-gray-800 group-hover:text-purple-600 transition-colors duration-300">
+              <div className="font-semibold text-gray-800 group-hover:text-purple-600 transition-colors duration-300 mb-1">
                 Đổi mật khẩu
-              </p>
+              </div>
               <p className="text-xs text-gray-500">Bảo mật tài khoản</p>
             </div>
-          </div>{" "}
+          </div>
           {user?.roleName === "Customer" && (
             <div
               onClick={() => {
@@ -167,9 +153,9 @@ const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout 
                 <CrownOutlined className="text-green-600" />
               </div>
               <div className="relative">
-                <p className="font-semibold text-gray-800 group-hover:text-green-600 transition-colors duration-300">
+                <div className="font-semibold text-gray-800 group-hover:text-green-600 transition-colors duration-300 mb-0.5">
                   Đấu giá đã đăng ký
-                </p>
+                </div>
                 <p className="text-xs text-gray-500">Xem danh sách đấu giá</p>
               </div>
             </div>
@@ -188,9 +174,9 @@ const UserDropdown: React.FC<Props> = ({ onShowInfo, onChangePassword, onLogout 
               <LogoutOutlined className="text-red-600" />
             </div>
             <div className="relative">
-              <p className="font-semibold text-gray-800 group-hover:text-red-600 transition-colors duration-300">
+              <div className="font-semibold text-gray-800 group-hover:text-red-600 transition-colors duration-300 mb-0.5">
                 Đăng xuất
-              </p>
+              </div>
               <p className="text-xs text-gray-500">Thoát khỏi tài khoản</p>
             </div>
           </div>

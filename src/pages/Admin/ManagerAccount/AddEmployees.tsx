@@ -9,7 +9,7 @@ const AddEmployees = () => {
   // const [loading, setLoading] = useState(false);
 
   return (
-    <div className="lg:w-3/4 sm:px-6 w-full mx-auto mt-6 bg-white rounded-lg ">
+    <div className="lg:w-3/4 sm:px-6 w-full mx-auto mt-6 rounded-lg ">
       <ConfigProvider
         theme={{
           components: {
@@ -38,18 +38,9 @@ const AddEmployees = () => {
         </div>
       </ConfigProvider>
       {current === 0 && (
-        <EkycSDK
-          setCurrent={setCurrent}
-          setAccount={setAccount}
-          face={false}
-        />
+        <EkycSDK setCurrent={setCurrent} setAccount={setAccount} face={false} />
       )}
-      {current === 1 && (
-        <RegisterAccountForm
-          account={account}
-          user={false}
-        />
-      )}
+      {current === 1 && <RegisterAccountForm account={account} user={false} />}
     </div>
   );
 };

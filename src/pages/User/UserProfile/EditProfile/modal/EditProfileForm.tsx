@@ -19,6 +19,7 @@ interface AccountInfo {
 
 interface EditProfileFormProps {
   account: AccountInfo | null;
+  onCancel: () => void;
 }
 
 interface UpdateProfileRequest {
@@ -34,7 +35,10 @@ interface UpdateProfileRequest {
   issueBy: string;
 }
 
-const EditProfileForm: React.FC<EditProfileFormProps> = ({ account }) => {
+const EditProfileForm: React.FC<EditProfileFormProps> = ({
+  account,
+  onCancel,
+}) => {
   const [formEdit] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -44,14 +48,19 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ account }) => {
     }
   }, [account, formEdit]);
 
-  const updateAccountInfo = async (values: UpdateProfileRequest): Promise<void> => {
+  const updateAccountInfo = async (
+    values: UpdateProfileRequest
+  ): Promise<void> => {
     try {
       setLoading(true);
-      const res: ApiResponse<unknown> = await AuthServices.updateExpiredProfile(values);
+      const res: ApiResponse<unknown> = await AuthServices.updateExpiredProfile(
+        values
+      );
 
       if (res.code === 200) {
         formEdit.resetFields();
         toast.success(res?.message || "Cập nhật thành công");
+        onCancel();
       } else {
         throw new Error(res?.message || "Cập nhật thất bại");
       }
@@ -79,7 +88,9 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ account }) => {
         className="flex flex-col px-12 py-6 mx-8 mt-4 bg-white rounded-lg"
         style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}
       >
-        <h1 className="text-2xl font-bold mb-4 text-center">Thông tin tài khoản</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center">
+          Thông tin tài khoản
+        </h1>
 
         <Form layout="vertical" form={formEdit} onFinish={onSubmit}>
           <Row gutter={16}>
@@ -114,7 +125,11 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ account }) => {
             </Col>
 
             <Col xs={24} sm={8}>
-              <Form.Item name="gender" label="Giới tính" rules={[{ required: true }]}>
+              <Form.Item
+                name="gender"
+                label="Giới tính"
+                rules={[{ required: true }]}
+              >
                 <Select placeholder="Chọn giới tính">
                   <Select.Option value={true}>Nam</Select.Option>
                   <Select.Option value={false}>Nữ</Select.Option>
@@ -123,7 +138,11 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ account }) => {
             </Col>
 
             <Col xs={24} sm={8}>
-              <Form.Item name="birthDay" label="Ngày sinh" rules={[{ required: true }]}>
+              <Form.Item
+                name="birthDay"
+                label="Ngày sinh"
+                rules={[{ required: true }]}
+              >
                 <DatePicker
                   format="YYYY/MM/DD"
                   placeholder="Chọn ngày sinh"
@@ -134,25 +153,41 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ account }) => {
             </Col>
 
             <Col xs={24} sm={8}>
-              <Form.Item name="nationality" label="Quốc tịch" rules={[{ required: true }]}>
+              <Form.Item
+                name="nationality"
+                label="Quốc tịch"
+                rules={[{ required: true }]}
+              >
                 <Input placeholder="Quốc tịch" readOnly />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={24}>
-              <Form.Item name="issueBy" label="Nơi cấp" rules={[{ required: true }]}>
+              <Form.Item
+                name="issueBy"
+                label="Nơi cấp"
+                rules={[{ required: true }]}
+              >
                 <Input placeholder="Nơi cấp" readOnly />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={16}>
-              <Form.Item name="originLocation" label="Nguyên quán" rules={[{ required: true }]}>
+              <Form.Item
+                name="originLocation"
+                label="Nguyên quán"
+                rules={[{ required: true }]}
+              >
                 <Input placeholder="Nguyên quán" readOnly />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={8}>
-              <Form.Item name="issueDate" label="Ngày cấp CCCD" rules={[{ required: true }]}>
+              <Form.Item
+                name="issueDate"
+                label="Ngày cấp CCCD"
+                rules={[{ required: true }]}
+              >
                 <DatePicker
                   format="YYYY/MM/DD"
                   placeholder="Ngày cấp CCCD"
@@ -173,7 +208,11 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ account }) => {
             </Col>
 
             <Col xs={24} sm={8}>
-              <Form.Item name="validDate" label="Ngày hết hạn CCCD" rules={[{ required: true }]}>
+              <Form.Item
+                name="validDate"
+                label="Ngày hết hạn CCCD"
+                rules={[{ required: true }]}
+              >
                 <DatePicker
                   format="YYYY/MM/DD"
                   placeholder="Ngày hết hạn CCCD"
@@ -185,9 +224,15 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ account }) => {
           </Row>
 
           <Form.Item>
-            <Button className="booking-btn" htmlType="submit" onClick={onSubmit}>
-              Cập nhật thông tin
-            </Button>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Button
+                className="w-2/4 py-4 !bg-gradient-to-r !from-blue-500 !to-purple-600 !hover:from-blue-600 !hover:to-purple-700 !text-white !font-bold "
+                htmlType="submit"
+                onClick={onSubmit}
+              >
+                Cập nhật thông tin
+              </Button>
+            </div>
           </Form.Item>
         </Form>
       </div>

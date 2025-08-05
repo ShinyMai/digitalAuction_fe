@@ -12,6 +12,7 @@ import NotificationDropdown from "../../../components/Notification";
 import UserDropdown from "../../../components/UserDropdown";
 import { logout } from "../../../store/authReduxs/authSlice";
 import type { RootState } from "../../../store/store";
+import EditProfile from "../../../pages/User/UserProfile/EditProfile";
 
 const Header = memo(() => {
   const navigate = useNavigate();
@@ -19,8 +20,10 @@ const Header = memo(() => {
   const [login, setLogin] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [changePassword, setChangePassword] = useState(false);
+  const [isUpdateProfile, setIsUpdateProfile] = useState(true);
 
   const { user } = useSelector((state: RootState) => state.auth);
+  const isExpired = user?.isExpired ?? true;
 
   const handleLogout = async () => {
     try {
@@ -185,6 +188,12 @@ const Header = memo(() => {
         <ChangePassword
           open={changePassword}
           onCancel={() => setChangePassword(false)}
+        />
+      )}
+      {isExpired && (
+        <EditProfile
+          open={isUpdateProfile}
+          onCancel={() => setIsUpdateProfile(false)}
         />
       )}
     </header>

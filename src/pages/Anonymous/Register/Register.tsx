@@ -42,7 +42,10 @@ const Register = () => {
         </div>
 
         {/* Enhanced Steps Progress */}
-        <div className="mb-8 animate-slide-in-up" style={{ animationDelay: "0.1s" }}>
+        <div
+          className="mb-8 animate-slide-in-up"
+          style={{ animationDelay: "0.1s" }}
+        >
           <ConfigProvider
             theme={{
               components: {
@@ -61,12 +64,22 @@ const Register = () => {
                 current={current}
                 items={[
                   {
-                    title: <span className="text-white font-semibold">Xác thực danh tính</span>,
-                    description: <span className="text-blue-200">Quét CCCD và khuôn mặt</span>,
+                    title: (
+                      <span className="text-white font-semibold">
+                        Xác thực danh tính
+                      </span>
+                    ),
+                    description: (
+                      <span className="text-blue-200">
+                        Quét CCCD và khuôn mặt
+                      </span>
+                    ),
                     icon: (
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          current >= 0 ? "bg-blue-500 text-white" : "bg-gray-400 text-gray-600"
+                          current >= 0
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-400 text-gray-600"
                         }`}
                       >
                         🆔
@@ -74,12 +87,22 @@ const Register = () => {
                     ),
                   },
                   {
-                    title: <span className="text-white font-semibold">Thông tin tài khoản</span>,
-                    description: <span className="text-blue-200">Tạo mật khẩu và hoàn tất</span>,
+                    title: (
+                      <span className="text-white font-semibold">
+                        Thông tin tài khoản
+                      </span>
+                    ),
+                    description: (
+                      <span className="text-blue-200">
+                        Tạo mật khẩu và hoàn tất
+                      </span>
+                    ),
                     icon: (
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          current >= 1 ? "bg-blue-500 text-white" : "bg-gray-400 text-gray-600"
+                          current >= 1
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-400 text-gray-600"
                         }`}
                       >
                         📝
@@ -102,7 +125,9 @@ const Register = () => {
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4 animate-pulse-glow">
                     <span className="text-2xl">🛡️</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-white mb-2">Xác thực danh tính</h2>
+                  <h2 className="text-2xl font-bold text-white mb-2">
+                    Xác thực danh tính
+                  </h2>
                   <p className="text-blue-200">
                     Vui lòng chuẩn bị CCCD và thực hiện quét theo hướng dẫn
                   </p>
@@ -130,7 +155,9 @@ const Register = () => {
                   <h2 className="text-2xl font-bold text-white mb-2">
                     Hoàn tất thông tin tài khoản
                   </h2>
-                  <p className="text-blue-200">Tạo mật khẩu và hoàn tất đăng ký</p>
+                  <p className="text-blue-200">
+                    Tạo mật khẩu và hoàn tất đăng ký
+                  </p>
                 </div>
 
                 <RegisterAccountForm account={account} user={true} />

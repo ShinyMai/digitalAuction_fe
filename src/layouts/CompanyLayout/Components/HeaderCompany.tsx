@@ -52,20 +52,26 @@ const HeaderCompany = memo(() => {
               onLogout={handleLogout}
             />
           </div>
-          {/* Tên người dùng (ẩn trên mobile) */}
           <span className="hidden sm:inline-block font-medium text-[18px] text-sky-700">
             {user?.name}
           </span>
         </div>
       </div>
 
-      {/* Popups */}
-      {showInfo && <UserProfile open={showInfo} onCancel={() => setShowInfo(false)} />}
+      {showInfo && (
+        <UserProfile open={showInfo} onCancel={() => setShowInfo(false)} />
+      )}
       {changePassword && (
-        <ChangePassword open={changePassword} onCancel={() => setChangePassword(false)} />
+        <ChangePassword
+          open={changePassword}
+          onCancel={() => setChangePassword(false)}
+        />
       )}
       {isExpired && (
-        <EditProfile open={isUpdateProfile} onCancel={() => setIsUpdateProfile(false)} />
+        <EditProfile
+          open={isUpdateProfile}
+          onCancel={() => setIsUpdateProfile(false)}
+        />
       )}
     </header>
   );

@@ -296,7 +296,10 @@ const SiderRouteOption = ({
                 exactMatch = child.key;
               }
               // For partial match, prioritize longer URL paths (more specific)
-              else if (routeWithoutRole.startsWith(child.url + "/") && child.url.length > bestPartialMatchLength) {
+              else if (
+                routeWithoutRole.startsWith(child.url + "/") &&
+                child.url.length > bestPartialMatchLength
+              ) {
                 bestPartialMatch = child.key;
                 bestPartialMatchLength = child.url.length;
               }
@@ -308,7 +311,10 @@ const SiderRouteOption = ({
             exactMatch = item.key;
           }
           // For partial match, prioritize longer URL paths (more specific)
-          else if (routeWithoutRole.startsWith(item.url + "/") && item.url.length > bestPartialMatchLength) {
+          else if (
+            routeWithoutRole.startsWith(item.url + "/") &&
+            item.url.length > bestPartialMatchLength
+          ) {
             bestPartialMatch = item.key;
             bestPartialMatchLength = item.url.length;
           }
@@ -364,13 +370,15 @@ const SiderRouteOption = ({
   };
   return (
     <div
-      className={`h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm transition-all duration-300 flex flex-col ${collapsed ? "w-20" : "w-full"
-        } `}
+      className={`h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm transition-all duration-300 flex flex-col ${
+        collapsed ? "w-20" : "w-full"
+      } `}
     >
       {/* Header with Logo and Collapse Button */}
       <div
-        className={`flex items-center justify-between bg-gradient-to-r from-sky-100 to-sky-50 border-b border-sky-200 transition-all duration-300 ${collapsed ? "h-20 px-2" : "h-28 px-4"
-          }`}
+        className={`flex items-center justify-between bg-gradient-to-r from-sky-100 to-sky-50 border-b border-sky-200 transition-all duration-300 ${
+          collapsed ? "h-20 px-2" : "h-24 px-4"
+        }`}
       >
         {!collapsed && (
           <img
@@ -379,7 +387,7 @@ const SiderRouteOption = ({
             className="h-auto max-h-16 object-contain border-2 border-sky-300 rounded-xl shadow-md"
           />
         )}
-        {/* Collapse/Expand Button */}{" "}
+        {/* Collapse/Expand Button */}
         <Tooltip
           title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
           placement="right"
@@ -388,8 +396,9 @@ const SiderRouteOption = ({
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={handleCollapse}
-            className={`flex items-center justify-center text-sky-600 hover:text-sky-800 hover:bg-sky-100 border-sky-300 transition-all duration-300 ${collapsed ? "w-12 h-12 rounded-xl" : "w-10 h-10 rounded-lg ml-2"
-              }`}
+            className={`flex items-center justify-center text-sky-600 hover:text-sky-800 hover:bg-sky-100 border-sky-300 transition-all duration-300 ${
+              collapsed ? "w-12 h-12 rounded-xl" : "w-10 h-10 rounded-lg ml-2"
+            }`}
             style={{
               boxShadow: collapsed
                 ? "0 4px 12px rgba(0, 0, 0, 0.1)"
@@ -397,7 +406,7 @@ const SiderRouteOption = ({
             }}
           />
         </Tooltip>
-      </div>{" "}
+      </div>
       {/* User Role Badge - only show when not collapsed */}
       {!collapsed && role && (
         <div className="px-4 py-3 border-b border-sky-200 flex-shrink-0">
@@ -408,7 +417,7 @@ const SiderRouteOption = ({
             <span className="font-bold text-sky-800 text-sm">{role}</span>
           </div>
         </div>
-      )}{" "}
+      )}
       {/* Navigation Menu */}
       <div
         className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar"
@@ -431,23 +440,24 @@ const SiderRouteOption = ({
             title: collapsed ? item.label : undefined,
             children: item.children
               ? item.children.map((child) => ({
-                key: child.key,
-                icon: child.icon,
-                label: child.label,
-                title: collapsed ? child.label : undefined,
-              }))
+                  key: child.key,
+                  icon: child.icon,
+                  label: child.label,
+                  title: collapsed ? child.label : undefined,
+                }))
               : undefined,
           }))}
-          className={`w-full bg-transparent border-none transition-all duration-300 ${collapsed
-            ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
-            : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
-            } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900 [&_.ant-menu-submenu-title]:text-sky-800 [&_.ant-menu-submenu-title]:font-semibold [&_.ant-menu-submenu-title:hover]:bg-sky-50 [&_.ant-menu-submenu-title:hover]:text-sky-900`}
+          className={`w-full bg-transparent border-none transition-all duration-300 ${
+            collapsed
+              ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
+              : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
+          } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900 [&_.ant-menu-submenu-title]:text-sky-800 [&_.ant-menu-submenu-title]:font-semibold [&_.ant-menu-submenu-title:hover]:bg-sky-50 [&_.ant-menu-submenu-title:hover]:text-sky-900`}
           style={{
             backgroundColor: "transparent",
             border: "none",
           }}
         />
-      </div>{" "}
+      </div>
       {/* Footer - Version info when expanded */}
       {!collapsed && (
         <div className="flex-shrink-0 p-4 border-t border-sky-200">
