@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import AuctionServices from "../../../../services/AuctionServices";
 import type {
@@ -12,13 +12,37 @@ import {
     Button,
     Modal,
     Space,
+    Card,
+    Collapse,
 } from "antd";
 import {
     SearchOutlined,
     DownloadOutlined,
     EyeOutlined,
+    UserOutlined,
+    ShoppingOutlined,
+    FileTextOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+
+// Interface cho dữ liệu đã nhóm theo người
+interface GroupedParticipant {
+    participantId: string;
+    name: string;
+    citizenIdentification: string;
+    numericalOrder?: number;
+    statusDeposit: number;
+    statusTicket: number;
+    totalRegistrationFee: number;
+    nonParticipationFileUrl?: string; // URL file lý do không tham gia
+    assets: {
+        tagName: string;
+        registrationFee: number;
+        auctionDocumentsId: string;
+    }[];
+    // Để hiển thị modal, lấy document đầu tiên làm đại diện
+    representativeDocument: AuctionDocument;
+}
 
 interface SearchParams {
     Name?: string;
@@ -50,13 +74,50 @@ const ListAuctionDocumentSuccesRegister = ({
     const [auctionDocuments, setAuctionDocuments] = useState<
         AuctionDocument[]
     >([]);
-    const [totalCount, setTotalCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
 
     // State cho modal lý do không tham gia
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-    const [selectedDocument, setSelectedDocument] = useState<AuctionDocument | null>(null);
+    const [selectedParticipant, setSelectedParticipant] = useState<GroupedParticipant | null>(null);
     const [reasonModalLoading, setReasonModalLoading] = useState<boolean>(false);
+
+    // Nhóm dữ liệu theo CMND/CCCD
+    const groupedParticipants = useMemo(() => {
+        const grouped = new Map<string, GroupedParticipant>();
+
+        auctionDocuments.forEach(doc => {
+            const key = doc.citizenIdentification; // Dùng CMND/CCCD làm key
+
+            if (grouped.has(key)) {
+                const existing = grouped.get(key)!;
+                existing.assets.push({
+                    tagName: doc.tagName,
+                    registrationFee: doc.registrationFee,
+                    auctionDocumentsId: doc.auctionDocumentsId,
+                });
+                existing.totalRegistrationFee += doc.registrationFee;
+            } else {
+                grouped.set(key, {
+                    participantId: doc.citizenIdentification,
+                    name: doc.name,
+                    citizenIdentification: doc.citizenIdentification,
+                    numericalOrder: doc.numericalOrder,
+                    statusDeposit: doc.statusDeposit,
+                    statusTicket: doc.statusTicket,
+                    totalRegistrationFee: doc.registrationFee,
+                    nonParticipationFileUrl: doc.note || undefined, // Sử dụng field note làm URL file
+                    assets: [{
+                        tagName: doc.tagName,
+                        registrationFee: doc.registrationFee,
+                        auctionDocumentsId: doc.auctionDocumentsId,
+                    }],
+                    representativeDocument: doc,
+                });
+            }
+        });
+
+        return Array.from(grouped.values());
+    }, [auctionDocuments]);
 
     // Kiểm tra nếu ngày hiện tại lớn hơn registerEndDate
     const isAfterRegisterEndDate =
@@ -81,7 +142,6 @@ const ListAuctionDocumentSuccesRegister = ({
                 auctionId
             );
             setAuctionDocuments(response.data.auctionDocuments);
-            setTotalCount(response.data.totalCount);
         } catch (error) {
             toast.error("Lỗi khi tải danh sách tài liệu đấu giá!");
             console.error(error);
@@ -115,27 +175,34 @@ const ListAuctionDocumentSuccesRegister = ({
     };
 
     // Xử lý hiển thị modal lý do không tham gia
-    const handleShowReasonModal = (document: AuctionDocument) => {
-        setSelectedDocument(document);
+    const handleShowReasonModal = (participant: GroupedParticipant) => {
+        setSelectedParticipant(participant);
         setIsModalVisible(true);
     };
 
     // Xử lý đóng modal
     const handleCloseModal = () => {
         setIsModalVisible(false);
-        setSelectedDocument(null);
+        setSelectedParticipant(null);
     };
 
-    // Xử lý đồng ý lý do không tham gia
+    // Xử lý đồng ý lý do không tham gia - Cập nhật tất cả tài sản của người này
     const handleApproveReason = async () => {
-        if (!selectedDocument) return;
+        if (!selectedParticipant) return;
 
         try {
             setReasonModalLoading(true);
-            // TODO: Gọi API để phê duyệt lý do không tham gia
-            // await AuctionServices.approveNonParticipation(selectedDocument.auctionDocumentsId);
 
-            toast.success("Đã phê duyệt lý do không tham gia!");
+            // Gọi API để phê duyệt lý do không tham gia cho tất cả tài sản của người này
+            // const assetIds = selectedParticipant.assets.map(asset => asset.auctionDocumentsId);
+
+            // TODO: Gọi API để phê duyệt lý do không tham gia cho tất cả assets
+            // await AuctionServices.approveNonParticipationForParticipant(
+            //     selectedParticipant.citizenIdentification, 
+            //     assetIds
+            // );
+
+            toast.success(`Đã phê duyệt lý do không tham gia cho ${selectedParticipant.name} (${selectedParticipant.assets.length} tài sản)!`);
             handleCloseModal();
             getListAuctionDocument(); // Refresh danh sách
         } catch (error) {
@@ -146,16 +213,23 @@ const ListAuctionDocumentSuccesRegister = ({
         }
     };
 
-    // Xử lý từ chối lý do không tham gia
+    // Xử lý từ chối lý do không tham gia - Cập nhật tất cả tài sản của người này
     const handleRejectReason = async () => {
-        if (!selectedDocument) return;
+        if (!selectedParticipant) return;
 
         try {
             setReasonModalLoading(true);
-            // TODO: Gọi API để từ chối lý do không tham gia
-            // await AuctionServices.rejectNonParticipation(selectedDocument.auctionDocumentsId);
 
-            toast.success("Đã từ chối lý do không tham gia!");
+            // Gọi API để từ chối lý do không tham gia cho tất cả tài sản của người này
+            // const assetIds = selectedParticipant.assets.map(asset => asset.auctionDocumentsId);
+
+            // TODO: Gọi API để từ chối lý do không tham gia cho tất cả assets
+            // await AuctionServices.rejectNonParticipationForParticipant(
+            //     selectedParticipant.citizenIdentification, 
+            //     assetIds
+            // );
+
+            toast.success(`Đã từ chối lý do không tham gia cho ${selectedParticipant.name} (${selectedParticipant.assets.length} tài sản)!`);
             handleCloseModal();
             getListAuctionDocument(); // Refresh danh sách
         } catch (error) {
@@ -172,23 +246,36 @@ const ListAuctionDocumentSuccesRegister = ({
                 "STT",
                 "Tên",
                 "CMND/CCCD",
-                "Tên tài sản",
-                "Phí đăng ký",
+                "Số tài sản",
+                "Danh sách tài sản",
+                "Tổng phí đăng ký",
+                "Trạng thái cọc",
+                "Trạng thái đơn",
                 "Chữ ký",
-                "Ghi chú",
             ];
 
             const csvRows = [
                 headers.join(","), // Header row
-                ...auctionDocuments.map((doc) => {
+                ...groupedParticipants.map((participant) => {
+                    const assetsList = participant.assets.map(asset =>
+                        `${asset.tagName} (${asset.registrationFee.toLocaleString("vi-VN")} VND)`
+                    ).join("; ");
+
+                    const depositStatus = participant.statusDeposit === 0 ? "Chưa cọc" : "Đã cọc";
+                    const ticketStatus = participant.statusTicket === 0 ? "Chưa chuyển tiền" :
+                        participant.statusTicket === 1 ? "Đã chuyển tiền" :
+                            participant.statusTicket === 2 ? "Đã ký phiếu" : "Đã hoàn tiền";
+
                     const row = [
-                        doc.numericalOrder || "-",
-                        `"${doc.name}"`,
-                        doc.citizenIdentification,
-                        `"${doc.tagName}"`,
-                        `${doc.registrationFee.toLocaleString("vi-VN")} VND`,
+                        participant.numericalOrder || "-",
+                        `"${participant.name}"`,
+                        participant.citizenIdentification,
+                        participant.assets.length,
+                        `"${assetsList}"`,
+                        `${participant.totalRegistrationFee.toLocaleString("vi-VN")} VND`,
+                        depositStatus,
+                        ticketStatus,
                         "", // Chữ ký để trống
-                        `"${doc.note || ""}"`, // Ghi chú từ trường note
                     ];
                     return row.join(",")
                 }),
@@ -201,7 +288,7 @@ const ListAuctionDocumentSuccesRegister = ({
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.setAttribute("href", url);
-            link.setAttribute("download", "auction_documents.csv");
+            link.setAttribute("download", "grouped_auction_participants.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -219,74 +306,124 @@ const ListAuctionDocumentSuccesRegister = ({
             title: "Số báo danh",
             dataIndex: "numericalOrder",
             key: "numericalOrder",
-            render: (numericalOrder: number | null) => numericalOrder || "-",
+            width: 120,
+            render: (numericalOrder: number | null) => (
+                <div className="text-center font-medium">
+                    {numericalOrder || "-"}
+                </div>
+            ),
         },
         {
-            title: "Tên",
-            dataIndex: "name",
-            key: "name",
+            title: "Thông tin người tham gia",
+            key: "participantInfo",
+            width: 250,
+            render: (record: GroupedParticipant) => (
+                <div className="space-y-1">
+                    <div className="font-semibold text-gray-800 flex items-center gap-2">
+                        <UserOutlined className="text-blue-500" />
+                        {record.name}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                        CMND/CCCD: {record.citizenIdentification}
+                    </div>
+                </div>
+            ),
         },
         {
-            title: "CMND/CCCD",
-            dataIndex: "citizenIdentification",
-            key: "citizenIdentification",
+            title: "Tài sản đăng ký",
+            key: "assets",
+            render: (record: GroupedParticipant) => (
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2 mb-2">
+                        <ShoppingOutlined className="text-green-500" />
+                        <span className="font-medium text-sm">
+                            Số lượng: {record.assets.length} tài sản
+                        </span>
+                    </div>
+                    <Collapse
+                        size="small"
+                        items={[
+                            {
+                                key: '1',
+                                label: `Xem chi tiết ${record.assets.length} tài sản`,
+                                children: (
+                                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                                        {record.assets.map((asset, index) => (
+                                            <div
+                                                key={asset.auctionDocumentsId}
+                                                className="bg-gray-50 p-2 rounded border-l-3 border-l-blue-400"
+                                            >
+                                                <div className="font-medium text-sm text-gray-800">
+                                                    {index + 1}. {asset.tagName}
+                                                </div>
+                                                <div className="text-xs text-gray-600">
+                                                    Phí: {asset.registrationFee.toLocaleString("vi-VN")} VND
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ),
+                            },
+                        ]}
+                    />
+                </div>
+            ),
         },
         {
-            title: "Tên tài sản",
-            dataIndex: "tagName",
-            key: "tagName",
+            title: "Tổng phí đăng ký",
+            dataIndex: "totalRegistrationFee",
+            key: "totalRegistrationFee",
+            width: 150,
+            render: (totalFee: number) => (
+                <div className="text-right">
+                    <div className="font-bold text-lg text-green-600">
+                        {totalFee.toLocaleString("vi-VN")}
+                    </div>
+                    <div className="text-xs text-gray-500">VND</div>
+                </div>
+            ),
         },
         {
-            title: "Phí đăng ký",
-            dataIndex: "registrationFee",
-            key: "registrationFee",
-            render: (registrationFee: number) =>
-                `${registrationFee.toLocaleString("vi-VN")} VND`,
+            title: "Trạng thái",
+            key: "status",
+            width: 200,
+            render: (record: GroupedParticipant) => (
+                <div className="space-y-2">
+                    <div>
+                        <Tag color={record.statusDeposit === 0 ? "red" : "green"} className="mb-1">
+                            {record.statusDeposit === 0 ? "Chưa cọc" : "Đã cọc"}
+                        </Tag>
+                    </div>
+                    <div>
+                        <Tag color={
+                            record.statusTicket === 0 ? "red" :
+                                record.statusTicket === 1 ? "blue" :
+                                    record.statusTicket === 2 ? "cyan" : "green"
+                        }>
+                            {record.statusTicket === 0 ? "Chưa chuyển tiền" :
+                                record.statusTicket === 1 ? "Đã chuyển tiền" :
+                                    record.statusTicket === 2 ? "Đã ký phiếu" : "Đã hoàn tiền"}
+                        </Tag>
+                    </div>
+                </div>
+            ),
         },
         {
-            title: "Trạng thái cọc",
-            dataIndex: "statusDeposit",
-            key: "statusDeposit",
-            render: (statusDeposit: number) => {
-                const color = statusDeposit === 0 ? "red" : "green";
-                const text = statusDeposit === 0 ? "Chưa cọc" : "Đã cọc";
-                return <Tag color={color}>{text}</Tag>;
-            },
-        },
-        {
-            title: "Trạng thái đơn",
-            dataIndex: "statusTicket",
-            key: "statusTicket",
-            render: (statusTicket: number) => {
-                let color = "red";
-                let text = "Chưa chuyển tiền";
-                if (statusTicket === 1) {
-                    color = "blue";
-                    text = "Đã chuyển tiền";
-                } else if (statusTicket === 2) {
-                    color = "cyan";
-                    text = "Đã ký phiếu";
-                } else if (statusTicket === 3) {
-                    color = "green";
-                    text = "Đã hoàn tiền";
-                }
-                return <Tag color={color}>{text}</Tag>;
-            },
-        },
-        {
-            title: "Lý do không tham gia",
-            key: "nonParticipationReason",
-            width: 180,
-            render: (record: AuctionDocument) => (
-                <Button
-                    type="primary"
-                    size="small"
-                    icon={<EyeOutlined />}
-                    onClick={() => handleShowReasonModal(record)}
-                    className="bg-blue-500 hover:bg-blue-600"
-                >
-                    Xem lý do
-                </Button>
+            title: "Thao tác",
+            key: "actions",
+            width: 150,
+            render: (record: GroupedParticipant) => (
+                <div className="space-y-2">
+                    <Button
+                        type="primary"
+                        size="small"
+                        icon={<EyeOutlined />}
+                        onClick={() => handleShowReasonModal(record)}
+                        className="bg-blue-500 hover:bg-blue-600 w-full"
+                    >
+                        Xem lý do
+                    </Button>
+                </div>
             ),
         },
     ];
@@ -294,6 +431,43 @@ const ListAuctionDocumentSuccesRegister = ({
     return (
         <section className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-teal-50">
             <div className="w-full mx-auto bg-white shadow-lg rounded-xl p-6">
+                {/* Thống kê tổng quan */}
+                <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
+                    <h2 className="text-lg font-semibold text-emerald-800 mb-4 flex items-center gap-2">
+                        <UserOutlined className="text-emerald-600" />
+                        Tổng quan người tham gia đấu giá
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <Card className="text-center bg-white border-l-4 border-l-blue-500">
+                            <div className="text-2xl font-bold text-blue-600">
+                                {groupedParticipants.length}
+                            </div>
+                            <div className="text-sm text-gray-600">Tổng số người</div>
+                        </Card>
+                        <Card className="text-center bg-white border-l-4 border-l-green-500">
+                            <div className="text-2xl font-bold text-green-600">
+                                {groupedParticipants.reduce((sum, p) => sum + p.assets.length, 0)}
+                            </div>
+                            <div className="text-sm text-gray-600">Tổng số tài sản</div>
+                        </Card>
+                        <Card className="text-center bg-white border-l-4 border-l-yellow-500">
+                            <div className="text-2xl font-bold text-yellow-600">
+                                {groupedParticipants.reduce((sum, p) => sum + p.totalRegistrationFee, 0).toLocaleString("vi-VN")}
+                            </div>
+                            <div className="text-sm text-gray-600">Tổng phí đăng ký (VND)</div>
+                        </Card>
+                        <Card className="text-center bg-white border-l-4 border-l-purple-500">
+                            <div className="text-2xl font-bold text-purple-600">
+                                {groupedParticipants.length > 0 ?
+                                    (groupedParticipants.reduce((sum, p) => sum + p.assets.length, 0) / groupedParticipants.length).toFixed(1)
+                                    : "0"
+                                }
+                            </div>
+                            <div className="text-sm text-gray-600">TB tài sản/người</div>
+                        </Card>
+                    </div>
+                </div>
+
                 <div className="mb-6 p-4 bg-blue-50 rounded-lg">
                     <h2 className="text-lg font-semibold text-blue-800 mb-4">
                         Tìm kiếm
@@ -334,7 +508,7 @@ const ListAuctionDocumentSuccesRegister = ({
                             onClick={handleDownload}
                             icon={<DownloadOutlined />}
                             className="bg-green-500 hover:bg-green-600 w-full sm:w-auto"
-                            disabled={!isAfterRegisterEndDate || auctionDocuments.length === 0}
+                            disabled={!isAfterRegisterEndDate || groupedParticipants.length === 0}
                         >
                             Tải danh sách điểm danh
                         </Button>
@@ -342,15 +516,17 @@ const ListAuctionDocumentSuccesRegister = ({
                 </div>
                 <Table
                     columns={columns}
-                    dataSource={auctionDocuments}
-                    rowKey="auctionDocumentsId"
+                    dataSource={groupedParticipants}
+                    rowKey="participantId"
                     loading={loading}
                     pagination={{
                         current: searchParams.PageNumber,
                         pageSize: searchParams.PageSize,
-                        total: totalCount,
+                        total: groupedParticipants.length,
                         showSizeChanger: true,
-                        pageSizeOptions: ["8", "16", "24", "32"],
+                        pageSizeOptions: ["5", "10", "15", "20"],
+                        showTotal: (total, range) =>
+                            `${range[0]}-${range[1]} của ${total} người tham gia`,
                         onChange: (page, pageSize) =>
                             setSearchParams((prev) => ({
                                 ...prev,
@@ -360,12 +536,19 @@ const ListAuctionDocumentSuccesRegister = ({
                     }}
                     scroll={{ x: "max-content" }}
                     className="border border-teal-100 rounded-lg"
+                    size="middle"
+                    rowClassName="hover:bg-blue-50"
                 />
             </div>
 
             {/* Modal hiển thị lý do không tham gia */}
             <Modal
-                title="Lý do không tham gia đấu giá"
+                title={
+                    <div className="flex items-center gap-2">
+                        <FileTextOutlined className="text-blue-500" />
+                        <span>Lý do không tham gia đấu giá</span>
+                    </div>
+                }
                 open={isModalVisible}
                 onCancel={handleCloseModal}
                 width={600}
@@ -380,7 +563,7 @@ const ListAuctionDocumentSuccesRegister = ({
                             onClick={handleRejectReason}
                             loading={reasonModalLoading}
                         >
-                            Từ chối
+                            Từ chối tất cả
                         </Button>
                         <Button
                             type="primary"
@@ -388,63 +571,143 @@ const ListAuctionDocumentSuccesRegister = ({
                             loading={reasonModalLoading}
                             className="bg-green-500 hover:bg-green-600"
                         >
-                            Đồng ý
+                            Đồng ý tất cả
                         </Button>
                     </Space>
                 }
             >
-                {selectedDocument && (
-                    <div className="space-y-4">
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                            <h3 className="font-semibold text-gray-800 mb-2">
-                                Thông tin người tham gia:
+                {selectedParticipant && (
+                    <div className="space-y-2">
+                        {/* Thông tin người tham gia */}
+                        <div className="bg-gray-50 p-2 rounded-lg">
+                            <h3 className="font-medium text-gray-800 mb-1 flex items-center gap-2 text-sm">
+                                <UserOutlined className="text-blue-500" />
+                                Thông tin người tham gia
                             </h3>
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-2 gap-2 text-xs">
                                 <div>
                                     <span className="text-gray-600">Họ tên:</span>
-                                    <span className="ml-2 font-medium">{selectedDocument.name}</span>
+                                    <span className="ml-1 font-medium">{selectedParticipant.name}</span>
                                 </div>
                                 <div>
                                     <span className="text-gray-600">CMND/CCCD:</span>
-                                    <span className="ml-2 font-medium">{selectedDocument.citizenIdentification}</span>
+                                    <span className="ml-1 font-medium">{selectedParticipant.citizenIdentification}</span>
                                 </div>
                                 <div>
                                     <span className="text-gray-600">Số báo danh:</span>
-                                    <span className="ml-2 font-medium">{selectedDocument.numericalOrder || "Chưa có"}</span>
+                                    <span className="ml-1 font-medium">{selectedParticipant.numericalOrder || "Chưa có"}</span>
                                 </div>
                                 <div>
-                                    <span className="text-gray-600">Tài sản:</span>
-                                    <span className="ml-2 font-medium">{selectedDocument.tagName}</span>
+                                    <span className="text-gray-600">Tổng số tài sản:</span>
+                                    <span className="ml-1 font-medium text-blue-600">{selectedParticipant.assets.length} tài sản</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-yellow-50 p-4 rounded-lg">
-                            <h3 className="font-semibold text-yellow-800 mb-2">
-                                Lý do không tham gia:
+                        {/* Danh sách tài sản với scroll cao tối đa 120px */}
+                        <div className="bg-blue-50 p-2 rounded-lg">
+                            <h3 className="font-medium text-blue-800 mb-1 flex items-center gap-2 text-sm">
+                                <ShoppingOutlined className="text-blue-600" />
+                                Danh sách tài sản ({selectedParticipant.assets.length})
                             </h3>
-                            <div className="text-gray-700">
-                                {selectedDocument.note || "Không có lý do cụ thể được cung cấp."}
+                            <div className="space-y-1 max-h-32 overflow-y-auto scrollbar-thin">
+                                {selectedParticipant.assets.map((asset, index) => (
+                                    <div key={asset.auctionDocumentsId} className="bg-white p-1.5 rounded border border-blue-200">
+                                        <div className="font-medium text-gray-800 text-xs">
+                                            {index + 1}. {asset.tagName}
+                                        </div>
+                                        <div className="text-xs text-gray-600">
+                                            {asset.registrationFee.toLocaleString("vi-VN")} VND
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="bg-blue-100 p-1.5 rounded mt-1">
+                                <div className="text-xs text-blue-800">
+                                    <strong>Tổng:</strong> {selectedParticipant.totalRegistrationFee.toLocaleString("vi-VN")} VND
+                                </div>
                             </div>
                         </div>
 
-                        <div className="bg-blue-50 p-4 rounded-lg">
-                            <h3 className="font-semibold text-blue-800 mb-2">
-                                Trạng thái hiện tại:
+                        {/* File lý do không tham gia compact */}
+                        <div className="bg-yellow-50 p-2 rounded-lg border border-yellow-200">
+                            <h3 className="font-medium text-yellow-800 mb-1 flex items-center gap-2 text-sm">
+                                <FileTextOutlined className="text-yellow-600" />
+                                File lý do không tham gia
                             </h3>
-                            <div className="flex gap-2">
-                                <Tag color={selectedDocument.statusDeposit === 0 ? "red" : "green"}>
-                                    {selectedDocument.statusDeposit === 0 ? "Chưa cọc" : "Đã cọc"}
+                            {selectedParticipant.nonParticipationFileUrl ? (
+                                <div className="space-y-1">
+                                    <div className="bg-white p-1.5 rounded border border-yellow-300">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-1">
+                                                <FileTextOutlined className="text-red-500 text-xs" />
+                                                <span className="text-xs font-medium">
+                                                    Đơn xin không tham gia đấu giá
+                                                </span>
+                                            </div>
+                                            <div className="flex gap-1">
+                                                <Button
+                                                    type="link"
+                                                    size="small"
+                                                    icon={<EyeOutlined />}
+                                                    href={selectedParticipant.nonParticipationFileUrl}
+                                                    target="_blank"
+                                                    className="text-blue-600 text-xs px-1 h-6"
+                                                >
+                                                    Xem
+                                                </Button>
+                                                <Button
+                                                    type="link"
+                                                    size="small"
+                                                    icon={<DownloadOutlined />}
+                                                    href={selectedParticipant.nonParticipationFileUrl}
+                                                    download
+                                                    className="text-green-600 text-xs px-1 h-6"
+                                                >
+                                                    Tải
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="text-xs text-yellow-700 bg-yellow-100 p-1.5 rounded">
+                                        💡 File này áp dụng cho tất cả {selectedParticipant.assets.length} tài sản.
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="bg-gray-100 p-1.5 rounded text-center">
+                                    <FileTextOutlined className="text-gray-400 text-sm mb-1" />
+                                    <div className="text-gray-500 text-xs">
+                                        Chưa có file được tải lên
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Trạng thái hiện tại compact */}
+                        <div className="bg-blue-50 p-2 rounded-lg">
+                            <h3 className="font-medium text-blue-800 mb-1 text-sm">
+                                Trạng thái hiện tại
+                            </h3>
+                            <div className="flex gap-1">
+                                <Tag color={selectedParticipant.statusDeposit === 0 ? "red" : "green"} className="text-xs">
+                                    {selectedParticipant.statusDeposit === 0 ? "Chưa cọc" : "Đã cọc"}
                                 </Tag>
                                 <Tag color={
-                                    selectedDocument.statusTicket === 0 ? "red" :
-                                        selectedDocument.statusTicket === 1 ? "blue" :
-                                            selectedDocument.statusTicket === 2 ? "cyan" : "green"
-                                }>
-                                    {selectedDocument.statusTicket === 0 ? "Chưa chuyển tiền" :
-                                        selectedDocument.statusTicket === 1 ? "Đã chuyển tiền" :
-                                            selectedDocument.statusTicket === 2 ? "Đã ký phiếu" : "Đã hoàn tiền"}
+                                    selectedParticipant.statusTicket === 0 ? "red" :
+                                        selectedParticipant.statusTicket === 1 ? "blue" :
+                                            selectedParticipant.statusTicket === 2 ? "cyan" : "green"
+                                } className="text-xs">
+                                    {selectedParticipant.statusTicket === 0 ? "Chưa chuyển tiền" :
+                                        selectedParticipant.statusTicket === 1 ? "Đã chuyển tiền" :
+                                            selectedParticipant.statusTicket === 2 ? "Đã ký phiếu" : "Đã hoàn tiền"}
                                 </Tag>
+                            </div>
+                        </div>
+
+                        {/* Cảnh báo compact */}
+                        <div className="bg-orange-50 border border-orange-200 p-1.5 rounded-lg">
+                            <div className="text-orange-800 text-xs">
+                                <strong>⚠️ Lưu ý:</strong> Hành động sẽ áp dụng cho tất cả {selectedParticipant.assets.length} tài sản của {selectedParticipant.name}.
                             </div>
                         </div>
                     </div>
