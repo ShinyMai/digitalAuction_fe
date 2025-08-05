@@ -7,10 +7,9 @@ export const AccountAPI = {
   resetPassword: "/Forgotpassword/reset-password",
   getRole: "/GetRoles",
   updateAccount: "/UpdateAccount/Send-Update-Otp",
-  verifyUpdateAccountOTP:
-    "/UpdateAccount/Verify-Otp-And-Update",
-  updateExpiredProfile:
-    "/UpdateExpiredProfile/Update-Expired-Profile",
+  verifyUpdateAccountOTP: "/UpdateAccount/Verify-Otp-And-Update",
+  updateExpiredProfile: "/UpdateExpiredProfile/Update-Expired-Profile",
+  listAccount: "/EmployeeManager/List-Employee-Account",
 } as const;
 
 export type AccountAPIKey = keyof typeof AccountAPI;

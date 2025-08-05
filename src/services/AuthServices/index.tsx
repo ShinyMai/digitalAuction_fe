@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { http } from "../../utils/axiosConfigs";
 import { AccountAPI } from "./urls";
 import type { RegisterAccount } from "../../types/auth.ts";
@@ -20,9 +21,7 @@ interface OTPVerifyResponse {
   resetToken: string;
 }
 
-const login = (
-  body: LoginBody
-): Promise<ApiResponse<User>> =>
+const login = (body: LoginBody): Promise<ApiResponse<User>> =>
   http.post(AccountAPI.login, body);
 
 const logout = (): Promise<ApiResponse<unknown>> =>
@@ -36,8 +35,7 @@ const register = (
 const forgotPassword = (body: {
   contact: string;
   channel: number;
-}): Promise<ApiResponse<unknown>> =>
-  http.post(AccountAPI.forgotPassword, body);
+}): Promise<ApiResponse<unknown>> => http.post(AccountAPI.forgotPassword, body);
 
 const verifyOTP = (body: {
   contact: string;
@@ -51,8 +49,7 @@ const resetPassword = (body: {
   channel: number;
   newPassword: string;
   resetGuid: string;
-}): Promise<ApiResponse<unknown>> =>
-  http.post(AccountAPI.resetPassword, body);
+}): Promise<ApiResponse<unknown>> => http.post(AccountAPI.resetPassword, body);
 
 const getRole = (): Promise<
   ApiResponse<{ roleId: number; roleName: string }[]>
@@ -63,8 +60,7 @@ const updateAccount = (body: {
   phoneNumber: string;
   passwordOld: string;
   passwordNew: string;
-}): Promise<ApiResponse<unknown>> =>
-  http.post(AccountAPI.updateAccount, body);
+}): Promise<ApiResponse<unknown>> => http.post(AccountAPI.updateAccount, body);
 
 const verifyUpdateAccountOTP = (body: {
   otpCode: string;
@@ -85,6 +81,9 @@ const updateExpiredProfile = (body: {
 }): Promise<ApiResponse<unknown>> =>
   http.post(AccountAPI.updateExpiredProfile, body);
 
+const getListAccount = (params?: any): Promise<ApiResponse<any>> =>
+  http.get(AccountAPI.listAccount, { params: params });
+
 const AuthServices = {
   login,
   register,
@@ -96,6 +95,7 @@ const AuthServices = {
   updateAccount,
   verifyUpdateAccountOTP,
   updateExpiredProfile,
+  getListAccount,
 };
 
 export default AuthServices;

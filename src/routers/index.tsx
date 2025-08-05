@@ -53,7 +53,7 @@ export const ADMIN_ROUTES = {
   PATH: "admin",
   SUB: {
     DASHBOARD: "dashboard",
-    MANAGER_ACCOUNT: "manager-account",
+    LIST_ACCOUNT: "list-account",
     ADD_EMPLOYEES: "add-employees",
   },
 };

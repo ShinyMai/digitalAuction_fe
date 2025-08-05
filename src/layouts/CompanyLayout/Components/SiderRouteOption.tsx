@@ -21,6 +21,7 @@ import {
   UserOutlined,
   EditOutlined,
   SettingOutlined,
+  AuditOutlined,
 } from "@ant-design/icons";
 import { Menu, type MenuProps, Button, Tooltip } from "antd";
 import React, { useMemo } from "react";
@@ -196,6 +197,13 @@ const items: MenuItem[] = [
         icon: <UserOutlined />,
         label: "Tạo tài khoản mới",
         url: ADMIN_ROUTES.SUB.ADD_EMPLOYEES,
+        roleView: ["Admin"],
+      },
+      {
+        key: "19",
+        icon: <AuditOutlined />,
+        label: "Tài khoản nhân viên",
+        url: ADMIN_ROUTES.SUB.LIST_ACCOUNT,
         roleView: ["Admin"],
       },
     ],

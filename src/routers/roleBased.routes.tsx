@@ -325,7 +325,11 @@ export const staffRoutes = [
 
 // Router site Admin
 const AddAccountStaff = React.lazy(
-  () => import("../pages/Admin/ManagerAccount/AddEmployees")
+  () => import("../pages/Admin/CreateAccount/AddEmployees")
+);
+
+const ListAccount = React.lazy(
+  () => import("../pages/Admin/ListAccount/index")
 );
 
 export const adminRoutes = [
@@ -336,6 +340,10 @@ export const adminRoutes = [
   {
     path: ADMIN_ROUTES.SUB.DASHBOARD,
     element: wrapWithLazy(Dashboard),
+  },
+  {
+    path: ADMIN_ROUTES.SUB.LIST_ACCOUNT,
+    element: wrapWithLazy(ListAccount),
   },
 ];
 
@@ -409,7 +417,10 @@ export const auctioneerRoutes = [
     element: wrapWithLazy(AuctionListSuccessfull),
   },
   {
-    path: STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL + "/" + STAFF_ROUTES.SUB.AUCTION_DETAIL_SUCCESSFULL,
+    path:
+      STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL +
+      "/" +
+      STAFF_ROUTES.SUB.AUCTION_DETAIL_SUCCESSFULL,
     element: wrapWithLazy(AuctionDetailSuccessfull),
-  }
+  },
 ];
