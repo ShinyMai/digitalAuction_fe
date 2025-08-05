@@ -6,6 +6,7 @@ import {
     TrophyOutlined,
     BarChartOutlined
 } from '@ant-design/icons';
+import { Pie } from '@ant-design/plots';
 
 const { Title, Text } = Typography;
 
@@ -14,40 +15,52 @@ interface PerformanceAnalyticsProps {
 }
 
 interface StaffPerformance {
+    userId: string;
     name: string;
     role: string;
     efficiency: number;
-    approvals: number;
-    avgTime: number; // hours
-    satisfaction: number;
+    totalApprovals: number;
+    avgProcessingTime: number; // hours
+    customerSatisfaction: number;
+    completedAuctions: number;
+    processingDocuments: number;
 }
 
 const PerformanceAnalytics: React.FC<PerformanceAnalyticsProps> = ({ loading = false }) => {
-    // TODO: Replace with real data from API
+    // Mock data based on real database structure
     const staffPerformance: StaffPerformance[] = [
         {
+            userId: "user_001",
             name: 'Nguyễn Văn A',
-            role: 'Senior Manager',
+            role: 'Quản lý cấp cao',
             efficiency: 95,
-            approvals: 28,
-            avgTime: 1.2,
-            satisfaction: 92
+            totalApprovals: 28,
+            avgProcessingTime: 1.2,
+            customerSatisfaction: 92,
+            completedAuctions: 15,
+            processingDocuments: 3
         },
         {
+            userId: "user_002",
             name: 'Trần Thị B',
-            role: 'Approval Specialist',
+            role: 'Chuyên viên phê duyệt',
             efficiency: 88,
-            approvals: 35,
-            avgTime: 1.8,
-            satisfaction: 89
+            totalApprovals: 35,
+            avgProcessingTime: 1.8,
+            customerSatisfaction: 89,
+            completedAuctions: 12,
+            processingDocuments: 5
         },
         {
+            userId: "user_003",
             name: 'Lê Văn C',
-            role: 'Document Reviewer',
+            role: 'Chuyên viên xem xét hồ sơ',
             efficiency: 91,
-            approvals: 31,
-            avgTime: 1.5,
-            satisfaction: 94
+            totalApprovals: 31,
+            avgProcessingTime: 1.5,
+            customerSatisfaction: 94,
+            completedAuctions: 18,
+            processingDocuments: 2
         }
     ];
 
@@ -57,6 +70,13 @@ const PerformanceAnalytics: React.FC<PerformanceAnalyticsProps> = ({ loading = f
         avgEfficiency: 91.2,
         avgSatisfaction: 90.8
     };
+
+    // Data for pie chart
+    const efficiencyDistribution = [
+        { type: 'Xuất sắc (90%+)', value: 8, percent: 66.7 },
+        { type: 'Tốt (80-89%)', value: 3, percent: 25.0 },
+        { type: 'Cần cải thiện (<80%)', value: 1, percent: 8.3 }
+    ];
 
     const getEfficiencyColor = (efficiency: number) => {
         if (efficiency >= 90) return '#52c41a';
@@ -69,7 +89,7 @@ const PerformanceAnalytics: React.FC<PerformanceAnalyticsProps> = ({ loading = f
             title={
                 <div className="flex items-center gap-2">
                     <BarChartOutlined className="text-orange-500" />
-                    <Title level={4} className="!mb-0">Performance Analytics</Title>
+                    <Title level={4} className="!mb-0">Phân tích hiệu suất</Title>
                 </div>
             }
             loading={loading}
@@ -80,7 +100,7 @@ const PerformanceAnalytics: React.FC<PerformanceAnalyticsProps> = ({ loading = f
                 <Col xs={24} sm={6}>
                     <Card size="small" className="!border-blue-200 !bg-blue-50 text-center">
                         <Statistic
-                            title={<span className="!text-blue-700 !text-xs">Total Staff</span>}
+                            title={<span className="!text-blue-700 !text-xs">Tổng nhân viên</span>}
                             value={departmentStats.totalStaff}
                             prefix={<TeamOutlined className="!text-blue-500" />}
                             valueStyle={{ color: '#1890ff', fontSize: '1.2rem' }}
@@ -90,7 +110,7 @@ const PerformanceAnalytics: React.FC<PerformanceAnalyticsProps> = ({ loading = f
                 <Col xs={24} sm={6}>
                     <Card size="small" className="!border-green-200 !bg-green-50 text-center">
                         <Statistic
-                            title={<span className="!text-green-700 !text-xs">Active</span>}
+                            title={<span className="!text-green-700 !text-xs">Đang hoạt động</span>}
                             value={departmentStats.activeStaff}
                             valueStyle={{ color: '#52c41a', fontSize: '1.2rem' }}
                         />
@@ -99,7 +119,7 @@ const PerformanceAnalytics: React.FC<PerformanceAnalyticsProps> = ({ loading = f
                 <Col xs={24} sm={6}>
                     <Card size="small" className="!border-yellow-200 !bg-yellow-50 text-center">
                         <Statistic
-                            title={<span className="!text-yellow-700 !text-xs">Avg Efficiency</span>}
+                            title={<span className="!text-yellow-700 !text-xs">Hiệu suất TB</span>}
                             value={departmentStats.avgEfficiency}
                             suffix="%"
                             precision={1}
@@ -110,7 +130,7 @@ const PerformanceAnalytics: React.FC<PerformanceAnalyticsProps> = ({ loading = f
                 <Col xs={24} sm={6}>
                     <Card size="small" className="!border-purple-200 !bg-purple-50 text-center">
                         <Statistic
-                            title={<span className="!text-purple-700 !text-xs">Satisfaction</span>}
+                            title={<span className="!text-purple-700 !text-xs">Hài lòng TB</span>}
                             value={departmentStats.avgSatisfaction}
                             suffix="%"
                             precision={1}
@@ -120,11 +140,53 @@ const PerformanceAnalytics: React.FC<PerformanceAnalyticsProps> = ({ loading = f
                 </Col>
             </Row>
 
+            {/* Efficiency Distribution Chart */}
+            <Row gutter={[24, 24]} className="mb-6">
+                <Col xs={24} lg={12}>
+                    <div>
+                        <div className="mb-3 text-gray-600 font-medium">Phân bố hiệu suất nhân viên</div>
+                        <Pie
+                            data={efficiencyDistribution}
+                            angleField="value"
+                            colorField="type"
+                            radius={0.8}
+                            height={250}
+                            color={['#52c41a', '#faad14', '#f5222d']}
+                            label={{
+                                type: 'outer',
+                                content: '{name} ({percentage})',
+                            }}
+                            interactions={[
+                                {
+                                    type: 'element-active',
+                                },
+                            ]}
+                        />
+                    </div>
+                </Col>
+                <Col xs={24} lg={12}>
+                    <div className="space-y-4 pt-8">
+                        <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <span className="text-sm font-medium text-green-700">Hiệu suất xuất sắc</span>
+                            <span className="text-lg font-bold text-green-600">8 người (67%)</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                            <span className="text-sm font-medium text-yellow-700">Hiệu suất tốt</span>
+                            <span className="text-lg font-bold text-yellow-600">3 người (25%)</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                            <span className="text-sm font-medium text-red-700">Cần cải thiện</span>
+                            <span className="text-lg font-bold text-red-600">1 người (8%)</span>
+                        </div>
+                    </div>
+                </Col>
+            </Row>
+
             {/* Individual Performance */}
             <div>
                 <div className="flex items-center gap-2 mb-4">
                     <TrophyOutlined className="text-yellow-500" />
-                    <Title level={5} className="!mb-0">Individual Performance</Title>
+                    <Title level={5} className="!mb-0">Hiệu suất cá nhân</Title>
                 </div>
 
                 <List
@@ -137,7 +199,7 @@ const PerformanceAnalytics: React.FC<PerformanceAnalyticsProps> = ({ loading = f
                                         <div className="flex items-center gap-3">
                                             <div
                                                 className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${index === 0 ? 'bg-blue-500' :
-                                                        index === 1 ? 'bg-green-500' : 'bg-purple-500'
+                                                    index === 1 ? 'bg-green-500' : 'bg-purple-500'
                                                     }`}
                                             >
                                                 {staff.name.charAt(0)}
@@ -161,31 +223,31 @@ const PerformanceAnalytics: React.FC<PerformanceAnalyticsProps> = ({ loading = f
                                                     >
                                                         {staff.efficiency}%
                                                     </div>
-                                                    <Text className="text-xs text-gray-500">Efficiency</Text>
+                                                    <Text className="text-xs text-gray-500">Hiệu suất</Text>
                                                 </div>
                                             </Col>
                                             <Col xs={12} sm={6}>
                                                 <div className="text-center">
                                                     <div className="text-lg font-bold text-blue-600">
-                                                        {staff.approvals}
+                                                        {staff.totalApprovals}
                                                     </div>
-                                                    <Text className="text-xs text-gray-500">Approvals</Text>
+                                                    <Text className="text-xs text-gray-500">Phê duyệt</Text>
                                                 </div>
                                             </Col>
                                             <Col xs={12} sm={6}>
                                                 <div className="text-center">
                                                     <div className="text-lg font-bold text-green-600">
-                                                        {staff.avgTime}h
+                                                        {staff.avgProcessingTime}h
                                                     </div>
-                                                    <Text className="text-xs text-gray-500">Avg Time</Text>
+                                                    <Text className="text-xs text-gray-500">Thời gian TB</Text>
                                                 </div>
                                             </Col>
                                             <Col xs={12} sm={6}>
                                                 <div className="text-center">
                                                     <div className="text-lg font-bold text-purple-600">
-                                                        {staff.satisfaction}%
+                                                        {staff.customerSatisfaction}%
                                                     </div>
-                                                    <Text className="text-xs text-gray-500">Rating</Text>
+                                                    <Text className="text-xs text-gray-500">Đánh giá</Text>
                                                 </div>
                                             </Col>
                                         </Row>
@@ -211,17 +273,17 @@ const PerformanceAnalytics: React.FC<PerformanceAnalyticsProps> = ({ loading = f
             <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
                     <ClockCircleOutlined className="text-blue-500" />
-                    <Text strong className="text-blue-700">Performance Insights</Text>
+                    <Text strong className="text-blue-700">Nhận xét hiệu suất</Text>
                 </div>
                 <Space direction="vertical" size="small">
                     <Text className="text-sm text-gray-600">
-                        • Team efficiency is above target (91.2% vs 85% target)
+                        • Hiệu suất nhóm vượt mục tiêu (91.2% so với 85% mục tiêu)
                     </Text>
                     <Text className="text-sm text-gray-600">
-                        • Average processing time has improved by 15% this quarter
+                        • Thời gian xử lý trung bình cải thiện 15% trong quý này
                     </Text>
                     <Text className="text-sm text-gray-600">
-                        • Customer satisfaction remains consistently high (90.8%)
+                        • Mức độ hài lòng của khách hàng duy trì ổn định cao (90.8%)
                     </Text>
                 </Space>
             </div>

@@ -25,29 +25,29 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({ loading = false }) 
     // TODO: Replace with real data from API
     const workflowSteps: WorkflowStep[] = [
         {
-            title: 'Submission',
-            description: 'Documents submitted',
+            title: 'Nộp hồ sơ',
+            description: 'Hồ sơ đã được nộp',
             status: 'finish',
             count: 45,
             avgTime: '0.5h'
         },
         {
-            title: 'Review',
-            description: 'Under review process',
+            title: 'Xem xét',
+            description: 'Đang trong quá trình xem xét',
             status: 'process',
             count: 12,
             avgTime: '2.1h'
         },
         {
-            title: 'Approval',
-            description: 'Manager approval',
+            title: 'Phê duyệt',
+            description: 'Chờ phê duyệt của quản lý',
             status: 'wait',
             count: 8,
             avgTime: '1.8h'
         },
         {
-            title: 'Publication',
-            description: 'Ready for auction',
+            title: 'Công bố',
+            description: 'Sẵn sàng đấu giá',
             status: 'wait',
             count: 0,
             avgTime: '0.3h'
@@ -65,7 +65,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({ loading = false }) 
                         size="small"
                     />
                     <Text className="text-xs text-gray-500">
-                        Avg: {step.avgTime}
+                        TB: {step.avgTime}
                     </Text>
                 </div>
             </div>
@@ -92,7 +92,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({ loading = false }) 
             title={
                 <div className="flex items-center gap-2">
                     <AuditOutlined className="text-green-500" />
-                    <Title level={4} className="!mb-0">Approval Workflow</Title>
+                    <Title level={4} className="!mb-0">Quy trình phê duyệt</Title>
                 </div>
             }
             loading={loading}
@@ -107,7 +107,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({ loading = false }) 
                     </div>
                     <div>
                         <div className="text-xl font-bold text-orange-600">2.1h</div>
-                        <Text className="text-sm text-gray-600">Avg Processing</Text>
+                        <Text className="text-sm text-gray-600">Xử lý TB</Text>
                     </div>
                 </div>
             </div>
@@ -125,29 +125,29 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({ loading = false }) 
                 <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
                         <ClockCircleOutlined className="text-yellow-600" />
-                        <Text strong className="text-yellow-800">Bottleneck Detected</Text>
+                        <Text strong className="text-yellow-800">Phát hiện nghẽn cổ chai</Text>
                     </div>
                     <Text className="text-sm text-yellow-700">
-                        {bottleneckStep.title} stage has {bottleneckStep.count} pending items.
-                        Consider allocating more resources to improve flow.
+                        Bước {bottleneckStep.title} có {bottleneckStep.count} mục đang chờ xử lý.
+                        Hãy xem xét phân bổ thêm tài nguyên để cải thiện luồng công việc.
                     </Text>
                 </div>
             )}
 
             {/* Quick Actions */}
             <div className="mt-4">
-                <Title level={5} className="!mb-3">🚀 Quick Actions</Title>
+                <Title level={5} className="!mb-3">🚀 Thao tác nhanh</Title>
                 <Space direction="vertical" size="small" className="w-full">
                     <div className="flex justify-between items-center p-2 bg-blue-50 rounded">
-                        <Text className="text-sm">Bulk Approve (5 ready)</Text>
-                        <Badge count="New" style={{ backgroundColor: '#52c41a' }} />
+                        <Text className="text-sm">Phê duyệt hàng loạt (5 sẵn sàng)</Text>
+                        <Badge count="Mới" style={{ backgroundColor: '#52c41a' }} />
                     </div>
                     <div className="flex justify-between items-center p-2 bg-green-50 rounded">
-                        <Text className="text-sm">Priority Review (3 urgent)</Text>
+                        <Text className="text-sm">Xem xét ưu tiên (3 khẩn cấp)</Text>
                         <Badge count="!" style={{ backgroundColor: '#f5222d' }} />
                     </div>
                     <div className="flex justify-between items-center p-2 bg-purple-50 rounded">
-                        <Text className="text-sm">Generate Report</Text>
+                        <Text className="text-sm">Tạo báo cáo</Text>
                         <Badge count="📊" style={{ backgroundColor: '#722ed1' }} />
                     </div>
                 </Space>

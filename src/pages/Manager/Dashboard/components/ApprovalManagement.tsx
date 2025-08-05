@@ -15,44 +15,68 @@ interface ApprovalManagementProps {
 }
 
 interface ApprovalItem {
-    id: string;
+    auctionDocumentId: string;
+    auctionId: string;
+    userId: string;
+    userName: string;
     type: 'auction' | 'document' | 'participant';
     title: string;
-    submitter: string;
-    submitTime: string;
+    statusTicket: number; // 0: Not Payment, 1: Payment successful, 2: Cancelled
+    statusDeposit: number; // 0: Not Payment, 1: Payment successful  
+    createAtTicket: string;
+    createAtDeposit: string;
     urgency: 'high' | 'medium' | 'low';
-    status: 'pending' | 'processing' | 'completed';
+    bankAccount: string;
+    numericalOrder: number;
 }
 
 const ApprovalManagement: React.FC<ApprovalManagementProps> = ({ loading = false }) => {
-    // TODO: Replace with real data from API
+    // Mock data based on AuctionDocument structure
     const pendingApprovals: ApprovalItem[] = [
         {
-            id: '1',
+            auctionDocumentId: 'doc_001',
+            auctionId: 'auction_001',
+            userId: 'user_001',
+            userName: 'Nguyễn Văn A',
             type: 'auction',
             title: 'Phiên đấu giá tài sản BĐS Quận 1',
-            submitter: 'Nguyễn Văn A',
-            submitTime: '2 giờ trước',
+            statusTicket: 0, // Not Payment
+            statusDeposit: 0, // Not Payment
+            createAtTicket: '2024-08-05T10:00:00Z',
+            createAtDeposit: '2024-08-05T12:00:00Z',
             urgency: 'high',
-            status: 'pending'
+            bankAccount: 'Vietcombank',
+            numericalOrder: 1
         },
         {
-            id: '2',
+            auctionDocumentId: 'doc_002',
+            auctionId: 'auction_002',
+            userId: 'user_002',
+            userName: 'Trần Thị B',
             type: 'document',
             title: 'Hồ sơ tham gia đấu giá - Công ty ABC',
-            submitter: 'Trần Thị B',
-            submitTime: '4 giờ trước',
+            statusTicket: 1, // Payment successful
+            statusDeposit: 0, // Not Payment
+            createAtTicket: '2024-08-05T08:00:00Z',
+            createAtDeposit: '2024-08-05T14:00:00Z',
             urgency: 'medium',
-            status: 'processing'
+            bankAccount: 'BIDV',
+            numericalOrder: 2
         },
         {
-            id: '3',
+            auctionDocumentId: 'doc_003',
+            auctionId: 'auction_003',
+            userId: 'user_003',
+            userName: 'Lê Văn C',
             type: 'participant',
             title: 'Xác minh danh tính người tham gia',
-            submitter: 'Lê Văn C',
-            submitTime: '6 giờ trước',
+            statusTicket: 1, // Payment successful
+            statusDeposit: 1, // Payment successful
+            createAtTicket: '2024-08-05T06:00:00Z',
+            createAtDeposit: '2024-08-05T16:00:00Z',
             urgency: 'low',
-            status: 'pending'
+            bankAccount: 'ACB',
+            numericalOrder: 3
         }
     ];
 
@@ -81,13 +105,25 @@ const ApprovalManagement: React.FC<ApprovalManagementProps> = ({ loading = false
         }
     };
 
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'pending': return <ClockCircleOutlined className="text-orange-500" />;
-            case 'processing': return <ExclamationCircleOutlined className="text-blue-500" />;
-            case 'completed': return <CheckCircleOutlined className="text-green-500" />;
-            default: return <ClockCircleOutlined />;
+    const getStatusIcon = (statusTicket: number, statusDeposit: number) => {
+        // Determine overall status based on ticket and deposit status
+        if (statusTicket === 0 && statusDeposit === 0) {
+            return <ClockCircleOutlined className="text-orange-500" />; // Pending
+        } else if (statusTicket === 1 && statusDeposit === 0) {
+            return <ExclamationCircleOutlined className="text-blue-500" />; // Processing
+        } else if (statusTicket === 1 && statusDeposit === 1) {
+            return <CheckCircleOutlined className="text-green-500" />; // Completed
+        } else if (statusTicket === 2) {
+            return <ClockCircleOutlined className="text-red-500" />; // Cancelled
         }
+        return <ClockCircleOutlined />;
+    };
+
+    const formatTimeAgo = (dateString: string) => {
+        const now = new Date();
+        const createDate = new Date(dateString);
+        const diffHours = Math.floor((now.getTime() - createDate.getTime()) / (1000 * 60 * 60));
+        return `${diffHours} giờ trước`;
     };
 
     return (
@@ -140,12 +176,12 @@ const ApprovalManagement: React.FC<ApprovalManagementProps> = ({ loading = false
                                         {item.urgency === 'high' ? 'Cao' :
                                             item.urgency === 'medium' ? 'Trung bình' : 'Thấp'}
                                     </Tag>
-                                    {getStatusIcon(item.status)}
+                                    {getStatusIcon(item.statusTicket, item.statusDeposit)}
                                 </Space>
                             </div>
                             <div className="flex justify-between items-center text-xs text-gray-500">
-                                <span>Bởi: {item.submitter}</span>
-                                <span>{item.submitTime}</span>
+                                <span>Bởi: {item.userName}</span>
+                                <span>{formatTimeAgo(item.createAtTicket)}</span>
                             </div>
                         </div>
                     </List.Item>

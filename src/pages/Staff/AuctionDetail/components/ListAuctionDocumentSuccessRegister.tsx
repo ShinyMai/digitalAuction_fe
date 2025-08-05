@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import AuctionServices from "../../../../services/AuctionServices";
@@ -11,10 +10,13 @@ import {
     Input,
     Tag,
     Button,
+    Modal,
+    Space,
 } from "antd";
 import {
     SearchOutlined,
     DownloadOutlined,
+    EyeOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 
@@ -50,6 +52,11 @@ const ListAuctionDocumentSuccesRegister = ({
     >([]);
     const [totalCount, setTotalCount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
+
+    // State cho modal lý do không tham gia
+    const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+    const [selectedDocument, setSelectedDocument] = useState<AuctionDocument | null>(null);
+    const [reasonModalLoading, setReasonModalLoading] = useState<boolean>(false);
 
     // Kiểm tra nếu ngày hiện tại lớn hơn registerEndDate
     const isAfterRegisterEndDate =
@@ -105,6 +112,58 @@ const ListAuctionDocumentSuccesRegister = ({
             [key]: value || undefined,
             PageNumber: 1, // Reset về trang 1 khi search
         }));
+    };
+
+    // Xử lý hiển thị modal lý do không tham gia
+    const handleShowReasonModal = (document: AuctionDocument) => {
+        setSelectedDocument(document);
+        setIsModalVisible(true);
+    };
+
+    // Xử lý đóng modal
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+        setSelectedDocument(null);
+    };
+
+    // Xử lý đồng ý lý do không tham gia
+    const handleApproveReason = async () => {
+        if (!selectedDocument) return;
+
+        try {
+            setReasonModalLoading(true);
+            // TODO: Gọi API để phê duyệt lý do không tham gia
+            // await AuctionServices.approveNonParticipation(selectedDocument.auctionDocumentsId);
+
+            toast.success("Đã phê duyệt lý do không tham gia!");
+            handleCloseModal();
+            getListAuctionDocument(); // Refresh danh sách
+        } catch (error) {
+            toast.error("Lỗi khi phê duyệt lý do không tham gia!");
+            console.error(error);
+        } finally {
+            setReasonModalLoading(false);
+        }
+    };
+
+    // Xử lý từ chối lý do không tham gia
+    const handleRejectReason = async () => {
+        if (!selectedDocument) return;
+
+        try {
+            setReasonModalLoading(true);
+            // TODO: Gọi API để từ chối lý do không tham gia
+            // await AuctionServices.rejectNonParticipation(selectedDocument.auctionDocumentsId);
+
+            toast.success("Đã từ chối lý do không tham gia!");
+            handleCloseModal();
+            getListAuctionDocument(); // Refresh danh sách
+        } catch (error) {
+            toast.error("Lỗi khi từ chối lý do không tham gia!");
+            console.error(error);
+        } finally {
+            setReasonModalLoading(false);
+        }
     };
 
     const handleDownload = () => {
@@ -214,6 +273,22 @@ const ListAuctionDocumentSuccesRegister = ({
                 return <Tag color={color}>{text}</Tag>;
             },
         },
+        {
+            title: "Lý do không tham gia",
+            key: "nonParticipationReason",
+            width: 180,
+            render: (record: AuctionDocument) => (
+                <Button
+                    type="primary"
+                    size="small"
+                    icon={<EyeOutlined />}
+                    onClick={() => handleShowReasonModal(record)}
+                    className="bg-blue-500 hover:bg-blue-600"
+                >
+                    Xem lý do
+                </Button>
+            ),
+        },
     ];
 
     return (
@@ -287,6 +362,94 @@ const ListAuctionDocumentSuccesRegister = ({
                     className="border border-teal-100 rounded-lg"
                 />
             </div>
+
+            {/* Modal hiển thị lý do không tham gia */}
+            <Modal
+                title="Lý do không tham gia đấu giá"
+                open={isModalVisible}
+                onCancel={handleCloseModal}
+                width={600}
+                footer={
+                    <Space>
+                        <Button onClick={handleCloseModal}>
+                            Hủy
+                        </Button>
+                        <Button
+                            type="primary"
+                            danger
+                            onClick={handleRejectReason}
+                            loading={reasonModalLoading}
+                        >
+                            Từ chối
+                        </Button>
+                        <Button
+                            type="primary"
+                            onClick={handleApproveReason}
+                            loading={reasonModalLoading}
+                            className="bg-green-500 hover:bg-green-600"
+                        >
+                            Đồng ý
+                        </Button>
+                    </Space>
+                }
+            >
+                {selectedDocument && (
+                    <div className="space-y-4">
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <h3 className="font-semibold text-gray-800 mb-2">
+                                Thông tin người tham gia:
+                            </h3>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <span className="text-gray-600">Họ tên:</span>
+                                    <span className="ml-2 font-medium">{selectedDocument.name}</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-600">CMND/CCCD:</span>
+                                    <span className="ml-2 font-medium">{selectedDocument.citizenIdentification}</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-600">Số báo danh:</span>
+                                    <span className="ml-2 font-medium">{selectedDocument.numericalOrder || "Chưa có"}</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-600">Tài sản:</span>
+                                    <span className="ml-2 font-medium">{selectedDocument.tagName}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-yellow-50 p-4 rounded-lg">
+                            <h3 className="font-semibold text-yellow-800 mb-2">
+                                Lý do không tham gia:
+                            </h3>
+                            <div className="text-gray-700">
+                                {selectedDocument.note || "Không có lý do cụ thể được cung cấp."}
+                            </div>
+                        </div>
+
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                            <h3 className="font-semibold text-blue-800 mb-2">
+                                Trạng thái hiện tại:
+                            </h3>
+                            <div className="flex gap-2">
+                                <Tag color={selectedDocument.statusDeposit === 0 ? "red" : "green"}>
+                                    {selectedDocument.statusDeposit === 0 ? "Chưa cọc" : "Đã cọc"}
+                                </Tag>
+                                <Tag color={
+                                    selectedDocument.statusTicket === 0 ? "red" :
+                                        selectedDocument.statusTicket === 1 ? "blue" :
+                                            selectedDocument.statusTicket === 2 ? "cyan" : "green"
+                                }>
+                                    {selectedDocument.statusTicket === 0 ? "Chưa chuyển tiền" :
+                                        selectedDocument.statusTicket === 1 ? "Đã chuyển tiền" :
+                                            selectedDocument.statusTicket === 2 ? "Đã ký phiếu" : "Đã hoàn tiền"}
+                                </Tag>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </section>
     );
 };
