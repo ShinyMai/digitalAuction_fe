@@ -72,6 +72,13 @@ const items: MenuItem[] = [
         url: AUCTIONEER_ROUTES.SUB.DASHBOARD,
         roleView: ["Auctioneer"],
       },
+      {
+        key: "3",
+        icon: <DashboardOutlined />,
+        label: "Manager Dashboard ( Chưa API )",
+        url: MANAGER_ROUTES.SUB.MANAGER_DASHBOARD,
+        roleView: ["Manager"],
+      },
     ],
   },
   {
