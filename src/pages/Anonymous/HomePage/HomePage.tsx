@@ -67,14 +67,14 @@ const HomePage = () => {
         <div className="container mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           <div className="flex-1 max-w-2xl text-center lg:text-left order-2 lg:order-1">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-              Hệ thống đăng ký tham gia{" "}
+              HỆ THỐNG ĐĂNG KÝ THAM GIA{" "}
               <span className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent font-extrabold">
-                đấu giá trực tuyến
+                ĐẤU GIÁ TRỰC TUYẾN
               </span>
             </h1>
             <p className="text-lg sm:text-xl lg:text-2xl mb-6 sm:mb-8 opacity-90 leading-relaxed">
-              Nền tảng đăng ký đấu giá hàng đầu Việt Nam - Kết nối bạn với các phiên đấu giá chính
-              thức
+              Nền tảng đăng ký đấu giá hàng đầu Việt Nam - Kết nối bạn với các
+              phiên đấu giá chính thức
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
               <button
@@ -93,7 +93,9 @@ const HomePage = () => {
           </div>
           <div className="flex-1 flex justify-center lg:pl-8 order-1 lg:order-2 mt-8 lg:mt-0">
             <div className="relative">
-              <div className="text-8xl md:text-9xl lg:text-[12rem] mb-4 animate-bounce">🏛️</div>{" "}
+              <div className="text-8xl md:text-9xl lg:text-[12rem] mb-4 animate-bounce">
+                🏛️
+              </div>{" "}
               <div className="absolute -top-2 sm:-top-4 -right-4 sm:-right-6 text-xl sm:text-2xl md:text-3xl animate-pulse delay-300">
                 ⚖️
               </div>
@@ -147,10 +149,15 @@ const HomePage = () => {
                   key={property.auctionId}
                   className="bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden"
                   onClick={() =>
-                    navigate(GUEST_ROUTERS.AUCTION_LIST + "/" + GUEST_ROUTERS.AUCTION_DETAIL, {
-                      state: { key: property.auctionId },
-                      replace: true,
-                    })
+                    navigate(
+                      GUEST_ROUTERS.AUCTION_LIST +
+                        "/" +
+                        GUEST_ROUTERS.AUCTION_DETAIL,
+                      {
+                        state: { key: property.auctionId },
+                        replace: true,
+                      }
+                    )
                   }
                 >
                   <img

@@ -9,6 +9,9 @@ export interface AuctionDocument {
   statusDeposit: number;
   statusTicket: number;
   tagName: string;
+  bankAccount: string;
+  bankAccountNumber: string;
+  bankBranch: string;
 }
 
 // Auction status data from API

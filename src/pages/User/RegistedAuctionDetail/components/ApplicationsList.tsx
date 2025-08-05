@@ -1,16 +1,35 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
-import { Card, Empty, Table, Tag, Typography, Tooltip, Space } from "antd";
 import {
-  EditOutlined,
+  Card,
+  Empty,
+  Table,
+  Tag,
+  Typography,
+  Tooltip,
+  Space,
+  Button,
+} from "antd";
+import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   TrophyOutlined,
   CloseCircleOutlined,
+  DownloadOutlined,
 } from "@ant-design/icons";
 import { formatNumber } from "../../../../utils/numberFormat";
-import type { AuctionDocument, DepositStatus, TicketStatus, AuctionStatusData } from "../types";
+import type {
+  AuctionDocument,
+  DepositStatus,
+  TicketStatus,
+  AuctionStatusData,
+} from "../types";
 import AuctionServices from "../../../../services/AuctionServices";
 import { toast } from "react-toastify";
+import { exportToDocx } from "../../../../components/Common/ExportDocs/DocumentGenerator";
+import UserServices from "../../../../services/UserServices";
+import { useSelector } from "react-redux";
+import type { RegistrationAuctionModals } from "../../../Anonymous/Modals";
 
 const { Text } = Typography;
 
@@ -28,6 +47,8 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
   const [auctionStatusData, setAuctionStatusData] = useState<{
     [key: string]: AuctionStatusData[];
   }>({});
+  const { user } = useSelector((state: any) => state.auth);
+  const [userInfo, setUserInfo] = useState<any>();
 
   // Fetch auction status data for all documents
   useEffect(() => {
@@ -53,6 +74,50 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
 
     getPriceAndFlag();
   }, [auctionId, documents]);
+
+  const getUserInfo = async () => {
+    try {
+      const res = await UserServices.getUserInfo({
+        user_id: user.id,
+      });
+
+      if (res.code === 200) {
+        setUserInfo(res.data);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin người dùng:", error);
+    }
+  };
+
+  console.log("User Info:", userInfo);
+
+  useEffect(() => {
+    getUserInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  // Function to transform record and userInfo to match exportToDocx requirements
+  const transformDataForExport = (
+    record: AuctionDocument
+  ): Partial<RegistrationAuctionModals> => {
+    return {
+      fullName: userInfo?.name || record.name || "",
+      dob: userInfo?.birthDay || "",
+      idNumber:
+        userInfo?.citizenIdentification || record.citizenIdentification || "",
+      idDate: userInfo?.issueDate || "",
+      place: userInfo?.issueBy || "",
+      phone: userInfo?.phoneNumber || "",
+      address: userInfo?.recentLocation || "",
+      auctionInfo: record.tagName || "",
+      assetsInfo: record.tagName || "",
+      priceStart: record.deposit?.toString() || "",
+      bankAccount: record.bankAccount || "",
+      bankAccountNumber: record.bankAccountNumber || "",
+      bankBranch: record.bankBranch || "",
+      locationDate: new Date().toISOString(),
+    };
+  };
 
   // Function to get auction status for a document
   const getAuctionStatus = (auctionDocumentsId: string) => {
@@ -88,26 +153,58 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
   const getDepositStatus = (status: DepositStatus) => {
     switch (status) {
       case 0:
-        return { color: "orange", text: "Chờ xác nhận", icon: <ClockCircleOutlined /> };
+        return {
+          color: "orange",
+          text: "Chờ xác nhận",
+          icon: <ClockCircleOutlined />,
+        };
       case 1:
-        return { color: "green", text: "Xác nhận cọc", icon: <CheckCircleOutlined /> };
+        return {
+          color: "green",
+          text: "Xác nhận cọc",
+          icon: <CheckCircleOutlined />,
+        };
       default:
-        return { color: "gray", text: "Không xác định", icon: <ClockCircleOutlined /> };
+        return {
+          color: "gray",
+          text: "Không xác định",
+          icon: <ClockCircleOutlined />,
+        };
     }
   };
 
   const getTicketStatus = (status: TicketStatus) => {
     switch (status) {
       case 0:
-        return { color: "orange", text: "Chưa chuyển tiền", icon: <ClockCircleOutlined /> };
+        return {
+          color: "orange",
+          text: "Chưa chuyển tiền",
+          icon: <ClockCircleOutlined />,
+        };
       case 1:
-        return { color: "green", text: "Đã chuyển tiền", icon: <CheckCircleOutlined /> };
+        return {
+          color: "green",
+          text: "Đã chuyển tiền",
+          icon: <CheckCircleOutlined />,
+        };
       case 2:
-        return { color: "green", text: "Đã nhận phiếu", icon: <CheckCircleOutlined /> };
+        return {
+          color: "green",
+          text: "Đã nhận phiếu",
+          icon: <CheckCircleOutlined />,
+        };
       case 3:
-        return { color: "green", text: "Đã hoàn cọc", icon: <CheckCircleOutlined /> };
+        return {
+          color: "green",
+          text: "Đã hoàn cọc",
+          icon: <CheckCircleOutlined />,
+        };
       default:
-        return { color: "gray", text: "Không xác định", icon: <ClockCircleOutlined /> };
+        return {
+          color: "gray",
+          text: "Không xác định",
+          icon: <ClockCircleOutlined />,
+        };
     }
   };
 
@@ -157,7 +254,9 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
       width: 150,
       align: "right" as const,
       render: (value: number, record: AuctionDocument) => {
-        const depositStatus = getDepositStatus(record.statusDeposit as DepositStatus);
+        const depositStatus = getDepositStatus(
+          record.statusDeposit as DepositStatus
+        );
         return (
           <Text
             strong
@@ -187,7 +286,11 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
       render: (status: DepositStatus) => {
         const depositStatus = getDepositStatus(status);
         return (
-          <Tag color={depositStatus.color} icon={depositStatus.icon} style={{ margin: "0" }}>
+          <Tag
+            color={depositStatus.color}
+            icon={depositStatus.icon}
+            style={{ margin: "0" }}
+          >
             {depositStatus.text}
           </Tag>
         );
@@ -202,18 +305,18 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
       render: (status: TicketStatus) => {
         const ticketStatus = getTicketStatus(status);
         return (
-          <Tag color={ticketStatus.color} icon={ticketStatus.icon} style={{ margin: "0" }}>
+          <Tag
+            color={ticketStatus.color}
+            icon={ticketStatus.icon}
+            style={{ margin: "0" }}
+          >
             {ticketStatus.text}
           </Tag>
         );
       },
     },
     {
-      title: (
-        <>
-          <TrophyOutlined /> Trạng thái đấu giá
-        </>
-      ),
+      title: "Trạng thái đấu giá",
       dataIndex: "auctionDocumentsId",
       key: "auctionStatus",
       width: 180,
@@ -222,14 +325,19 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
         const auctionStatus = getAuctionStatus(auctionDocumentsId);
         return (
           <Space direction="vertical" size={4}>
-            <Tag color={auctionStatus.color} icon={auctionStatus.icon} style={{ margin: "0" }}>
+            <Tag
+              color={auctionStatus.color}
+              icon={auctionStatus.icon}
+              style={{ margin: "0" }}
+            >
               {auctionStatus.text}
             </Tag>
             {auctionStatus.price && (
               <Text
                 style={{
                   fontSize: "12px",
-                  color: auctionStatus.color === "success" ? "#52c41a" : "#ff4d4f",
+                  color:
+                    auctionStatus.color === "success" ? "#52c41a" : "#ff4d4f",
                   fontWeight: "bold",
                 }}
               >
@@ -241,11 +349,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
       },
     },
     {
-      title: (
-        <>
-          <EditOutlined /> Ghi chú
-        </>
-      ),
+      title: "Ghi chú",
       dataIndex: "note",
       key: "note",
       width: 200,
@@ -258,6 +362,26 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
           <Text type="secondary">--</Text>
         ),
     },
+    {
+      title: "Thao tác",
+      dataIndex: "actions",
+      key: "actions",
+      render: (_: any, record: AuctionDocument) => {
+        return (
+          <Tooltip title="Tải xuống phiếu đăng ký" placement="top">
+            <Button
+              type="text"
+              icon={<DownloadOutlined />}
+              className="!text-blue-600 !hover:bg-blue-50"
+              onClick={() => {
+                const transformedData = transformDataForExport(record);
+                exportToDocx(transformedData);
+              }}
+            />
+          </Tooltip>
+        );
+      },
+    },
   ];
 
   const renderTableView = () => (
@@ -268,7 +392,8 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
         pageSize: 10,
         showSizeChanger: true,
         showQuickJumper: true,
-        showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đăng ký`,
+        showTotal: (total, range) =>
+          `${range[0]}-${range[1]} của ${total} đăng ký`,
       }}
       scroll={{ x: 800 }}
       size="middle"
@@ -277,7 +402,10 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
   );
 
   return (
-    <Card title="Danh sách đăng ký tham gia đấu giá" style={{ marginBottom: "24px " }}>
+    <Card
+      title="Danh sách đăng ký tham gia đấu giá"
+      style={{ marginBottom: "24px " }}
+    >
       {filteredDocuments.length === 0 ? (
         <Empty
           description={

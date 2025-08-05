@@ -4,7 +4,11 @@ import { Spin, Button, Empty, message, Typography } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import type { AuctionDocument } from "./types";
 import AuctionServices from "../../../services/AuctionServices";
-import { ApplicationsList, FilterSection, StatisticsOverview } from "./components";
+import {
+  ApplicationsList,
+  FilterSection,
+  StatisticsOverview,
+} from "./components";
 
 const { Title } = Typography;
 
@@ -14,7 +18,9 @@ const RegistedAuctionDetail: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [documents, setDocuments] = useState<AuctionDocument[]>([]);
-  const [filteredDocuments, setFilteredDocuments] = useState<AuctionDocument[]>([]);
+  const [filteredDocuments, setFilteredDocuments] = useState<AuctionDocument[]>(
+    []
+  );
   const [error, setError] = useState<string>("");
   const [depositFilter, setDepositFilter] = useState<number | "all">("all");
   const [ticketFilter, setTicketFilter] = useState<number | "all">("all");
@@ -22,7 +28,9 @@ const RegistedAuctionDetail: React.FC = () => {
   const fetchAuctionDetail = async () => {
     try {
       setLoading(true);
-      const res = await AuctionServices.getListAuctionDocumentRegisted({ auctionId: id });
+      const res = await AuctionServices.getListAuctionDocumentRegisted({
+        auctionId: id,
+      });
 
       if (res.code === 200) {
         setDocuments(res.data);
@@ -68,12 +76,20 @@ const RegistedAuctionDetail: React.FC = () => {
   const statistics = {
     totalDocuments: filteredDocuments.length,
     totalDeposit: filteredDocuments.reduce((sum, doc) => sum + doc.deposit, 0),
-    totalRegistrationFee: filteredDocuments.reduce((sum, doc) => sum + doc.registrationFee, 0),
-    paidDeposits: filteredDocuments.filter((doc) => doc.statusDeposit === 1).length,
-    pendingDeposits: filteredDocuments.filter((doc) => doc.statusDeposit === 0).length,
-    refundedDeposits: filteredDocuments.filter((doc) => doc.statusDeposit === 2).length,
-    approvedTickets: filteredDocuments.filter((doc) => doc.statusTicket === 1).length,
-    pendingTickets: filteredDocuments.filter((doc) => doc.statusTicket === 0).length,
+    totalRegistrationFee: filteredDocuments.reduce(
+      (sum, doc) => sum + doc.registrationFee,
+      0
+    ),
+    paidDeposits: filteredDocuments.filter((doc) => doc.statusDeposit === 1)
+      .length,
+    pendingDeposits: filteredDocuments.filter((doc) => doc.statusDeposit === 0)
+      .length,
+    refundedDeposits: filteredDocuments.filter((doc) => doc.statusDeposit === 2)
+      .length,
+    approvedTickets: filteredDocuments.filter((doc) => doc.statusTicket === 1)
+      .length,
+    pendingTickets: filteredDocuments.filter((doc) => doc.statusTicket === 0)
+      .length,
   };
 
   if (loading) {
@@ -103,7 +119,9 @@ const RegistedAuctionDetail: React.FC = () => {
           Quay lại danh sách đấu giá
         </Button>
         <Empty description={error} style={{ margin: "50px 0" }}>
-          <div className="text-center p-4">Không thể tải thông tin chi tiết phiên đấu giá</div>
+          <div className="text-center p-4">
+            Không thể tải thông tin chi tiết phiên đấu giá
+          </div>
           <Button type="primary" onClick={fetchAuctionDetail}>
             Thử lại
           </Button>
@@ -113,7 +131,7 @@ const RegistedAuctionDetail: React.FC = () => {
   }
 
   return (
-    <div className="max-w-5/6 mx-auto px-4">
+    <div className="max-w-11/12 mx-auto">
       <div className="mb-6">
         <Button
           type="link"
