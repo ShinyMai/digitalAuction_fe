@@ -79,5 +79,14 @@ export const MANAGER_ROUTES = {
     LIST_BLOG: "list-blog-manager",
     AUCTION_LIST_WAITING_PUBLIC: "auction-list-waiting-public",
     AUCTION_DETAIL_WAITING_PUBLIC: "auction-detail-waiting-public",
+    MANAGER_DASHBOARD: "manager-dashboard",
+  },
+};
+
+export const DIRECTOR_ROUTES = {
+  PATH: "director",
+  SUB: {
+    DASHBOARD: "dashboard",
+    STATISTICS: "statistics",
   },
 };

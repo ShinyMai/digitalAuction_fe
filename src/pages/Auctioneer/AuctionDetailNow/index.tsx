@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 interface AuctionAsset {
   auctionAssetsId: string;
   tagName: string;
+  startingPrice?: number;
 }
 
 const USER_ROLES = {

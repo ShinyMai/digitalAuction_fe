@@ -4,7 +4,7 @@ import { ToastContainer } from "react-toastify";
 import PrivateRoutes from "../layouts/AnonymousLayout";
 import PrivateRoutesCompany from "../layouts/CompanyLayout";
 import { useAppRouting } from "../hooks/useAppRouting";
-import { adminRoutes, auctioneerRoutes, managerRoutes } from "./roleBased.routes";
+import { adminRoutes, auctioneerRoutes, managerRoutes, directorRoutes } from "./roleBased.routes";
 
 const AppRouter = () => {
   const {
@@ -17,7 +17,7 @@ const AppRouter = () => {
     isStaff,
     isAuctioneer,
     isManager,
-    // isDirector,
+    isDirector,
   } = useAppRouting();
 
   return (
@@ -66,6 +66,14 @@ const AppRouter = () => {
               ))}
             {isAuctioneer &&
               auctioneerRoutes.map((route, index) => (
+                <Route
+                  key={index}
+                  path={route.path}
+                  element={<route.element />}
+                />
+              ))}
+            {isDirector &&
+              directorRoutes.map((route, index) => (
                 <Route
                   key={index}
                   path={route.path}

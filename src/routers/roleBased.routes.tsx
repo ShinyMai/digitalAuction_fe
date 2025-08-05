@@ -352,6 +352,10 @@ const ListBlogManager = React.lazy(
   () => import("../pages/Manager/ManageBlog/index")
 );
 
+const ManagerDashboard = React.lazy(
+  () => import("../pages/Manager/Dashboard/index")
+);
+
 export const managerRoutes = [
   ...staffRoutes,
   {
@@ -379,6 +383,23 @@ export const managerRoutes = [
       "/" +
       MANAGER_ROUTES.SUB.AUCTION_DETAIL_WAITING_PUBLIC,
     element: wrapWithLazy(AuctionDetailWaitingPublic),
+  },
+  {
+    path: MANAGER_ROUTES.SUB.MANAGER_DASHBOARD,
+    element: wrapWithLazy(ManagerDashboard),
+  },
+];
+
+// Director Dashboard
+const DirectorDashboard = React.lazy(
+  () => import("../pages/Director/Dashboard/index")
+);
+
+export const directorRoutes = [
+  ...managerRoutes,
+  {
+    path: STAFF_ROUTES.SUB.STATISTICS,
+    element: wrapWithLazy(DirectorDashboard),
   },
 ];
 
