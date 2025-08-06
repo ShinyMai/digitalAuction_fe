@@ -1,10 +1,10 @@
-import { Image, Typography, Card } from "antd";
+import { Image, Typography, Card, Alert, Button } from "antd";
 import MINPHAPLOGO from "../../../../assets/LOGO-MINH-PHAP.jpg";
 import dayjs from "dayjs";
 import type { AuctionDataDetail } from "../../Modals";
 import { useState } from "react";
 import PopupVerifyCancelAuction from "./PopupVerifyCancelAuction";
-import { EnvironmentOutlined } from "@ant-design/icons";
+import { EnvironmentOutlined, WarningOutlined, FileTextOutlined, DownloadOutlined } from "@ant-design/icons";
 
 interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
@@ -32,6 +32,77 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
       <div className="w-full mx-auto bg-white shadow-lg rounded-xl p-6">
         {auctionDetailData ? (
           <div className="space-y-8">
+            {/* Thông báo hủy đấu giá - Hiển thị nổi bật ở đầu trang */}
+            {(auctionDetailData.cancelReason || auctionDetailData.cancelReasonFile) && (
+              <div className="mb-8">
+                <Alert
+                  message={
+                    <div className="flex items-center">
+                      <WarningOutlined className="text-orange-600 mr-2 text-xl" />
+                      <span className="font-bold text-orange-800 text-lg">
+                        Phiên đấu giá này đã bị hủy
+                      </span>
+                    </div>
+                  }
+                  description={
+                    <div className="mt-4">
+                      {/* Lý do hủy */}
+                      {auctionDetailData.cancelReason && (
+                        <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400 mb-4">
+                          <h4 className="font-semibold text-orange-800 mb-3 flex items-center">
+                            <FileTextOutlined className="mr-2" />
+                            Lý do hủy đấu giá:
+                          </h4>
+                          <div className="bg-white p-3 rounded-md border border-orange-200">
+                            <p className="text-orange-700 whitespace-pre-wrap leading-relaxed text-sm">
+                              {auctionDetailData.cancelReason}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* File lý do hủy */}
+                      {auctionDetailData.cancelReasonFile && (
+                        <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
+                          <h4 className="font-semibold text-orange-800 mb-3 flex items-center">
+                            <FileTextOutlined className="mr-2" />
+                            Tài liệu lý do hủy:
+                          </h4>
+                          <div className="bg-white p-3 rounded-md border border-orange-200">
+                            <Button
+                              type="link"
+                              icon={<DownloadOutlined />}
+                              href={
+                                auctionType === "SQL"
+                                  ? auctionDetailData.cancelReasonFile
+                                  : API_BASE_URL_NODE + "/" + auctionDetailData.cancelReasonFile
+                              }
+                              target="_blank"
+                              className="text-orange-600 hover:text-orange-800 font-medium p-0"
+                            >
+                              Tải xuống tài liệu lý do hủy đấu giá
+                            </Button>
+                            <div className="mt-2">
+                              <span className="text-xs text-orange-500">
+                                Click để xem chi tiết tài liệu giải trình
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  }
+                  type="warning"
+                  showIcon={false}
+                  className="border-orange-300 shadow-lg"
+                  style={{
+                    background: 'linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%)',
+                    borderRadius: '12px'
+                  }}
+                />
+              </div>
+            )}
+
             {/* Thông tin đấu giá */}
             <div className="flex flex-col md:flex-row items-stretch mb-6">
               <div className="w-full md:w-1/3 mb-4 md:mb-0 flex-shrink-0">
@@ -119,7 +190,7 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
                 Danh sách tài sản đấu giá
               </h3>
               {auctionDetailData.listAuctionAssets &&
-              auctionDetailData.listAuctionAssets.length > 0 ? (
+                auctionDetailData.listAuctionAssets.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {auctionDetailData.listAuctionAssets.map((asset) => (
                     <Card
