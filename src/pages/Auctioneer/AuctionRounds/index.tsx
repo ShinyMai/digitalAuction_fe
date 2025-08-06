@@ -166,12 +166,23 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
 
 
 
-    const handleEndAuction = () => {
-        console.log("Creating new auction round...");
+    const handleEndAuction = async () => {
+        try {
+            const response = await AuctionServices.updateAuctionSuccessfull({ auctionId: auctionId });
+            if (response.code === 200) {
+                toast.success("Phiên đấu giá đã kết thúc thành công");
+                // Cập nhật lại danh sách vòng đấu giá sau khi kết thúc
+            } else {
+                toast.error("Lỗi khi kết thúc phiên đấu giá");
+            }
+        } catch (error) {
+            console.error("Error ending auction:", error);
+            toast.error("Error ending auction");
+        }
     };
 
     const handleViewResults = () => {
-        console.log("Viewing auction results...");
+
         setShowResults(true);
     };
 

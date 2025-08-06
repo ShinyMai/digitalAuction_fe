@@ -34,7 +34,8 @@ export const AuctionAPI = {
   UPDATE_AUCTION_REJECTED: "/Auctions/reject-auction",
   UPDATE_AUCTION: '/Auctions',
   EXPORT_HANDBOOK: '/AuctionBook/export-book',
-  EXPORT_REFUNDLIST: '/AuctionDocuments/export-refund-excel'
+  EXPORT_REFUNDLIST: '/AuctionDocuments/export-refund-excel',
+  UPDATE_AUCTION_SUCCESSFULL: "/Auctions/mark-successful",
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;

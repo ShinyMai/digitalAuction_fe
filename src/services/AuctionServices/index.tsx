@@ -95,6 +95,9 @@ const exportHandbook = (body: any): Promise<ApiResponse<any>> =>
   http.post(AuctionAPI.EXPORT_HANDBOOK, body);
 const exportRefundList = (params: any): Promise<ApiResponse<any>> =>
   http.get(`${AuctionAPI.EXPORT_REFUNDLIST}`, { params });
+const updateAuctionSuccessfull = (body: any): Promise<ApiResponse<any>> =>
+  http.put(AuctionAPI.UPDATE_AUCTION_SUCCESSFULL, body);
+
 const AuctionServices = {
   addAuction,
   getListAuctionCategory,
@@ -128,7 +131,8 @@ const AuctionServices = {
   updateAuctionRejected,
   updateAuction,
   exportHandbook,
-  exportRefundList
+  exportRefundList,
+  updateAuctionSuccessfull
 };
 
 export default AuctionServices;
