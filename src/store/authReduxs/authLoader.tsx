@@ -6,18 +6,15 @@ import type { RootState } from "../store";
 const AuthLoader = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { user } = useSelector((state: RootState) => state.auth);
   useEffect(() => {
     if (user?.roleName) {
       const currentPath = location.pathname;
       const rolePath = user.roleName.toLowerCase();
-
       if (user.roleName !== "Customer") {
         // For company staff (Admin, Staff, etc.)
         if (!currentPath.startsWith(`/${rolePath}`)) {
-          navigate(`/${rolePath}/statistics`, {
+          navigate(`/${rolePath}/dashboard`, {
             replace: true,
           });
         }

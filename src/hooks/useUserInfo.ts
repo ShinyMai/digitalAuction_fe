@@ -61,7 +61,9 @@ export const useMultipleUserInfo = (userIds: string[]) => {
       try {
         const promises = userIds.map(async (userId) => {
           try {
-            const response = await UserServices.getUserInfo({ user_id: userId });
+            const response = await UserServices.getUserInfo({
+              user_id: userId,
+            });
             return { userId, data: response?.data };
           } catch (err) {
             console.error(`Error fetching user info for ${userId}:`, err);
@@ -91,4 +93,33 @@ export const useMultipleUserInfo = (userIds: string[]) => {
   }, [userIds]); // Use userIds directly as dependency
 
   return { usersInfo, loading, error };
+};
+
+// Hook để lấy thông tin user hiện tại từ localStorage/auth state
+export const useCurrentUserInfo = () => {
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    try {
+      // Lấy thông tin user từ localStorage
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        setUserInfo({
+          name: userData.name,
+          email: userData.email,
+          citizenIdentification: userData.citizenIdentification,
+          phoneNumber: userData.phoneNumber,
+          roleName: userData.roleName,
+        });
+      }
+    } catch (error) {
+      console.error("Error loading user info:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { userInfo, loading };
 };

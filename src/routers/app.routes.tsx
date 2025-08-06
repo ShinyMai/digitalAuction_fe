@@ -4,7 +4,12 @@ import { ToastContainer } from "react-toastify";
 import PrivateRoutes from "../layouts/AnonymousLayout";
 import PrivateRoutesCompany from "../layouts/CompanyLayout";
 import { useAppRouting } from "../hooks/useAppRouting";
-import { adminRoutes, auctioneerRoutes, managerRoutes, directorRoutes } from "./roleBased.routes";
+import {
+  adminRoutes,
+  auctioneerRoutes,
+  managerRoutes,
+  directorRoutes,
+} from "./roleBased.routes";
 
 const AppRouter = () => {
   const {
@@ -79,23 +84,12 @@ const AppRouter = () => {
                   path={route.path}
                   element={<route.element />}
                 />
-              ))}
-            <Route
-              index
-              element={<Navigate to="statistics" replace />}
-            />
+              ))}{" "}
+            <Route index element={<Navigate to="dashboard" replace />} />
           </Route>
         )}
-        {!role && (
-          <Route
-            path="*"
-            element={<Navigate to="/" replace />}
-          />
-        )}
-        <Route
-          path="/not-found"
-          element={<div>Page Not Found</div>}
-        />
+        {!role && <Route path="*" element={<Navigate to="/" replace />} />}
+        <Route path="/not-found" element={<div>Page Not Found</div>} />
       </Routes>
       <ToastContainer stacked />
     </>
