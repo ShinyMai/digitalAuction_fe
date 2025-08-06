@@ -19,7 +19,6 @@ const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasNewNotification, setHasNewNotification] = useState(false);
-  const [pageIndex, setPageIndex] = useState(1);
   const ref = useRef(null);
   const navigate = useNavigate();
   const { user } = useSelector((state: any) => state.auth);
@@ -28,7 +27,7 @@ const NotificationDropdown = () => {
     try {
       setLoading(true);
       const res = await NotiServices.getListNotifications({
-        pageIndex,
+        pageIndex: 1,
         pageSize: 5,
       });
       if (res?.code === 200) {
@@ -110,7 +109,7 @@ const NotificationDropdown = () => {
   useEffect(() => {
     getListNotifications();
     hasUnread();
-  }, [pageIndex]);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -125,11 +124,14 @@ const NotificationDropdown = () => {
   const formatTimeAgo = (dateString: string) => {
     const now = new Date();
     const notificationDate = new Date(dateString);
-    const diffInMinutes = Math.floor((now.getTime() - notificationDate.getTime()) / (1000 * 60));
+    const diffInMinutes = Math.floor(
+      (now.getTime() - notificationDate.getTime()) / (1000 * 60)
+    );
 
     if (diffInMinutes < 1) return "Vừa xong";
     if (diffInMinutes < 60) return `${diffInMinutes} phút trước`;
-    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} giờ trước`;
+    if (diffInMinutes < 1440)
+      return `${Math.floor(diffInMinutes / 60)} giờ trước`;
     return `${Math.floor(diffInMinutes / 1440)} ngày trước`;
   };
 
@@ -233,7 +235,9 @@ const NotificationDropdown = () => {
                         <div className="flex items-start justify-between mb-1">
                           <p
                             className={`text-sm leading-relaxed ${
-                              !notification.isRead ? "font-semibold text-gray-900" : "text-gray-700"
+                              !notification.isRead
+                                ? "font-semibold text-gray-900"
+                                : "text-gray-700"
                             } line-clamp-2`}
                           >
                             {notification.message}
@@ -248,7 +252,10 @@ const NotificationDropdown = () => {
                           <div className="flex items-center gap-1">
                             <ClockCircleOutlined />
                             <span>
-                              {formatTimeAgo(notification.createdAt || new Date().toISOString())}
+                              {formatTimeAgo(
+                                notification.createdAt ||
+                                  new Date().toISOString()
+                              )}
                             </span>
                           </div>
                           {notification.category && (
@@ -267,7 +274,9 @@ const NotificationDropdown = () => {
                 <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <BellOutlined className="text-2xl text-gray-400" />
                 </div>
-                <h4 className="font-semibold text-gray-700 mb-2">Chưa có thông báo</h4>
+                <h4 className="font-semibold text-gray-700 mb-2">
+                  Chưa có thông báo
+                </h4>
                 <p className="text-sm text-gray-500">
                   Bạn sẽ nhận được thông báo khi có cập nhật mới
                 </p>
@@ -275,25 +284,6 @@ const NotificationDropdown = () => {
             )}
           </Spin>
         </div>
-
-        {/* Footer */}
-        {notifications.length > 0 && (
-          <div className="border-t border-gray-100 bg-gray-50/80 backdrop-blur-sm">
-            <button
-              onClick={() => {
-                setOpen(false);
-                setPageIndex(pageIndex + 1);
-              }}
-              className="w-full px-4 py-3 text-center text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-all duration-300 relative group overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="relative flex items-center justify-center gap-2">
-                <MessageOutlined />
-                Xem tất cả thông báo
-              </span>
-            </button>
-          </div>
-        )}
       </div>
 
       <style>{`

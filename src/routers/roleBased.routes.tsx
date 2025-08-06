@@ -171,13 +171,10 @@ const AuctionDetailSuccessfull = React.lazy(
   () => import("../pages/Manager/AuctionDetailSuccessfull/index")
 );
 
-// Placeholder components for missing routes
-const Statistics = React.lazy(() =>
-  Promise.resolve({
-    default: () => <div>Statistics Page - Coming Soon</div>,
-  })
-);
+// Dashboard component
+const Dashboard = React.lazy(() => import("../components/Common/Dashboard"));
 
+// Placeholder components for missing routes
 const Properties = React.lazy(() =>
   Promise.resolve({
     default: () => <div>Properties Page - Coming Soon</div>,
@@ -190,10 +187,8 @@ const Personnel = React.lazy(() =>
   })
 );
 
-const Dashboard = React.lazy(() =>
-  Promise.resolve({
-    default: () => <div>Dashboard Page - Coming Soon</div>,
-  })
+const CommonDashboard = React.lazy(
+  () => import("../components/Common/Dashboard")
 );
 
 const SupportRegisterAuction = React.lazy(
@@ -227,11 +222,7 @@ export const staffRoutes = [
   },
   {
     path: STAFF_ROUTES.SUB.DASHBOARD,
-    element: wrapWithLazy(Dashboard),
-  },
-  {
-    path: STAFF_ROUTES.SUB.STATISTICS,
-    element: wrapWithLazy(Statistics),
+    element: wrapWithLazy(CommonDashboard),
   },
   {
     path: STAFF_ROUTES.SUB.PROPERTIES,
@@ -390,16 +381,11 @@ export const managerRoutes = [
   },
 ];
 
-// Director Dashboard
-const DirectorDashboard = React.lazy(
-  () => import("../pages/Director/Dashboard/index")
-);
-
 export const directorRoutes = [
   ...managerRoutes,
   {
     path: STAFF_ROUTES.SUB.STATISTICS,
-    element: wrapWithLazy(DirectorDashboard),
+    element: wrapWithLazy(CommonDashboard),
   },
 ];
 
