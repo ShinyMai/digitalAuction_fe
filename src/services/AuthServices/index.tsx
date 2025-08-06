@@ -84,6 +84,17 @@ const updateExpiredProfile = (body: {
 const getListAccount = (params?: any): Promise<ApiResponse<any>> =>
   http.get(AccountAPI.listAccount, { params: params });
 
+const changeStatusAccount = (body: {
+  accountId: string;
+  isActive: boolean;
+}): Promise<ApiResponse<any>> =>
+  http.post(AccountAPI.chanegeStatusAccount, body);
+
+const assignRole = (body: {
+  accountId: string;
+  roleId: number;
+}): Promise<ApiResponse<any>> => http.post(AccountAPI.assignRole, body);
+
 const AuthServices = {
   login,
   register,
@@ -96,6 +107,8 @@ const AuthServices = {
   verifyUpdateAccountOTP,
   updateExpiredProfile,
   getListAccount,
+  changeStatusAccount,
+  assignRole,
 };
 
 export default AuthServices;
