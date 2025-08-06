@@ -1,26 +1,35 @@
 import React from "react";
-import { Table, Card, Button, Tag, Pagination } from "antd";
-import { EyeOutlined, UserOutlined } from "@ant-design/icons";
+import { Table, Card, Button, Tag, Pagination, Space, Popconfirm } from "antd";
+import {
+  UserOutlined,
+  UserSwitchOutlined,
+  CheckCircleOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
 import type { AccountData } from "../types";
 
 interface AccountTableProps {
   listAccount: AccountData[];
   loading: boolean;
-  onRowClick: (record: AccountData) => void;
   pageNumber: number;
   pageSize: number;
   totalCount: number;
   onPageChange: (page: number, size: number) => void;
+  onRowClick: (record: AccountData) => void;
+  onAssignRole: (record: AccountData) => void;
+  onToggleStatus: (record: AccountData) => void;
 }
 
 const AccountTable: React.FC<AccountTableProps> = ({
   listAccount,
   loading,
-  onRowClick,
   pageNumber,
   pageSize,
   totalCount,
   onPageChange,
+  onRowClick,
+  onAssignRole,
+  onToggleStatus,
 }) => {
   const columns = [
     {
@@ -75,18 +84,48 @@ const AccountTable: React.FC<AccountTableProps> = ({
       title: "Hành động",
       key: "action",
       render: (_: unknown, record: AccountData) => (
-        <Button
-          type="primary"
-          icon={<EyeOutlined />}
-          size="small"
-          className="bg-blue-500 hover:bg-blue-600"
-          onClick={(e) => {
-            e.stopPropagation();
-            onRowClick(record);
-          }}
-        >
-          Chi tiết
-        </Button>
+        <Space size="small">
+          <Button
+            type="primary"
+            icon={<UserSwitchOutlined />}
+            size="small"
+            className="bg-blue-500 hover:bg-blue-600"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAssignRole(record);
+            }}
+            title="Phân quyền"
+          >
+            Phân quyền
+          </Button>
+          <div onClick={(e) => e.stopPropagation()}>
+            <Popconfirm
+              title="Xác nhận thay đổi trạng thái"
+              description={`Bạn có chắc chắn muốn ${
+                record.isActive ? "vô hiệu hóa" : "kích hoạt"
+              } tài khoản "${record.name}"?`}
+              onConfirm={() => onToggleStatus(record)}
+              okText="Xác nhận"
+              cancelText="Hủy"
+            >
+              <Button
+                type={record.isActive ? "default" : "primary"}
+                icon={
+                  record.isActive ? <StopOutlined /> : <CheckCircleOutlined />
+                }
+                size="small"
+                className={
+                  record.isActive
+                    ? "border-red-500 text-red-500 hover:bg-red-50"
+                    : "bg-green-500 hover:bg-green-600 text-white border-green-500"
+                }
+                title={record.isActive ? "Vô hiệu hóa" : "Kích hoạt"}
+              >
+                {record.isActive ? "Vô hiệu" : "Kích hoạt"}
+              </Button>
+            </Popconfirm>
+          </div>
+        </Space>
       ),
     },
   ];
@@ -107,7 +146,6 @@ const AccountTable: React.FC<AccountTableProps> = ({
         className="rounded-lg overflow-hidden"
         scroll={{ x: 800 }}
       />
-
       {/* Pagination */}
       <div className="flex justify-end mt-6">
         <Pagination

@@ -10,6 +10,8 @@ export const AccountAPI = {
   verifyUpdateAccountOTP: "/UpdateAccount/Verify-Otp-And-Update",
   updateExpiredProfile: "/UpdateExpiredProfile/Update-Expired-Profile",
   listAccount: "/EmployeeManager/List-Employee-Account",
+  chanegeStatusAccount: "/EmployeeManager/Change-Status-Employee-Account",
+  assignRole: "/EmployeeManager/Assign-Permission-User",
 } as const;
 
 export type AccountAPIKey = keyof typeof AccountAPI;

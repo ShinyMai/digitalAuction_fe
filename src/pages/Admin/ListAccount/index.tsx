@@ -2,10 +2,11 @@ import { useEffect, useState, useCallback } from "react";
 import { Typography } from "antd";
 import AuthServices from "../../../services/AuthServices";
 import { toast } from "react-toastify";
-import type { AccountData, Role } from "./types";
+import type { AccountData } from "./types";
 import SearchFilter from "./components/SearchFilter";
 import AccountTable from "./components/AccountTable";
 import AccountDetailModal from "./components/AccountDetailModal";
+import AssignRoleModal from "./components/AssignRoleModal";
 
 const { Title } = Typography;
 
@@ -21,7 +22,16 @@ const ListAccount = () => {
     null
   );
   const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [assignRoleModalOpen, setAssignRoleModalOpen] = useState(false);
+  const [accountForRoleAssign, setAccountForRoleAssign] =
+    useState<AccountData | null>(null);
+
+  const roles = [
+    { roleId: 3, roleName: "Staff" },
+    { roleId: 4, roleName: "Auctioneer" },
+    { roleId: 5, roleName: "Director" },
+    { roleId: 6, roleName: "Manager" },
+  ];
 
   const getListAccount = useCallback(async () => {
     try {
@@ -59,24 +69,9 @@ const ListAccount = () => {
     }
   }, [pageNumber, pageSize, search, roleId]);
 
-  const getRoles = async () => {
-    try {
-      const res = await AuthServices.getRole();
-      if (res.code === 200) {
-        setRoles(res.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch roles:", error);
-    }
-  };
-
   useEffect(() => {
     getListAccount();
   }, [getListAccount]);
-
-  useEffect(() => {
-    getRoles();
-  }, []);
 
   const handleRowClick = (record: AccountData) => {
     setSelectedAccount(record);
@@ -85,13 +80,57 @@ const ListAccount = () => {
 
   const handleSearch = () => {
     setPageNumber(1);
-    // getListAccount sẽ được gọi tự động do dependency trong useEffect
   };
   const handleReset = () => {
     setSearch("");
     setRoleId(null);
     setPageNumber(1);
-    // getListAccount sẽ được gọi tự động do dependency trong useEffect
+  };
+  const handleAssignRole = (record: AccountData) => {
+    setAccountForRoleAssign(record);
+    setAssignRoleModalOpen(true);
+  };
+  const handleRoleAssign = async (accountId: string, newRoleId: number) => {
+    try {
+      const res = await AuthServices.assignRole({
+        accountId: accountId,
+        roleId: newRoleId,
+      });
+
+      if (res.code === 200) {
+        const selectedRole = roles.find((r) => r.roleId === newRoleId);
+        toast.success(
+          `Đã phân quyền "${selectedRole?.roleName}" thành công cho tài khoản!`
+        );
+        getListAccount();
+      } else {
+        toast.error("Không thể phân quyền tài khoản");
+      }
+    } catch (error) {
+      console.error("Failed to assign role:", error);
+      toast.error("Lỗi khi phân quyền tài khoản");
+      throw error;
+    }
+  };
+
+  const handleToggleStatus = (record: AccountData) => {
+    const changeStatus = async () => {
+      try {
+        const res = await AuthServices.changeStatusAccount({
+          accountId: record.accountId,
+          isActive: !record.isActive,
+        });
+        if (res.code === 200) {
+          toast.success(`Thay đổi trạng thái tài khoản: ${record.name}`);
+        }
+      } catch (error) {
+        console.error("Failed to change account status:", error);
+        toast.error("Lỗi khi thay đổi trạng thái tài khoản");
+      } finally {
+        getListAccount();
+      }
+    };
+    changeStatus();
   };
 
   return (
@@ -109,12 +148,14 @@ const ListAccount = () => {
           roles={roles}
           onSearch={handleSearch}
           onReset={handleReset}
-        />
+        />{" "}
         {/* Table Section */}
         <AccountTable
           listAccount={listAccount}
           loading={loading}
           onRowClick={handleRowClick}
+          onAssignRole={handleAssignRole}
+          onToggleStatus={handleToggleStatus}
           pageNumber={pageNumber}
           pageSize={pageSize}
           totalCount={totalCount}
@@ -122,12 +163,23 @@ const ListAccount = () => {
             setPageNumber(page);
             setPageSize(size);
           }}
-        />
+        />{" "}
         {/* Detail Modal */}
         <AccountDetailModal
           open={detailModalOpen}
           onClose={() => setDetailModalOpen(false)}
           selectedAccount={selectedAccount}
+        />
+        {/* Assign Role Modal */}
+        <AssignRoleModal
+          open={assignRoleModalOpen}
+          onClose={() => {
+            setAssignRoleModalOpen(false);
+            setAccountForRoleAssign(null);
+          }}
+          selectedAccount={accountForRoleAssign}
+          roles={roles}
+          onAssign={handleRoleAssign}
         />
       </div>
     </div>
