@@ -12,7 +12,7 @@ import NotificationDropdown from "../../../components/Notification";
 import UserDropdown from "../../../components/UserDropdown";
 import { logout } from "../../../store/authReduxs/authSlice";
 import type { RootState } from "../../../store/store";
-import EditProfile from "../../../pages/User/UserProfile/EditProfile";
+import EditProfile from "../../../pages/User/UserProfile/EditProfile/EditProfile";
 
 const Header = memo(() => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const Header = memo(() => {
   const [isUpdateProfile, setIsUpdateProfile] = useState(true);
 
   const { user } = useSelector((state: RootState) => state.auth);
-  const isExpired = user?.isExpired ?? true;
+  const isExpired = user ? user.isExpired : false;
 
   const handleLogout = async () => {
     try {

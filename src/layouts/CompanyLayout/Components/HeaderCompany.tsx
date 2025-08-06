@@ -34,9 +34,7 @@ const HeaderCompany = memo(() => {
       navigate("/", { replace: true });
     }
   };
-
-  const isExpired = user?.isExpired ?? true;
-
+  const isExpired = user ? user.isExpired : false;
   return (
     <header className="sticky top-0 z-50 w-full bg-gradient-to-r from-sky-100 to-sky-50 shadow-md border-b border-sky-200">
       <div className="flex items-center justify-between px-4 py-3 sm:px-6 md:px-10 lg:px-12">
