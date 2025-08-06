@@ -1,8 +1,8 @@
-import { Image, Typography, Card } from "antd";
+import { Image, Typography, Card, Alert } from "antd";
 import MINPHAPLOGO from "../../../../assets/LOGO-MINH-PHAP.jpg";
 import dayjs from "dayjs";
 import type { AuctionDataDetail } from "../../Modals";
-import { EnvironmentOutlined } from "@ant-design/icons";
+import { EnvironmentOutlined, WarningOutlined } from "@ant-design/icons";
 
 interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
@@ -20,6 +20,33 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
       <div className="w-full mx-auto bg-white shadow-lg rounded-xl p-6">
         {auctionDetailData ? (
           <div className="space-y-8">
+            {/* Thông báo lý do từ chối - Hiển thị ở đầu trang */}
+            {auctionDetailData.rejectReason && (
+              <div className="mb-6">
+                <Alert
+                  message={
+                    <div className="flex items-center">
+                      <WarningOutlined className="text-red-600 mr-2 text-lg" />
+                      <span className="font-semibold text-red-800">
+                        Phiên đấu giá này đã bị từ chối
+                      </span>
+                    </div>
+                  }
+                  description={
+                    <div className="mt-3 bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                      <h4 className="font-medium text-red-800 mb-2">Lý do từ chối:</h4>
+                      <p className="text-red-700 whitespace-pre-wrap leading-relaxed">
+                        {auctionDetailData.rejectReason}
+                      </p>
+                    </div>
+                  }
+                  type="error"
+                  showIcon={false}
+                  className="border-red-300 shadow-lg"
+                />
+              </div>
+            )}
+
             {/* Thông tin đấu giá */}
             <div className="flex flex-col md:flex-row items-stretch mb-6">
               <div className="w-full md:w-1/3 mb-4 md:mb-0 flex-shrink-0">

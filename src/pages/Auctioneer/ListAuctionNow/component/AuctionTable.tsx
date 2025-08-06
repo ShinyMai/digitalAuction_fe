@@ -3,7 +3,7 @@ import { Table, Tooltip, type TableProps } from "antd";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import type { AuctionDataList } from "../../Modals";
-import { AUCTIONEER_ROUTES, STAFF_ROUTES } from "../../../../routers";
+import { STAFF_ROUTES } from "../../../../routers";
 import { useSelector } from "react-redux";
 import UserNameOrId from "../../../../components/Common/UserNameOrId";
 
@@ -136,25 +136,31 @@ const AuctionTable = ({
         onRow={(record) => ({
           onClick: () => {
             const rolePath = role?.toLowerCase();
-
-            if (rolePath == STAFF_ROUTES.PATH) {
-              navigate(
-                `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_NOW}/${STAFF_ROUTES.SUB.AUCTION_DETAIL_NOW}`,
-                {
-                  state: { key: record.auctionId },
-                  replace: true,
-                }
-              );
-            } else if (rolePath == AUCTIONEER_ROUTES.PATH) {
-              console.log("RolePath", rolePath);
-              navigate(
-                `/${rolePath}/${AUCTIONEER_ROUTES.SUB.AUCTION_NOW}/${AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW}`,
-                {
-                  state: { key: record.auctionId },
-                  replace: true,
-                }
-              );
-            }
+            navigate(
+              `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_NOW}/${STAFF_ROUTES.SUB.AUCTION_DETAIL_NOW}`,
+              {
+                state: { key: record.auctionId },
+                replace: true,
+              }
+            );
+            // if (rolePath == STAFF_ROUTES.PATH) {
+            //   navigate(
+            //     `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_NOW}/${STAFF_ROUTES.SUB.AUCTION_DETAIL_NOW}`,
+            //     {
+            //       state: { key: record.auctionId },
+            //       replace: true,
+            //     }
+            //   );
+            // } else if (rolePath == AUCTIONEER_ROUTES.PATH) {
+            //   console.log("RolePath", rolePath);
+            //   navigate(
+            //     `/${rolePath}/${AUCTIONEER_ROUTES.SUB.AUCTION_NOW}/${AUCTIONEER_ROUTES.SUB.AUCTION_DETAIL_NOW}`,
+            //     {
+            //       state: { key: record.auctionId },
+            //       replace: true,
+            //     }
+            //   );
+            // }
           },
         })}
         rowClassName="cursor-pointer hover:bg-blue-50 transition-colors duration-200"

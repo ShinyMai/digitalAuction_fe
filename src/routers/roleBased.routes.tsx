@@ -389,10 +389,6 @@ export const directorRoutes = [
   },
 ];
 
-const DashboardAuctioneer = React.lazy(
-  () => import("../pages/Auctioneer/Dashboard/index")
-);
-
 const Reports = React.lazy(() => import("../pages/Auctioneer/Reports/index"));
 
 export const auctioneerRoutes = [
@@ -410,10 +406,6 @@ export const auctioneerRoutes = [
   {
     path: AUCTIONEER_ROUTES.SUB.LIST_AUCTION_ASSIGNED,
     element: wrapWithLazy(ListAuctionAssigned),
-  },
-  {
-    path: AUCTIONEER_ROUTES.SUB.DASHBOARD,
-    element: wrapWithLazy(DashboardAuctioneer),
   },
   {
     path: AUCTIONEER_ROUTES.SUB.REPORTS,

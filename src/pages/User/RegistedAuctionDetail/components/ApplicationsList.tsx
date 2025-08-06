@@ -9,6 +9,13 @@ import {
   Tooltip,
   Space,
   Button,
+  Modal,
+  Checkbox,
+  Input,
+  Upload,
+  Form,
+  Divider,
+  message,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -16,6 +23,9 @@ import {
   TrophyOutlined,
   CloseCircleOutlined,
   DownloadOutlined,
+  ExclamationCircleOutlined,
+  UploadOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import { formatNumber } from "../../../../utils/numberFormat";
 import type {
@@ -32,6 +42,7 @@ import { useSelector } from "react-redux";
 import type { RegistrationAuctionModals } from "../../../Anonymous/Modals";
 
 const { Text } = Typography;
+const { TextArea } = Input;
 
 interface ApplicationsListProps {
   filteredDocuments: AuctionDocument[];
@@ -49,6 +60,13 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
   }>({});
   const { user } = useSelector((state: any) => state.auth);
   const [userInfo, setUserInfo] = useState<any>();
+
+  // Modal states
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
+  const [cancelReason, setCancelReason] = useState("");
+  const [uploadedFile, setUploadedFile] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch auction status data for all documents
   useEffect(() => {
@@ -89,12 +107,81 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
     }
   };
 
-  console.log("User Info:", userInfo);
-
   useEffect(() => {
     getUserInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  // Handle cancel modal functions
+  const handleOpenCancelModal = () => {
+    setIsCancelModalVisible(true);
+  };
+
+  const handleCloseCancelModal = () => {
+    setIsCancelModalVisible(false);
+    setSelectedAssets([]);
+    setCancelReason("");
+    setUploadedFile(null);
+  };
+
+  const handleAssetSelection = (assetId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedAssets(prev => [...prev, assetId]);
+    } else {
+      setSelectedAssets(prev => prev.filter(id => id !== assetId));
+    }
+  };
+
+  const handleSelectAllAssets = (checked: boolean) => {
+    if (checked) {
+      setSelectedAssets(filteredDocuments.map(doc => doc.auctionDocumentsId));
+    } else {
+      setSelectedAssets([]);
+    }
+  };
+
+  const handleFileUpload = (info: any) => {
+    if (info.file.status === 'done') {
+      setUploadedFile(info.file);
+      message.success(`${info.file.name} file uploaded successfully`);
+    } else if (info.file.status === 'error') {
+      message.error(`${info.file.name} file upload failed.`);
+    }
+  };
+
+  const handleSubmitCancelRequest = async () => {
+    if (selectedAssets.length === 0) {
+      message.error("Vui lòng chọn ít nhất một tài sản để hủy tham gia!");
+      return;
+    }
+
+    if (!cancelReason.trim()) {
+      message.error("Vui lòng nhập lý do hủy tham gia!");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const dataSubmit = {
+        auctionId: auctionId,
+        assetsSelected: selectedAssets,
+        refundReason: cancelReason,
+        refundProofs: uploadedFile ? [uploadedFile] : [],
+      }
+      console.log("Data to submit:", dataSubmit);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      message.success("Đã gửi yêu cầu hủy tham gia đấu giá thành công!");
+      handleCloseCancelModal();
+    } catch (error) {
+      console.error("Error submitting cancel request:", error);
+      message.error("Có lỗi xảy ra khi gửi yêu cầu!");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Function to transform record and userInfo to match exportToDocx requirements
   const transformDataForExport = (
@@ -402,23 +489,200 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
   );
 
   return (
-    <Card
-      title="Danh sách đăng ký tham gia đấu giá"
-      style={{ marginBottom: "24px " }}
-    >
-      {filteredDocuments.length === 0 ? (
-        <Empty
-          description={
-            documents.length === 0
-              ? "Bạn chưa đăng ký tham gia phiên đấu giá này"
-              : "Không có đăng ký nào phù hợp với bộ lọc"
-          }
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-        />
-      ) : (
-        renderTableView()
-      )}
-    </Card>
+    <>
+      <Card
+        title={
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span>Danh sách đăng ký tham gia đấu giá</span>
+            <Button
+              type="primary"
+              danger
+              size="small"
+              icon={<DeleteOutlined />}
+              onClick={handleOpenCancelModal}
+            >
+              Xin hủy tham gia đấu giá
+            </Button>
+          </div>
+        }
+        style={{ marginBottom: "24px " }}
+      >
+        {filteredDocuments.length === 0 ? (
+          <Empty
+            description={
+              documents.length === 0
+                ? "Bạn chưa đăng ký tham gia phiên đấu giá này"
+                : "Không có đăng ký nào phù hợp với bộ lọc"
+            }
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
+        ) : (
+          renderTableView()
+        )}
+      </Card>
+
+      {/* Cancel Participation Modal */}
+      <Modal
+        title={
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <ExclamationCircleOutlined style={{ color: "#ff4d4f", fontSize: "20px" }} />
+            <span style={{ fontSize: "16px", fontWeight: "600" }}>
+              Xin hủy tham gia đấu giá
+            </span>
+          </div>
+        }
+        open={isCancelModalVisible}
+        onCancel={handleCloseCancelModal}
+        width={700}
+        footer={null}
+        destroyOnClose
+        className="cancel-participation-modal"
+      >
+        <div style={{ padding: "20px 0" }}>
+          {/* Warning Message */}
+          <div
+            style={{
+              background: "#fff2f0",
+              border: "1px solid #ffccc7",
+              borderRadius: "6px",
+              padding: "12px 16px",
+              marginBottom: "24px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            <ExclamationCircleOutlined style={{ color: "#ff4d4f" }} />
+            <Text style={{ color: "#ff4d4f", fontSize: "14px" }}>
+              Việc hủy tham gia đấu giá sẽ được xem xét trong các trường hợp bất khả kháng. Vui lòng cân nhắc kỹ trước khi thực hiện.
+            </Text>
+          </div>
+
+          <Form layout="vertical">
+            {/* Asset Selection */}
+            <Form.Item
+              label={<Text strong style={{ fontSize: "14px" }}>Chọn tài sản muốn hủy tham gia</Text>}
+              required
+            >
+              <div style={{
+                border: "1px solid #d9d9d9",
+                borderRadius: "6px",
+                padding: "16px",
+                background: "#fafafa"
+              }}>
+                <div style={{ marginBottom: "12px" }}>
+                  <Checkbox
+                    checked={selectedAssets.length === filteredDocuments.length && filteredDocuments.length > 0}
+                    indeterminate={selectedAssets.length > 0 && selectedAssets.length < filteredDocuments.length}
+                    onChange={(e) => handleSelectAllAssets(e.target.checked)}
+                  >
+                    <Text strong>Chọn tất cả ({filteredDocuments.length} tài sản)</Text>
+                  </Checkbox>
+                </div>
+                <Divider style={{ margin: "12px 0" }} />
+                <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                  {filteredDocuments.map((asset) => (
+                    <div
+                      key={asset.auctionDocumentsId}
+                      style={{
+                        marginBottom: "8px",
+                        padding: "8px 12px",
+                        background: "white",
+                        borderRadius: "4px",
+                        border: "1px solid #f0f0f0"
+                      }}
+                    >
+                      <Checkbox
+                        checked={selectedAssets.includes(asset.auctionDocumentsId)}
+                        onChange={(e) => handleAssetSelection(asset.auctionDocumentsId, e.target.checked)}
+                      >
+                        <div>
+                          <Text strong style={{ color: "#1890ff" }}>{asset.tagName}</Text>
+                          <br />
+                          <Text type="secondary" style={{ fontSize: "12px" }}>
+                            STT: {asset.numericalOrder} • Cọc: {formatNumber(asset.deposit)} VNĐ
+                          </Text>
+                        </div>
+                      </Checkbox>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Form.Item>
+
+            {/* Reason TextArea */}
+            <Form.Item
+              label={<Text strong style={{ fontSize: "14px" }}>Lý do hủy tham gia</Text>}
+              required
+            >
+              <TextArea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Vui lòng nhập lý do chi tiết tại sao bạn muốn hủy tham gia đấu giá..."
+                rows={4}
+                maxLength={500}
+                showCount
+                style={{
+                  borderRadius: "6px",
+                  fontSize: "14px"
+                }}
+              />
+            </Form.Item>
+
+            {/* File Upload */}
+            <Form.Item
+              label={<Text strong style={{ fontSize: "14px" }}>Tài liệu đính kèm (tùy chọn)</Text>}
+            >
+              <Upload
+                name="file"
+                maxCount={1}
+                beforeUpload={() => false} // Prevent auto upload
+                onChange={handleFileUpload}
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              >
+                <Button
+                  icon={<UploadOutlined />}
+                  style={{
+                    borderRadius: "6px",
+                    border: "1px dashed #d9d9d9"
+                  }}
+                >
+                  Chọn file đính kèm
+                </Button>
+              </Upload>
+              <Text type="secondary" style={{ fontSize: "12px", marginTop: "8px", display: "block" }}>
+                Hỗ trợ: PDF, DOC, DOCX, JPG, PNG (tối đa 10MB)
+              </Text>
+            </Form.Item>
+
+            {/* Action Buttons */}
+            <Form.Item style={{ marginBottom: 0, marginTop: "32px" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+                <Button
+                  onClick={handleCloseCancelModal}
+                  style={{ borderRadius: "6px" }}
+                >
+                  Hủy bỏ
+                </Button>
+                <Button
+                  type="primary"
+                  danger
+                  loading={isSubmitting}
+                  onClick={handleSubmitCancelRequest}
+                  icon={<DeleteOutlined />}
+                  style={{
+                    borderRadius: "6px",
+                    boxShadow: "0 2px 4px rgba(255, 77, 79, 0.3)"
+                  }}
+                >
+                  {isSubmitting ? "Đang gửi..." : "Xác nhận hủy tham gia"}
+                </Button>
+              </div>
+            </Form.Item>
+          </Form>
+        </div>
+      </Modal>
+    </>
   );
 };
 

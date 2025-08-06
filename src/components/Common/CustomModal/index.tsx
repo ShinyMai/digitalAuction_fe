@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./styles.module.scss";
 import "./style.scss";
 import { ModalWrapper } from "./styled";
-import cn from "../../../libs/classnames";
+import cn from "../../../utils/classnames";
 
 interface CustomModalProps {
   children: React.ReactNode;
