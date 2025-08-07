@@ -42,8 +42,6 @@ const AuctionDetailAnonymous = () => {
     }
   };
 
-  console.log("auctionDetailData", auctionDetailData);
-
   return (
     <section className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -94,7 +92,10 @@ const AuctionDetailAnonymous = () => {
               ),
               children: (
                 <Card className="shadow-xl bg-white/70 backdrop-blur-sm border-0 rounded-2xl">
-                  <ListAuctionDocument auctionId={auctionId} />
+                  <ListAuctionDocument
+                    auctionId={auctionId}
+                    auctionDetailData={auctionDetailData}
+                  />
                 </Card>
               ),
             },
@@ -111,6 +112,7 @@ const AuctionDetailAnonymous = () => {
                   <ListAuctionDocumentSuccessRegister
                     auctionId={auctionId}
                     auctionDateModals={auctionDateModal}
+                    auctionDetailData={auctionDetailData}
                   />
                 </Card>
               ),

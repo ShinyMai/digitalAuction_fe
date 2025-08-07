@@ -15,7 +15,6 @@ import {
   Upload,
   Form,
   Divider,
-  message,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -141,43 +140,62 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
   };
 
   const handleFileUpload = (info: any) => {
-    if (info.file.status === 'done') {
-      setUploadedFile(info.file);
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
+    const { file } = info;
+
+    // Khi beforeUpload return false, file sẽ có status undefined
+    // Chúng ta cần set uploadedFile trực tiếp
+    if (file) {
+      setUploadedFile(file);
+      toast.success(`Đã chọn file: ${file.name}`);
     }
   };
 
   const handleSubmitCancelRequest = async () => {
     if (selectedAssets.length === 0) {
-      message.error("Vui lòng chọn ít nhất một tài sản để hủy tham gia!");
+      toast.error("Vui lòng chọn ít nhất một tài sản để hủy tham gia!");
       return;
     }
 
     if (!cancelReason.trim()) {
-      message.error("Vui lòng nhập lý do hủy tham gia!");
+      toast.error("Vui lòng nhập lý do hủy tham gia!");
+      return;
+    }
+
+    if (!uploadedFile) {
+      toast.error("Vui lòng tải lên tài liệu đính kèm!");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const dataSubmit = {
-        auctionId: auctionId,
-        assetsSelected: selectedAssets,
-        refundReason: cancelReason,
-        refundProofs: uploadedFile ? [uploadedFile] : [],
-      }
-      console.log("Data to submit:", dataSubmit);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Tạo FormData để gửi kèm file
+      const formData = new FormData();
 
-      message.success("Đã gửi yêu cầu hủy tham gia đấu giá thành công!");
+      // Thêm AuctionDocumentIds (array) vào FormData
+      selectedAssets.forEach((assetId) => {
+        formData.append(`AuctionDocumentIds`, assetId);
+      });
+
+      // Thêm RefundReason
+      formData.append('RefundReason', cancelReason);
+
+      // Thêm file nếu có
+      if (uploadedFile) {
+        // Khi sử dụng beforeUpload: false, file object chính là originFileObj
+        const fileToUpload = uploadedFile.originFileObj || uploadedFile;
+        formData.append('RefundProof', fileToUpload);
+      }
+      const response = await AuctionServices.userRequestRefund(formData);
+      if (response.code == 200) {
+        toast.success(response.message)
+      } else {
+        toast.error(response.message || "Có lỗi xảy ra khi gửi yêu cầu!");
+      }
       handleCloseCancelModal();
     } catch (error) {
       console.error("Error submitting cancel request:", error);
-      message.error("Có lỗi xảy ra khi gửi yêu cầu!");
+      toast.error("Có lỗi xảy ra khi gửi yêu cầu!");
     } finally {
       setIsSubmitting(false);
     }
@@ -554,7 +572,8 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
           >
             <ExclamationCircleOutlined style={{ color: "#ff4d4f" }} />
             <Text style={{ color: "#ff4d4f", fontSize: "14px" }}>
-              Việc hủy tham gia đấu giá sẽ được xem xét trong các trường hợp bất khả kháng. Vui lòng cân nhắc kỹ trước khi thực hiện.
+              Việc hủy tham gia đấu giá sẽ được xem xét trong các trường hợp bất khả kháng.
+              <strong> Bắt buộc phải có tài liệu chứng minh lý do hủy.</strong> Vui lòng cân nhắc kỹ trước khi thực hiện.
             </Text>
           </div>
 
@@ -631,7 +650,8 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
 
             {/* File Upload */}
             <Form.Item
-              label={<Text strong style={{ fontSize: "14px" }}>Tài liệu đính kèm (tùy chọn)</Text>}
+              label={<Text strong style={{ fontSize: "14px" }}>Tài liệu đính kèm <span style={{ color: 'red' }}>*</span></Text>}
+              required
             >
               <Upload
                 name="file"
@@ -639,20 +659,31 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                 beforeUpload={() => false} // Prevent auto upload
                 onChange={handleFileUpload}
                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                style={{ width: '100%' }}
               >
                 <Button
                   icon={<UploadOutlined />}
                   style={{
                     borderRadius: "6px",
-                    border: "1px dashed #d9d9d9"
+                    border: uploadedFile ? "1px solid #52c41a" : "1px dashed #d9d9d9",
+                    borderColor: uploadedFile ? "#52c41a" : "#d9d9d9",
+                    color: uploadedFile ? "#52c41a" : undefined,
+                    width: '100%'
                   }}
                 >
-                  Chọn file đính kèm
+                  {uploadedFile ? `Đã chọn: ${uploadedFile.name}` : "Chọn file đính kèm (Bắt buộc)"}
                 </Button>
               </Upload>
-              <Text type="secondary" style={{ fontSize: "12px", marginTop: "8px", display: "block" }}>
-                Hỗ trợ: PDF, DOC, DOCX, JPG, PNG (tối đa 10MB)
-              </Text>
+              <div style={{ marginTop: "8px" }}>
+                <Text type="secondary" style={{ fontSize: "12px", display: "block" }}>
+                  <span style={{ color: 'red' }}>* Bắt buộc:</span> Hỗ trợ PDF, DOC, DOCX, JPG, PNG (tối đa 10MB)
+                </Text>
+                {uploadedFile && (
+                  <Text style={{ fontSize: "12px", color: "#52c41a", display: "block", marginTop: "4px" }}>
+                    ✓ File đã được chọn: {uploadedFile.name} ({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </Text>
+                )}
+              </div>
             </Form.Item>
 
             {/* Action Buttons */}
