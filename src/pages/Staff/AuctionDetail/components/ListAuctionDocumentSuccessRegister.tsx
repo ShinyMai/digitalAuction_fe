@@ -83,16 +83,16 @@ interface GroupedParticipant {
     numericalOrder?: number;
     statusDeposit: number;
     statusTicket: number;
-    statusRefund?: number;
+    statusRefund?: number; // Trạng thái chung (có ít nhất 1 tài sản có yêu cầu hoàn)
     isAttended?: boolean;
     totalRegistrationFee: number;
-    nonParticipationFileUrl?: string; // URL file lý do không tham gia - từ refundProof
-    refundReason?: string; // Lý do hoàn cọc
     assets: {
         tagName: string;
         registrationFee: number;
         auctionDocumentsId: string;
-        statusRefund?: number; // Thêm statusRefund cho từng tài sản
+        statusRefund?: number; // Trạng thái riêng cho từng tài sản
+        refundReason?: string; // Lý do riêng cho từng tài sản
+        refundProof?: string; // File riêng cho từng tài sản
     }[];
     // Để hiển thị modal, lấy document đầu tiên làm đại diện
     representativeDocument: AuctionDocument;
@@ -143,6 +143,10 @@ const ListAuctionDocumentSuccesRegister = ({
     const [selectedParticipant, setSelectedParticipant] = useState<GroupedParticipant | null>(null);
     const [reasonModalLoading, setReasonModalLoading] = useState<boolean>(false);
 
+    // State cho modal xem chi tiết (đã xử lý)
+    const [isViewDetailModalVisible, setIsViewDetailModalVisible] = useState<boolean>(false);
+    const [selectedDetailParticipant, setSelectedDetailParticipant] = useState<GroupedParticipant | null>(null);
+
     // State cho modal từ chối yêu cầu
     const [isRejectModalVisible, setIsRejectModalVisible] = useState<boolean>(false);
     const [rejectReason, setRejectReason] = useState<string>("");
@@ -185,14 +189,16 @@ const ListAuctionDocumentSuccesRegister = ({
                     registrationFee: doc.registrationFee,
                     auctionDocumentsId: doc.auctionDocumentsId,
                     statusRefund: doc.statusRefund,
+                    refundReason: doc.refundReason, // Lưu lý do riêng cho từng tài sản
+                    refundProof: doc.refundProof, // Lưu file riêng cho từng tài sản
                 });
                 existing.totalRegistrationFee += doc.registrationFee;
 
-                // Cập nhật thông tin refund nếu tài sản này có yêu cầu hoàn cọc
-                if (doc.statusRefund === 1 && !existing.refundReason) {
-                    existing.refundReason = doc.refundReason;
-                    existing.nonParticipationFileUrl = doc.refundProof;
-                    existing.statusRefund = 1;
+                // Cập nhật trạng thái chung: ưu tiên trạng thái "yêu cầu hoàn cọc" (1) nếu có
+                if (doc.statusRefund === 1 || doc.statusRefund === 2 || doc.statusRefund === 3) {
+                    if (!existing.statusRefund || (existing.statusRefund !== 1 && doc.statusRefund === 1)) {
+                        existing.statusRefund = doc.statusRefund;
+                    }
                 }
             } else {
                 grouped.set(key, {
@@ -202,23 +208,25 @@ const ListAuctionDocumentSuccesRegister = ({
                     numericalOrder: doc.numericalOrder,
                     statusDeposit: doc.statusDeposit,
                     statusTicket: doc.statusTicket,
-                    statusRefund: doc.statusRefund === 1 ? 1 : undefined, // Chỉ set khi có yêu cầu hoàn cọc
+                    statusRefund: doc.statusRefund === 1 || doc.statusRefund === 2 || doc.statusRefund === 3 ? doc.statusRefund : undefined, // Set khi có yêu cầu hoàn cọc hoặc đã xử lý
                     isAttended: doc.isAttended,
                     totalRegistrationFee: doc.registrationFee,
-                    nonParticipationFileUrl: doc.statusRefund === 1 ? doc.refundProof : undefined,
-                    refundReason: doc.statusRefund === 1 ? doc.refundReason : undefined,
                     assets: [{
                         tagName: doc.tagName,
                         registrationFee: doc.registrationFee,
                         auctionDocumentsId: doc.auctionDocumentsId,
                         statusRefund: doc.statusRefund,
+                        refundReason: doc.refundReason, // Lưu lý do riêng cho từng tài sản
+                        refundProof: doc.refundProof, // Lưu file riêng cho từng tài sản
                     }],
                     representativeDocument: doc,
                 });
             }
         });
 
-        return Array.from(grouped.values());
+        const result = Array.from(grouped.values());
+
+        return result;
     }, [auctionDocuments]);
 
     // Kiểm tra nếu ngày hiện tại lớn hơn registerEndDate
@@ -278,16 +286,28 @@ const ListAuctionDocumentSuccesRegister = ({
         }));
     };
 
-    // Xử lý hiển thị modal lý do không tham gia
+    // Xử lý hiển thị modal lý do không tham gia (cho yêu cầu chờ phê duyệt)
     const handleShowReasonModal = (participant: GroupedParticipant) => {
         setSelectedParticipant(participant);
         setIsModalVisible(true);
     };
 
-    // Xử lý đóng modal
+    // Xử lý hiển thị modal xem chi tiết (cho yêu cầu đã xử lý)
+    const handleShowDetailModal = (participant: GroupedParticipant) => {
+        setSelectedDetailParticipant(participant);
+        setIsViewDetailModalVisible(true);
+    };
+
+    // Xử lý đóng modal yêu cầu chờ phê duyệt
     const handleCloseModal = () => {
         setIsModalVisible(false);
         setSelectedParticipant(null);
+    };
+
+    // Xử lý đóng modal xem chi tiết
+    const handleCloseDetailModal = () => {
+        setIsViewDetailModalVisible(false);
+        setSelectedDetailParticipant(null);
     };
 
     // Xử lý đồng ý lý do không tham gia - Cập nhật tất cả tài sản của người này
@@ -297,18 +317,25 @@ const ListAuctionDocumentSuccesRegister = ({
         try {
             setReasonModalLoading(true);
 
-            // Gọi API để phê duyệt lý do không tham gia cho tất cả tài sản của người này
-            // const assetIds = selectedParticipant.assets.map(asset => asset.auctionDocumentsId);
+            const approveData = {
+                auctionDocumentIds: selectedParticipant.assets
+                    .filter(asset => asset.statusRefund === 1)
+                    .map(asset => asset.auctionDocumentsId),
+                noteReviewRefund: "Phê duyệt yêu cầu hoàn cọc",
+                statusRefund: 2
+            };
 
-            // TODO: Gọi API để phê duyệt lý do không tham gia cho tất cả assets
-            // await AuctionServices.approveNonParticipationForParticipant(
-            //     selectedParticipant.citizenIdentification, 
-            //     assetIds
-            // );
+            const response = await AuctionServices.staffReviewRefund(approveData);
+            if (response.code == 200) {
+                toast.success(`Đã phê duyệt yêu cầu hoàn cọc cho ${selectedParticipant.name} (${selectedParticipant.assets.filter(asset => asset.statusRefund === 1).length} tài sản)!`);
+                handleCloseModal();
+                getListAuctionDocument(); // Refresh danh sách
+            } else {
+                // Thay thế ID bằng tên tài sản trong message
+                const friendlyMessage = replaceDocumentIdWithTagName(response.message);
+                toast.error(friendlyMessage);
+            }
 
-            toast.success(`Đã phê duyệt lý do không tham gia cho ${selectedParticipant.name} (${selectedParticipant.assets.length} tài sản)!`);
-            handleCloseModal();
-            getListAuctionDocument(); // Refresh danh sách
         } catch (error) {
             toast.error("Lỗi khi phê duyệt lý do không tham gia!");
             console.error(error);
@@ -333,7 +360,6 @@ const ListAuctionDocumentSuccesRegister = ({
         try {
             setRejectModalLoading(true);
 
-            // Dữ liệu để console.log và gửi API
             const rejectData = {
                 auctionDocumentIds: selectedParticipant.assets
                     .filter(asset => asset.statusRefund === 1)
@@ -342,9 +368,6 @@ const ListAuctionDocumentSuccesRegister = ({
                 statusRefund: 3
             };
 
-            console.log("Dữ liệu từ chối yêu cầu hoàn cọc:", rejectData);
-
-            // TODO: Gọi API để từ chối yêu cầu hoàn cọc
             const response = await AuctionServices.staffReviewRefund(rejectData);
             if (response.code == 200) {
                 toast.success(`Đã từ chối yêu cầu hoàn cọc cho ${selectedParticipant.name}!`);
@@ -538,9 +561,13 @@ const ListAuctionDocumentSuccesRegister = ({
                     </div>
                     <div>
                         <Tag color={
-                            record.statusRefund === 1 ? "orange" : "gray"
+                            record.statusRefund === 1 ? "orange" :
+                                record.statusRefund === 2 ? "green" :
+                                    record.statusRefund === 3 ? "red" : "gray"
                         }>
-                            {record.statusRefund === 1 ? "Yêu cầu hoàn cọc" : "Không yêu cầu"}
+                            {record.statusRefund === 1 ? "Yêu cầu hoàn cọc" :
+                                record.statusRefund === 2 ? "Đã chấp nhận hoàn" :
+                                    record.statusRefund === 3 ? "Đã từ chối hoàn" : "Không yêu cầu"}
                         </Tag>
                     </div>
                     {record.isAttended !== undefined && (
@@ -556,30 +583,57 @@ const ListAuctionDocumentSuccesRegister = ({
         {
             title: "Thao tác",
             key: "actions",
-            width: 150,
-            render: (record: GroupedParticipant) => (
-                <div className="space-y-2">
-                    {record.statusRefund === 1 ? (
-                        <Button
-                            type="primary"
-                            size="small"
-                            icon={<EyeOutlined />}
-                            onClick={() => handleShowReasonModal(record)}
-                            className="bg-blue-500 hover:bg-blue-600 w-full"
-                        >
-                            Xem lý do
-                        </Button>
-                    ) : (
-                        <Button
-                            size="small"
-                            disabled
-                            className="w-full"
-                        >
-                            Không có yêu cầu
-                        </Button>
-                    )}
-                </div>
-            ),
+            width: 180,
+            render: (record: GroupedParticipant) => {
+                // Kiểm tra có yêu cầu chờ xử lý không
+                const hasPendingRequests = record.assets.some(asset => asset.statusRefund === 1);
+                // Kiểm tra có yêu cầu đã xử lý không  
+                const hasProcessedRequests = record.assets.some(asset => asset.statusRefund === 2 || asset.statusRefund === 3);
+
+                return (
+                    <div className="space-y-1">
+                        {/* Button xử lý yêu cầu - chỉ hiển thị khi có yêu cầu chờ xử lý */}
+                        {hasPendingRequests && (
+                            <Button
+                                type="primary"
+                                size="small"
+                                icon={<EyeOutlined />}
+                                onClick={() => handleShowReasonModal(record)}
+                                className="bg-orange-500 hover:bg-orange-600 w-full"
+                            >
+                                Xử lý yêu cầu
+                            </Button>
+                        )}
+
+                        {/* Button xem lý do - hiển thị khi có yêu cầu đã xử lý */}
+                        {hasProcessedRequests && (
+                            <Button
+                                type="primary"
+                                size="small"
+                                icon={<EyeOutlined />}
+                                onClick={() => handleShowDetailModal(record)}
+                                className={`w-full ${record.statusRefund === 2 ? 'bg-green-500 hover:bg-green-600' :
+                                    record.statusRefund === 3 ? 'bg-red-500 hover:bg-red-600' :
+                                        'bg-blue-500 hover:bg-blue-600'
+                                    }`}
+                            >
+                                Xem lý do
+                            </Button>
+                        )}
+
+                        {/* Trường hợp không có yêu cầu nào */}
+                        {!hasPendingRequests && !hasProcessedRequests && (
+                            <Button
+                                size="small"
+                                disabled
+                                className="w-full"
+                            >
+                                Không có yêu cầu
+                            </Button>
+                        )}
+                    </div>
+                );
+            },
         },
     ];
 
@@ -723,12 +777,12 @@ const ListAuctionDocumentSuccesRegister = ({
                 />
             </div>
 
-            {/* Modal hiển thị lý do không tham gia */}
+            {/* Modal xử lý yêu cầu hoàn cọc (chỉ cho yêu cầu chờ phê duyệt) */}
             <Modal
                 title={
                     <div className="flex items-center gap-2">
-                        <FileTextOutlined className="text-blue-500" />
-                        <span>Yêu cầu hoàn cọc</span>
+                        <FileTextOutlined className="text-orange-500" />
+                        <span>Xử lý yêu cầu hoàn cọc</span>
                     </div>
                 }
                 open={isModalVisible}
@@ -787,152 +841,115 @@ const ListAuctionDocumentSuccesRegister = ({
                                     <span className="text-gray-600">Yêu cầu hoàn cọc:</span>
                                     <span className="ml-1 font-medium text-orange-600">{selectedParticipant.assets.filter(asset => asset.statusRefund === 1).length} tài sản</span>
                                 </div>
+                                <div>
+                                    <span className="text-gray-600">Tổng tiền yêu cầu hoàn:</span>
+                                    <span className="ml-1 font-medium text-red-600">
+                                        {selectedParticipant.assets
+                                            .filter(asset => asset.statusRefund === 1)
+                                            .reduce((sum, asset) => sum + asset.registrationFee, 0)
+                                            .toLocaleString("vi-VN")} VND
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
                         {/* Danh sách tài sản yêu cầu hoàn cọc */}
-                        <div className="bg-blue-50 p-2 rounded-lg">
-                            <h3 className="font-medium text-blue-800 mb-1 flex items-center gap-2 text-sm">
-                                <ShoppingOutlined className="text-blue-600" />
-                                Tài sản yêu cầu hoàn cọc ({selectedParticipant.assets.filter(asset => asset.statusRefund === 1).length}/{selectedParticipant.assets.length})
+                        <div className="bg-orange-50 p-2 rounded-lg border border-orange-200">
+                            <h3 className="font-medium text-orange-800 mb-2 flex items-center gap-2 text-sm">
+                                <ShoppingOutlined className="text-orange-600" />
+                                Tài sản yêu cầu hoàn cọc ({selectedParticipant.assets.filter(asset => asset.statusRefund === 1).length} tài sản)
                             </h3>
-                            <div className="space-y-1 max-h-32 overflow-y-auto scrollbar-thin">
+                            <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin">
                                 {selectedParticipant.assets
                                     .filter(asset => asset.statusRefund === 1)
                                     .map((asset, index) => (
-                                        <div key={asset.auctionDocumentsId} className="bg-white p-1.5 rounded border border-orange-200">
-                                            <div className="font-medium text-gray-800 text-xs flex items-center gap-1">
-                                                <span className="w-4 h-4 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs">
-                                                    {index + 1}
-                                                </span>
-                                                {asset.tagName}
+                                        <div key={asset.auctionDocumentsId} className="bg-white p-3 rounded-lg border border-orange-200">
+                                            {/* Header tài sản */}
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
+                                                        {index + 1}
+                                                    </span>
+                                                    <h4 className="font-semibold text-gray-800 text-sm">{asset.tagName}</h4>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="text-sm font-medium text-green-600">
+                                                        {asset.registrationFee.toLocaleString("vi-VN")} VND
+                                                    </div>
+                                                    <Tag color="orange">Yêu cầu hoàn</Tag>
+                                                </div>
                                             </div>
-                                            <div className="text-xs text-gray-600">
-                                                {asset.registrationFee.toLocaleString("vi-VN")} VND
+
+                                            {/* Thông tin yêu cầu hoàn cọc */}
+                                            <div className="mt-2 p-2 rounded border bg-orange-50 border-orange-200">
+                                                {/* Lý do */}
+                                                <div className="mb-2">
+                                                    <div className="text-xs font-medium mb-1 text-orange-800">
+                                                        Lý do yêu cầu hoàn cọc:
+                                                    </div>
+                                                    {asset.refundReason ? (
+                                                        <div className="bg-white p-2 rounded text-xs text-gray-700 border">
+                                                            {asset.refundReason}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="bg-gray-100 p-2 rounded text-xs text-gray-500 text-center">
+                                                            Chưa có lý do được cung cấp
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* File đính kèm */}
+                                                <div>
+                                                    <div className="text-xs font-medium mb-1 text-orange-800">
+                                                        File đính kèm:
+                                                    </div>
+                                                    {asset.refundProof ? (
+                                                        <div className="bg-white p-2 rounded border">
+                                                            <div className="flex items-center justify-between">
+                                                                <div className="flex items-center gap-1">
+                                                                    <FileTextOutlined className="text-xs text-orange-500" />
+                                                                    <span className="text-xs text-gray-700">Tài liệu hoàn cọc</span>
+                                                                </div>
+                                                                <div className="flex gap-1">
+                                                                    <Button
+                                                                        type="link"
+                                                                        size="small"
+                                                                        icon={<EyeOutlined />}
+                                                                        href={asset.refundProof}
+                                                                        target="_blank"
+                                                                        className="text-blue-600 text-xs px-1 h-5"
+                                                                    >
+                                                                        Xem
+                                                                    </Button>
+                                                                    <Button
+                                                                        type="link"
+                                                                        size="small"
+                                                                        icon={<DownloadOutlined />}
+                                                                        href={asset.refundProof}
+                                                                        download
+                                                                        className="text-green-600 text-xs px-1 h-5"
+                                                                    >
+                                                                        Tải
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="bg-gray-100 p-2 rounded text-center">
+                                                            <div className="text-gray-500 text-xs">
+                                                                Chưa có file được tải lên
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
                             </div>
-                            {selectedParticipant.assets.filter(asset => asset.statusRefund === 1).length > 0 && (
-                                <div className="bg-orange-100 p-1.5 rounded mt-1">
-                                    <div className="text-xs text-orange-800">
-                                        <strong>Tổng phí yêu cầu hoàn:</strong> {
-                                            selectedParticipant.assets
-                                                .filter(asset => asset.statusRefund === 1)
-                                                .reduce((sum, asset) => sum + asset.registrationFee, 0)
-                                                .toLocaleString("vi-VN")
-                                        } VND
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
-                        {/* Lý do hoàn cọc */}
-                        <div className="bg-yellow-50 p-2 rounded-lg border border-yellow-200">
-                            <h3 className="font-medium text-yellow-800 mb-1 flex items-center gap-2 text-sm">
-                                <FileTextOutlined className="text-yellow-600" />
-                                Lý do yêu cầu hoàn cọc
-                            </h3>
-                            {selectedParticipant.refundReason ? (
-                                <div className="bg-white p-2 rounded border border-yellow-300">
-                                    <p className="text-sm text-gray-800">{selectedParticipant.refundReason}</p>
-                                </div>
-                            ) : (
-                                <div className="bg-gray-100 p-1.5 rounded text-center">
-                                    <div className="text-gray-500 text-xs">
-                                        Chưa có lý do được cung cấp
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* File đính kèm */}
-                        <div className="bg-blue-50 p-2 rounded-lg border border-blue-200">
-                            <h3 className="font-medium text-blue-800 mb-1 flex items-center gap-2 text-sm">
-                                <FileTextOutlined className="text-blue-600" />
-                                File đính kèm
-                            </h3>
-                            {selectedParticipant.nonParticipationFileUrl ? (
-                                <div className="space-y-1">
-                                    <div className="bg-white p-1.5 rounded border border-yellow-300">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-1">
-                                                <FileTextOutlined className="text-red-500 text-xs" />
-                                                <span className="text-xs font-medium">
-                                                    Tài liệu yêu cầu hoàn cọc
-                                                </span>
-                                            </div>
-                                            <div className="flex gap-1">
-                                                <Button
-                                                    type="link"
-                                                    size="small"
-                                                    icon={<EyeOutlined />}
-                                                    href={selectedParticipant.nonParticipationFileUrl}
-                                                    target="_blank"
-                                                    className="text-blue-600 text-xs px-1 h-6"
-                                                >
-                                                    Xem
-                                                </Button>
-                                                <Button
-                                                    type="link"
-                                                    size="small"
-                                                    icon={<DownloadOutlined />}
-                                                    href={selectedParticipant.nonParticipationFileUrl}
-                                                    download
-                                                    className="text-green-600 text-xs px-1 h-6"
-                                                >
-                                                    Tải
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="text-xs text-yellow-700 bg-yellow-100 p-1.5 rounded">
-                                        💡 File này áp dụng cho tất cả {selectedParticipant.assets.length} tài sản.
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="bg-gray-100 p-1.5 rounded text-center">
-                                    <FileTextOutlined className="text-gray-400 text-sm mb-1" />
-                                    <div className="text-gray-500 text-xs">
-                                        Chưa có file được tải lên
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Trạng thái hiện tại compact */}
-                        <div className="bg-blue-50 p-2 rounded-lg">
-                            <h3 className="font-medium text-blue-800 mb-1 text-sm">
-                                Trạng thái hiện tại
-                            </h3>
-                            <div className="flex gap-1 flex-wrap">
-                                <Tag color={selectedParticipant.statusDeposit === 0 ? "red" : "green"} className="text-xs">
-                                    {selectedParticipant.statusDeposit === 0 ? "Chưa cọc" : "Đã cọc"}
-                                </Tag>
-                                <Tag color={
-                                    selectedParticipant.statusTicket === 0 ? "red" :
-                                        selectedParticipant.statusTicket === 1 ? "blue" :
-                                            selectedParticipant.statusTicket === 2 ? "cyan" : "green"
-                                } className="text-xs">
-                                    {selectedParticipant.statusTicket === 0 ? "Chưa chuyển tiền" :
-                                        selectedParticipant.statusTicket === 1 ? "Đã chuyển tiền" :
-                                            selectedParticipant.statusTicket === 2 ? "Đã ký phiếu" : "Đã hoàn tiền"}
-                                </Tag>
-                                <Tag color={
-                                    selectedParticipant.statusRefund === 1 ? "orange" : "gray"
-                                } className="text-xs">
-                                    {selectedParticipant.statusRefund === 1 ? "Yêu cầu hoàn cọc" : "Không yêu cầu"}
-                                </Tag>
-                                {selectedParticipant.isAttended !== undefined && (
-                                    <Tag color={selectedParticipant.isAttended ? "green" : "red"} className="text-xs">
-                                        {selectedParticipant.isAttended ? "Đã tham gia" : "Không tham gia"}
-                                    </Tag>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Cảnh báo compact */}
-                        <div className="bg-orange-50 border border-orange-200 p-1.5 rounded-lg">
+                        {/* Cảnh báo */}
+                        <div className="bg-orange-50 border border-orange-200 p-2 rounded-lg">
                             <div className="text-orange-800 text-xs">
                                 <strong>⚠️ Lưu ý:</strong> Hành động sẽ áp dụng cho {selectedParticipant.assets.filter(asset => asset.statusRefund === 1).length} tài sản được yêu cầu hoàn cọc của {selectedParticipant.name}.
                             </div>
@@ -1034,7 +1051,7 @@ const ListAuctionDocumentSuccesRegister = ({
                                 <div>
                                     <h5 className="font-bold text-yellow-800 text-base mb-2">⚠️ Cảnh báo quan trọng</h5>
                                     <p className="text-yellow-700 text-sm leading-relaxed">
-                                        Sau khi từ chối, yêu cầu hoàn cọc sẽ bị <strong>hủy bỏ vĩnh viễn</strong> và không thể khôi phục.
+                                        Sau khi từ chối, yêu cầu hoàn cọc cho <strong>{selectedParticipant?.assets.filter(asset => asset.statusRefund === 1).length} tài sản</strong> sẽ bị <strong>hủy bỏ vĩnh viễn</strong> và không thể khôi phục.
                                         Người dùng sẽ nhận được email thông báo kèm theo lý do từ chối mà bạn vừa nhập.
                                     </p>
                                 </div>
@@ -1062,6 +1079,192 @@ const ListAuctionDocumentSuccesRegister = ({
                             >
                                 Gửi lý do từ chối
                             </Button>
+                        </div>
+                    </div>
+                )}
+            </Modal>
+
+            {/* Modal xem chi tiết yêu cầu đã xử lý */}
+            <Modal
+                title={
+                    <div className="flex items-center gap-2">
+                        <FileTextOutlined className={
+                            selectedDetailParticipant?.statusRefund === 2 ? "text-green-500" : "text-red-500"
+                        } />
+                        <span>
+                            {selectedDetailParticipant?.statusRefund === 2 ? "Chi tiết yêu cầu đã chấp nhận" : "Chi tiết yêu cầu đã từ chối"}
+                        </span>
+                    </div>
+                }
+                open={isViewDetailModalVisible}
+                onCancel={handleCloseDetailModal}
+                width={600}
+                footer={
+                    <Button onClick={handleCloseDetailModal} type="primary">
+                        Đóng
+                    </Button>
+                }
+            >
+                {selectedDetailParticipant && (
+                    <div className="space-y-2">
+                        {/* Thông tin người tham gia */}
+                        <div className="bg-gray-50 p-2 rounded-lg">
+                            <h3 className="font-medium text-gray-800 mb-1 flex items-center gap-2 text-sm">
+                                <UserOutlined className="text-blue-500" />
+                                Thông tin người tham gia
+                            </h3>
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                                <div>
+                                    <span className="text-gray-600">Họ tên:</span>
+                                    <span className="ml-1 font-medium">{selectedDetailParticipant.name}</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-600">CMND/CCCD:</span>
+                                    <span className="ml-1 font-medium">{selectedDetailParticipant.citizenIdentification}</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-600">Số báo danh:</span>
+                                    <span className="ml-1 font-medium">{selectedDetailParticipant.numericalOrder || "Chưa có"}</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-600">Tổng số tài sản:</span>
+                                    <span className="ml-1 font-medium text-blue-600">{selectedDetailParticipant.assets.length} tài sản</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-600">Đã chấp nhận:</span>
+                                    <span className="ml-1 font-medium text-green-600">{selectedDetailParticipant.assets.filter(asset => asset.statusRefund === 2).length} tài sản</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-600">Đã từ chối:</span>
+                                    <span className="ml-1 font-medium text-red-600">{selectedDetailParticipant.assets.filter(asset => asset.statusRefund === 3).length} tài sản</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Danh sách tài sản với thông tin riêng biệt */}
+                        <div className="bg-gray-50 p-2 rounded-lg">
+                            <h3 className="font-medium text-gray-800 mb-2 flex items-center gap-2 text-sm">
+                                <ShoppingOutlined className="text-blue-600" />
+                                Danh sách tài sản ({selectedDetailParticipant.assets.length} tài sản)
+                            </h3>
+                            <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin">
+                                {selectedDetailParticipant.assets.map((asset, index) => (
+                                    <div key={asset.auctionDocumentsId} className="bg-white p-3 rounded-lg border border-gray-200">
+                                        {/* Header tài sản */}
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <span className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
+                                                    {index + 1}
+                                                </span>
+                                                <h4 className="font-semibold text-gray-800 text-sm">{asset.tagName}</h4>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-sm font-medium text-green-600">
+                                                    {asset.registrationFee.toLocaleString("vi-VN")} VND
+                                                </div>
+                                                <Tag color={
+                                                    asset.statusRefund === 1 ? "orange" :
+                                                        asset.statusRefund === 2 ? "green" :
+                                                            asset.statusRefund === 3 ? "red" : "gray"
+                                                }>
+                                                    {asset.statusRefund === 1 ? "Yêu cầu hoàn" :
+                                                        asset.statusRefund === 2 ? "Đã chấp nhận" :
+                                                            asset.statusRefund === 3 ? "Đã từ chối" : "Không yêu cầu"}
+                                                </Tag>
+                                            </div>
+                                        </div>
+
+                                        {/* Thông tin chi tiết nếu có yêu cầu hoàn cọc */}
+                                        {asset.statusRefund && (asset.statusRefund === 1 || asset.statusRefund === 2 || asset.statusRefund === 3) && (
+                                            <div className={`mt-2 p-2 rounded border ${asset.statusRefund === 1 ? "bg-orange-50 border-orange-200" :
+                                                asset.statusRefund === 2 ? "bg-green-50 border-green-200" :
+                                                    "bg-red-50 border-red-200"
+                                                }`}>
+                                                {/* Lý do */}
+                                                <div className="mb-2">
+                                                    <div className={`text-xs font-medium mb-1 ${asset.statusRefund === 1 ? "text-orange-800" :
+                                                        asset.statusRefund === 2 ? "text-green-800" : "text-red-800"
+                                                        }`}>
+                                                        {asset.statusRefund === 1 ? "Lý do yêu cầu:" :
+                                                            asset.statusRefund === 2 ? "Lý do chấp nhận:" : "Lý do từ chối:"}
+                                                    </div>
+                                                    {asset.refundReason ? (
+                                                        <div className="bg-white p-2 rounded text-xs text-gray-700 border">
+                                                            {asset.refundReason}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="bg-gray-100 p-2 rounded text-xs text-gray-500 text-center">
+                                                            Chưa có lý do được cung cấp
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* File đính kèm */}
+                                                <div>
+                                                    <div className={`text-xs font-medium mb-1 ${asset.statusRefund === 1 ? "text-orange-800" :
+                                                        asset.statusRefund === 2 ? "text-green-800" : "text-red-800"
+                                                        }`}>
+                                                        File đính kèm:
+                                                    </div>
+                                                    {asset.refundProof ? (
+                                                        <div className="bg-white p-2 rounded border">
+                                                            <div className="flex items-center justify-between">
+                                                                <div className="flex items-center gap-1">
+                                                                    <FileTextOutlined className={`text-xs ${asset.statusRefund === 1 ? "text-orange-500" :
+                                                                        asset.statusRefund === 2 ? "text-green-500" : "text-red-500"
+                                                                        }`} />
+                                                                    <span className="text-xs text-gray-700">Tài liệu hoàn cọc</span>
+                                                                </div>
+                                                                <div className="flex gap-1">
+                                                                    <Button
+                                                                        type="link"
+                                                                        size="small"
+                                                                        icon={<EyeOutlined />}
+                                                                        href={asset.refundProof}
+                                                                        target="_blank"
+                                                                        className="text-blue-600 text-xs px-1 h-5"
+                                                                    >
+                                                                        Xem
+                                                                    </Button>
+                                                                    <Button
+                                                                        type="link"
+                                                                        size="small"
+                                                                        icon={<DownloadOutlined />}
+                                                                        href={asset.refundProof}
+                                                                        download
+                                                                        className="text-green-600 text-xs px-1 h-5"
+                                                                    >
+                                                                        Tải
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="bg-gray-100 p-2 rounded text-center">
+                                                            <div className="text-gray-500 text-xs">
+                                                                Chưa có file được tải lên
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Thông tin tóm tắt */}
+                        <div className={`p-2 rounded-lg border ${selectedDetailParticipant.statusRefund === 2 ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}>
+                            <div className={`text-xs ${selectedDetailParticipant.statusRefund === 2 ? "text-green-800" : "text-red-800"}`}>
+                                <strong>
+                                    {selectedDetailParticipant.statusRefund === 2 ? "✅ Trạng thái:" : "❌ Trạng thái:"}
+                                </strong>
+                                {selectedDetailParticipant.statusRefund === 2 ?
+                                    ` Đã chấp nhận yêu cầu hoàn cọc cho ${selectedDetailParticipant.assets.filter(asset => asset.statusRefund === 2).length} tài sản của ${selectedDetailParticipant.name}.` :
+                                    ` Đã từ chối yêu cầu hoàn cọc cho ${selectedDetailParticipant.assets.filter(asset => asset.statusRefund === 3).length} tài sản của ${selectedDetailParticipant.name}.`
+                                }
+                            </div>
                         </div>
                     </div>
                 )}
