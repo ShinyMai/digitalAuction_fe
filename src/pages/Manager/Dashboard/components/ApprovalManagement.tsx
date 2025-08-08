@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, List, Progress, Tag, Typography, Space } from 'antd';
+import { Card, List, Tag, Typography, Space } from 'antd';
 import {
     ClockCircleOutlined,
     CheckCircleOutlined,
@@ -146,16 +146,6 @@ const ApprovalManagement: React.FC<ApprovalManagementProps> = ({ loading = false
                     <div className="text-xl font-bold text-green-600">{approvalStats.completionRate}%</div>
                     <div className="text-sm text-gray-600">Tỷ lệ hoàn thành</div>
                 </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="mb-4">
-                <Text className="text-sm text-gray-600">Tiến độ xử lý trong tuần</Text>
-                <Progress
-                    percent={approvalStats.completionRate}
-                    strokeColor="#52c41a"
-                    className="mb-2"
-                />
             </div>
 
             {/* Pending List */}

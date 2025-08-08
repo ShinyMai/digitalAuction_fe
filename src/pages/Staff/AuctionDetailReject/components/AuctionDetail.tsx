@@ -122,8 +122,8 @@ const AuctionDetail = ({ auctionDetailData, auctionType, auctionId }: AuctionDet
                   <div className="flex justify-between">
                     <span className="font-medium text-blue-900">Đấu giá viên:</span>
                     <span className="text-teal-800">
-                      {auctionDetailData.auctioneer
-                        ? auctionDetailData.auctioneer
+                      {auctionDetailData.auctioneerBy
+                        ? auctionDetailData.auctioneerBy
                         : "Chưa chọn đấu giá viên"}
                     </span>
                   </div>

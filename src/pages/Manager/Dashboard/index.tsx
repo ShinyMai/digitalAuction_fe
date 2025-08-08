@@ -5,9 +5,7 @@ import {
 } from '@ant-design/icons';
 import BusinessOverview from './components/BusinessOverview';
 import RevenueChart from './components/RevenueChart';
-import PerformanceAnalytics from './components/PerformanceAnalytics';
 import ApprovalManagement from './components/ApprovalManagement';
-import ApprovalWorkflow from './components/ApprovalWorkflow';
 import type { RangePickerProps } from 'antd/es/date-picker';
 
 const { Title } = Typography;
@@ -103,19 +101,9 @@ const ManagerDashboard: React.FC = () => {
                     <RevenueChart loading={loading} />
                 </Col>
 
-                {/* Performance Analytics */}
-                <Col xs={24} lg={12}>
-                    <PerformanceAnalytics loading={loading} />
-                </Col>
-
                 {/* Approval Management */}
                 <Col xs={24} lg={12}>
                     <ApprovalManagement loading={loading} />
-                </Col>
-
-                {/* Approval Workflow */}
-                <Col xs={24} lg={12}>
-                    <ApprovalWorkflow loading={loading} />
                 </Col>
             </Row>
         </div>

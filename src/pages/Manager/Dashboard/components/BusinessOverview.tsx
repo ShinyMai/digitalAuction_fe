@@ -4,7 +4,6 @@ import {
     TrophyOutlined,
     DollarOutlined,
     UserOutlined,
-    CheckCircleOutlined,
     ClockCircleOutlined,
     FileTextOutlined
 } from '@ant-design/icons';
@@ -75,11 +74,11 @@ const BusinessOverview: React.FC<BusinessOverviewProps> = ({ loading = false }) 
                     </Card>
                 </Col>
 
-                {/* Tỷ lệ thành công */}
+                {/* Tổng số phiên đấu giá thành công */}
                 <Col xs={24} sm={12} md={8}>
                     <Card className="!border-yellow-200 !bg-yellow-50 hover:!shadow-md !transition-all">
                         <Statistic
-                            title={<span className="!text-yellow-700 !font-medium">Tỷ lệ thành công</span>}
+                            title={<span className="!text-yellow-700 !font-medium">Tổng số phiên đấu giá thành công</span>}
                             value={businessMetrics.successRate}
                             precision={1}
                             suffix="%"
@@ -97,11 +96,11 @@ const BusinessOverview: React.FC<BusinessOverviewProps> = ({ loading = false }) 
                     </Card>
                 </Col>
 
-                {/* Người tham gia TB */}
+                {/* Tổng số người tham gia */}
                 <Col xs={24} sm={12} md={8}>
                     <Card className="!border-purple-200 !bg-purple-50 hover:!shadow-md !transition-all">
                         <Statistic
-                            title={<span className="!text-purple-700 !font-medium">Người tham gia TB</span>}
+                            title={<span className="!text-purple-700 !font-medium">Tổng số người tham gia</span>}
                             value={businessMetrics.averageParticipants}
                             prefix={<UserOutlined className="!text-purple-500" />}
                             valueStyle={{ color: '#7c3aed' }}
@@ -110,11 +109,11 @@ const BusinessOverview: React.FC<BusinessOverviewProps> = ({ loading = false }) 
                     </Card>
                 </Col>
 
-                {/* Chờ phê duyệt */}
+                {/* Tổng số phiên bị hủy */}
                 <Col xs={24} sm={12} md={8}>
                     <Card className="!border-orange-200 !bg-orange-50 hover:!shadow-md !transition-all">
                         <Statistic
-                            title={<span className="!text-orange-700 !font-medium">Chờ phê duyệt</span>}
+                            title={<span className="!text-orange-700 !font-medium">Tổng số phiên bị hủy</span>}
                             value={businessMetrics.pendingApprovals}
                             prefix={<ClockCircleOutlined className="!text-orange-500" />}
                             valueStyle={{ color: '#ea580c' }}
@@ -122,27 +121,6 @@ const BusinessOverview: React.FC<BusinessOverviewProps> = ({ loading = false }) 
                     </Card>
                 </Col>
 
-                {/* Tỷ lệ phê duyệt */}
-                <Col xs={24} sm={12} md={8}>
-                    <Card className="!border-emerald-200 !bg-emerald-50 hover:!shadow-md !transition-all">
-                        <Statistic
-                            title={<span className="!text-emerald-700 !font-medium">Tỷ lệ phê duyệt</span>}
-                            value={businessMetrics.approvalRate}
-                            precision={1}
-                            suffix="%"
-                            prefix={<CheckCircleOutlined className="!text-emerald-500" />}
-                            valueStyle={{ color: '#059669' }}
-                        />
-                        <div className="!mt-2">
-                            <Progress
-                                percent={businessMetrics.approvalRate}
-                                size="small"
-                                strokeColor="#10b981"
-                                showInfo={false}
-                            />
-                        </div>
-                    </Card>
-                </Col>
             </Row>
         </Card>
     );
