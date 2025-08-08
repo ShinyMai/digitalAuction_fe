@@ -236,7 +236,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
                 <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-gradient-to-r from-indigo-200/30 to-purple-200/30 rounded-full animate-float delay-3000"></div>
             </div>
 
-            <div className="!max-w-7xl !mx-auto relative z-10">
+            <div className="w-full !mx-auto relative z-10">
                 <AnimatePresence mode="wait">
                     {!showDetail && !showResults && !showInputPrice ? (
                         <motion.div
