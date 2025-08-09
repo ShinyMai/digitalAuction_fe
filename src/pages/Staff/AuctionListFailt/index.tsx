@@ -54,7 +54,6 @@ const AuctionListFailt = () => {
 
   useEffect(() => {
     fetchAuctionList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
   const fetchAuctionCategories = async () => {
     try {
