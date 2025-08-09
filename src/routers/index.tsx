@@ -79,6 +79,8 @@ export const MANAGER_ROUTES = {
     AUCTION_LIST_WAITING_PUBLIC: "auction-list-waiting-public",
     AUCTION_DETAIL_WAITING_PUBLIC: "auction-detail-waiting-public",
     MANAGER_DASHBOARD: "manager-dashboard",
+    AUCTION_LIST_FAILT: "auction-list-failt",
+    AUCTION_DETAIL_FAILT: "auction-detail-failt",
   },
 };
 

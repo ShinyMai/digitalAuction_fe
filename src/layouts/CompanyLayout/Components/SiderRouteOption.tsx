@@ -116,6 +116,13 @@ const items: MenuItem[] = [
         url: MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL,
         roleView: ["Manager", "Staff"],
       },
+      {
+        key: "20",
+        icon: <StopOutlined />,
+        label: "Đã hết hạn review ",
+        url: MANAGER_ROUTES.SUB.AUCTION_LIST_FAILT,
+        roleView: ["Manager", "Staff"],
+      },
     ],
   },
   {

@@ -210,6 +210,13 @@ const AuctionListDraff = React.lazy(
 const AuctionDetailDraff = React.lazy(
   () => import("../pages/Staff/AuctionDetailDraff/index")
 );
+const AuctionListFailt = React.lazy(
+  () => import("../pages/Staff/AuctionListFailt/index")
+);
+const AuctionDetailFailt = React.lazy(
+  () => import("../pages/Staff/AuctionDetailFailt/index")
+);
+
 
 export const staffRoutes = [
   {
@@ -311,6 +318,17 @@ export const staffRoutes = [
       "/" +
       STAFF_ROUTES.SUB.AUCTION_DETAIL_SUCCESSFULL,
     element: wrapWithLazy(AuctionDetailSuccessfull),
+  },
+  {
+    path: MANAGER_ROUTES.SUB.AUCTION_LIST_FAILT,
+    element: wrapWithLazy(AuctionListFailt),
+  },
+  {
+    path:
+      MANAGER_ROUTES.SUB.AUCTION_LIST_FAILT +
+      "/" +
+      MANAGER_ROUTES.SUB.AUCTION_DETAIL_FAILT,
+    element: wrapWithLazy(AuctionDetailFailt),
   },
 ];
 
