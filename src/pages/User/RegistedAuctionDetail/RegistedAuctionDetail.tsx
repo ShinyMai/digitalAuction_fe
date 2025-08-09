@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Spin, Button, Empty, message, Typography } from "antd";
@@ -11,6 +10,7 @@ import {
   StatisticsOverview,
 } from "./components";
 import { useSelector } from "react-redux";
+import type { RootState } from "../../../store/store";
 
 const { Title } = Typography;
 
@@ -26,7 +26,7 @@ const RegistedAuctionDetail: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [depositFilter, setDepositFilter] = useState<number | "all">("all");
   const [ticketFilter, setTicketFilter] = useState<number | "all">("all");
-  const { user } = useSelector((state: any) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
 
   const fetchAuctionDetail = async () => {
     try {
@@ -93,6 +93,23 @@ const RegistedAuctionDetail: React.FC = () => {
     approvedTickets: filteredDocuments.filter((doc) => doc.statusTicket === 1)
       .length,
     pendingTickets: filteredDocuments.filter((doc) => doc.statusTicket === 0)
+      .length,
+    // Thêm các thống kê mới cho các trường vừa thêm
+    attendedSessions: filteredDocuments.filter((doc) => doc.isAttended === true)
+      .length,
+    notAttendedSessions: filteredDocuments.filter(
+      (doc) => doc.isAttended === false
+    ).length,
+    pendingRefunds: filteredDocuments.filter((doc) => doc.statusRefund === 0)
+      .length,
+    approvedRefunds: filteredDocuments.filter((doc) => doc.statusRefund === 1)
+      .length,
+    rejectedRefunds: filteredDocuments.filter((doc) => doc.statusRefund === 2)
+      .length,
+    documentsWithRefundReason: filteredDocuments.filter(
+      (doc) => doc.refundReason
+    ).length,
+    documentsWithRefundProof: filteredDocuments.filter((doc) => doc.refundProof)
       .length,
   };
 

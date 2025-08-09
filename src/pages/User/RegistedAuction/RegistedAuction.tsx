@@ -1,7 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useCallback } from "react";
-import { Card, Button, Empty, Spin, Input, Select, DatePicker, Pagination } from "antd";
+import {
+  Card,
+  Button,
+  Empty,
+  Spin,
+  Input,
+  Select,
+  DatePicker,
+  Pagination,
+} from "antd";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
@@ -18,8 +27,12 @@ const { RangePicker } = DatePicker;
 const RegistedAuction = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state: any) => state.auth);
-  const [registeredAuctions, setRegisteredAuctions] = useState<RegisteredAuction[]>([]);
-  const [filteredAuctions, setFilteredAuctions] = useState<RegisteredAuction[]>([]);
+  const [registeredAuctions, setRegisteredAuctions] = useState<
+    RegisteredAuction[]
+  >([]);
+  const [filteredAuctions, setFilteredAuctions] = useState<RegisteredAuction[]>(
+    []
+  );
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
@@ -30,11 +43,15 @@ const RegistedAuction = () => {
   const [totalAuctions, setTotalAuctions] = useState(0);
 
   const applyFilters = useCallback(() => {
-    const auctions = Array.isArray(registeredAuctions) ? registeredAuctions : [];
+    const auctions = Array.isArray(registeredAuctions)
+      ? registeredAuctions
+      : [];
     let filtered = auctions;
 
     if (statusFilter) {
-      filtered = filtered.filter((auction) => getStatusString(auction) === statusFilter);
+      filtered = filtered.filter(
+        (auction) => getStatusString(auction) === statusFilter
+      );
       const startIndex = (currentPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
       const paginatedResults = filtered.slice(startIndex, endIndex);
@@ -56,10 +73,15 @@ const RegistedAuction = () => {
         const requestBody = {
           pageNumber: currentPage,
           pageSize: pageSize,
+          userId: user.id,
           search: {
             auctionName: searchValue ?? searchTerm ?? null,
-            auctionStartDate: dateRange?.[0] ? dayjs(dateRange[0]).toISOString() : null,
-            auctionEndDate: dateRange?.[1] ? dayjs(dateRange[1]).toISOString() : null,
+            auctionStartDate: dateRange?.[0]
+              ? dayjs(dateRange[0]).toISOString()
+              : null,
+            auctionEndDate: dateRange?.[1]
+              ? dayjs(dateRange[1]).toISOString()
+              : null,
           },
         };
         const res = await AuctionServices.getListAuctionRegisted(requestBody);
@@ -110,14 +132,26 @@ const RegistedAuction = () => {
   };
 
   const getStats = () => {
-    const auctions = Array.isArray(registeredAuctions) ? registeredAuctions : [];
+    const auctions = Array.isArray(registeredAuctions)
+      ? registeredAuctions
+      : [];
 
     const total = totalAuctions || auctions.length;
-    const registration = auctions.filter((a) => getStatusString(a) === "registration").length;
-    const upcoming = auctions.filter((a) => getStatusString(a) === "upcoming").length;
-    const ongoing = auctions.filter((a) => getStatusString(a) === "ongoing").length;
-    const completed = auctions.filter((a) => getStatusString(a) === "completed").length;
-    const cancelled = auctions.filter((a) => getStatusString(a) === "cancelled").length;
+    const registration = auctions.filter(
+      (a) => getStatusString(a) === "registration"
+    ).length;
+    const upcoming = auctions.filter(
+      (a) => getStatusString(a) === "upcoming"
+    ).length;
+    const ongoing = auctions.filter(
+      (a) => getStatusString(a) === "ongoing"
+    ).length;
+    const completed = auctions.filter(
+      (a) => getStatusString(a) === "completed"
+    ).length;
+    const cancelled = auctions.filter(
+      (a) => getStatusString(a) === "cancelled"
+    ).length;
 
     return { total, registration, upcoming, ongoing, completed, cancelled };
   };
@@ -207,7 +241,9 @@ const RegistedAuction = () => {
               description={
                 <div>
                   <p className="text-lg text-gray-500 mb-2">
-                    {(Array.isArray(registeredAuctions) ? registeredAuctions.length : 0) === 0
+                    {(Array.isArray(registeredAuctions)
+                      ? registeredAuctions.length
+                      : 0) === 0
                       ? "Bạn chưa đăng ký tham gia đấu giá nào"
                       : "Không tìm thấy đấu giá nào phù hợp với bộ lọc"}
                   </p>
@@ -246,7 +282,9 @@ const RegistedAuction = () => {
               pageSize={pageSize}
               showSizeChanger
               showQuickJumper
-              showTotal={(total, range) => `${range[0]}-${range[1]} của ${total} đấu giá`}
+              showTotal={(total, range) =>
+                `${range[0]}-${range[1]} của ${total} đấu giá`
+              }
               onChange={(page, size) => {
                 setCurrentPage(page);
                 if (size !== pageSize) {

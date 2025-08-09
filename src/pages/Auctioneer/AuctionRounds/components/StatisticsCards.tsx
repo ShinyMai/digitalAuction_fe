@@ -1,7 +1,6 @@
 import { Card, Statistic, Row, Col } from "antd";
 import {
     FileTextOutlined,
-    PlayCircleOutlined,
     UserOutlined,
     DollarOutlined
 } from "@ant-design/icons";
@@ -21,75 +20,105 @@ interface StatisticsCardsProps {
     formatCurrency: (value: string) => string;
 }
 
-const StatisticsCards = ({ stats, formatCurrency }: StatisticsCardsProps) => {
+const StatisticsCards = ({ stats }: StatisticsCardsProps) => {
     return (
-        <>
-            {/* Main Statistics Cards */}
-            <Row gutter={[16, 16]} className="!mb-6">
-                <Col xs={24} sm={12} md={6}>
-                    <Card className="!border-blue-200 !bg-blue-50 hover:!shadow-md !transition-shadow">
-                        <Statistic
-                            title={<span className="!text-blue-700 !font-medium">Tổng số vòng</span>}
-                            value={stats.totalRounds}
-                            prefix={<FileTextOutlined className="!text-blue-500" />}
-                            valueStyle={{ color: '#1d4ed8' }}
-                        />
+        <div className="mb-8">
+            {/* Enhanced Statistics Cards with better spacing and design */}
+            <Row gutter={[24, 24]} justify="center">
+                <Col xs={24} sm={12} lg={8}>
+                    <Card
+                        className="!border-0 !shadow-lg hover:!shadow-xl !transition-all !duration-300 !bg-gradient-to-br !from-blue-50 !to-blue-100 !rounded-2xl !overflow-hidden group"
+                        bodyStyle={{ padding: '32px 24px' }}
+                    >
+                        <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                                <Statistic
+                                    title={
+                                        <span className="!text-blue-700 !font-semibold !text-base !mb-2 !block">
+                                            Tổng số vòng
+                                        </span>
+                                    }
+                                    value={stats.totalRounds}
+                                    valueStyle={{
+                                        color: '#1d4ed8',
+                                        fontSize: '2.5rem',
+                                        fontWeight: '700',
+                                        lineHeight: '1'
+                                    }}
+                                />
+                            </div>
+                            <div className="ml-4">
+                                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                    <FileTextOutlined className="!text-white !text-2xl" />
+                                </div>
+                            </div>
+                        </div>
                     </Card>
                 </Col>
-                <Col xs={24} sm={12} md={6}>
-                    <Card className="!border-green-200 !bg-green-50 hover:!shadow-md !transition-shadow">
-                        <Statistic
-                            title={<span className="!text-green-700 !font-medium">Đang diễn ra</span>}
-                            value={stats.activeRounds}
-                            prefix={<PlayCircleOutlined className="!text-green-500" />}
-                            valueStyle={{ color: '#059669' }}
-                        />
-                    </Card>
-                </Col>
-                <Col xs={24} sm={12} md={6}>
-                    <Card className="!border-purple-200 !bg-purple-50 hover:!shadow-md !transition-shadow">
-                        <Statistic
-                            title={<span className="!text-purple-700 !font-medium">Người tham gia</span>}
-                            value={stats.totalBidders}
-                            prefix={<UserOutlined className="!text-purple-500" />}
-                            valueStyle={{ color: '#7c3aed' }}
-                        />
-                    </Card>
-                </Col>
-                <Col xs={24} sm={12} md={6}>
-                    <Card className="!border-orange-200 !bg-orange-50 hover:!shadow-md !transition-shadow">
-                        <Statistic
-                            title={<span className="!text-orange-700 !font-medium">Tổng lượt đấu giá</span>}
-                            value={stats.totalBids}
-                            prefix={<DollarOutlined className="!text-orange-500" />}
-                            valueStyle={{ color: '#ea580c' }}
-                        />
-                    </Card>
-                </Col>
-            </Row>
 
-            {/* Additional Statistics */}
-            <Row gutter={[16, 16]} className="!mb-6">
-                <Col xs={24} sm={12} md={12}>
-                    <Card className="!border-red-200 !bg-red-50 hover:!shadow-md !transition-shadow">
-                        <Statistic
-                            title={<span className="!text-red-700 !font-medium">Tổng giá trị đấu giá</span>}
-                            value={formatCurrency(stats.totalBidValue.toString())}
-                            valueStyle={{ color: '#dc2626', fontSize: '18px' }}
-                        />
+                <Col xs={24} sm={12} lg={8}>
+                    <Card
+                        className="!border-0 !shadow-lg hover:!shadow-xl !transition-all !duration-300 !bg-gradient-to-br !from-purple-50 !to-purple-100 !rounded-2xl !overflow-hidden group"
+                        bodyStyle={{ padding: '32px 24px' }}
+                    >
+                        <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                                <Statistic
+                                    title={
+                                        <span className="!text-purple-700 !font-semibold !text-base !mb-2 !block">
+                                            Người tham gia
+                                        </span>
+                                    }
+                                    value={stats.totalBidders}
+                                    valueStyle={{
+                                        color: '#7c3aed',
+                                        fontSize: '2.5rem',
+                                        fontWeight: '700',
+                                        lineHeight: '1'
+                                    }}
+                                />
+                            </div>
+                            <div className="ml-4">
+                                <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                    <UserOutlined className="!text-white !text-2xl" />
+                                </div>
+                            </div>
+                        </div>
                     </Card>
                 </Col>
-                <Col xs={24} sm={12} md={12}>
-                    <Card className="!border-indigo-200 !bg-indigo-50 hover:!shadow-md !transition-shadow">
-                        <Statistic
-                            title={<span className="!text-indigo-700 !font-medium">Giá trị trung bình</span>}
-                            value={formatCurrency(stats.averageBidValue.toString())}
-                            valueStyle={{ color: '#4f46e5', fontSize: '18px' }}
-                        />
+
+                <Col xs={24} sm={12} lg={8}>
+                    <Card
+                        className="!border-0 !shadow-lg hover:!shadow-xl !transition-all !duration-300 !bg-gradient-to-br !from-orange-50 !to-orange-100 !rounded-2xl !overflow-hidden group"
+                        bodyStyle={{ padding: '32px 24px' }}
+                    >
+                        <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                                <Statistic
+                                    title={
+                                        <span className="!text-orange-700 !font-semibold !text-base !mb-2 !block">
+                                            Tổng lượt đấu giá
+                                        </span>
+                                    }
+                                    value={stats.totalBids}
+                                    valueStyle={{
+                                        color: '#ea580c',
+                                        fontSize: '2.5rem',
+                                        fontWeight: '700',
+                                        lineHeight: '1'
+                                    }}
+                                />
+                            </div>
+                            <div className="ml-4">
+                                <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                    <DollarOutlined className="!text-white !text-2xl" />
+                                </div>
+                            </div>
+                        </div>
                     </Card>
                 </Col>
             </Row>
-        </>
+        </div>
     );
 };
 

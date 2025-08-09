@@ -1,20 +1,13 @@
 import { useEffect, useState } from "react";
 import { Tabs, Button, Typography } from "antd";
-import { ReloadOutlined, HistoryOutlined, BarChartOutlined, HomeOutlined, ArrowLeftOutlined } from "@ant-design/icons";
-import type { AuctionRound, AuctionRoundPrice, AuctionHeaderData, AuctionStatisticsData, AssetAnalysisData } from "./modalsData";
+import { ReloadOutlined, HistoryOutlined, HomeOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import type { AuctionRound, AuctionRoundPrice } from "./modalsData";
 import AuctionHeader from "./components/AuctionHeader";
 import PriceHistoryTable from "./components/PriceHistoryTable";
-import AuctionStatistics from "./components/AuctionStatistics";
 import AssetAnalysisTable from "./components/AssetAnalysisTable";
 import "./styles.css";
 import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
-// Import fake data - sẽ thay thế bằng API calls thật
-import {
-    fakeHeaderStats,
-    fakeAssetAnalysis,
-    fakeStatistics
-} from "./fakeData";
 import type { AuctionDataDetail } from "../Modals";
 
 interface AuctionRoundDetailProps {
@@ -29,9 +22,6 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
 
     // State management
     const [auctionRoundPrice, setAuctionRoundPrice] = useState<AuctionRoundPrice[]>([]);
-    const [headerStats, setHeaderStats] = useState<AuctionHeaderData | null>(null);
-    const [assetAnalysis, setAssetAnalysis] = useState<AssetAnalysisData | null>(null);
-    const [statistics, setStatistics] = useState<AuctionStatisticsData | null>(null);
     const [activeTab, setActiveTab] = useState<string>('history');
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -39,12 +29,7 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
     const loadAllData = async () => {
         setLoading(true);
         try {
-            await Promise.all([
-                getListOfAuctionRoundPrices(),
-                getAuctionHeaderStats(),
-                getAssetAnalysisData(),
-                getAuctionStatistics()
-            ]);
+            await getListOfAuctionRoundPrices();
         } catch (error) {
             console.error("Error loading data:", error);
             toast.error("Có lỗi xảy ra khi tải dữ liệu");
@@ -73,54 +58,6 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
             }
         } catch (error) {
             console.error("Error fetching auction round prices:", error);
-        }
-    };
-
-    // API Function 2: Get header statistics (MISSING API)
-    const getAuctionHeaderStats = async () => {
-        try {
-            // TODO: THIẾU API - Cần thêm vào AuctionServices
-            // const response = await AuctionServices.getAuctionRoundHeader(auctionRound?.auctionRoundId);
-            // setHeaderStats(response.data);
-
-            // For now, return fake data
-            console.log('⚠️ MISSING API: getAuctionRoundHeader - Using fake data for header:', auctionRound?.auctionRoundId || 'AR001');
-            setHeaderStats(fakeHeaderStats);
-        } catch (error) {
-            console.error("Error fetching header stats:", error);
-            setHeaderStats(fakeHeaderStats);
-        }
-    };
-
-    // API Function 3: Get asset analysis data (MISSING API)
-    const getAssetAnalysisData = async () => {
-        try {
-            // TODO: THIẾU API - Cần thêm vào AuctionServices
-            // const response = await AuctionServices.getAssetAnalysis(auctionRound?.auctionRoundId);
-            // setAssetAnalysis(response.data);
-
-            // For now, return fake data
-            console.log('⚠️ MISSING API: getAssetAnalysis - Using fake data for asset analysis:', auctionRound?.auctionRoundId || 'AR001');
-            setAssetAnalysis(fakeAssetAnalysis);
-        } catch (error) {
-            console.error("Error fetching asset analysis:", error);
-            setAssetAnalysis(fakeAssetAnalysis);
-        }
-    };
-
-    // API Function 4: Get auction statistics (MISSING API)
-    const getAuctionStatistics = async () => {
-        try {
-            // TODO: THIẾU API - Cần thêm vào AuctionServices
-            // const response = await AuctionServices.getAuctionStatistics(auctionRound?.auctionRoundId);
-            // setStatistics(response.data);
-
-            // For now, return fake data
-            console.log('⚠️ MISSING API: getAuctionStatistics - Using fake data for statistics:', auctionRound?.auctionRoundId || 'AR001');
-            setStatistics(fakeStatistics);
-        } catch (error) {
-            console.error("Error fetching statistics:", error);
-            setStatistics(fakeStatistics);
         }
     };
 
@@ -187,9 +124,6 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
     const totalParticipants = new Set(auctionRoundPrice.map(item => item.citizenIdentification)).size;
     const totalAssets = new Set(auctionRoundPrice.map(item => item.tagName)).size;
 
-    // Debug log - will be removed when implementing component enhancements
-    console.log("Current state:", { headerStats, assetAnalysis, statistics });
-
     const tabItems = [
         {
             key: 'history',
@@ -214,23 +148,6 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
                 priceHistory={auctionRoundPrice}
                 onUpdateWinner={onUpdateWinnerFlag}
             />
-        },
-        {
-            key: 'statistics',
-            label: (
-                <span className="flex items-center gap-2">
-                    <BarChartOutlined />
-                    Thống kê
-                </span>
-            ),
-            children: auctionRound ? (
-                <AuctionStatistics
-                    priceHistory={auctionRoundPrice}
-                    auctionRound={auctionRound}
-                />
-            ) : (
-                <div>Loading auction round data...</div>
-            )
         }
     ];
 

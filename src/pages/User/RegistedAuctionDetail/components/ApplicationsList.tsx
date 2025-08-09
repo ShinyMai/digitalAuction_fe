@@ -15,7 +15,6 @@ import {
   Upload,
   Form,
   Divider,
-  message,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -26,6 +25,9 @@ import {
   ExclamationCircleOutlined,
   UploadOutlined,
   DeleteOutlined,
+  UserOutlined,
+  FileProtectOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import { formatNumber } from "../../../../utils/numberFormat";
 import type {
@@ -63,6 +65,8 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
 
   // Modal states
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<AuctionDocument | null>(null);
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const [cancelReason, setCancelReason] = useState("");
   const [uploadedFile, setUploadedFile] = useState<any>(null);
@@ -124,6 +128,17 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
     setUploadedFile(null);
   };
 
+  // Handle detail modal functions
+  const handleOpenDetailModal = (record: AuctionDocument) => {
+    setSelectedDocument(record);
+    setIsDetailModalVisible(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalVisible(false);
+    setSelectedDocument(null);
+  };
+
   const handleAssetSelection = (assetId: string, checked: boolean) => {
     if (checked) {
       setSelectedAssets(prev => [...prev, assetId]);
@@ -141,43 +156,62 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
   };
 
   const handleFileUpload = (info: any) => {
-    if (info.file.status === 'done') {
-      setUploadedFile(info.file);
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
+    const { file } = info;
+
+    // Khi beforeUpload return false, file sẽ có status undefined
+    // Chúng ta cần set uploadedFile trực tiếp
+    if (file) {
+      setUploadedFile(file);
+      toast.success(`Đã chọn file: ${file.name}`);
     }
   };
 
   const handleSubmitCancelRequest = async () => {
     if (selectedAssets.length === 0) {
-      message.error("Vui lòng chọn ít nhất một tài sản để hủy tham gia!");
+      toast.error("Vui lòng chọn ít nhất một tài sản để hủy tham gia!");
       return;
     }
 
     if (!cancelReason.trim()) {
-      message.error("Vui lòng nhập lý do hủy tham gia!");
+      toast.error("Vui lòng nhập lý do hủy tham gia!");
+      return;
+    }
+
+    if (!uploadedFile) {
+      toast.error("Vui lòng tải lên tài liệu đính kèm!");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const dataSubmit = {
-        auctionId: auctionId,
-        assetsSelected: selectedAssets,
-        refundReason: cancelReason,
-        refundProofs: uploadedFile ? [uploadedFile] : [],
-      }
-      console.log("Data to submit:", dataSubmit);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Tạo FormData để gửi kèm file
+      const formData = new FormData();
 
-      message.success("Đã gửi yêu cầu hủy tham gia đấu giá thành công!");
+      // Thêm AuctionDocumentIds (array) vào FormData
+      selectedAssets.forEach((assetId) => {
+        formData.append(`AuctionDocumentIds`, assetId);
+      });
+
+      // Thêm RefundReason
+      formData.append('RefundReason', cancelReason);
+
+      // Thêm file nếu có
+      if (uploadedFile) {
+        // Khi sử dụng beforeUpload: false, file object chính là originFileObj
+        const fileToUpload = uploadedFile.originFileObj || uploadedFile;
+        formData.append('RefundProof', fileToUpload);
+      }
+      const response = await AuctionServices.userRequestRefund(formData);
+      if (response.code == 200) {
+        toast.success(response.message)
+      } else {
+        toast.error(response.message || "Có lỗi xảy ra khi gửi yêu cầu!");
+      }
       handleCloseCancelModal();
     } catch (error) {
       console.error("Error submitting cancel request:", error);
-      message.error("Có lỗi xảy ra khi gửi yêu cầu!");
+      toast.error("Có lỗi xảy ra khi gửi yêu cầu!");
     } finally {
       setIsSubmitting(false);
     }
@@ -292,6 +326,52 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
           text: "Không xác định",
           icon: <ClockCircleOutlined />,
         };
+    }
+  };
+
+  // Thêm các hàm helper cho trường mới
+  const getAttendanceStatus = (isAttended?: boolean) => {
+    if (isAttended === undefined || isAttended === null) {
+      return {
+        color: "default",
+        text: "Chưa xác định",
+        icon: <ClockCircleOutlined />,
+      };
+    }
+
+    return isAttended ? {
+      color: "green",
+      text: "Đã tham dự",
+      icon: <UserOutlined />,
+    } : {
+      color: "red",
+      text: "Chưa tham dự",
+      icon: <ExclamationCircleOutlined />,
+    };
+  };
+
+  const getRefundStatus = (statusRefund?: number) => {
+    switch (statusRefund) {
+      case 0:
+        return {
+          color: "orange",
+          text: "Chờ xử lý",
+          icon: <ClockCircleOutlined />,
+        };
+      case 1:
+        return {
+          color: "green",
+          text: "Đã chấp nhận",
+          icon: <CheckCircleOutlined />,
+        };
+      case 2:
+        return {
+          color: "red",
+          text: "Từ chối",
+          icon: <CloseCircleOutlined />,
+        };
+      default:
+        return null; // Không hiển thị gì nếu chưa có yêu cầu hoàn cọc
     }
   };
 
@@ -453,19 +533,30 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
       title: "Thao tác",
       dataIndex: "actions",
       key: "actions",
+      width: 120,
       render: (_: any, record: AuctionDocument) => {
         return (
-          <Tooltip title="Tải xuống phiếu đăng ký" placement="top">
-            <Button
-              type="text"
-              icon={<DownloadOutlined />}
-              className="!text-blue-600 !hover:bg-blue-50"
-              onClick={() => {
-                const transformedData = transformDataForExport(record);
-                exportToDocx(transformedData);
-              }}
-            />
-          </Tooltip>
+          <Space size="small">
+            <Tooltip title="Xem chi tiết" placement="top">
+              <Button
+                type="text"
+                icon={<InfoCircleOutlined />}
+                className="!text-green-600 !hover:bg-green-50"
+                onClick={() => handleOpenDetailModal(record)}
+              />
+            </Tooltip>
+            <Tooltip title="Tải xuống phiếu đăng ký" placement="top">
+              <Button
+                type="text"
+                icon={<DownloadOutlined />}
+                className="!text-blue-600 !hover:bg-blue-50"
+                onClick={() => {
+                  const transformedData = transformDataForExport(record);
+                  exportToDocx(transformedData);
+                }}
+              />
+            </Tooltip>
+          </Space>
         );
       },
     },
@@ -482,7 +573,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
         showTotal: (total, range) =>
           `${range[0]}-${range[1]} của ${total} đăng ký`,
       }}
-      scroll={{ x: 800 }}
+      scroll={{ x: 1000 }}
       size="middle"
       columns={getTableColumns()}
     />
@@ -526,7 +617,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
         title={
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <ExclamationCircleOutlined style={{ color: "#ff4d4f", fontSize: "20px" }} />
-            <span style={{ fontSize: "16px", fontWeight: "600" }}>
+            <span style={{ fontSize: "16px", fontWeight: "600" }} className="text-black">
               Xin hủy tham gia đấu giá
             </span>
           </div>
@@ -554,7 +645,8 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
           >
             <ExclamationCircleOutlined style={{ color: "#ff4d4f" }} />
             <Text style={{ color: "#ff4d4f", fontSize: "14px" }}>
-              Việc hủy tham gia đấu giá sẽ được xem xét trong các trường hợp bất khả kháng. Vui lòng cân nhắc kỹ trước khi thực hiện.
+              Việc hủy tham gia đấu giá sẽ được xem xét trong các trường hợp bất khả kháng.
+              <strong> Bắt buộc phải có tài liệu chứng minh lý do hủy.</strong> Vui lòng cân nhắc kỹ trước khi thực hiện.
             </Text>
           </div>
 
@@ -631,7 +723,8 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
 
             {/* File Upload */}
             <Form.Item
-              label={<Text strong style={{ fontSize: "14px" }}>Tài liệu đính kèm (tùy chọn)</Text>}
+              label={<Text strong style={{ fontSize: "14px" }}>Tài liệu đính kèm <span style={{ color: 'red' }}>*</span></Text>}
+              required
             >
               <Upload
                 name="file"
@@ -639,20 +732,31 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                 beforeUpload={() => false} // Prevent auto upload
                 onChange={handleFileUpload}
                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                style={{ width: '100%' }}
               >
                 <Button
                   icon={<UploadOutlined />}
                   style={{
                     borderRadius: "6px",
-                    border: "1px dashed #d9d9d9"
+                    border: uploadedFile ? "1px solid #52c41a" : "1px dashed #d9d9d9",
+                    borderColor: uploadedFile ? "#52c41a" : "#d9d9d9",
+                    color: uploadedFile ? "#52c41a" : undefined,
+                    width: '100%'
                   }}
                 >
-                  Chọn file đính kèm
+                  {uploadedFile ? `Đã chọn: ${uploadedFile.name}` : "Chọn file đính kèm (Bắt buộc)"}
                 </Button>
               </Upload>
-              <Text type="secondary" style={{ fontSize: "12px", marginTop: "8px", display: "block" }}>
-                Hỗ trợ: PDF, DOC, DOCX, JPG, PNG (tối đa 10MB)
-              </Text>
+              <div style={{ marginTop: "8px" }}>
+                <Text type="secondary" style={{ fontSize: "12px", display: "block" }}>
+                  <span style={{ color: 'red' }}>* Bắt buộc:</span> Hỗ trợ PDF, DOC, DOCX, JPG, PNG (tối đa 10MB)
+                </Text>
+                {uploadedFile && (
+                  <Text style={{ fontSize: "12px", color: "#52c41a", display: "block", marginTop: "4px" }}>
+                    ✓ File đã được chọn: {uploadedFile.name} ({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </Text>
+                )}
+              </div>
             </Form.Item>
 
             {/* Action Buttons */}
@@ -681,6 +785,106 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
             </Form.Item>
           </Form>
         </div>
+      </Modal>
+
+      {/* Detail Information Modal */}
+      <Modal
+        title={
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }} className="text-black">
+            <InfoCircleOutlined style={{ color: "#1890ff", fontSize: "18px" }} />
+            <span style={{ fontSize: "15px", fontWeight: "600" }}>
+              Thông tin xin hủy
+            </span>
+          </div>
+        }
+        open={isDetailModalVisible}
+        onCancel={handleCloseDetailModal}
+        width={600}
+        footer={[
+          <Button key="close" onClick={handleCloseDetailModal} size="small">
+            Đóng
+          </Button>
+        ]}
+        destroyOnClose
+        className="detail-modal"
+      >
+        {selectedDocument && (
+          <div style={{ padding: "16px 0" }}>
+            {/* New Fields Information */}
+            <div style={{ marginBottom: "20px" }}>
+              <div style={{
+                background: "#f0f9ff",
+                padding: "12px",
+                borderRadius: "6px",
+                border: "1px solid #bae7ff"
+              }}>
+                {/* Attendance Status */}
+                <div style={{ marginBottom: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <Text type="secondary" style={{ fontSize: "12px" }}>Tham dự:</Text>
+                  {(() => {
+                    const attendanceStatus = getAttendanceStatus(selectedDocument.isAttended);
+                    return (
+                      <Tag color={attendanceStatus.color} icon={attendanceStatus.icon} style={{ fontSize: "11px" }}>
+                        {attendanceStatus.text}
+                      </Tag>
+                    );
+                  })()}
+                </div>
+
+                {/* Refund Status */}
+                <div style={{ marginBottom: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <Text type="secondary" style={{ fontSize: "12px" }}>Hoàn cọc:</Text>
+                  {(() => {
+                    const refundStatus = getRefundStatus(selectedDocument.statusRefund);
+                    if (!refundStatus) {
+                      return <Text type="secondary" style={{ fontSize: "11px" }}>Chưa có yêu cầu</Text>;
+                    }
+                    return (
+                      <Tag color={refundStatus.color} icon={refundStatus.icon} style={{ fontSize: "11px" }}>
+                        {refundStatus.text}
+                      </Tag>
+                    );
+                  })()}
+                </div>
+
+                {/* Refund Reason */}
+                {selectedDocument.refundReason && (
+                  <div style={{ marginBottom: "12px" }}>
+                    <Text type="secondary" style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>
+                      Lý do hoàn cọc:
+                    </Text>
+                    <div style={{
+                      background: "white",
+                      padding: "8px",
+                      borderRadius: "4px",
+                      border: "1px solid #d9d9d9"
+                    }}>
+                      <Text style={{ fontSize: "12px" }}>{selectedDocument.refundReason}</Text>
+                    </div>
+                  </div>
+                )}
+
+                {/* Refund Proof */}
+                {selectedDocument.refundProof && (
+                  <div>
+                    <Text type="secondary" style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>
+                      Minh chứng:
+                    </Text>
+                    <Button
+                      type="primary"
+                      size="small"
+                      icon={<FileProtectOutlined />}
+                      onClick={() => window.open(selectedDocument.refundProof, '_blank')}
+                      style={{ borderRadius: "4px", fontSize: "11px" }}
+                    >
+                      Xem tài liệu
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </Modal>
     </>
   );

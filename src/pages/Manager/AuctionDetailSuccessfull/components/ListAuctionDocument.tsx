@@ -4,7 +4,7 @@ import AuctionServices from "../../../../services/AuctionServices";
 import type { AuctionDocument, AuctionDateModal } from "../../Modals";
 import { Table, Input, Tag, Select, Button } from "antd";
 import { HistoryOutlined } from "@ant-design/icons";
-import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal";
+import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal/ParticipantBiddingHistoryModal";
 
 // Đã xóa import dayjs
 
@@ -52,7 +52,6 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
     CitizenIdentification?: string;
     TagName?: string;
   }>({});
-
   // State cho modal lịch sử đấu giá
   const [isBiddingHistoryModalVisible, setIsBiddingHistoryModalVisible] =
     useState<boolean>(false);
@@ -61,6 +60,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       name: string;
       citizenIdentification: string;
       auctionId?: string;
+      userId?: string;
     } | null>(null);
 
   useEffect(() => {
@@ -107,13 +107,13 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       PageNumber: 1,
     }));
   };
-
   // Xử lý mở modal lịch sử đấu giá
   const handleShowBiddingHistory = (participant: AuctionDocument) => {
     setSelectedParticipantForHistory({
       name: participant.name,
       citizenIdentification: participant.citizenIdentification,
       auctionId: auctionId,
+      userId: participant.userId,
     });
     setIsBiddingHistoryModalVisible(true);
   };

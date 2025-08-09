@@ -1,6 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { AuctionRound, AuctionRoundPrice, AuctionRoundPriceWinner } from "./modalsData";
+import type {
+  AuctionRound,
+  AuctionRoundPrice,
+  AuctionRoundPriceWinner,
+} from "./modalsData";
 import { fakeAuctionRoundPrices } from "./fakeData";
 import PageHeader from "./components/PageHeader";
 import StatisticsCards from "./components/StatisticsCards";
@@ -15,336 +19,365 @@ import { toast } from "react-toastify";
 import type { AuctionDataDetail } from "../Modals";
 
 interface AuctionAsset {
-    auctionAssetsId: string;
-    tagName: string;
-    startingPrice?: number;
+  auctionAssetsId: string;
+  tagName: string;
+  startingPrice?: number;
 }
 
 interface props {
-    auctionId: string;
-    auction?: AuctionDataDetail;
-    auctionAsset: AuctionAsset[];
+  auctionId: string;
+  auction?: AuctionDataDetail;
+  auctionAsset: AuctionAsset[];
 }
 
 const USER_ROLES = {
-    USER: "Customer",
-    ADMIN: "Admin",
-    STAFF: "Staff",
-    AUCTIONEER: "Auctioneer",
-    MANAGER: "Manager",
-    DIRECTOR: "Director",
+  USER: "Customer",
+  ADMIN: "Admin",
+  STAFF: "Staff",
+  AUCTIONEER: "Auctioneer",
+  MANAGER: "Manager",
+  DIRECTOR: "Director",
 } as const;
 
-type UserRole =
-    (typeof USER_ROLES)[keyof typeof USER_ROLES];
+type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 // Utility functions
 const formatCurrency = (value: string) => {
-    return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
-    }).format(parseInt(value));
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(parseInt(value));
 };
 
 const calculateStatistics = (
-    auctionRounds: AuctionRound[],
-    auctionRoundPrices: AuctionRoundPrice[]
+  auctionRounds: AuctionRound[],
+  auctionRoundPrices: AuctionRoundPrice[]
 ) => {
-    const totalRounds = auctionRounds.length;
-    const activeRounds = auctionRounds.filter(round => round.status === 1).length;
-    const completedRounds = auctionRounds.filter(round => round.status === 2).length;
+  const totalRounds = auctionRounds.length;
+  const activeRounds = auctionRounds.filter(
+    (round) => round.status === 1
+  ).length;
+  const completedRounds = auctionRounds.filter(
+    (round) => round.status === 2
+  ).length;
 
-    const totalBids = auctionRoundPrices.length;
-    const totalBidders = new Set(auctionRoundPrices.map(price => price.CitizenIdentification)).size;
+  const totalBids = auctionRoundPrices.length;
+  const totalBidders = new Set(
+    auctionRoundPrices.map((price) => price.CitizenIdentification)
+  ).size;
 
-    const totalBidValue = auctionRoundPrices.reduce((sum, price) => sum + parseInt(price.AuctionPrice), 0);
-    const averageBidValue = totalBids > 0 ? totalBidValue / totalBids : 0;
+  const totalBidValue = auctionRoundPrices.reduce(
+    (sum, price) => sum + parseInt(price.AuctionPrice),
+    0
+  );
+  const averageBidValue = totalBids > 0 ? totalBidValue / totalBids : 0;
 
-    return {
-        totalRounds,
-        activeRounds,
-        completedRounds,
-        totalBids,
-        totalBidders,
-        totalBidValue,
-        averageBidValue
-    };
+  return {
+    totalRounds,
+    activeRounds,
+    completedRounds,
+    totalBids,
+    totalBidders,
+    totalBidValue,
+    averageBidValue,
+  };
 };
 
 const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
-    const [auctionRounds, setAuctionRounds] = useState<AuctionRound[]>([]);
-    const [auctionRoundPrices, setAuctionRoundPrices] = useState<AuctionRoundPrice[]>([]);
-    const [auctionRoundPriceWinners, setAuctionRoundPriceWinners] = useState<AuctionRoundPriceWinner[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [showDetail, setShowDetail] = useState(false);
-    const [showResults, setShowResults] = useState(false);
-    const [showInputPrice, setShowInputPrice] = useState(false);
-    const [selectedRound, setSelectedRound] = useState<AuctionRound>();
-    const { user } = useSelector(
-        (state: RootState) => state.auth
+  const [auctionRounds, setAuctionRounds] = useState<AuctionRound[]>([]);
+  const [auctionRoundPrices, setAuctionRoundPrices] = useState<
+    AuctionRoundPrice[]
+  >([]);
+  const [auctionRoundPriceWinners, setAuctionRoundPriceWinners] = useState<
+    AuctionRoundPriceWinner[]
+  >([]);
+  const [loading, setLoading] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [showInputPrice, setShowInputPrice] = useState(false);
+  const [selectedRound, setSelectedRound] = useState<AuctionRound>();
+  const { user } = useSelector((state: RootState) => state.auth);
+  const role = user?.roleName as UserRole | undefined;
+
+  const getListAuctionRounds = useCallback(async () => {
+    try {
+      setLoading(true);
+      // Simulate fetching data from an API
+      const response = await AuctionServices.getListAuctionRounds(auctionId);
+      setAuctionRounds(response.data.auctionRounds);
+    } catch (error) {
+      console.error("Error fetching auction rounds:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [auctionId]);
+
+  const getAuctionRoundPrices = useCallback(() => {
+    try {
+      setAuctionRoundPrices(fakeAuctionRoundPrices);
+    } catch (error) {
+      console.error("Error fetching auction round prices:", error);
+    }
+  }, []);
+
+  const getListAuctionRoundPriceWinners = useCallback(async () => {
+    try {
+      setLoading(true);
+      if (auction?.status == 2) {
+        const response =
+          await AuctionServices.getListAuctionRoundPriceWinnerByAuctionId(
+            auctionId
+          );
+        if (response.code === 200) {
+          setAuctionRoundPriceWinners(response.data.auctionRoundPrices);
+        }
+        console.log("Auction round price winners:", response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching auction round price winners:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [auctionId, auction?.status]);
+
+  const handleCreateRound = useCallback(async () => {
+    try {
+      if (!auctionId) {
+        console.error("No auction detail data available");
+        return;
+      }
+
+      // Kiểm tra giới hạn số vòng đấu giá
+      if (
+        auction?.numberRoundMax &&
+        auctionRounds.length >= auction.numberRoundMax
+      ) {
+        toast.warning(
+          `Số lượng vòng đấu giá đã đạt giới hạn tối đa (${auction.numberRoundMax} vòng)`
+        );
+        return;
+      }
+
+      const dataRequest = {
+        auctionId: auctionId,
+        createdBy: user?.id,
+      };
+      const response = await AuctionServices.createAuctionRound(dataRequest);
+
+      // ✅ Cập nhật lại danh sách auction rounds sau khi tạo thành công
+      if (response.code === 200) {
+        await getListAuctionRounds();
+        toast.success(response.data);
+      } else {
+        toast.error("Lỗi khi tạo danh vòng đấu giá");
+      }
+    } catch (error) {
+      console.error("Error creating auction round:", error);
+      toast.error("Error creating auction round");
+    }
+  }, [
+    auctionId,
+    user?.id,
+    getListAuctionRounds,
+    auction?.numberRoundMax,
+    auctionRounds.length,
+  ]);
+
+  useEffect(() => {
+    getListAuctionRounds();
+    getAuctionRoundPrices();
+    getListAuctionRoundPriceWinners();
+  }, [
+    getListAuctionRounds,
+    getAuctionRoundPrices,
+    getListAuctionRoundPriceWinners,
+  ]);
+
+  const handleEndAuction = async () => {
+    try {
+      const response = await AuctionServices.updateAuctionSuccessfull({
+        auctionId: auctionId,
+      });
+      if (response.code === 200) {
+        toast.success("Phiên đấu giá đã kết thúc thành công");
+        // Cập nhật lại danh sách vòng đấu giá sau khi kết thúc
+      } else {
+        toast.error("Lỗi khi kết thúc phiên đấu giá");
+      }
+    } catch (error) {
+      console.error("Error ending auction:", error);
+      toast.error("Error ending auction");
+    }
+  };
+
+  const handleViewResults = () => {
+    setShowResults(true);
+  };
+
+  const handleViewDetails = (record: AuctionRound) => {
+    setSelectedRound(record);
+    setShowDetail(true);
+    setShowInputPrice(false);
+  };
+
+  const handleInputPrice = (record: AuctionRound) => {
+    setSelectedRound(record);
+    setShowInputPrice(true);
+    setShowDetail(false);
+  };
+
+  // Tìm auctionRoundId của vòng liền trước
+  const getPreviousRoundId = (currentRound: AuctionRound | undefined) => {
+    if (!currentRound || !auctionRounds.length) return undefined;
+
+    // Sắp xếp các vòng theo roundNumber tăng dần
+    const sortedRounds = [...auctionRounds].sort(
+      (a, b) => a.roundNumber - b.roundNumber
     );
-    const role = user?.roleName as UserRole | undefined;
 
-    const getListAuctionRounds = useCallback(async () => {
-        try {
-            setLoading(true);
-            // Simulate fetching data from an API
-            const response = await AuctionServices.getListAuctionRounds(auctionId);
-            setAuctionRounds(response.data.auctionRounds);
-        } catch (error) {
-            console.error("Error fetching auction rounds:", error);
-        } finally {
-            setLoading(false);
-        }
-    }, [auctionId]);
+    // Tìm index của vòng hiện tại
+    const currentIndex = sortedRounds.findIndex(
+      (round) => round.auctionRoundId === currentRound.auctionRoundId
+    );
 
-    const getAuctionRoundPrices = useCallback(() => {
-        try {
-            setAuctionRoundPrices(fakeAuctionRoundPrices);
-        } catch (error) {
-            console.error("Error fetching auction round prices:", error);
-        }
-    }, []);
+    // Nếu có vòng trước đó, trả về auctionRoundId của vòng đó
+    if (currentIndex > 0) {
+      return sortedRounds[currentIndex - 1].auctionRoundId;
+    }
 
-    const getListAuctionRoundPriceWinners = useCallback(async () => {
-        try {
-            setLoading(true);
-            if (auction?.status == 2) {
-                const response = await AuctionServices.getListAuctionRoundPriceWinnerByAuctionId(auctionId);
-                if (response.code === 200) {
-                    setAuctionRoundPriceWinners(response.data.auctionRoundPrices);
-                }
-                console.log("Auction round price winners:", response.data);
-            }
-        } catch (error) {
-            console.error("Error fetching auction round price winners:", error);
-        } finally {
-            setLoading(false);
-        }
-    }, [auctionId, auction?.status]);
+    return undefined;
+  };
 
-    const handleCreateRound = useCallback(async () => {
-        try {
-            if (!auctionId) {
-                console.error("No auction detail data available");
-                return;
-            }
+  const handleBackToList = () => {
+    setShowDetail(false);
+    setShowResults(false);
+    setShowInputPrice(false);
+    setSelectedRound(undefined);
+  };
 
-            // Kiểm tra giới hạn số vòng đấu giá
-            if (auction?.numberRoundMax && auctionRounds.length >= auction.numberRoundMax) {
-                toast.warning(`Số lượng vòng đấu giá đã đạt giới hạn tối đa (${auction.numberRoundMax} vòng)`);
-                return;
-            }
+  // Calculate statistics
+  const stats = calculateStatistics(auctionRounds, auctionRoundPrices);
 
-            const dataRequest = {
-                auctionId: auctionId,
-                createdBy: user?.id
-            }
-            const response = await AuctionServices.createAuctionRound(dataRequest);
+  return (
+    <div className="!min-h-screen !bg-gray-50 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-200/30 to-cyan-200/30 rounded-full animate-float"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-purple-200/30 to-pink-200/30 rounded-full animate-float delay-1000"></div>
+        <div className="absolute bottom-32 left-1/4 w-20 h-20 bg-gradient-to-r from-teal-200/30 to-blue-200/30 rounded-full animate-float delay-2000"></div>
+        <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-gradient-to-r from-indigo-200/30 to-purple-200/30 rounded-full animate-float delay-3000"></div>
+      </div>
 
+      <div className="w-full !mx-auto relative z-10">
+        <AnimatePresence mode="wait">
+          {!showDetail && !showResults && !showInputPrice ? (
+            <motion.div
+              key="list"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              {/* Header */}
+              <motion.div
+                initial={{ opacity: 0, y: -30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+              >
+                <PageHeader
+                  auction={auction}
+                  onCreateClick={handleCreateRound}
+                  onEndAuction={handleEndAuction}
+                  onViewResults={handleViewResults}
+                />
+              </motion.div>
 
-            // ✅ Cập nhật lại danh sách auction rounds sau khi tạo thành công
-            if (response.code === 200) {
-                await getListAuctionRounds();
-                toast.success(response.data);
-            } else {
-                toast.error("Lỗi khi tạo danh vòng đấu giá");
-            }
+              {/* Statistics Cards */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.4 }}
+              >
+                <StatisticsCards
+                  stats={stats}
+                  formatCurrency={formatCurrency}
+                />
+              </motion.div>
 
+              {/* Table */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6, duration: 0.4 }}
+              >
+                <AuctionRoundsTable
+                  auctionRounds={auctionRounds}
+                  loading={loading}
+                  auction={auction}
+                  userRole={role}
+                  onViewDetails={handleViewDetails}
+                  onInputPrice={handleInputPrice}
+                />
+              </motion.div>
+            </motion.div>
+          ) : showResults ? (
+            <motion.div
+              key="results"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 50 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <AuctionResults
+                auctionID={auctionId}
+                auctionRoundPriceWinners={auctionRoundPriceWinners}
+                onBack={handleBackToList}
+              />
+            </motion.div>
+          ) : showDetail ? (
+            <motion.div
+              key="detail"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 50 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              {role === USER_ROLES.AUCTIONEER && (
+                <AuctionRoundDetail
+                  auctionRound={selectedRound}
+                  auction={auction}
+                  onBackToList={handleBackToList}
+                />
+              )}
+              {role === USER_ROLES.STAFF && (
+                <AuctionRoundDetail
+                  auctionRound={selectedRound}
+                  auction={auction}
+                  onBackToList={handleBackToList}
+                />
+              )}
+            </motion.div>
+          ) : showInputPrice ? (
+            <motion.div
+              key="input-price"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 50 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <InputAuctionPrice
+                auctionId={auctionId}
+                roundData={selectedRound}
+                auctionRoundIdBefore={getPreviousRoundId(selectedRound)}
+                auctionAssetsToStatistic={auctionAsset}
+                onBackToList={handleBackToList}
+              />
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </div>
 
-        } catch (error) {
-            console.error("Error creating auction round:", error);
-            toast.error("Error creating auction round");
-        }
-    }, [auctionId, user?.id, getListAuctionRounds, auction?.numberRoundMax, auctionRounds.length]);
-
-    useEffect(() => {
-        getListAuctionRounds();
-        getAuctionRoundPrices();
-        getListAuctionRoundPriceWinners();
-    }, [getListAuctionRounds, getAuctionRoundPrices, getListAuctionRoundPriceWinners]);
-
-
-
-    const handleEndAuction = async () => {
-        try {
-            const response = await AuctionServices.updateAuctionSuccessfull({ auctionId: auctionId });
-            if (response.code === 200) {
-                toast.success("Phiên đấu giá đã kết thúc thành công");
-                // Cập nhật lại danh sách vòng đấu giá sau khi kết thúc
-            } else {
-                toast.error("Lỗi khi kết thúc phiên đấu giá");
-            }
-        } catch (error) {
-            console.error("Error ending auction:", error);
-            toast.error("Error ending auction");
-        }
-    };
-
-    const handleViewResults = () => {
-
-        setShowResults(true);
-    };
-
-    const handleViewDetails = (record: AuctionRound) => {
-        setSelectedRound(record);
-        setShowDetail(true);
-        setShowInputPrice(false);
-    };
-
-    const handleInputPrice = (record: AuctionRound) => {
-        setSelectedRound(record);
-        setShowInputPrice(true);
-        setShowDetail(false);
-    };
-
-    // Tìm auctionRoundId của vòng liền trước
-    const getPreviousRoundId = (currentRound: AuctionRound | undefined) => {
-        if (!currentRound || !auctionRounds.length) return undefined;
-
-        // Sắp xếp các vòng theo roundNumber tăng dần
-        const sortedRounds = [...auctionRounds].sort((a, b) => a.roundNumber - b.roundNumber);
-
-        // Tìm index của vòng hiện tại
-        const currentIndex = sortedRounds.findIndex(round => round.auctionRoundId === currentRound.auctionRoundId);
-
-        // Nếu có vòng trước đó, trả về auctionRoundId của vòng đó
-        if (currentIndex > 0) {
-            return sortedRounds[currentIndex - 1].auctionRoundId;
-        }
-
-        return undefined;
-    };
-
-    const handleBackToList = () => {
-        setShowDetail(false);
-        setShowResults(false);
-        setShowInputPrice(false);
-        setSelectedRound(undefined);
-    };
-
-    // Calculate statistics
-    const stats = calculateStatistics(auctionRounds, auctionRoundPrices);
-
-    return (
-        <div className="!min-h-screen !bg-gray-50 !p-6 relative overflow-hidden">
-            {/* Animated Background Elements */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-200/30 to-cyan-200/30 rounded-full animate-float"></div>
-                <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-purple-200/30 to-pink-200/30 rounded-full animate-float delay-1000"></div>
-                <div className="absolute bottom-32 left-1/4 w-20 h-20 bg-gradient-to-r from-teal-200/30 to-blue-200/30 rounded-full animate-float delay-2000"></div>
-                <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-gradient-to-r from-indigo-200/30 to-purple-200/30 rounded-full animate-float delay-3000"></div>
-            </div>
-
-            <div className="!max-w-7xl !mx-auto relative z-10">
-                <AnimatePresence mode="wait">
-                    {!showDetail && !showResults && !showInputPrice ? (
-                        <motion.div
-                            key="list"
-                            initial={{ opacity: 0, x: -50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -50 }}
-                            transition={{ duration: 0.5, ease: "easeInOut" }}
-                        >
-                            {/* Header */}
-                            <motion.div
-                                initial={{ opacity: 0, y: -30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2, duration: 0.4 }}
-                            >
-                                <PageHeader
-                                    auction={auction}
-                                    onCreateClick={handleCreateRound}
-                                    onEndAuction={handleEndAuction}
-                                    onViewResults={handleViewResults}
-                                />
-                            </motion.div>
-
-                            {/* Statistics Cards */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4, duration: 0.4 }}
-                            >
-                                <StatisticsCards stats={stats} formatCurrency={formatCurrency} />
-                            </motion.div>
-
-                            {/* Table */}
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.6, duration: 0.4 }}
-                            >
-                                <AuctionRoundsTable
-                                    auctionRounds={auctionRounds}
-                                    loading={loading}
-                                    auction={auction}
-                                    userRole={role}
-                                    onViewDetails={handleViewDetails}
-                                    onInputPrice={handleInputPrice}
-                                />
-                            </motion.div>
-                        </motion.div>
-                    ) : showResults ? (
-                        <motion.div
-                            key="results"
-                            initial={{ opacity: 0, y: 50 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 50 }}
-                            transition={{ duration: 0.5, ease: "easeInOut" }}
-                        >
-                            <AuctionResults
-                                auctionID={auctionId}
-                                auctionRoundPriceWinners={auctionRoundPriceWinners}
-                                onBack={handleBackToList}
-                            />
-                        </motion.div>
-                    ) : showDetail ? (
-                        <motion.div
-                            key="detail"
-                            initial={{ opacity: 0, x: 50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 50 }}
-                            transition={{ duration: 0.5, ease: "easeInOut" }}
-                        >
-                            {
-                                role === USER_ROLES.AUCTIONEER && (
-                                    <AuctionRoundDetail
-                                        auctionRound={selectedRound}
-                                        auction={auction}
-                                        onBackToList={handleBackToList} />
-                                )
-                            }
-                            {
-                                role === USER_ROLES.STAFF && (
-                                    <AuctionRoundDetail
-                                        auctionRound={selectedRound}
-                                        auction={auction}
-                                        onBackToList={handleBackToList} />
-                                )
-                            }
-                        </motion.div>
-                    ) : showInputPrice ? (
-                        <motion.div
-                            key="input-price"
-                            initial={{ opacity: 0, x: 50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 50 }}
-                            transition={{ duration: 0.5, ease: "easeInOut" }}
-                        >
-                            <InputAuctionPrice
-                                auctionId={auctionId}
-                                roundData={selectedRound}
-                                auctionRoundIdBefore={getPreviousRoundId(selectedRound)}
-                                auctionAssetsToStatistic={auctionAsset}
-                                onBackToList={handleBackToList}
-                            />
-                        </motion.div>
-                    ) : null}
-                </AnimatePresence>
-            </div>
-
-            <style>{`
+      <style>{`
                 @keyframes float {
                     0%, 100% { transform: translateY(0px) rotate(0deg); }
                     33% { transform: translateY(-10px) rotate(120deg); }
@@ -367,8 +400,8 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
                     animation-delay: 3s;
                 }
             `}</style>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default AuctionRounds;

@@ -4,7 +4,7 @@ import AuctionServices from "../../../../services/AuctionServices";
 import type { AuctionDocument, AuctionDateModal } from "../../Modals";
 import { Table, Input, Tag, Select, Button } from "antd";
 import { HistoryOutlined } from "@ant-design/icons";
-import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal";
+import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal/ParticipantBiddingHistoryModal";
 
 // Đã xóa import dayjs
 

@@ -54,8 +54,8 @@ export type AuctionDataDetail = {
   status: string;
   auctionMap?: string;
   winnerData: string;
-  auctioneer?: string;
-  rejectReason? : string;
+  auctioneerBy?: string;
+  rejectReason?: string;
   cancelReason?: string;
   cancelReasonFile?: string;
   listAuctionAssets?: AuctionAsset[];
@@ -88,7 +88,12 @@ export type AuctionDocument = {
   statusDeposit: number;
   statusRefundDeposit: boolean;
   statusTicket: number;
+  refundProof?: string;
+  refundReason?: string;
+  isAttended?: boolean;
+  statusRefund?: number;
   tagName: string;
+  userId?: string;
 };
 
 export type AuctionDateModal = {
