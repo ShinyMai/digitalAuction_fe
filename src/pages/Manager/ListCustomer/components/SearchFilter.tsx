@@ -1,16 +1,10 @@
 import React from "react";
-import { Card, Input, Select, Button } from "antd";
+import { Card, Input, Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import type { Role } from "../types";
-
-const { Option } = Select;
 
 interface SearchFilterProps {
   search: string;
   setSearch: (value: string) => void;
-  roleId: number | null;
-  setRoleId: (value: number | null) => void;
-  roles: Role[];
   onSearch: () => void;
   onReset: () => void;
 }
@@ -18,9 +12,6 @@ interface SearchFilterProps {
 const SearchFilter: React.FC<SearchFilterProps> = ({
   search,
   setSearch,
-  roleId,
-  setRoleId,
-  roles,
   onSearch,
   onReset,
 }) => {
@@ -39,25 +30,6 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             className="h-12 rounded-lg"
             onPressEnter={onSearch}
           />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Chức vụ
-          </label>
-          <Select
-            placeholder="Chọn chức vụ"
-            value={roleId}
-            onChange={setRoleId}
-            allowClear
-            className="w-full"
-            size="large"
-          >
-            {roles.map((role) => (
-              <Option key={role.roleId} value={role.roleId}>
-                {role.roleName}
-              </Option>
-            ))}
-          </Select>
         </div>
         <div className="flex gap-2 items-end ml-2 pb-1">
           <Button

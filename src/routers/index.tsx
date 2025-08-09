@@ -46,6 +46,7 @@ export const STAFF_ROUTES = {
     AUCTION_DETAIL_REJECT: "auction-detail-reject",
     AUCTION_LIST_SUCCESSFULL: "auction-list-successfull",
     AUCTION_DETAIL_SUCCESSFULL: "auction-detail-successfull",
+    LIST_CUSTOMER: "list-customer",
   },
 };
 

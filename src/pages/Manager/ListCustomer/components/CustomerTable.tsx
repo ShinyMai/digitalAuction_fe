@@ -119,7 +119,6 @@ const AccountTable: React.FC<AccountTableProps> = ({
           current: pageNumber,
           pageSize: pageSize,
           total: totalCount,
-          showSizeChanger: true,
           showQuickJumper: true,
           showTotal: (total, range) =>
             `${range[0]}-${range[1]} của ${total} nhân viên`,

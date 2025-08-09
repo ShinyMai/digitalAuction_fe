@@ -26,3 +26,10 @@ export interface Role {
   roleId: number;
   roleName: string;
 }
+
+export interface ListCustomerResponse {
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  customerInfos: AccountData[];
+}

@@ -45,11 +45,15 @@ const getNumbericalOrder = (
     )
   );
 
+const getListCustomer = (params: any): Promise<ApiResponse> =>
+  http.get(UserAPI.LIST_CUSTOMER, { params: params });
+
 const UserServices = {
   getUserInfo,
   sendPasswordToUser,
   getUserByCccd,
   getNumbericalOrder,
+  getListCustomer,
 };
 
 export default UserServices;

@@ -211,6 +211,10 @@ const AuctionDetailDraff = React.lazy(
   () => import("../pages/Staff/AuctionDetailDraff/index")
 );
 
+const ListCustomer = React.lazy(
+  () => import("../pages/Manager/ListCustomer/index")
+);
+
 export const staffRoutes = [
   {
     path: STAFF_ROUTES.SUB.POST_AUCTION,
@@ -312,6 +316,10 @@ export const staffRoutes = [
       STAFF_ROUTES.SUB.AUCTION_DETAIL_SUCCESSFULL,
     element: wrapWithLazy(AuctionDetailSuccessfull),
   },
+  {
+    path: STAFF_ROUTES.SUB.LIST_CUSTOMER,
+    element: wrapWithLazy(ListCustomer),
+  },
 ];
 
 // Router site Admin
@@ -349,10 +357,6 @@ const ManagerDashboard = React.lazy(
 
 const ListEmployee = React.lazy(
   () => import("../pages/Manager/ListEmployee/index")
-);
-
-const ListCustomer = React.lazy(
-  () => import("../pages/Manager/ListCustomer/index")
 );
 
 export const managerRoutes = [

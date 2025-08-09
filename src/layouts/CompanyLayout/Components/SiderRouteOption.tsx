@@ -174,7 +174,7 @@ const items: MenuItem[] = [
     key: "user-management",
     icon: <UserAddOutlined className="text-xl" />,
     label: "Quản lý người dùng",
-    roleView: ["Director", "Manager", "Admin"],
+    roleView: ["Director", "Manager", "Admin", "Staff"],
     children: [
       {
         key: "15",
@@ -188,7 +188,7 @@ const items: MenuItem[] = [
         icon: <ContactsOutlined />,
         label: "Quản lý khách hàng",
         url: MANAGER_ROUTES.SUB.LIST_CUSTOMER,
-        roleView: ["Director", "Manager"],
+        roleView: ["Director", "Manager", "Staff"],
       },
       {
         key: "16",

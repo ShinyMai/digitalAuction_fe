@@ -1,11 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { Typography } from "antd";
-import AuthServices from "../../../services/AuthServices";
 import { toast } from "react-toastify";
-import type { AccountData } from "./types";
+import type { AccountData, ListCustomerResponse } from "./types";
 import SearchFilter from "./components/SearchFilter";
 import EmployeeTable from "./components/CustomerTable";
 import EmployeeDetailModal from "./components/CustomerDetailModal";
+import UserServices from "../../../services/UserServices";
 
 const { Title } = Typography;
 
@@ -13,7 +13,6 @@ const ListEmployee = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
-  const [roleId, setRoleId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [listEmployee, setListEmployee] = useState<AccountData[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -21,10 +20,6 @@ const ListEmployee = () => {
     null
   );
   const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const viewableRoles = [
-    { roleId: 3, roleName: "Nhân viên" },
-    { roleId: 4, roleName: "Đấu giá viên" },
-  ];
   const getListEmployee = useCallback(async () => {
     try {
       setLoading(true);
@@ -32,7 +27,6 @@ const ListEmployee = () => {
         PageNumber: number;
         PageSize: number;
         Search?: string;
-        RoleId?: number;
       } = {
         PageNumber: pageNumber,
         PageSize: pageSize,
@@ -41,30 +35,24 @@ const ListEmployee = () => {
       if (search && search.trim()) {
         params.Search = search.trim();
       }
-      if (roleId !== null && roleId !== undefined) {
-        if (roleId === 3 || roleId === 4) {
-          params.RoleId = roleId;
-        }
-      }
-      const res = await AuthServices.getListAccount(params);
+      const res = await UserServices.getListCustomer(params);
       if (res.code === 200) {
-        const filteredEmployees = res.data.employeeAccounts.filter(
-          (employee: AccountData) =>
-            employee.roleName === "Staff" || employee.roleName === "Auctioneer"
-        );
+        // Using the correct response structure based on API
+        const responseData = res.data as ListCustomerResponse;
+        const customers = responseData.customerInfos || [];
 
-        setListEmployee(filteredEmployees);
-        setTotalCount(filteredEmployees.length);
+        setListEmployee(customers);
+        setTotalCount(responseData.totalCount || customers.length);
       } else {
-        toast.error("Không thể tải danh sách nhân viên");
+        toast.error("Không thể tải danh sách khách hàng");
       }
     } catch (error) {
-      console.error("Failed to fetch employee list:", error);
-      toast.error("Lỗi khi tải danh sách nhân viên");
+      console.error("Failed to fetch customer list:", error);
+      toast.error("Lỗi khi tải danh sách khách hàng");
     } finally {
       setLoading(false);
     }
-  }, [pageNumber, pageSize, search, roleId]);
+  }, [pageNumber, pageSize, search]);
 
   useEffect(() => {
     getListEmployee();
@@ -82,27 +70,23 @@ const ListEmployee = () => {
 
   const handleReset = () => {
     setSearch("");
-    setRoleId(null);
     setPageNumber(1);
   };
   return (
     <div className="p-6 bg-gradient-to-br from-blue-50 to-teal-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         <Title level={3} className="!text-center !mb-4 !text-gray-800">
-          Danh sách nhân viên
+          Danh sách khách hàng
         </Title>
         <div className="text-center mb-6">
           <p className="text-sm text-gray-600 bg-blue-50 px-4 py-2 rounded-lg inline-block border border-blue-200">
-            💼 Bạn chỉ có thể xem thông tin của nhân viên cấp dưới
+            👥 Quản lý thông tin khách hàng tham gia đấu giá
           </p>
         </div>
         {/* Search and Filter Section */}
         <SearchFilter
           search={search}
           setSearch={setSearch}
-          roleId={roleId}
-          setRoleId={setRoleId}
-          roles={viewableRoles}
           onSearch={handleSearch}
           onReset={handleReset}
         />
