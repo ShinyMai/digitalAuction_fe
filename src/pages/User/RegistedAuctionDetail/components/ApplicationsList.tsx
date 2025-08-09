@@ -25,6 +25,9 @@ import {
   ExclamationCircleOutlined,
   UploadOutlined,
   DeleteOutlined,
+  UserOutlined,
+  FileProtectOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import { formatNumber } from "../../../../utils/numberFormat";
 import type {
@@ -62,6 +65,8 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
 
   // Modal states
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<AuctionDocument | null>(null);
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const [cancelReason, setCancelReason] = useState("");
   const [uploadedFile, setUploadedFile] = useState<any>(null);
@@ -121,6 +126,17 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
     setSelectedAssets([]);
     setCancelReason("");
     setUploadedFile(null);
+  };
+
+  // Handle detail modal functions
+  const handleOpenDetailModal = (record: AuctionDocument) => {
+    setSelectedDocument(record);
+    setIsDetailModalVisible(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalVisible(false);
+    setSelectedDocument(null);
   };
 
   const handleAssetSelection = (assetId: string, checked: boolean) => {
@@ -313,6 +329,52 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
     }
   };
 
+  // Thêm các hàm helper cho trường mới
+  const getAttendanceStatus = (isAttended?: boolean) => {
+    if (isAttended === undefined || isAttended === null) {
+      return {
+        color: "default",
+        text: "Chưa xác định",
+        icon: <ClockCircleOutlined />,
+      };
+    }
+
+    return isAttended ? {
+      color: "green",
+      text: "Đã tham dự",
+      icon: <UserOutlined />,
+    } : {
+      color: "red",
+      text: "Chưa tham dự",
+      icon: <ExclamationCircleOutlined />,
+    };
+  };
+
+  const getRefundStatus = (statusRefund?: number) => {
+    switch (statusRefund) {
+      case 0:
+        return {
+          color: "orange",
+          text: "Chờ xử lý",
+          icon: <ClockCircleOutlined />,
+        };
+      case 1:
+        return {
+          color: "green",
+          text: "Đã chấp nhận",
+          icon: <CheckCircleOutlined />,
+        };
+      case 2:
+        return {
+          color: "red",
+          text: "Từ chối",
+          icon: <CloseCircleOutlined />,
+        };
+      default:
+        return null; // Không hiển thị gì nếu chưa có yêu cầu hoàn cọc
+    }
+  };
+
   // Define table columns
   const getTableColumns = () => [
     {
@@ -471,19 +533,30 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
       title: "Thao tác",
       dataIndex: "actions",
       key: "actions",
+      width: 120,
       render: (_: any, record: AuctionDocument) => {
         return (
-          <Tooltip title="Tải xuống phiếu đăng ký" placement="top">
-            <Button
-              type="text"
-              icon={<DownloadOutlined />}
-              className="!text-blue-600 !hover:bg-blue-50"
-              onClick={() => {
-                const transformedData = transformDataForExport(record);
-                exportToDocx(transformedData);
-              }}
-            />
-          </Tooltip>
+          <Space size="small">
+            <Tooltip title="Xem chi tiết" placement="top">
+              <Button
+                type="text"
+                icon={<InfoCircleOutlined />}
+                className="!text-green-600 !hover:bg-green-50"
+                onClick={() => handleOpenDetailModal(record)}
+              />
+            </Tooltip>
+            <Tooltip title="Tải xuống phiếu đăng ký" placement="top">
+              <Button
+                type="text"
+                icon={<DownloadOutlined />}
+                className="!text-blue-600 !hover:bg-blue-50"
+                onClick={() => {
+                  const transformedData = transformDataForExport(record);
+                  exportToDocx(transformedData);
+                }}
+              />
+            </Tooltip>
+          </Space>
         );
       },
     },
@@ -500,7 +573,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
         showTotal: (total, range) =>
           `${range[0]}-${range[1]} của ${total} đăng ký`,
       }}
-      scroll={{ x: 800 }}
+      scroll={{ x: 1000 }}
       size="middle"
       columns={getTableColumns()}
     />
@@ -544,7 +617,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
         title={
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <ExclamationCircleOutlined style={{ color: "#ff4d4f", fontSize: "20px" }} />
-            <span style={{ fontSize: "16px", fontWeight: "600" }}>
+            <span style={{ fontSize: "16px", fontWeight: "600" }} className="text-black">
               Xin hủy tham gia đấu giá
             </span>
           </div>
@@ -712,6 +785,106 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
             </Form.Item>
           </Form>
         </div>
+      </Modal>
+
+      {/* Detail Information Modal */}
+      <Modal
+        title={
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }} className="text-black">
+            <InfoCircleOutlined style={{ color: "#1890ff", fontSize: "18px" }} />
+            <span style={{ fontSize: "15px", fontWeight: "600" }}>
+              Thông tin xin hủy
+            </span>
+          </div>
+        }
+        open={isDetailModalVisible}
+        onCancel={handleCloseDetailModal}
+        width={600}
+        footer={[
+          <Button key="close" onClick={handleCloseDetailModal} size="small">
+            Đóng
+          </Button>
+        ]}
+        destroyOnClose
+        className="detail-modal"
+      >
+        {selectedDocument && (
+          <div style={{ padding: "16px 0" }}>
+            {/* New Fields Information */}
+            <div style={{ marginBottom: "20px" }}>
+              <div style={{
+                background: "#f0f9ff",
+                padding: "12px",
+                borderRadius: "6px",
+                border: "1px solid #bae7ff"
+              }}>
+                {/* Attendance Status */}
+                <div style={{ marginBottom: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <Text type="secondary" style={{ fontSize: "12px" }}>Tham dự:</Text>
+                  {(() => {
+                    const attendanceStatus = getAttendanceStatus(selectedDocument.isAttended);
+                    return (
+                      <Tag color={attendanceStatus.color} icon={attendanceStatus.icon} style={{ fontSize: "11px" }}>
+                        {attendanceStatus.text}
+                      </Tag>
+                    );
+                  })()}
+                </div>
+
+                {/* Refund Status */}
+                <div style={{ marginBottom: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <Text type="secondary" style={{ fontSize: "12px" }}>Hoàn cọc:</Text>
+                  {(() => {
+                    const refundStatus = getRefundStatus(selectedDocument.statusRefund);
+                    if (!refundStatus) {
+                      return <Text type="secondary" style={{ fontSize: "11px" }}>Chưa có yêu cầu</Text>;
+                    }
+                    return (
+                      <Tag color={refundStatus.color} icon={refundStatus.icon} style={{ fontSize: "11px" }}>
+                        {refundStatus.text}
+                      </Tag>
+                    );
+                  })()}
+                </div>
+
+                {/* Refund Reason */}
+                {selectedDocument.refundReason && (
+                  <div style={{ marginBottom: "12px" }}>
+                    <Text type="secondary" style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>
+                      Lý do hoàn cọc:
+                    </Text>
+                    <div style={{
+                      background: "white",
+                      padding: "8px",
+                      borderRadius: "4px",
+                      border: "1px solid #d9d9d9"
+                    }}>
+                      <Text style={{ fontSize: "12px" }}>{selectedDocument.refundReason}</Text>
+                    </div>
+                  </div>
+                )}
+
+                {/* Refund Proof */}
+                {selectedDocument.refundProof && (
+                  <div>
+                    <Text type="secondary" style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>
+                      Minh chứng:
+                    </Text>
+                    <Button
+                      type="primary"
+                      size="small"
+                      icon={<FileProtectOutlined />}
+                      onClick={() => window.open(selectedDocument.refundProof, '_blank')}
+                      style={{ borderRadius: "4px", fontSize: "11px" }}
+                    >
+                      Xem tài liệu
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </Modal>
     </>
   );

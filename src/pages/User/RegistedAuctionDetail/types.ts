@@ -12,6 +12,10 @@ export interface AuctionDocument {
   bankAccount: string;
   bankAccountNumber: string;
   bankBranch: string;
+  isAttended?: boolean;
+  refundProof?: string;
+  refundReason?: string;
+  statusRefund?: number; // 1: đã gửi lý do yêu cầu hoàn tiền, 1 : đã được chấp nhận hoàn cọc, 2: từ chối hoàn cọc 
 }
 
 // Auction status data from API
@@ -64,8 +68,9 @@ export interface AuctionDocumentResponse {
   data: AuctionDocument[];
 }
 
-export type DepositStatus = 0 | 1; // 0: Pending, 1: Paid, 2: Refunded
+export type DepositStatus = 0 | 1 | 2; // 0: Pending, 1: Paid, 2: Refunded
 export type TicketStatus = 0 | 1 | 2 | 3; // 0: Pending, 1: Approved, 2: Rejected
+export type RefundStatus = 0 | 1 | 2; // 0: Pending, 1: Approved, 2: Rejected
 
 export interface StatusInfo {
   color: string;

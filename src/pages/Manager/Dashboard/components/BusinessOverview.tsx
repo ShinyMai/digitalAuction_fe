@@ -35,9 +35,9 @@ const BusinessOverview: React.FC<BusinessOverviewProps> = ({ loading = false }) 
                                         </span>
                                     }
                                     value={businessMetrics.totalAuctions}
-                                    valueStyle={{ 
-                                        color: '#1d4ed8', 
-                                        fontSize: '2.5rem', 
+                                    valueStyle={{
+                                        color: '#1d4ed8',
+                                        fontSize: '2.5rem',
                                         fontWeight: '700',
                                         lineHeight: '1'
                                     }}
@@ -64,9 +64,9 @@ const BusinessOverview: React.FC<BusinessOverviewProps> = ({ loading = false }) 
                                         </span>
                                     }
                                     value={businessMetrics.successfulAuctions}
-                                    valueStyle={{ 
-                                        color: '#059669', 
-                                        fontSize: '2.5rem', 
+                                    valueStyle={{
+                                        color: '#059669',
+                                        fontSize: '2.5rem',
                                         fontWeight: '700',
                                         lineHeight: '1'
                                     }}
@@ -93,9 +93,9 @@ const BusinessOverview: React.FC<BusinessOverviewProps> = ({ loading = false }) 
                                         </span>
                                     }
                                     value={businessMetrics.canceledAuctions}
-                                    valueStyle={{ 
-                                        color: '#dc2626', 
-                                        fontSize: '2.5rem', 
+                                    valueStyle={{
+                                        color: '#dc2626',
+                                        fontSize: '2.5rem',
                                         fontWeight: '700',
                                         lineHeight: '1'
                                     }}
@@ -122,9 +122,9 @@ const BusinessOverview: React.FC<BusinessOverviewProps> = ({ loading = false }) 
                                         </span>
                                     }
                                     value={businessMetrics.totalParticipants}
-                                    valueStyle={{ 
-                                        color: '#7c3aed', 
-                                        fontSize: '2.5rem', 
+                                    valueStyle={{
+                                        color: '#7c3aed',
+                                        fontSize: '2.5rem',
                                         fontWeight: '700',
                                         lineHeight: '1'
                                     }}

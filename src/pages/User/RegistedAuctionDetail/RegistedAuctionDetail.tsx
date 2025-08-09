@@ -9,6 +9,8 @@ import {
   FilterSection,
   StatisticsOverview,
 } from "./components";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../store/store";
 
 const { Title } = Typography;
 
@@ -24,12 +26,14 @@ const RegistedAuctionDetail: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [depositFilter, setDepositFilter] = useState<number | "all">("all");
   const [ticketFilter, setTicketFilter] = useState<number | "all">("all");
+  const { user } = useSelector((state: RootState) => state.auth);
 
   const fetchAuctionDetail = async () => {
     try {
       setLoading(true);
       const res = await AuctionServices.getListAuctionDocumentRegisted({
         auctionId: id,
+        userId: user?.id || "",
       });
 
       if (res.code === 200) {
@@ -89,6 +93,21 @@ const RegistedAuctionDetail: React.FC = () => {
     approvedTickets: filteredDocuments.filter((doc) => doc.statusTicket === 1)
       .length,
     pendingTickets: filteredDocuments.filter((doc) => doc.statusTicket === 0)
+      .length,
+    // Thêm các thống kê mới cho các trường vừa thêm
+    attendedSessions: filteredDocuments.filter((doc) => doc.isAttended === true)
+      .length,
+    notAttendedSessions: filteredDocuments.filter((doc) => doc.isAttended === false)
+      .length,
+    pendingRefunds: filteredDocuments.filter((doc) => doc.statusRefund === 0)
+      .length,
+    approvedRefunds: filteredDocuments.filter((doc) => doc.statusRefund === 1)
+      .length,
+    rejectedRefunds: filteredDocuments.filter((doc) => doc.statusRefund === 2)
+      .length,
+    documentsWithRefundReason: filteredDocuments.filter((doc) => doc.refundReason)
+      .length,
+    documentsWithRefundProof: filteredDocuments.filter((doc) => doc.refundProof)
       .length,
   };
 
