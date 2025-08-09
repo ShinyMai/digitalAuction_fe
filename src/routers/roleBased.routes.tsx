@@ -347,6 +347,14 @@ const ManagerDashboard = React.lazy(
   () => import("../pages/Manager/Dashboard/index")
 );
 
+const ListEmployee = React.lazy(
+  () => import("../pages/Manager/ListEmployee/index")
+);
+
+const ListCustomer = React.lazy(
+  () => import("../pages/Manager/ListCustomer/index")
+);
+
 export const managerRoutes = [
   ...staffRoutes,
   {
@@ -363,6 +371,14 @@ export const managerRoutes = [
   {
     path: MANAGER_ROUTES.SUB.LIST_BLOG,
     element: wrapWithLazy(ListBlogManager),
+  },
+  {
+    path: MANAGER_ROUTES.SUB.LIST_EMPLOYEE,
+    element: wrapWithLazy(ListEmployee),
+  },
+  {
+    path: MANAGER_ROUTES.SUB.LIST_CUSTOMER,
+    element: wrapWithLazy(ListCustomer),
   },
   {
     path: MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC,

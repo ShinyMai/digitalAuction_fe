@@ -76,6 +76,8 @@ export const MANAGER_ROUTES = {
     AUCTION_LIST_CANCEL: "auction-list-cancel",
     AUCTION_DETAIL_CANCEL: "auction-detail-cancel",
     LIST_BLOG: "list-blog-manager",
+    LIST_EMPLOYEE: "list-employee",
+    LIST_CUSTOMER: "list-customer",
     AUCTION_LIST_WAITING_PUBLIC: "auction-list-waiting-public",
     AUCTION_DETAIL_WAITING_PUBLIC: "auction-detail-waiting-public",
     MANAGER_DASHBOARD: "manager-dashboard",

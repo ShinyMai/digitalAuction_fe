@@ -1,17 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import AuctionServices from "../../../../services/AuctionServices";
-import type {
-  AuctionDocument,
-  AuctionDateModal,
-} from "../../Modals";
-import {
-  Table,
-  Input,
-  Tag,
-  Select,
-} from "antd";
+import type { AuctionDocument, AuctionDateModal } from "../../Modals";
+import { Table, Input, Tag, Select, Button } from "antd";
+import { HistoryOutlined } from "@ant-design/icons";
+import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal";
 
 // Đã xóa import dayjs
 
@@ -34,7 +27,7 @@ interface SearchParams {
   TagName?: string;
   SortBy?: string;
   IsAscending?: boolean;
-  statusTicket?: number
+  statusTicket?: number;
 }
 
 interface Props {
@@ -42,20 +35,16 @@ interface Props {
   auctionDateModals?: AuctionDateModal;
 }
 
-const ListAuctionDocument = ({
-  auctionId,
-  auctionAssets,
-}: Props) => {
-  const [searchParams, setSearchParams] =
-    useState<SearchParams>({
-      PageNumber: 1,
-      PageSize: 8,
-      SortBy: 'numericalorder',
-      IsAscending: true,
-    });
-  const [auctionDocuments, setAuctionDocuments] = useState<
-    AuctionDocument[]
-  >([]);
+const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
+  const [searchParams, setSearchParams] = useState<SearchParams>({
+    PageNumber: 1,
+    PageSize: 8,
+    SortBy: "numericalorder",
+    IsAscending: true,
+  });
+  const [auctionDocuments, setAuctionDocuments] = useState<AuctionDocument[]>(
+    []
+  );
   const [totalCount, setTotalCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [searchValues, setSearchValues] = useState<{
@@ -64,10 +53,21 @@ const ListAuctionDocument = ({
     TagName?: string;
   }>({});
 
+  // State cho modal lịch sử đấu giá
+  const [isBiddingHistoryModalVisible, setIsBiddingHistoryModalVisible] =
+    useState<boolean>(false);
+  const [selectedParticipantForHistory, setSelectedParticipantForHistory] =
+    useState<{
+      name: string;
+      citizenIdentification: string;
+      auctionId?: string;
+    } | null>(null);
+
   // Đã xóa kiểm tra thời gian đăng ký
 
   useEffect(() => {
     getListAuctionDocument();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, auctionId]);
 
   const getListAuctionDocument = async () => {
@@ -77,40 +77,32 @@ const ListAuctionDocument = ({
         PageNumber: searchParams.PageNumber || 1,
         PageSize: searchParams.PageSize || 8,
         Name: searchParams.Name,
-        CitizenIdentification:
-          searchParams.CitizenIdentification,
+        CitizenIdentification: searchParams.CitizenIdentification,
         TagName: searchParams.TagName,
         SortBy: searchParams.SortBy,
         IsAscending: searchParams.IsAscending,
-        statusTicket: searchParams.statusTicket
+        statusTicket: searchParams.statusTicket,
       };
-      const response =
-        await AuctionServices.getListAuctionDocument(
-          params,
-          auctionId
-        );
+      const response = await AuctionServices.getListAuctionDocument(
+        params,
+        auctionId
+      );
       setAuctionDocuments(response.data.auctionDocuments);
       setTotalCount(response.data.totalCount);
     } catch (error) {
-      toast.error(
-        "Lỗi khi tải danh sách tài liệu đấu giá!"
-      );
+      toast.error("Lỗi khi tải danh sách tài liệu đấu giá!");
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleInputChange = (
-    key: keyof SearchParams,
-    value: string
-  ) => {
+  const handleInputChange = (key: keyof SearchParams, value: string) => {
     const newValue = value || undefined;
     setSearchValues((prev) => ({
       ...prev,
       [key]: newValue,
-    }));
-    // Thực hiện search ngay khi giá trị thay đổi
+    })); // Thực hiện search ngay khi giá trị thay đổi
     setSearchParams((prev) => ({
       ...prev,
       [key]: newValue,
@@ -119,13 +111,28 @@ const ListAuctionDocument = ({
   };
   // Đã xóa handleAction
 
+  // Xử lý mở modal lịch sử đấu giá
+  const handleShowBiddingHistory = (participant: AuctionDocument) => {
+    setSelectedParticipantForHistory({
+      name: participant.name,
+      citizenIdentification: participant.citizenIdentification,
+      auctionId: auctionId,
+    });
+    setIsBiddingHistoryModalVisible(true);
+  };
+
+  // Xử lý đóng modal lịch sử đấu giá
+  const handleCloseBiddingHistoryModal = () => {
+    setIsBiddingHistoryModalVisible(false);
+    setSelectedParticipantForHistory(null);
+  };
+
   const columns = [
     {
       title: "Số báo danh",
       dataIndex: "numericalOrder",
       key: "numericalOrder",
-      render: (numericalOrder: number | null) =>
-        numericalOrder || "-",
+      render: (numericalOrder: number | null) => numericalOrder || "-",
     },
     {
       title: "Tên",
@@ -174,10 +181,28 @@ const ListAuctionDocument = ({
       dataIndex: "statusDeposit",
       key: "statusDeposit",
       render: (statusDeposit: number) => {
-        const color = statusDeposit === 1 ? 'green' : 'orange';
-        const text = statusDeposit === 1 ? 'Đã cọc' : 'Chưa cọc';
+        const color = statusDeposit === 1 ? "green" : "orange";
+        const text = statusDeposit === 1 ? "Đã cọc" : "Chưa cọc";
         return <Tag color={color}>{text}</Tag>;
       },
+    },
+    {
+      title: "Thao tác",
+      key: "actions",
+      width: 120,
+      align: "center" as const,
+      render: (record: AuctionDocument) => (
+        <Button
+          type="primary"
+          size="small"
+          icon={<HistoryOutlined />}
+          onClick={() => handleShowBiddingHistory(record)}
+          className="bg-blue-500 hover:bg-blue-600"
+          title="Xem lịch sử đấu giá"
+        >
+          Lịch sử đấu giá
+        </Button>
+      ),
     },
   ];
 
@@ -187,12 +212,16 @@ const ListAuctionDocument = ({
         <div className="mb-6">
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <div className="p-4 bg-gradient-to-r from-teal-500 to-blue-500">
-              <h2 className="text-lg font-semibold text-white">Tìm kiếm hồ sơ đấu giá</h2>
+              <h2 className="text-lg font-semibold text-white">
+                Tìm kiếm hồ sơ đấu giá
+              </h2>
             </div>
             <div className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Tên người đăng ký</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Tên người đăng ký
+                  </label>
                   <Input
                     placeholder="Nhập tên người đăng ký..."
                     allowClear
@@ -202,17 +231,23 @@ const ListAuctionDocument = ({
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">CMND/CCCD</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    CMND/CCCD
+                  </label>
                   <Input
                     placeholder="Nhập số CMND/CCCD..."
                     allowClear
                     value={searchValues.CitizenIdentification}
-                    onChange={(e) => handleInputChange("CitizenIdentification", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("CitizenIdentification", e.target.value)
+                    }
                     className="w-full !rounded-md [&>input]:!py-2 [&>input]:!px-3 [&>input]:!border-gray-300 [&>input]:!hover:border-teal-500 [&>input]:!focus:border-teal-500"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Tài sản đấu giá</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Tài sản đấu giá
+                  </label>
                   <Select
                     placeholder="Chọn tài sản đấu giá..."
                     allowClear
@@ -220,9 +255,11 @@ const ListAuctionDocument = ({
                     value={searchValues.TagName}
                     onChange={(value) => handleInputChange("TagName", value)}
                     filterOption={(input, option) =>
-                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
                     }
-                    options={auctionAssets.map(asset => ({
+                    options={auctionAssets.map((asset) => ({
                       value: asset.tagName,
                       label: asset.tagName,
                     }))}
@@ -254,6 +291,13 @@ const ListAuctionDocument = ({
           className="border border-teal-100 rounded-lg"
         />
       </div>
+
+      {/* Modal lịch sử đấu giá */}
+      <ParticipantBiddingHistoryModal
+        visible={isBiddingHistoryModalVisible}
+        onClose={handleCloseBiddingHistoryModal}
+        participantInfo={selectedParticipantForHistory}
+      />
       {/* Đã xóa style cho gear icon */}
     </section>
   );

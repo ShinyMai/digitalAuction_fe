@@ -4,7 +4,7 @@ import EkycSDK from "../../../components/Ekyc/EkycSDK";
 import RegisterAccountForm from "../../Anonymous/Register/components/RegisterAccountForm";
 
 const AddEmployees = () => {
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(1);
   const [account, setAccount] = useState({});
   // const [loading, setLoading] = useState(false);
 

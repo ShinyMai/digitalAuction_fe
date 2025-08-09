@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Spin, Button, Empty, message, Typography } from "antd";
@@ -9,6 +10,7 @@ import {
   FilterSection,
   StatisticsOverview,
 } from "./components";
+import { useSelector } from "react-redux";
 
 const { Title } = Typography;
 
@@ -24,12 +26,14 @@ const RegistedAuctionDetail: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [depositFilter, setDepositFilter] = useState<number | "all">("all");
   const [ticketFilter, setTicketFilter] = useState<number | "all">("all");
+  const { user } = useSelector((state: any) => state.auth);
 
   const fetchAuctionDetail = async () => {
     try {
       setLoading(true);
       const res = await AuctionServices.getListAuctionDocumentRegisted({
         auctionId: id,
+        userId: user?.id || "",
       });
 
       if (res.code === 200) {
@@ -119,9 +123,6 @@ const RegistedAuctionDetail: React.FC = () => {
           Quay lại danh sách đấu giá
         </Button>
         <Empty description={error} style={{ margin: "50px 0" }}>
-          <div className="text-center p-4">
-            Không thể tải thông tin chi tiết phiên đấu giá
-          </div>
           <Button type="primary" onClick={fetchAuctionDetail}>
             Thử lại
           </Button>

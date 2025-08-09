@@ -2,23 +2,16 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import AuctionServices from "../../../../services/AuctionServices";
 import type { AuctionDocument, AuctionDateModal } from "../../Modals";
-import {
-  Table,
-  Input,
-  Tag,
-  Button,
-  Card,
-  Modal,
-  Space,
-  Divider,
-} from "antd";
+import { Table, Input, Tag, Button, Card, Modal, Space, Divider } from "antd";
 import {
   SearchOutlined,
   UserOutlined,
   ShoppingOutlined,
-  DollarOutlined
+  DollarOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import DepositConfirmationPopup from "./DepositConfirmationPopup";
+import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal";
 
 // Interface cho dữ liệu đã nhóm theo người
 interface GroupedParticipant {
@@ -54,20 +47,35 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
     SortBy: "numericalorder",
     IsAscending: true,
   });
-  const [auctionDocuments, setAuctionDocuments] = useState<AuctionDocument[]>([]);
+  const [auctionDocuments, setAuctionDocuments] = useState<AuctionDocument[]>(
+    []
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
-  const [selectedRecord, setSelectedRecord] = useState<AuctionDocument | null>(null);
-
+  const [selectedRecord, setSelectedRecord] = useState<AuctionDocument | null>(
+    null
+  );
   // State cho modal hiển thị danh sách tài sản
-  const [isAssetsModalVisible, setIsAssetsModalVisible] = useState<boolean>(false);
-  const [selectedParticipant, setSelectedParticipant] = useState<GroupedParticipant | null>(null);
+  const [isAssetsModalVisible, setIsAssetsModalVisible] =
+    useState<boolean>(false);
+  const [selectedParticipant, setSelectedParticipant] =
+    useState<GroupedParticipant | null>(null);
+
+  // State cho modal lịch sử đấu giá
+  const [isBiddingHistoryModalVisible, setIsBiddingHistoryModalVisible] =
+    useState<boolean>(false);
+  const [selectedParticipantForHistory, setSelectedParticipantForHistory] =
+    useState<{
+      name: string;
+      citizenIdentification: string;
+      auctionId?: string;
+    } | null>(null);
 
   // Nhóm dữ liệu theo CMND/CCCD
   const groupedParticipants = useMemo(() => {
     const grouped = new Map<string, GroupedParticipant>();
 
-    auctionDocuments.forEach(doc => {
+    auctionDocuments.forEach((doc) => {
       const key = doc.citizenIdentification; // Dùng CMND/CCCD làm key
 
       if (grouped.has(key)) {
@@ -101,7 +109,10 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
         IsAscending: searchParams.IsAscending,
         StatusDeposit: searchParams.StatusDeposit,
       };
-      const response = await AuctionServices.getListAuctionDocument(params, auctionId);
+      const response = await AuctionServices.getListAuctionDocument(
+        params,
+        auctionId
+      );
       setAuctionDocuments(response.data.auctionDocuments);
     } catch (error) {
       toast.error("Lỗi khi tải danh sách tài liệu đấu giá!");
@@ -119,9 +130,14 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
   useEffect(() => {
     if (isAssetsModalVisible && selectedParticipant) {
       const updatedParticipant = groupedParticipants.find(
-        p => p.citizenIdentification === selectedParticipant.citizenIdentification
+        (p) =>
+          p.citizenIdentification === selectedParticipant.citizenIdentification
       );
-      if (updatedParticipant && JSON.stringify(updatedParticipant) !== JSON.stringify(selectedParticipant)) {
+      if (
+        updatedParticipant &&
+        JSON.stringify(updatedParticipant) !==
+          JSON.stringify(selectedParticipant)
+      ) {
         setSelectedParticipant(updatedParticipant);
       }
     }
@@ -134,7 +150,11 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchParams.Name, searchParams.CitizenIdentification, searchParams.TagName]);
+  }, [
+    searchParams.Name,
+    searchParams.CitizenIdentification,
+    searchParams.TagName,
+  ]);
 
   const handleInputChange = (key: keyof SearchParams, value: string) => {
     setSearchParams((prev) => ({
@@ -158,7 +178,11 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
         setIsPopupVisible(true);
       }
     } catch (error) {
-      toast.error(`Lỗi khi thực hiện ${action === "receiveTicket" ? "nhận phiếu" : "nhận cọc"}!`);
+      toast.error(
+        `Lỗi khi thực hiện ${
+          action === "receiveTicket" ? "nhận phiếu" : "nhận cọc"
+        }!`
+      );
       console.error(error);
     }
   };
@@ -166,7 +190,11 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
   const handleConfirmDeposit = async (note: string) => {
     if (!selectedRecord) return;
     try {
-      await AuctionServices.acceptPaymentDeposit(auctionId, selectedRecord.auctionDocumentsId, { note: note });
+      await AuctionServices.acceptPaymentDeposit(
+        auctionId,
+        selectedRecord.auctionDocumentsId,
+        { note: note }
+      );
       toast.success("Đã xác nhận nhận cọc!");
       setIsPopupVisible(false);
       setSelectedRecord(null);
@@ -188,11 +216,26 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
     setSelectedParticipant(participant);
     setIsAssetsModalVisible(true);
   };
-
   // Xử lý đóng modal danh sách tài sản
   const handleCloseAssetsModal = () => {
     setIsAssetsModalVisible(false);
     setSelectedParticipant(null);
+  };
+
+  // Xử lý mở modal lịch sử đấu giá
+  const handleShowBiddingHistory = (participant: GroupedParticipant) => {
+    setSelectedParticipantForHistory({
+      name: participant.name,
+      citizenIdentification: participant.citizenIdentification,
+      auctionId: auctionId,
+    });
+    setIsBiddingHistoryModalVisible(true);
+  };
+
+  // Xử lý đóng modal lịch sử đấu giá
+  const handleCloseBiddingHistoryModal = () => {
+    setIsBiddingHistoryModalVisible(false);
+    setSelectedParticipantForHistory(null);
   };
 
   const columns = [
@@ -243,7 +286,9 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
           return acc;
         }, {} as Record<number, number>);
 
-        const depositCount = record.assets.filter(asset => asset.statusDeposit === 1).length;
+        const depositCount = record.assets.filter(
+          (asset) => asset.statusDeposit === 1
+        ).length;
 
         return (
           <div className="space-y-2">
@@ -252,15 +297,23 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
                 <Tag
                   key={status}
                   color={
-                    parseInt(status) === 0 ? "gray" :
-                      parseInt(status) === 1 ? "blue" :
-                        parseInt(status) === 2 ? "cyan" : "green"
+                    parseInt(status) === 0
+                      ? "gray"
+                      : parseInt(status) === 1
+                      ? "blue"
+                      : parseInt(status) === 2
+                      ? "cyan"
+                      : "green"
                   }
                   className="text-xs"
                 >
-                  {parseInt(status) === 0 ? `${count} chưa chuyển` :
-                    parseInt(status) === 1 ? `${count} đã chuyển` :
-                      parseInt(status) === 2 ? `${count} đã nhận phiếu` : `${count} đã hoàn`}
+                  {parseInt(status) === 0
+                    ? `${count} chưa chuyển`
+                    : parseInt(status) === 1
+                    ? `${count} đã chuyển`
+                    : parseInt(status) === 2
+                    ? `${count} đã nhận phiếu`
+                    : `${count} đã hoàn`}
                 </Tag>
               ))}
             </div>
@@ -287,6 +340,26 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
         </div>
       ),
     },
+    {
+      title: "Thao tác",
+      key: "actions",
+      width: 120,
+      align: "center" as const,
+      render: (record: GroupedParticipant) => (
+        <div className="flex flex-col gap-2">
+          <Button
+            type="primary"
+            size="small"
+            icon={<HistoryOutlined />}
+            onClick={() => handleShowBiddingHistory(record)}
+            className="bg-blue-500 hover:bg-blue-600 w-full"
+            title="Xem lịch sử đấu giá"
+          >
+            Lịch sử đấu giá
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -307,22 +380,33 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
             </Card>
             <Card className="text-center bg-white border-l-4 border-l-green-500">
               <div className="text-2xl font-bold text-green-600">
-                {groupedParticipants.reduce((sum, p) => sum + p.assets.length, 0)}
+                {groupedParticipants.reduce(
+                  (sum, p) => sum + p.assets.length,
+                  0
+                )}
               </div>
               <div className="text-sm text-gray-600">Tổng số tài sản</div>
             </Card>
             <Card className="text-center bg-white border-l-4 border-l-yellow-500">
               <div className="text-2xl font-bold text-yellow-600">
-                {groupedParticipants.reduce((sum, p) => sum + p.totalRegistrationFee, 0).toLocaleString("vi-VN")}
+                {groupedParticipants
+                  .reduce((sum, p) => sum + p.totalRegistrationFee, 0)
+                  .toLocaleString("vi-VN")}
               </div>
-              <div className="text-sm text-gray-600">Tổng phí đăng ký (VND)</div>
+              <div className="text-sm text-gray-600">
+                Tổng phí đăng ký (VND)
+              </div>
             </Card>
             <Card className="text-center bg-white border-l-4 border-l-purple-500">
               <div className="text-2xl font-bold text-purple-600">
-                {groupedParticipants.length > 0 ?
-                  (groupedParticipants.reduce((sum, p) => sum + p.assets.length, 0) / groupedParticipants.length).toFixed(1)
-                  : "0"
-                }
+                {groupedParticipants.length > 0
+                  ? (
+                      groupedParticipants.reduce(
+                        (sum, p) => sum + p.assets.length,
+                        0
+                      ) / groupedParticipants.length
+                    ).toFixed(1)
+                  : "0"}
               </div>
               <div className="text-sm text-gray-600">TB tài sản/người</div>
             </Card>
@@ -345,7 +429,9 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
               prefix={<SearchOutlined />}
               allowClear
               value={searchParams.CitizenIdentification}
-              onChange={(e) => handleInputChange("CitizenIdentification", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("CitizenIdentification", e.target.value)
+              }
               className="w-full sm:w-1/3"
             />
             <Input
@@ -416,10 +502,10 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
           className="assets-modal"
           styles={{
             header: {
-              borderBottom: '1px solid #f0f0f0',
-              paddingBottom: '12px',
-              marginBottom: '16px'
-            }
+              borderBottom: "1px solid #f0f0f0",
+              paddingBottom: "12px",
+              marginBottom: "16px",
+            },
           }}
         >
           {selectedParticipant && (
@@ -433,17 +519,27 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
                         <UserOutlined className="text-blue-600 text-xs" />
                       </div>
                       <div>
-                        <div className="text-xs text-gray-500 uppercase">Họ tên</div>
-                        <div className="font-medium text-gray-800 text-sm">{selectedParticipant.name}</div>
+                        <div className="text-xs text-gray-500 uppercase">
+                          Họ tên
+                        </div>
+                        <div className="font-medium text-gray-800 text-sm">
+                          {selectedParticipant.name}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                        <span className="text-green-600 text-xs font-bold">ID</span>
+                        <span className="text-green-600 text-xs font-bold">
+                          ID
+                        </span>
                       </div>
                       <div>
-                        <div className="text-xs text-gray-500 uppercase">CMND/CCCD</div>
-                        <div className="font-medium text-gray-800 text-sm">{selectedParticipant.citizenIdentification}</div>
+                        <div className="text-xs text-gray-500 uppercase">
+                          CMND/CCCD
+                        </div>
+                        <div className="font-medium text-gray-800 text-sm">
+                          {selectedParticipant.citizenIdentification}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -453,8 +549,12 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
                         <ShoppingOutlined className="text-purple-600 text-xs" />
                       </div>
                       <div>
-                        <div className="text-xs text-gray-500 uppercase">Số tài sản</div>
-                        <div className="font-medium text-purple-600">{selectedParticipant.assets.length}</div>
+                        <div className="text-xs text-gray-500 uppercase">
+                          Số tài sản
+                        </div>
+                        <div className="font-medium text-purple-600">
+                          {selectedParticipant.assets.length}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -462,9 +562,14 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
                         <DollarOutlined className="text-yellow-600 text-xs" />
                       </div>
                       <div>
-                        <div className="text-xs text-gray-500 uppercase">Tổng phí</div>
+                        <div className="text-xs text-gray-500 uppercase">
+                          Tổng phí
+                        </div>
                         <div className="font-medium text-green-600 text-sm">
-                          {selectedParticipant.totalRegistrationFee.toLocaleString("vi-VN")} VND
+                          {selectedParticipant.totalRegistrationFee.toLocaleString(
+                            "vi-VN"
+                          )}{" "}
+                          VND
                         </div>
                       </div>
                     </div>
@@ -472,7 +577,10 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
                 </div>
               </div>
 
-              <Divider orientation="left" className="text-gray-600 text-sm my-3">
+              <Divider
+                orientation="left"
+                className="text-gray-600 text-sm my-3"
+              >
                 Danh sách tài sản ({selectedParticipant.assets.length})
               </Divider>
 
@@ -505,15 +613,23 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
                       <div className="flex items-center gap-2">
                         <Tag
                           color={
-                            asset.statusTicket === 0 ? "default" :
-                              asset.statusTicket === 1 ? "processing" :
-                                asset.statusTicket === 2 ? "warning" : "success"
+                            asset.statusTicket === 0
+                              ? "default"
+                              : asset.statusTicket === 1
+                              ? "processing"
+                              : asset.statusTicket === 2
+                              ? "warning"
+                              : "success"
                           }
                           className="text-xs"
                         >
-                          {asset.statusTicket === 0 ? "Chưa chuyển" :
-                            asset.statusTicket === 1 ? "Đã chuyển" :
-                              asset.statusTicket === 2 ? "Nhận phiếu" : "Đã hoàn"}
+                          {asset.statusTicket === 0
+                            ? "Chưa chuyển"
+                            : asset.statusTicket === 1
+                            ? "Đã chuyển"
+                            : asset.statusTicket === 2
+                            ? "Nhận phiếu"
+                            : "Đã hoàn"}
                         </Tag>
 
                         {asset.statusDeposit === 1 && (
@@ -537,7 +653,10 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
                         <Button
                           type="primary"
                           size="small"
-                          disabled={asset.statusTicket !== 2 || asset.statusDeposit !== 0}
+                          disabled={
+                            asset.statusTicket !== 2 ||
+                            asset.statusDeposit !== 0
+                          }
                           onClick={() => handleAction("receiveDeposit", asset)}
                           className="bg-green-500 border-none text-xs px-3"
                         >
@@ -553,9 +672,13 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
               <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-gray-600">
-                    <strong>{selectedParticipant.assets.length}</strong> tài sản •
-                    Tổng: <strong className="text-green-600">
-                      {selectedParticipant.totalRegistrationFee.toLocaleString("vi-VN")} VND
+                    <strong>{selectedParticipant.assets.length}</strong> tài sản
+                    • Tổng:{" "}
+                    <strong className="text-green-600">
+                      {selectedParticipant.totalRegistrationFee.toLocaleString(
+                        "vi-VN"
+                      )}{" "}
+                      VND
                     </strong>
                   </span>
                   <Button
@@ -568,8 +691,15 @@ const ListAuctionDocument = ({ auctionId }: Props) => {
                 </div>
               </div>
             </div>
-          )}
+          )}{" "}
         </Modal>
+
+        {/* Modal lịch sử đấu giá */}
+        <ParticipantBiddingHistoryModal
+          visible={isBiddingHistoryModalVisible}
+          onClose={handleCloseBiddingHistoryModal}
+          participantInfo={selectedParticipantForHistory}
+        />
       </div>
     </section>
   );
