@@ -1,6 +1,7 @@
 import {
   ADMIN_ROUTES,
   AUCTIONEER_ROUTES,
+  DIRECTOR_ROUTES,
   GUEST_ROUTERS,
   MANAGER_ROUTES,
   STAFF_ROUTES,
@@ -218,6 +219,10 @@ const AuctionDetailFailt = React.lazy(
 );
 
 
+const ListCustomer = React.lazy(
+  () => import("../pages/Manager/ListCustomer/index")
+);
+
 export const staffRoutes = [
   {
     path: STAFF_ROUTES.SUB.POST_AUCTION,
@@ -330,6 +335,10 @@ export const staffRoutes = [
       MANAGER_ROUTES.SUB.AUCTION_DETAIL_FAILT,
     element: wrapWithLazy(AuctionDetailFailt),
   },
+  {
+    path: STAFF_ROUTES.SUB.LIST_CUSTOMER,
+    element: wrapWithLazy(ListCustomer),
+  },
 ];
 
 // Router site Admin
@@ -365,6 +374,18 @@ const ManagerDashboard = React.lazy(
   () => import("../pages/Manager/Dashboard/index")
 );
 
+const ListEmployee = React.lazy(
+  () => import("../pages/Manager/ListEmployee/index")
+);
+
+const ListAuctionAsset = React.lazy(
+  () => import("../pages/Director/ListAuctionAsset/ListAuctionAsset")
+);
+
+const DetailAuctionAsset = React.lazy(
+  () => import("../pages/Director/DetailAuctionAsset/DetailAuctionAsset")
+);
+
 export const managerRoutes = [
   ...staffRoutes,
   {
@@ -383,6 +404,14 @@ export const managerRoutes = [
     element: wrapWithLazy(ListBlogManager),
   },
   {
+    path: MANAGER_ROUTES.SUB.LIST_EMPLOYEE,
+    element: wrapWithLazy(ListEmployee),
+  },
+  {
+    path: MANAGER_ROUTES.SUB.LIST_CUSTOMER,
+    element: wrapWithLazy(ListCustomer),
+  },
+  {
     path: MANAGER_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC,
     element: wrapWithLazy(AuctionListWaitingPublic),
   },
@@ -397,6 +426,14 @@ export const managerRoutes = [
     path: MANAGER_ROUTES.SUB.MANAGER_DASHBOARD,
     element: wrapWithLazy(ManagerDashboard),
   },
+  {
+    path: MANAGER_ROUTES.SUB.AUCTION_ASSET_LIST,
+    element: wrapWithLazy(ListAuctionAsset),
+  },
+  {
+    path: MANAGER_ROUTES.SUB.AUCTION_ASSET_DETAIL + "/:id",
+    element: wrapWithLazy(DetailAuctionAsset),
+  },
 ];
 
 export const directorRoutes = [
@@ -404,6 +441,15 @@ export const directorRoutes = [
   {
     path: STAFF_ROUTES.SUB.STATISTICS,
     element: wrapWithLazy(CommonDashboard),
+  },
+  // Add explicit director routes for auction assets
+  {
+    path: DIRECTOR_ROUTES.SUB.AUCTION_ASSET_LIST,
+    element: wrapWithLazy(ListAuctionAsset),
+  },
+  {
+    path: DIRECTOR_ROUTES.SUB.AUCTION_ASSET_DETAIL + "/:id",
+    element: wrapWithLazy(DetailAuctionAsset),
   },
 ];
 

@@ -159,14 +159,20 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({ open, onCancel }) => {
                 <div className="flex items-center justify-center gap-2">
                   <ClockCircleOutlined className="text-amber-600 text-lg" />
                   <Text className="text-amber-700 font-semibold">
-                    Gửi lại mã OTP sau <span className="text-orange-600 font-bold">{seconds}</span>
+                    Gửi lại mã OTP sau{" "}
+                    <span className="text-orange-600 font-bold">{seconds}</span>
                     giây
                   </Text>
                 </div>
               </div>
             )}
             {/* Form Section */}
-            <Form form={form} name="verify_otp" layout="vertical" className="space-y-6">
+            <Form
+              form={form}
+              name="verify_otp"
+              layout="vertical"
+              className="space-y-6"
+            >
               {/* Combined Email and OTP Section */}
               <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg space-y-6">
                 {/* Email Input Section */}
@@ -175,7 +181,9 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({ open, onCancel }) => {
                     <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg flex items-center justify-center mr-3">
                       <MailOutlined className="text-white text-sm" />
                     </div>
-                    <Text className="font-semibold text-slate-700 text-lg">Địa chỉ Email</Text>
+                    <Text className="font-semibold text-slate-700 text-lg">
+                      Địa chỉ Email
+                    </Text>
                   </div>
 
                   <div className="flex flex-col gap-3">
@@ -234,7 +242,9 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({ open, onCancel }) => {
                       <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-3">
                         <SafetyOutlined className="text-white text-sm" />
                       </div>
-                      <Text className="font-semibold text-slate-700 text-lg">Mã OTP</Text>
+                      <Text className="font-semibold text-slate-700 text-lg">
+                        Mã OTP
+                      </Text>
                     </div>
 
                     <Form.Item
@@ -270,7 +280,7 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({ open, onCancel }) => {
                             onClick={handleSendOTP}
                             className="!p-0 !h-auto !text-blue-600 !hover:text-blue-700"
                           >
-                            Gửi lại ngay
+                            Gửi lại OTP
                           </Button>
                         )}
                       </Text>

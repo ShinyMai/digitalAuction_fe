@@ -55,7 +55,7 @@ export type AuctionDataDetail = {
   auctionMap?: string;
   winnerData: string;
   auctioneerBy?: string;
-  rejectReason? : string;
+  rejectReason?: string;
   cancelReason?: string;
   cancelReasonFile?: string;
   listAuctionAssets?: AuctionAsset[];
@@ -93,6 +93,7 @@ export type AuctionDocument = {
   isAttended?: boolean;
   statusRefund?: number;
   tagName: string;
+  userId?: string;
 };
 
 export type AuctionDateModal = {

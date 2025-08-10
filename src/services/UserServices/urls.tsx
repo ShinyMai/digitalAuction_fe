@@ -5,6 +5,7 @@ export const UserAPI = {
     "AuctionDocuments/user-by-citizen-identification?citizenIdentification={citizenIdentification}",
   GET_NUMBERICAL_ORDER:
     "/SearchUserAttendance/Search-User-Attendance?auctionId={auctionId}&citizenIdentification={citizenIdentification}",
+  LIST_CUSTOMER: "/ListCustomer/List-Customer",
 } as const;
 
 export type UserAPIKey = keyof typeof UserAPI;

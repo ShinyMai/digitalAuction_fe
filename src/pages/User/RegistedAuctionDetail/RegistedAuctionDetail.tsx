@@ -97,16 +97,18 @@ const RegistedAuctionDetail: React.FC = () => {
     // Thêm các thống kê mới cho các trường vừa thêm
     attendedSessions: filteredDocuments.filter((doc) => doc.isAttended === true)
       .length,
-    notAttendedSessions: filteredDocuments.filter((doc) => doc.isAttended === false)
-      .length,
+    notAttendedSessions: filteredDocuments.filter(
+      (doc) => doc.isAttended === false
+    ).length,
     pendingRefunds: filteredDocuments.filter((doc) => doc.statusRefund === 0)
       .length,
     approvedRefunds: filteredDocuments.filter((doc) => doc.statusRefund === 1)
       .length,
     rejectedRefunds: filteredDocuments.filter((doc) => doc.statusRefund === 2)
       .length,
-    documentsWithRefundReason: filteredDocuments.filter((doc) => doc.refundReason)
-      .length,
+    documentsWithRefundReason: filteredDocuments.filter(
+      (doc) => doc.refundReason
+    ).length,
     documentsWithRefundProof: filteredDocuments.filter((doc) => doc.refundProof)
       .length,
   };
@@ -138,9 +140,6 @@ const RegistedAuctionDetail: React.FC = () => {
           Quay lại danh sách đấu giá
         </Button>
         <Empty description={error} style={{ margin: "50px 0" }}>
-          <div className="text-center p-4">
-            Không thể tải thông tin chi tiết phiên đấu giá
-          </div>
           <Button type="primary" onClick={fetchAuctionDetail}>
             Thử lại
           </Button>

@@ -30,6 +30,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   ADMIN_ROUTES,
   AUCTIONEER_ROUTES,
+  DIRECTOR_ROUTES,
   MANAGER_ROUTES,
   STAFF_ROUTES,
 } from "../../../routers";
@@ -181,14 +182,21 @@ const items: MenuItem[] = [
     key: "user-management",
     icon: <UserAddOutlined className="text-xl" />,
     label: "Quản lý người dùng",
-    roleView: ["Director", "Manager", "Admin"],
+    roleView: ["Director", "Manager", "Admin", "Staff"],
     children: [
       {
         key: "15",
         icon: <ContactsOutlined />,
         label: "Quản lý nhân sự",
-        url: STAFF_ROUTES.SUB.PROPERTIES,
+        url: MANAGER_ROUTES.SUB.LIST_EMPLOYEE,
         roleView: ["Director", "Manager"],
+      },
+      {
+        key: "20",
+        icon: <ContactsOutlined />,
+        label: "Quản lý khách hàng",
+        url: MANAGER_ROUTES.SUB.LIST_CUSTOMER,
+        roleView: ["Director", "Manager", "Staff"],
       },
       {
         key: "16",
@@ -225,6 +233,21 @@ const items: MenuItem[] = [
         label: "Quản lý tin tức (Manager)",
         url: MANAGER_ROUTES.SUB.LIST_BLOG,
         roleView: ["Manager"],
+      },
+    ],
+  },
+  {
+    key: "asset-management",
+    icon: <FormOutlined className="text-xl" />,
+    label: "Quản lý tài sản đấu giá",
+    roleView: ["Director", "Manager"],
+    children: [
+      {
+        key: "21",
+        icon: <EditOutlined />,
+        label: "Quản lý tài sản đấu giá",
+        url: DIRECTOR_ROUTES.SUB.AUCTION_ASSET_LIST,
+        roleView: ["Director", "Manager"],
       },
     ],
   },
@@ -376,13 +399,15 @@ const SiderRouteOption = ({
   };
   return (
     <div
-      className={`h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm transition-all duration-300 flex flex-col ${collapsed ? "w-20" : "w-full"
-        } `}
+      className={`h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm transition-all duration-300 flex flex-col ${
+        collapsed ? "w-20" : "w-full"
+      } `}
     >
       {/* Header with Logo and Collapse Button */}
       <div
-        className={`flex items-center justify-between bg-gradient-to-r from-sky-100 to-sky-50 border-b border-sky-200 transition-all duration-300 ${collapsed ? "h-20 px-2" : "h-24 px-4"
-          }`}
+        className={`flex items-center justify-between bg-gradient-to-r from-sky-100 to-sky-50 border-b border-sky-200 transition-all duration-300 ${
+          collapsed ? "h-20 px-2" : "h-24 px-4"
+        }`}
       >
         {!collapsed && (
           <img
@@ -400,8 +425,9 @@ const SiderRouteOption = ({
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={handleCollapse}
-            className={`flex items-center justify-center text-sky-600 hover:text-sky-800 hover:bg-sky-100 border-sky-300 transition-all duration-300 ${collapsed ? "w-12 h-12 rounded-xl" : "w-10 h-10 rounded-lg ml-2"
-              }`}
+            className={`flex items-center justify-center text-sky-600 hover:text-sky-800 hover:bg-sky-100 border-sky-300 transition-all duration-300 ${
+              collapsed ? "w-12 h-12 rounded-xl" : "w-10 h-10 rounded-lg ml-2"
+            }`}
             style={{
               boxShadow: collapsed
                 ? "0 4px 12px rgba(0, 0, 0, 0.1)"
@@ -443,17 +469,18 @@ const SiderRouteOption = ({
             title: collapsed ? item.label : undefined,
             children: item.children
               ? item.children.map((child) => ({
-                key: child.key,
-                icon: child.icon,
-                label: child.label,
-                title: collapsed ? child.label : undefined,
-              }))
+                  key: child.key,
+                  icon: child.icon,
+                  label: child.label,
+                  title: collapsed ? child.label : undefined,
+                }))
               : undefined,
           }))}
-          className={`w-full bg-transparent border-none transition-all duration-300 ${collapsed
-            ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
-            : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
-            } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900 [&_.ant-menu-submenu-title]:text-sky-800 [&_.ant-menu-submenu-title]:font-semibold [&_.ant-menu-submenu-title:hover]:bg-sky-50 [&_.ant-menu-submenu-title:hover]:text-sky-900`}
+          className={`w-full bg-transparent border-none transition-all duration-300 ${
+            collapsed
+              ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
+              : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
+          } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900 [&_.ant-menu-submenu-title]:text-sky-800 [&_.ant-menu-submenu-title]:font-semibold [&_.ant-menu-submenu-title:hover]:bg-sky-50 [&_.ant-menu-submenu-title:hover]:text-sky-900`}
           style={{
             backgroundColor: "transparent",
             border: "none",

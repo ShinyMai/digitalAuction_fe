@@ -39,7 +39,7 @@ const ListAccount = () => {
       const params: {
         PageNumber: number;
         PageSize: number;
-        Search?: string;
+        Seach?: string;
         RoleId?: number;
       } = {
         PageNumber: pageNumber,
@@ -47,7 +47,7 @@ const ListAccount = () => {
       };
 
       if (search && search.trim()) {
-        params.Search = search.trim();
+        params.Seach = search.trim();
       }
 
       if (roleId !== null && roleId !== undefined) {
@@ -77,9 +77,9 @@ const ListAccount = () => {
     setSelectedAccount(record);
     setDetailModalOpen(true);
   };
-
   const handleSearch = () => {
     setPageNumber(1);
+    getListAccount();
   };
   const handleReset = () => {
     setSearch("");

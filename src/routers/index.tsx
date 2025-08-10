@@ -46,6 +46,7 @@ export const STAFF_ROUTES = {
     AUCTION_DETAIL_REJECT: "auction-detail-reject",
     AUCTION_LIST_SUCCESSFULL: "auction-list-successfull",
     AUCTION_DETAIL_SUCCESSFULL: "auction-detail-successfull",
+    LIST_CUSTOMER: "list-customer",
   },
 };
 
@@ -76,11 +77,15 @@ export const MANAGER_ROUTES = {
     AUCTION_LIST_CANCEL: "auction-list-cancel",
     AUCTION_DETAIL_CANCEL: "auction-detail-cancel",
     LIST_BLOG: "list-blog-manager",
+    LIST_EMPLOYEE: "list-employee",
+    LIST_CUSTOMER: "list-customer",
     AUCTION_LIST_WAITING_PUBLIC: "auction-list-waiting-public",
     AUCTION_DETAIL_WAITING_PUBLIC: "auction-detail-waiting-public",
     MANAGER_DASHBOARD: "manager-dashboard",
     AUCTION_LIST_FAILT: "auction-list-failt",
     AUCTION_DETAIL_FAILT: "auction-detail-failt",
+    AUCTION_ASSET_LIST: "auction-asset-list",
+    AUCTION_ASSET_DETAIL: "auction-asset-detail",
   },
 };
 
@@ -89,5 +94,7 @@ export const DIRECTOR_ROUTES = {
   SUB: {
     DASHBOARD: "dashboard",
     STATISTICS: "statistics",
+    AUCTION_ASSET_LIST: "auction-asset-list",
+    AUCTION_ASSET_DETAIL: "auction-asset-detail",
   },
 };

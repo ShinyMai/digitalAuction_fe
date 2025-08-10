@@ -95,6 +95,7 @@ const AccountTable: React.FC<AccountTableProps> = ({
               onAssignRole(record);
             }}
             title="Phân quyền"
+            disabled={!record.isActive}
           >
             Phân quyền
           </Button>

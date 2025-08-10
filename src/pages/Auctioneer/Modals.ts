@@ -87,6 +87,7 @@ export type AuctionDocument = {
   statusRefundDeposit: boolean;
   statusTicket: number;
   tagName: string;
+  userId?: string;
 };
 
 export type AuctionDateModal = {
@@ -115,6 +116,6 @@ export type AuctionRoundPrice = {
 export type AuctionRoundModals = {
   auctionRoundId: string;
   auctionId?: string;
-  roundNumber: number
+  roundNumber: number;
   status: number;
-}
+};
