@@ -6,7 +6,7 @@ import {
   CheckCircleOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import type { ModalAuctioners } from "../../../Staff/Modals";
+import type { ModalAuctioners } from "../../Modals";
 import CustomModal from "../../../../components/Common/CustomModal";
 
 const { Title, Text } = Typography;

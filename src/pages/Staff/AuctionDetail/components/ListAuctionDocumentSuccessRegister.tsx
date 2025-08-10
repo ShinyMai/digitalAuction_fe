@@ -129,7 +129,7 @@ const ListAuctionDocumentSuccesRegister = ({
     const [searchParams, setSearchParams] =
         useState<SearchParams>({
             PageNumber: 1,
-            PageSize: 8,
+            PageSize: 15,
             StatusDeposit: 1,
         });
     const [auctionDocuments, setAuctionDocuments] = useState<

@@ -55,7 +55,7 @@ interface Props {
 const ListAuctionDocument = ({ auctionId, auctionDetailData }: Props) => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
-    PageSize: 8,
+    PageSize: 15,
     StatusDeposit: 0,
     SortBy: "numericalOrder",
     IsAscending: true,

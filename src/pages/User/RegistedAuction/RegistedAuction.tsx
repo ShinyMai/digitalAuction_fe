@@ -56,6 +56,7 @@ const RegistedAuction = () => {
         const requestBody = {
           pageNumber: currentPage,
           pageSize: pageSize,
+          userId: user.id,
           search: {
             auctionName: searchValue ?? searchTerm ?? null,
             auctionStartDate: dateRange?.[0] ? dayjs(dateRange[0]).toISOString() : null,
