@@ -8,7 +8,7 @@ const getListAuctionAsset = (params: any): Promise<ApiResponse> =>
 
 const getDetailAuctionAsset = (params: string): Promise<ApiResponse> =>
   http.get(AuctionAssetAPI.DETAIL_AUCTION_ASSET, {
-    params: { auctionAssetId: params },
+    params: { AuctionAssetsId: params },
   });
 
 const AuctionAssetServices = {

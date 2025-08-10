@@ -1,6 +1,7 @@
 import {
   ADMIN_ROUTES,
   AUCTIONEER_ROUTES,
+  DIRECTOR_ROUTES,
   GUEST_ROUTERS,
   MANAGER_ROUTES,
   STAFF_ROUTES,
@@ -412,7 +413,7 @@ export const managerRoutes = [
     element: wrapWithLazy(ListAuctionAsset),
   },
   {
-    path: MANAGER_ROUTES.SUB.AUCTION_ASSET_DETAIL,
+    path: MANAGER_ROUTES.SUB.AUCTION_ASSET_DETAIL + "/:id",
     element: wrapWithLazy(DetailAuctionAsset),
   },
 ];
@@ -422,6 +423,15 @@ export const directorRoutes = [
   {
     path: STAFF_ROUTES.SUB.STATISTICS,
     element: wrapWithLazy(CommonDashboard),
+  },
+  // Add explicit director routes for auction assets
+  {
+    path: DIRECTOR_ROUTES.SUB.AUCTION_ASSET_LIST,
+    element: wrapWithLazy(ListAuctionAsset),
+  },
+  {
+    path: DIRECTOR_ROUTES.SUB.AUCTION_ASSET_DETAIL + "/:id",
+    element: wrapWithLazy(DetailAuctionAsset),
   },
 ];
 

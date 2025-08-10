@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useCallback } from "react";
 import { Card, Spin, Empty, Pagination, Typography, Button, Form } from "antd";
 import { ReloadOutlined, ExportOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import AuctionAssetServices from "../../../services/AuctionAssetServices";
 import dayjs from "dayjs";
@@ -10,7 +12,6 @@ import SearchFilter from "./components/SearchFilter";
 import AssetsTable from "./components/AssetsTable";
 import AssetsGrid from "./components/AssetsGrid";
 import AssetsList from "./components/AssetsList";
-import AssetDetailModal from "./components/AssetDetailModal";
 
 import type {
   AuctionAsset,
@@ -19,10 +20,13 @@ import type {
   AuctionAssetApiResponse,
   AdvancedFilterValues,
 } from "./types";
+import { DIRECTOR_ROUTES, MANAGER_ROUTES } from "../../../routers";
+import { useSelector } from "react-redux";
 
 const { Title } = Typography;
 
 const ListAuctionAsset: React.FC = () => {
+  const navigate = useNavigate();
   const [assets, setAssets] = useState<AuctionAsset[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -38,12 +42,11 @@ const ListAuctionAsset: React.FC = () => {
   });
   const [totalAssets, setTotalAssets] = useState(0);
   const [categoryCounts, setCategoryCounts] = useState<CategoryCount>({});
-  const [selectedAsset, setSelectedAsset] = useState<AuctionAsset | null>(null);
-  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [viewMode, setViewMode] = useState<"table" | "grid" | "list">("table");
   const [showFilters, setShowFilters] = useState(false);
 
   const [form] = Form.useForm();
+  const { user } = useSelector((state: any) => state.auth);
 
   const fetchAuctionAssets = useCallback(async () => {
     try {
@@ -157,9 +160,21 @@ const ListAuctionAsset: React.FC = () => {
     }));
   };
 
+  const getRoute = () => {
+    if (user.roleName === "Director") {
+      return DIRECTOR_ROUTES;
+    } else if (user.roleName === "Manager") {
+      return MANAGER_ROUTES;
+    }
+  };
+
   const showAssetDetail = (asset: AuctionAsset) => {
-    setSelectedAsset(asset);
-    setIsDetailModalVisible(true);
+    const route = getRoute();
+    if (route) {
+      navigate(
+        `/${route.PATH}/${route.SUB.AUCTION_ASSET_DETAIL}/${asset.auctionAssetsId}`
+      );
+    }
   };
 
   const handleExport = () => {
@@ -266,15 +281,6 @@ const ListAuctionAsset: React.FC = () => {
             )}
           </Spin>
         </Card>
-
-        <AssetDetailModal
-          visible={isDetailModalVisible}
-          asset={selectedAsset}
-          onClose={() => {
-            setIsDetailModalVisible(false);
-            setSelectedAsset(null);
-          }}
-        />
       </div>
       <style>{`
     /* Custom styles for ListAuctionAsset component */
