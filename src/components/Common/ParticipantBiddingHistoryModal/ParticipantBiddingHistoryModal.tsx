@@ -222,10 +222,10 @@ const ParticipantBiddingHistoryModal: React.FC<
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 -m-6 mb-0 border-b border-blue-100">
           <div className="flex items-center gap-4">
             <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full shadow-lg">
-              <UserOutlined className="text-white text-xl" />
+              <UserOutlined className="text-white text-xl " />
             </div>
             <div className="flex-1">
-              <div className="text-xl font-bold text-gray-800 mb-1">
+              <div className="text-xl font-bold text-gray-800 mb-1 text-left">
                 Lịch sử đấu giá của {participantInfo?.name}
               </div>
               <div className="flex items-center gap-4 text-sm text-gray-600">
@@ -233,12 +233,6 @@ const ParticipantBiddingHistoryModal: React.FC<
                   <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
                   CMND/CCCD: {participantInfo?.citizenIdentification}
                 </span>
-                {participantInfo?.userId && (
-                  <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                    User ID: {participantInfo.userId}
-                  </span>
-                )}
               </div>
             </div>
             <Button

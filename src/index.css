@@ -381,7 +381,7 @@ body {
 }
 
 .ant-select-selector {
-  min-height: 46px !important;
+  max-height: 46px !important;
   display: flex;
   align-items: center;
   border-radius: 6px !important;

@@ -82,6 +82,8 @@ export const MANAGER_ROUTES = {
     AUCTION_LIST_WAITING_PUBLIC: "auction-list-waiting-public",
     AUCTION_DETAIL_WAITING_PUBLIC: "auction-detail-waiting-public",
     MANAGER_DASHBOARD: "manager-dashboard",
+    AUCTION_ASSET_LIST: "auction-asset-list",
+    AUCTION_ASSET_DETAIL: "auction-asset-detail",
   },
 };
 
@@ -90,5 +92,7 @@ export const DIRECTOR_ROUTES = {
   SUB: {
     DASHBOARD: "dashboard",
     STATISTICS: "statistics",
+    AUCTION_ASSET_LIST: "auction-asset-list",
+    AUCTION_ASSET_DETAIL: "auction-asset-detail",
   },
 };

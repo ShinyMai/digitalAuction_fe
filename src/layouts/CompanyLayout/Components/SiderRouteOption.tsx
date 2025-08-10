@@ -30,6 +30,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   ADMIN_ROUTES,
   AUCTIONEER_ROUTES,
+  DIRECTOR_ROUTES,
   MANAGER_ROUTES,
   STAFF_ROUTES,
 } from "../../../routers";
@@ -225,6 +226,21 @@ const items: MenuItem[] = [
         label: "Quản lý tin tức (Manager)",
         url: MANAGER_ROUTES.SUB.LIST_BLOG,
         roleView: ["Manager"],
+      },
+    ],
+  },
+  {
+    key: "asset-management",
+    icon: <FormOutlined className="text-xl" />,
+    label: "Quản lý tài sản đấu giá",
+    roleView: ["Director", "Manager"],
+    children: [
+      {
+        key: "21",
+        icon: <EditOutlined />,
+        label: "Quản lý tài sản đấu giá",
+        url: DIRECTOR_ROUTES.SUB.AUCTION_ASSET_LIST,
+        roleView: ["Director", "Manager"],
       },
     ],
   },
