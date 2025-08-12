@@ -851,7 +851,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                 {selectedDocument.refundReason && (
                   <div style={{ marginBottom: "12px" }}>
                     <Text type="secondary" style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>
-                      Lý do hoàn cọc:
+                      Lý do xin rút:
                     </Text>
                     <div style={{
                       background: "white",

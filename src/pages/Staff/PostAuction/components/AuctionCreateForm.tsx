@@ -638,11 +638,11 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
                   >
                     <Form.Item
                       name="AuctionMap"
-                      label={<span className="!font-medium !text-blue-900">Vị trí trên bản đồ</span>}
-                      rules={[{ required: true, message: "Vui lòng nhập vị trí trên bản đồ!" }]}
+                      label={<span className="!font-medium !text-blue-900">Gắn link trên bản đồ</span>}
+                      rules={[{ required: true, message: "Gắn link vị trí trên bản đồ!" }]}
                     >
                       <Input
-                        placeholder="Nhập vị trí trên bản đồ"
+                        placeholder="Gắn link vị trí trên bản đồ"
                         className="!rounded-lg !border-blue-200 hover:!border-blue-400 focus:!border-blue-500"
                         size="large"
                       />

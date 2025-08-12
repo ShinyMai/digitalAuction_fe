@@ -112,6 +112,23 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
     }
   }, [auctionId]);
 
+  const getAuctionStatistic = async () => {
+    try {
+      if (!auctionId) {
+        console.error("No auction detail data available");
+        return;
+      }
+      const response = await AuctionServices.auctionRoundStatistic(auctionId);
+      console.log("Auction statistic data:", response);
+    } catch (error) {
+      console.error("Error fetching auction statistic:", error);
+    }
+  }
+
+  useEffect(() => {
+    getAuctionStatistic();
+  }, [])
+
   const getAuctionRoundPrices = useCallback(() => {
     try {
       setAuctionRoundPrices(fakeAuctionRoundPrices);
