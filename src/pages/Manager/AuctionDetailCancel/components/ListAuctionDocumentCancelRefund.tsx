@@ -110,7 +110,6 @@ const ListAuctionDocumentCancelRefund = ({
     };
 
     const handleDownload = async () => {
-        console.log("Downloading refund list for auction ID:", auctionId);
         try {
             const response = await AuctionServices.exportRefundList({ auctionId });
             console.log("Response data:", response);

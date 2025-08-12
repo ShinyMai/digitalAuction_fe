@@ -101,6 +101,10 @@ const userRequestRefund = (body: any): Promise<ApiResponse<any>> =>
   http.post(AuctionAPI.USER_REQUEST_REFUND, body);
 const staffReviewRefund = (body: any): Promise<ApiResponse<any>> =>
   http.post(AuctionAPI.STAFF_REVIEW_REFUND, body);
+const confirmAttendance = (body: any): Promise<ApiResponse<any>> =>
+  http.post(AuctionAPI.CONFIRM_ATTENDANCE, body);
+const auctionRoundStatistic = (params: any): Promise<ApiResponse<any>> =>
+  http.get(`${AuctionAPI.AUCTION_ROUND_STATISTIC}/${params}`);
 
 const AuctionServices = {
   addAuction,
@@ -138,7 +142,9 @@ const AuctionServices = {
   exportRefundList,
   updateAuctionSuccessfull,
   userRequestRefund,
-  staffReviewRefund
+  staffReviewRefund,
+  confirmAttendance,
+  auctionRoundStatistic
 };
 
 export default AuctionServices;

@@ -38,6 +38,9 @@ export const AuctionAPI = {
   UPDATE_AUCTION_SUCCESSFULL: "/Auctions/mark-successful",
   USER_REQUEST_REFUND: "/AuctionDocuments/request-refund",
   STAFF_REVIEW_REFUND: "/AuctionDocuments/review-refund",
+  CONFIRM_ATTENDANCE: "/AuctionDocuments/mark-attendance",
+  AUCTION_ROUND_STATISTIC: "/AuctionStatistics",
+  ASSET_INFO_STATISTIC: "/AuctionAssetStatistics",
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;

@@ -87,10 +87,13 @@ export type AuctionDocument = {
   numericalOrder: number;
   registrationFee: number;
   statusDeposit: boolean;
-  statusRefundDeposit: boolean;
   statusTicket: number;
   tagName: string;
   userId?: string;
+  isAttended?: boolean;
+  statusRefund?: number;
+  refundReason?: string;
+  refundProof?: string;
 };
 
 export type AuctionDateModal = {
