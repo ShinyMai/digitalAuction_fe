@@ -112,8 +112,6 @@ const ListAuctionDocumentCancelRefund = ({
     const handleDownload = async () => {
         try {
             const response = await AuctionServices.exportRefundList({ auctionId });
-            console.log("Response data:", response);
-
             if (response && response.data) {
                 // Check if response contains base64 data
                 if (response.data.base64 && response.data.fileName && response.data.contentType) {

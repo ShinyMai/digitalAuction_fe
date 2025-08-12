@@ -12,7 +12,6 @@ import {
   StopOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
-  DownloadOutlined,
 } from "@ant-design/icons";
 import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal/ParticipantBiddingHistoryModal";
 
@@ -223,44 +222,6 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       }
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  // Xử lý tải danh sách hoàn tiền
-  const handleDownloadRefundList = async () => {
-    try {
-      const response = await AuctionServices.exportRefundList({ auctionId });
-      if (response && response.data) {
-        // Check if response contains base64 data
-        if (response.data.base64 && response.data.fileName && response.data.contentType) {
-          // Convert base64 to blob
-          const base64Data = response.data.base64;
-          const byteCharacters = atob(base64Data);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: response.data.contentType });
-
-          // Create download link
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = response.data.fileName;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-
-          toast.success("Tải danh sách hoàn tiền thành công!");
-        } else {
-          toast.success(response.message || "Xuất file danh sách hoàn tiền thành công!");
-        }
-      }
-    } catch (error) {
-      toast.error("Lỗi khi tải danh sách hoàn tiền!");
-      console.error(error);
     }
   };
 
@@ -492,20 +453,9 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
         <div className="mb-6">
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-gray-800">
-                  Tìm kiếm hồ sơ đấu giá
-                </h2>
-                <Button
-                  type="primary"
-                  icon={<DownloadOutlined />}
-                  onClick={handleDownloadRefundList}
-                  className="bg-orange-500 text-white border-orange-500 hover:bg-orange-600 hover:border-orange-600 shadow-md"
-                  size="middle"
-                >
-                  Tải danh sách hoàn tiền
-                </Button>
-              </div>
+              <h2 className="text-lg font-semibold text-gray-800">
+                Tìm kiếm hồ sơ đấu giá
+              </h2>
             </div>
             <div className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

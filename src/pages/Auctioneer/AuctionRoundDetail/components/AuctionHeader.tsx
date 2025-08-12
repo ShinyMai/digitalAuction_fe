@@ -9,6 +9,7 @@ interface AuctionHeaderProps {
     auctionRoundId?: string; // Required - no default value
     totalParticipants: number;
     totalAssets: number;
+    auctionName: string;
     status?: number;
     onEndAuction?: () => void; // Callback function for ending auction
 }
@@ -26,10 +27,10 @@ type UserRole =
     (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 const AuctionHeader = ({
-    auctionRoundId,
     totalParticipants,
     totalAssets,
     status,
+    auctionName,
     onEndAuction,
 }: AuctionHeaderProps) => {
     const getStatusBadge = () => {
@@ -65,7 +66,7 @@ const AuctionHeader = ({
                     <Space direction="vertical" size="small" className="!w-full">
                         <Space align="center" wrap>
                             <Title level={2} className="!mb-0">
-                                Chi tiết phiên đấu giá - {auctionRoundId}
+                                Chi tiết phiên đấu giá - {auctionName}
                             </Title>
                             {getStatusBadge()}
                         </Space>

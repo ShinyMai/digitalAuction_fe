@@ -16,7 +16,7 @@ interface AuctionRoundDetailProps {
     onBackToList?: () => void;
 }
 
-const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailProps) => {
+const AuctionRoundDetail = ({ auctionRound, onBackToList, auction }: AuctionRoundDetailProps) => {
     // Current auction round ID - single source of truth
 
 
@@ -171,6 +171,7 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList }: AuctionRoundDetailPr
                 {/* Header */}
                 <AuctionHeader
                     auctionRoundId={auctionRound?.auctionRoundId}
+                    auctionName={auction?.auctionName || 'Phiên đấu giá'}
                     totalParticipants={totalParticipants}
                     totalAssets={totalAssets}
                     status={auctionRound?.status}

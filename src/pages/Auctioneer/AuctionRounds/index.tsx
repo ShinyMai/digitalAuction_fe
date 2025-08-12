@@ -344,6 +344,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
             >
               {role === USER_ROLES.AUCTIONEER && (
                 <AuctionRoundDetail
+
                   auctionRound={selectedRound}
                   auction={auction}
                   onBackToList={handleBackToList}
