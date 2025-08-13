@@ -54,13 +54,13 @@ const AuctionDetailAnonymous = () => {
     setIsEditMode(!isEditMode);
   };
 
-  const handleUpdateSuccess = () => {
-    setIsEditMode(false);
-    // Refresh data sau khi update thành công
-    if (auctionId) {
-      fetchAuctionDetail(auctionId);
-    }
-  };
+  // const handleUpdateSuccess = () => {
+  //   setIsEditMode(false);
+  //   // Refresh data sau khi update thành công
+  //   if (auctionId) {
+  //     fetchAuctionDetail(auctionId);
+  //   }
+  // };
 
   const handleSendToManager = async () => {
     try {
@@ -106,11 +106,10 @@ const AuctionDetailAnonymous = () => {
                 icon={<SendOutlined />}
                 onClick={handleSendToManager}
                 disabled={isEditMode}
-                className={`${
-                  isEditMode
-                    ? "bg-gray-300 border-0 text-gray-500 cursor-not-allowed opacity-50"
-                    : "bg-gradient-to-r from-emerald-500 to-teal-500 border-0 hover:from-emerald-600 hover:to-teal-600 text-white"
-                } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[160px] group`}
+                className={`${isEditMode
+                  ? "bg-gray-300 border-0 text-gray-500 cursor-not-allowed opacity-50"
+                  : "bg-gradient-to-r from-emerald-500 to-teal-500 border-0 hover:from-emerald-600 hover:to-teal-600 text-white"
+                  } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[160px] group`}
                 size="large"
               >
                 <span className="ml-1">Gửi cho quản lý</span>
@@ -120,11 +119,10 @@ const AuctionDetailAnonymous = () => {
                 type={isEditMode ? "default" : "primary"}
                 icon={<EditOutlined />}
                 onClick={handleEditToggle}
-                className={`${
-                  isEditMode
-                    ? "bg-gradient-to-r from-slate-500 to-gray-500 border-0 text-white hover:from-slate-600 hover:to-gray-600"
-                    : "bg-gradient-to-r from-blue-500 to-indigo-500 border-0 hover:from-blue-600 hover:to-indigo-600 text-white"
-                } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[140px] group`}
+                className={`${isEditMode
+                  ? "bg-gradient-to-r from-slate-500 to-gray-500 border-0 text-white hover:from-slate-600 hover:to-gray-600"
+                  : "bg-gradient-to-r from-blue-500 to-indigo-500 border-0 hover:from-blue-600 hover:to-indigo-600 text-white"
+                  } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[140px] group`}
                 size="large"
               >
                 <span className="ml-1">
@@ -149,7 +147,6 @@ const AuctionDetailAnonymous = () => {
                   auctionDetailData={auctionDetailData}
                   auctionType={auctionType}
                   auctionId={auctionId}
-                  onUpdateSuccess={handleUpdateSuccess}
                 />
               </motion.div>
             ) : (
