@@ -26,7 +26,6 @@ const AuctionDetailReject = () => {
     if (auctionId) {
       fetchAuctionDetail(auctionId);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auctionId]);
 
   const fetchAuctionDetail = async (id: string) => {
@@ -49,11 +48,19 @@ const AuctionDetailReject = () => {
     setIsEditMode(!isEditMode);
   };
 
+  const handleUpdateSuccess = () => {
+    setIsEditMode(false);
+    if (auctionId) {
+      fetchAuctionDetail(auctionId);
+    }
+  };
+
   const handleSendToManager = async () => {
     try {
       const response = await AuctionServices.waitingPublicAuction(auctionId);
       if (response.code === 200) {
         toast.success(response.message);
+        navigate(`/${role.toLowerCase()}/${STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC}`, { replace: true });
       } else {
         toast.error(response.message);
       }
@@ -64,7 +71,6 @@ const AuctionDetailReject = () => {
 
   return (
     <section className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
-      {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-200/30 to-cyan-200/30 rounded-full animate-float"></div>
         <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-purple-200/30 to-pink-200/30 rounded-full animate-float delay-1000"></div>
@@ -73,10 +79,8 @@ const AuctionDetailReject = () => {
       </div>
 
       <div className="w-full mx-auto rounded-xl relative z-10">
-        {/* Enhanced Button Group */}
         <div className="mb-6 p-4 bg-white/70 backdrop-blur-lg rounded-2xl border border-white/30 shadow-2xl">
           <div className="flex flex-col sm:flex-row sm:justify-between items-center gap-4">
-            {/* Back Button */}
             <Button
               icon={<ArrowLeftOutlined />}
               onClick={handleGoBack}
@@ -86,7 +90,6 @@ const AuctionDetailReject = () => {
               Quay lại
             </Button>
 
-            {/* Action Buttons Group */}
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <Button
                 icon={<SendOutlined />}
@@ -132,6 +135,7 @@ const AuctionDetailReject = () => {
                   auctionDetailData={auctionDetailData}
                   auctionType={auctionType}
                   auctionId={auctionId}
+                  onUpdateSuccess={handleUpdateSuccess}
                 />
               </motion.div>
             ) : (

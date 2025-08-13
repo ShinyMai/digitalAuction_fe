@@ -17,10 +17,6 @@ interface AuctionRoundDetailProps {
 }
 
 const AuctionRoundDetail = ({ auctionRound, onBackToList, auction }: AuctionRoundDetailProps) => {
-    // Current auction round ID - single source of truth
-
-
-    // State management
     const [auctionRoundPrice, setAuctionRoundPrice] = useState<AuctionRoundPrice[]>([]);
     const [activeTab, setActiveTab] = useState<string>('history');
     const [loading, setLoading] = useState<boolean>(false);
@@ -47,7 +43,6 @@ const AuctionRoundDetail = ({ auctionRound, onBackToList, auction }: AuctionRoun
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [auctionRound]);
 
-    // API Function 1: Get auction round prices (from service logic)
     const getListOfAuctionRoundPrices = async () => {
         try {
             if (auctionRound) {

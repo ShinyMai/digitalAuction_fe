@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import { Button, message, Upload, Tooltip } from "antd";
@@ -8,10 +8,18 @@ interface Props {
   contentName: string;
   value?: AntUploadFile[];
   onChange?: (value: AntUploadFile[]) => void;
+  accept?: string; // Thêm prop accept để tùy chỉnh định dạng file
 }
 
-const CustomUploadFile = ({ contentName, onChange }: Omit<Props, "value">) => {
-  const [fileList, setFileList] = useState<AntUploadFile[]>([]);
+const CustomUploadFile = ({ contentName, value, onChange, accept = ".xlsx,.xls,.docx,.pdf" }: Props) => {
+  const [fileList, setFileList] = useState<AntUploadFile[]>(value || []);
+
+  // Đồng bộ với value từ Form
+  useEffect(() => {
+    if (value !== undefined) {
+      setFileList(value);
+    }
+  }, [value]);
 
   // Hàm cắt ngắn tên file nếu quá dài
   const truncateFileName = (name: string, maxLength: number = 20) => {
@@ -23,17 +31,33 @@ const CustomUploadFile = ({ contentName, onChange }: Omit<Props, "value">) => {
 
   const props: UploadProps = {
     name: "file",
-    accept: ".xlsx,.xls,.docx,.pdf",
+    accept: accept,
     fileList: fileList,
     beforeUpload: (file) => {
-      const isValidFile =
-        file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-        file.type === "application/vnd.ms-excel" ||
-        file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-        file.type === "application/pdf";
+      // Tạo map để kiểm tra file type
+      const fileTypeMap: { [key: string]: string } = {
+        '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        '.xlsm': 'application/vnd.ms-excel.sheet.macroEnabled.12',
+        '.xls': 'application/vnd.ms-excel',
+        '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        '.pdf': 'application/pdf'
+      };
 
-      if (!isValidFile) {
-        message.error("Chỉ được tải lên file Excel (.xlsx, .xls), Word (.docx) hoặc PDF!");
+      // Lấy danh sách extension được phép từ accept prop
+      const allowedExtensions = accept.split(',').map(ext => ext.trim());
+      const allowedTypes = allowedExtensions.map(ext => fileTypeMap[ext]).filter(Boolean);
+
+      // Kiểm tra file extension
+      const fileName = file.name.toLowerCase();
+      const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+      const isValidExtension = allowedExtensions.includes(fileExtension);
+
+      // Kiểm tra file type
+      const isValidType = allowedTypes.includes(file.type);
+
+      if (!isValidExtension && !isValidType) {
+        const extensionList = allowedExtensions.join(', ');
+        message.error(`Chỉ được tải lên file có định dạng: ${extensionList}!`);
         return Upload.LIST_IGNORE;
       }
 

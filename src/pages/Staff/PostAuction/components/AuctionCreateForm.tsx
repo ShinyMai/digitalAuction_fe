@@ -3,7 +3,6 @@ import { Button, Card, Col, DatePicker, Form, Input, message, Row, Select, Toolt
 import { useForm } from "antd/es/form/Form";
 import { useState, useEffect } from "react";
 import UploadFile from "./Upload";
-import { useFormFileUpload } from "./useFormFileUpload";
 import type { AuctionCategory } from "../../Modals.ts";
 import dayjs, { Dayjs } from "dayjs";
 import AuctionServices from "../../../../services/AuctionServices/index.tsx";
@@ -12,6 +11,8 @@ import { useSelector } from "react-redux";
 import * as XLSX from "xlsx";
 import { QuestionCircleOutlined, SaveOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { STAFF_ROUTES } from "../../../../routers/index.tsx";
 
 // Định nghĩa interface cho dữ liệu form
 interface AuctionFormValues {
@@ -50,15 +51,9 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
   const [loading, setLoading] = useState(false);
   const [registerRange, setRegisterRange] = useState<[Dayjs, Dayjs] | null>(null);
 
-  // File upload hooks
-  const auctionAssetUpload = useFormFileUpload("AuctionAssetFile", form);
-  const auctionRulesUpload = useFormFileUpload("AuctionRulesFile", form);
-  const auctionPlanningUpload = useFormFileUpload("AuctionPlanningMap", form);
-
+  const navigate = useNavigate()
   const { user } = useSelector((state: any) => state.auth);
   const CreatedBy = user?.id || "defaultUser";
-
-  console.log("auctionType: ", auctionType);
 
   // Chuyển danh sách danh mục thành options cho Select
   const dataAuctionCategoryList = auctionCategoryList.map((val) => ({
@@ -226,10 +221,12 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
       delete formattedValues.AuctionTimeRange;
 
       console.log("Formatted values before creating FormData:", formattedValues);
-
       const formData = createFormData(formattedValues);
       if (auctionType === "SQL") {
-        await AuctionServices.addAuction(formData);
+        const response = await AuctionServices.addAuction(formData);
+        if (response.code == 200) {
+          navigate(`/${STAFF_ROUTES.PATH}/${STAFF_ROUTES.SUB.AUCTION_LIST_DRAFF}`, { replace: true })
+        }
       }
 
       if (auctionType === "NODE") {
@@ -538,11 +535,12 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
               >
                 <Form.Item
                   name="AuctionAssetFile"
+                  valuePropName="fileList"
                   label={
                     <div className="flex items-center justify-between">
                       <span className="!font-medium !text-blue-900 flex items-center">
                         Tệp tài sản đấu giá
-                        <Tooltip title="Chỉ nhận file đúng định dạng như file mẫu" placement="top">
+                        <Tooltip title="Chỉ nhận file Excel (.xlsx hoặc .xlsm) đúng định dạng như file mẫu" placement="top">
                           <QuestionCircleOutlined className="ml-2 text-blue-500 cursor-pointer" />
                         </Tooltip>
                       </span>
@@ -552,28 +550,38 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
                     { required: true, message: "Vui lòng tải lên tệp tài sản!" },
                     {
                       validator: (_, value) => {
-                        if (!value || value.length === 0) {
-                          return Promise.reject(new Error("Vui lòng tải lên tệp tài sản!"));
-                        }
-                        const file = value[0];
-                        if (!file.originFileObj && !file.name) {
-                          return Promise.reject(new Error("File không hợp lệ!"));
+                        // Chỉ validate format nếu có file
+                        if (value && Array.isArray(value) && value.length > 0) {
+                          const file = value[0];
+                          if (file) {
+                            // Kiểm tra định dạng file - chỉ cho phép .xlsx và .xlsm
+                            const fileName = file.name || file.originFileObj?.name || '';
+                            const allowedExtensions = ['.xlsx', '.xlsm'];
+                            const fileExtension = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
+
+                            if (!allowedExtensions.includes(fileExtension)) {
+                              return Promise.reject(new Error("Chỉ được phép tải lên file Excel (.xlsx hoặc .xlsm)!"));
+                            }
+                          }
                         }
                         return Promise.resolve();
                       },
                     },
                   ]}
                 >
-                  <div className="space-y-3">
-                    <UploadFile contentName="AuctionAssetFile" onChange={auctionAssetUpload.onChange} />
-                    <div
-                      className="cursor-pointer text-blue-500 hover:text-blue-700 underline text-sm"
-                      onClick={handleDownloadTemplate}
-                    >
-                      📁 Tải mẫu danh sách tài sản
-                    </div>
-                  </div>
+                  <UploadFile
+                    contentName="AuctionAssetFile"
+                    accept=".xlsx,.xlsm"
+                  />
                 </Form.Item>
+
+                {/* Download Template */}
+                <div
+                  className="cursor-pointer text-blue-500 hover:text-blue-700 underline text-sm mt-2"
+                  onClick={handleDownloadTemplate}
+                >
+                  📁 Tải mẫu danh sách tài sản
+                </div>
               </motion.div>
             </Col>
 
@@ -585,24 +593,42 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
               >
                 <Form.Item
                   name="AuctionRulesFile"
-                  label={<span className="!font-medium !text-blue-900">Tệp quy tắc đấu giá</span>}
+                  valuePropName="fileList"
+                  label={
+                    <span className="!font-medium !text-blue-900 flex items-center">
+                      Tệp quy tắc đấu giá
+                      <Tooltip title="Chấp nhận file Excel (.xlsx, .xls), Word (.docx) hoặc PDF" placement="top">
+                        <QuestionCircleOutlined className="ml-2 text-blue-500 cursor-pointer" />
+                      </Tooltip>
+                    </span>
+                  }
                   rules={[
                     { required: true, message: "Vui lòng tải lên tệp quy tắc!" },
                     {
                       validator: (_, value) => {
-                        if (!value || value.length === 0) {
-                          return Promise.reject(new Error("Vui lòng tải lên tệp quy tắc!"));
-                        }
-                        const file = value[0];
-                        if (!file.originFileObj && !file.name) {
-                          return Promise.reject(new Error("File không hợp lệ!"));
+                        // Chỉ validate format nếu có file
+                        if (value && Array.isArray(value) && value.length > 0) {
+                          const file = value[0];
+                          if (file) {
+                            // Kiểm tra định dạng file - cho phép Excel, Word và PDF
+                            const fileName = file.name || file.originFileObj?.name || '';
+                            const allowedExtensions = ['.xlsx', '.xls', '.docx', '.pdf'];
+                            const fileExtension = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
+
+                            if (!allowedExtensions.includes(fileExtension)) {
+                              return Promise.reject(new Error("Chỉ được phép tải lên file Excel (.xlsx, .xls), Word (.docx) hoặc PDF!"));
+                            }
+                          }
                         }
                         return Promise.resolve();
                       },
                     },
                   ]}
                 >
-                  <UploadFile contentName="AuctionRulesFile" onChange={auctionRulesUpload.onChange} />
+                  <UploadFile
+                    contentName="AuctionRulesFile"
+                    accept=".xlsx,.xls,.docx,.pdf"
+                  />
                 </Form.Item>
               </motion.div>
             </Col>
@@ -618,13 +644,41 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
                   >
                     <Form.Item
                       name="AuctionPlanningMap"
-                      label={<span className="!font-medium !text-blue-900">Bản đồ kế hoạch đấu giá</span>}
+                      label={
+                        <span className="!font-medium !text-blue-900 flex items-center">
+                          Bản đồ kế hoạch đấu giá
+                          <Tooltip title="Chấp nhận file Excel (.xlsx, .xls), Word (.docx) hoặc PDF" placement="top">
+                            <QuestionCircleOutlined className="ml-2 text-blue-500 cursor-pointer" />
+                          </Tooltip>
+                        </span>
+                      }
                       valuePropName="fileList"
-                      rules={[{ required: true, message: "Vui lòng tải lên bản đồ kế hoạch!" }]}
+                      rules={[
+                        { required: true, message: "Vui lòng tải lên bản đồ kế hoạch!" },
+                        {
+                          validator: (_, value) => {
+                            // Chỉ validate format nếu có file
+                            if (value && Array.isArray(value) && value.length > 0) {
+                              const file = value[0];
+                              if (file) {
+                                // Kiểm tra định dạng file - cho phép Excel, Word và PDF
+                                const fileName = file.name || file.originFileObj?.name || '';
+                                const allowedExtensions = ['.xlsx', '.xls', '.docx', '.pdf'];
+                                const fileExtension = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
+
+                                if (!allowedExtensions.includes(fileExtension)) {
+                                  return Promise.reject(new Error("Chỉ được phép tải lên file Excel (.xlsx, .xls), Word (.docx) hoặc PDF!"));
+                                }
+                              }
+                            }
+                            return Promise.resolve();
+                          },
+                        }
+                      ]}
                     >
                       <UploadFile
                         contentName="AuctionPlanningMap"
-                        onChange={auctionPlanningUpload.onChange}
+                        accept=".xlsx,.xls,.docx,.pdf"
                       />
                     </Form.Item>
                   </motion.div>

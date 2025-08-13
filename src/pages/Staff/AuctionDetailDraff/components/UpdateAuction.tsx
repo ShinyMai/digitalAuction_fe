@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { Form, Input, DatePicker, Select, Upload, Button, Card, Row, Col, Typography } from "antd";
@@ -13,12 +12,13 @@ interface UpdateAuctionProps {
     auctionDetailData: AuctionDataDetail | undefined;
     auctionType?: string;
     auctionId?: string;
+    onUpdateSuccess?: () => void;
 }
 
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 
-const UpdateAuction = ({ auctionDetailData, auctionId }: UpdateAuctionProps) => {
+const UpdateAuction = ({ auctionDetailData, auctionId, onUpdateSuccess }: UpdateAuctionProps) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [listAuctionCategory, setListAuctionCategory] = useState<{ label: string, value: number }[]>();
@@ -139,6 +139,10 @@ const UpdateAuction = ({ auctionDetailData, auctionId }: UpdateAuctionProps) => 
             const response = await AuctionServices.updateAuction(formData);
             if (response.code === 200) {
                 toast.success(response.message);
+                // Gọi callback để chuyển về component AuctionDetail
+                if (onUpdateSuccess) {
+                    onUpdateSuccess();
+                }
             } else {
                 toast.error("Cập nhật phiên đấu giá thất bại")
             }

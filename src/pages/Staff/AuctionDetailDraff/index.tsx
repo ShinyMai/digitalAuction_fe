@@ -49,11 +49,20 @@ const AuctionDetailAnonymous = () => {
     setIsEditMode(!isEditMode);
   };
 
+  const handleUpdateSuccess = () => {
+    setIsEditMode(false);
+    // Refresh data sau khi update thành công
+    if (auctionId) {
+      fetchAuctionDetail(auctionId);
+    }
+  };
+
   const handleSendToManager = async () => {
     try {
       const response = await AuctionServices.waitingPublicAuction(auctionId);
       if (response.code === 200) {
         toast.success(response.message);
+        navigate(`/${role.toLowerCase()}/${STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC}`, { replace: true });
       } else {
         toast.error(response.message);
       }
@@ -134,6 +143,7 @@ const AuctionDetailAnonymous = () => {
                   auctionDetailData={auctionDetailData}
                   auctionType={auctionType}
                   auctionId={auctionId}
+                  onUpdateSuccess={handleUpdateSuccess}
                 />
               </motion.div>
             ) : (
