@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 import AuctionServices from "../../../../services/AuctionServices";
 import type {
   AuctionDocument,
@@ -47,9 +48,13 @@ interface Props {
   auctionId?: string;
   auctionDateModals?: AuctionDateModal;
   auctionDetailData?: AuctionDataDetail;
+  onDataChange?: () => void;
 }
 
-const ListAuctionDocument = ({ auctionId, auctionDetailData }: Props) => {
+const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Props) => {
+  const { user } = useSelector((state: { auth: { user: { roleName: string } } }) => state.auth);
+  const userRole = user?.roleName?.toLowerCase();
+
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
     PageSize: 15,
@@ -164,14 +169,12 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData }: Props) => {
       if (
         updatedParticipant &&
         JSON.stringify(updatedParticipant) !==
-          JSON.stringify(selectedParticipant)
+        JSON.stringify(selectedParticipant)
       ) {
         setSelectedParticipant(updatedParticipant);
       }
     }
-  }, [groupedParticipants, isAssetsModalVisible, selectedParticipant]);
-
-  // Debounce effect cho search
+  }, [groupedParticipants, isAssetsModalVisible, selectedParticipant]);  // Debounce effect cho search
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       // Trigger search sau 500ms delay
@@ -200,15 +203,14 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData }: Props) => {
         });
         toast.success("Đã xác nhận nhận phiếu!");
         await getListAuctionDocument();
-        // selectedParticipant sẽ được tự động cập nhật bởi useEffect
+        // Không gọi onDataChange() để tránh popup bị đóng
       } else if (action === "receiveDeposit") {
         setSelectedRecord(record);
         setIsPopupVisible(true);
       }
     } catch (error) {
       toast.error(
-        `Lỗi khi thực hiện ${
-          action === "receiveTicket" ? "nhận phiếu" : "nhận cọc"
+        `Lỗi khi thực hiện ${action === "receiveTicket" ? "nhận phiếu" : "nhận cọc"
         }!`
       );
       console.error(error);
@@ -227,7 +229,10 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData }: Props) => {
       setIsPopupVisible(false);
       setSelectedRecord(null);
       await getListAuctionDocument();
-      // selectedParticipant sẽ được tự động cập nhật bởi useEffect
+      // Thông báo parent component để refresh các component khác
+      if (onDataChange) {
+        onDataChange();
+      }
     } catch (error) {
       toast.error("Lỗi khi xác nhận nhận cọc!");
       console.error(error);
@@ -327,20 +332,20 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData }: Props) => {
                     parseInt(status) === 0
                       ? "gray"
                       : parseInt(status) === 1
-                      ? "blue"
-                      : parseInt(status) === 2
-                      ? "cyan"
-                      : "green"
+                        ? "blue"
+                        : parseInt(status) === 2
+                          ? "cyan"
+                          : "green"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa chuyển tiền hồ sơ`
                     : parseInt(status) === 1
-                    ? `${count} đã chuyển tiền hồ sơ`
-                    : parseInt(status) === 2
-                    ? `${count} đã nhận hồ sơ`
-                    : `${count} đã hoàn`}
+                      ? `${count} đã chuyển tiền hồ sơ`
+                      : parseInt(status) === 2
+                        ? `${count} đã nhận hồ sơ`
+                        : `${count} đã hoàn`}
                 </Tag>
               ))}
             </div>
@@ -671,20 +676,20 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData }: Props) => {
                             asset.statusTicket === 0
                               ? "default"
                               : asset.statusTicket === 1
-                              ? "processing"
-                              : asset.statusTicket === 2
-                              ? "warning"
-                              : "success"
+                                ? "processing"
+                                : asset.statusTicket === 2
+                                  ? "warning"
+                                  : "success"
                           }
                           className="text-xs"
                         >
                           {asset.statusTicket === 0
                             ? "Chưa chuyển tiền hồ sơ"
                             : asset.statusTicket === 1
-                            ? "Đã chuyển tiền hồ sơ"
-                            : asset.statusTicket === 2
-                            ? "Đã nhận hồ sơ"
-                            : "Đã hoàn"}
+                              ? "Đã chuyển tiền hồ sơ"
+                              : asset.statusTicket === 2
+                                ? "Đã nhận hồ sơ"
+                                : "Đã hoàn"}
                         </Tag>
 
                         {asset.statusDeposit === 1 && (
@@ -694,30 +699,32 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData }: Props) => {
                         )}
                       </div>
 
-                      <Space size="small">
-                        <Button
-                          type="primary"
-                          size="small"
-                          disabled={asset.statusTicket !== 1}
-                          onClick={() => handleAction("receiveTicket", asset)}
-                          className="bg-blue-500 border-none text-xs px-3"
-                        >
-                          Nhận phiếu
-                        </Button>
+                      {userRole === 'staff' && (
+                        <Space size="small">
+                          <Button
+                            type="primary"
+                            size="small"
+                            disabled={asset.statusTicket !== 1}
+                            onClick={() => handleAction("receiveTicket", asset)}
+                            className="bg-blue-500 border-none text-xs px-3"
+                          >
+                            Nhận phiếu
+                          </Button>
 
-                        <Button
-                          type="primary"
-                          size="small"
-                          disabled={
-                            asset.statusTicket !== 2 ||
-                            asset.statusDeposit !== 0
-                          }
-                          onClick={() => handleAction("receiveDeposit", asset)}
-                          className="bg-green-500 border-none text-xs px-3"
-                        >
-                          Nhận cọc
-                        </Button>
-                      </Space>
+                          <Button
+                            type="primary"
+                            size="small"
+                            disabled={
+                              asset.statusTicket !== 2 ||
+                              asset.statusDeposit !== 0
+                            }
+                            onClick={() => handleAction("receiveDeposit", asset)}
+                            className="bg-green-500 border-none text-xs px-3"
+                          >
+                            Nhận cọc
+                          </Button>
+                        </Space>
+                      )}
                     </div>
                   </div>
                 ))}

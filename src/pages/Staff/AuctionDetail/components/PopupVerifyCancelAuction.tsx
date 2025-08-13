@@ -49,16 +49,16 @@ const PopupVerifyCancelAuction: React.FC<WarningModalProps> = ({
       if (auctionId) {
         formData.append("AuctionId", auctionId);
       }
-      console.log("Alo", auctionId);
-      // In FormData ra console (chỉ để kiểm tra, vì FormData không hiển thị trực tiếp)
-      console.log("Giá trị form khi submit:", values);
-      console.log("FormData entries:");
       for (const [key, value] of formData.entries()) {
         console.log(`${key}:`, value);
       }
       const response = await AuctionServices.cancelAuction(formData);
-      toast.success(response.message);
-      onConfirm(); // Gọi onConfirm để xử lý logic hủy
+      if (response.code === 200) {
+        toast.success(response.message);
+        onConfirm(); // Gọi onConfirm để xử lý logic hủy
+      } else {
+        toast.warning(response.message || "Hủy đấu giá không thành công");
+      }
     } catch (error) {
       console.error("Lỗi khi submit form:", error);
     }

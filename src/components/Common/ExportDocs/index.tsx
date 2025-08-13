@@ -9,21 +9,40 @@ interface Props {
   data?: Partial<RegistrationAuctionModals>;
   open?: boolean;
   onCancel?: () => void;
+  closable?: boolean;
+  maskClosable?: boolean;
+  keyboard?: boolean;
+  onBackStep?: () => void;
 }
 
-const ExportDocxRegistration: React.FC<Props> = ({ data, open, onCancel }) => {
+const ExportDocxRegistration: React.FC<Props> = ({
+  data,
+  open,
+  onCancel,
+  closable = true,
+  maskClosable = true,
+  keyboard = true,
+  onBackStep
+}) => {
   const handleExportClick = () => {
     exportToDocx(data);
+    // Chờ 3 giây trước khi thực hiện onBackStep
+    setTimeout(() => {
+      if (onBackStep) onBackStep();
+    }, 3000);
   };
 
   return (
     <CustomModal
       title={null}
       open={open}
-      onCancel={onCancel}
+      onCancel={closable ? onCancel : undefined}
       width={600}
       footer={null}
       bodyStyle={{ padding: 0 }}
+      closable={closable}
+      maskClosable={maskClosable}
+      keyboard={keyboard}
     >
       <div className="bg-white rounded-2xl p-8 text-center shadow-xl">
         <div className="flex justify-center mb-4">

@@ -15,6 +15,7 @@ const AuctionDetailAnonymous = () => {
 
   const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
   const [auctionDateModal, setAuctionDateModal] = useState<AuctionDateModal>();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (auctionId) {
@@ -40,6 +41,11 @@ const AuctionDetailAnonymous = () => {
     } catch (error) {
       console.error("Error fetching auction detail:", error);
     }
+  };
+
+  // Callback để refresh data khi có thay đổi từ các component con
+  const handleDataChange = () => {
+    setRefreshKey(prev => prev + 1);
   };
 
   return (
@@ -93,8 +99,10 @@ const AuctionDetailAnonymous = () => {
               children: (
                 <Card className="shadow-xl bg-white/70 backdrop-blur-sm border-0 rounded-2xl">
                   <ListAuctionDocument
+                    key={`auction-docs-${refreshKey}`}
                     auctionId={auctionId}
                     auctionDetailData={auctionDetailData}
+                    onDataChange={handleDataChange}
                   />
                 </Card>
               ),
@@ -110,6 +118,7 @@ const AuctionDetailAnonymous = () => {
               children: (
                 <Card className="shadow-xl bg-white/70 backdrop-blur-sm border-0 rounded-2xl">
                   <ListAuctionDocumentSuccessRegister
+                    key={`success-docs-${refreshKey}`}
                     auctionId={auctionId}
                     auctionDateModals={auctionDateModal}
                     auctionDetailData={auctionDetailData}

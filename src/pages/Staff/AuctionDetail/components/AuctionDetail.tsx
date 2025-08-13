@@ -9,6 +9,8 @@ import { useRef, useState } from "react";
 import PopupVerifyCancelAuction from "./PopupVerifyCancelAuction";
 import { EnvironmentOutlined } from "@ant-design/icons";
 import CustomModal from "../../../../components/Common/CustomModal";
+import { MANAGER_ROUTES } from "../../../../routers";
+import { useNavigate } from "react-router-dom";
 
 interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
@@ -40,8 +42,7 @@ const AuctionDetail = ({
   const [isOpenQR, setIsOpenQR] = useState(false);
   const DateNow = dayjs().format("YYYY-MM-DDTHH:mm:ss");
   const qrRef = useRef<HTMLDivElement>(null);
-
-  console.log("check", auctionDetailData);
+  const navigate = useNavigate()
   const handleCancelClick = () => {
     setIsModalOpen(true);
   };
@@ -52,6 +53,7 @@ const AuctionDetail = ({
 
   const handleModalConfirm = () => {
     setIsModalOpen(false);
+    navigate(`/${role?.toLowerCase()}/${MANAGER_ROUTES.SUB.AUCTION_LIST_CANCEL}`, { replace: true });
   };
 
   const downloadQRCode = () => {

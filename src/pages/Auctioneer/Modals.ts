@@ -83,7 +83,7 @@ export type AuctionDocument = {
   note: string | null;
   numericalOrder: number;
   registrationFee: number;
-  statusDeposit: boolean;
+  statusDeposit: number;
   statusRefundDeposit: boolean;
   statusTicket: number;
   tagName: string;

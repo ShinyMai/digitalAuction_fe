@@ -10,7 +10,7 @@ import ModalsSelectAuctioners from "./components/ModalsSelectAuctionners";
 import RejectReasonModal from "./components/RejectReasonModal";
 import { TrophyOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
-import { MANAGER_ROUTES } from "../../../routers";
+import { MANAGER_ROUTES, STAFF_ROUTES } from "../../../routers";
 
 const { Title } = Typography;
 
@@ -70,6 +70,7 @@ const AuctionDetailDraff = () => {
         });
         if (response.code === 200) {
           toast.success(`Gán đấu giá viên và công khai phiên đấu giá thành công!`);
+          navigate(`/${role.toLowerCase()}/${STAFF_ROUTES.SUB.AUCTION_LIST}`, { replace: true });
         } else {
           toast.warning(response.message)
         }

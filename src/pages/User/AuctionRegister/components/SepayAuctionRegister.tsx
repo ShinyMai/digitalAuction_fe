@@ -31,9 +31,10 @@ interface Props {
   dataQrSepay?: dataPayment;
   dataUser?: UserInfomation;
   dataAutionAsset?: AuctionAsset;
+  onBackSelectAsset: () => void
 }
 
-const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAutionAsset }) => {
+const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAutionAsset, onBackSelectAsset }) => {
   const [isPaid, setIsPaid] = useState<boolean>(false);
   const [isChecking, setIsChecking] = useState<boolean>(true);
   const [countdown, setCountdown] = useState<number>(45);
@@ -139,13 +140,12 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
           <div className="mb-8 animate-slide-in-up" style={{ animationDelay: "0.1s" }}>
             <Card className="text-center bg-white/80 backdrop-blur-sm shadow-2xl border-0 rounded-3xl overflow-hidden">
               <div
-                className={`p-6 ${
-                  isPaid
-                    ? "bg-gradient-to-r from-green-500 to-emerald-600"
-                    : isChecking
+                className={`p-6 ${isPaid
+                  ? "bg-gradient-to-r from-green-500 to-emerald-600"
+                  : isChecking
                     ? "bg-gradient-to-r from-blue-500 to-purple-600"
                     : "bg-gradient-to-r from-orange-500 to-red-600"
-                } text-white relative`}
+                  } text-white relative`}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent"></div>
                 <div className="relative z-10">
@@ -465,7 +465,15 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
       </div>
 
       {isPaid && (
-        <ExportDocx open={isPaid} onCancel={() => setIsPaid(false)} data={getDataExport()} />
+        <ExportDocx
+          open={isPaid}
+          onCancel={undefined}
+          data={getDataExport()}
+          onBackStep={onBackSelectAsset}
+          closable={false}
+          maskClosable={false}
+          keyboard={false}
+        />
       )}
 
       <style>{`

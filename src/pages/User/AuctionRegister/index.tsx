@@ -76,6 +76,7 @@ const AuctionRegister = () => {
       title: "Thanh Toán",
       content: (
         <SepayAuctionregister
+          onBackSelectAsset={() => setCurrent(0)}
           dataAutionAsset={selectedAssets}
           dataQrSepay={dataPayment}
           dataUser={userInfo}
