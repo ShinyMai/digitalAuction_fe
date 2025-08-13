@@ -16,7 +16,6 @@ const { Title } = Typography;
 
 const RegistedAuctionDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  console.log("RegistedAuctionDetail ID:", id);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [documents, setDocuments] = useState<AuctionDocument[]>([]);
@@ -90,9 +89,12 @@ const RegistedAuctionDetail: React.FC = () => {
       .length,
     refundedDeposits: filteredDocuments.filter((doc) => doc.statusDeposit === 2)
       .length,
-    approvedTickets: filteredDocuments.filter((doc) => doc.statusTicket === 1)
+    paidMoney: filteredDocuments.filter((doc) => doc.statusTicket === 1).length,
+    waitingMoney: filteredDocuments.filter((doc) => doc.statusTicket === 0)
       .length,
-    pendingTickets: filteredDocuments.filter((doc) => doc.statusTicket === 0)
+    approvedTicket: filteredDocuments.filter((doc) => doc.statusTicket === 2)
+      .length,
+    refundedTicket: filteredDocuments.filter((doc) => doc.statusTicket === 3)
       .length,
     // Thêm các thống kê mới cho các trường vừa thêm
     attendedSessions: filteredDocuments.filter((doc) => doc.isAttended === true)

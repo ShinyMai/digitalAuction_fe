@@ -37,7 +37,10 @@ interface Role {
   roleName: string;
 }
 
-const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user }) => {
+const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({
+  account,
+  user,
+}) => {
   const [formRegister] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
@@ -78,10 +81,13 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
       });
       if (res.code === 200) {
         formRegister.resetFields();
-        toast.success("Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.", {
-          position: "top-right",
-          autoClose: 5000,
-        });
+        toast.success(
+          "Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.",
+          {
+            position: "top-right",
+            autoClose: 5000,
+          }
+        );
         setLoading(false);
       } else {
         throw new Error("Đăng ký không thành công");
@@ -131,8 +137,12 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4 animate-pulse-glow">
             <UserOutlined className="text-2xl text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Thông tin tài khoản</h2>
-          <p className="text-gray-600">Vui lòng hoàn tất thông tin để tạo tài khoản</p>
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">
+            Thông tin tài khoản
+          </h2>
+          <p className="text-gray-600">
+            Vui lòng hoàn tất thông tin để tạo tài khoản
+          </p>
         </div>
 
         <Form layout="vertical" form={formRegister} className="space-y-6">
@@ -149,7 +159,9 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="email"
-                  label={<span className="font-semibold text-gray-700">Email</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">Email</span>
+                  }
                   rules={[
                     {
                       required: true,
@@ -172,14 +184,19 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="phoneNumber"
-                  label={<span className="font-semibold text-gray-700">Số điện thoại</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">
+                      Số điện thoại
+                    </span>
+                  }
                   rules={[
                     {
                       required: true,
                       message: "Vui lòng nhập số điện thoại",
                     },
                     {
-                      pattern: /^0(3[2-9]|5[6|8|9]|7[06-9]|8[1-6|8|9]|9[0-9])[0-9]{7}$/,
+                      pattern:
+                        /^0(3[2-9]|5[6|8|9]|7[06-9]|8[1-6|8|9]|9[0-9])[0-9]{7}$/,
                       message: "Số điện thoại không hợp lệ",
                     },
                   ]}
@@ -195,14 +212,19 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="password"
-                  label={<span className="font-semibold text-gray-700">Mật khẩu</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">
+                      Mật khẩu
+                    </span>
+                  }
                   rules={[
                     {
                       required: true,
                       message: "Vui lòng nhập mật khẩu",
                     },
                     {
-                      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/,
+                      pattern:
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/,
                       message:
                         "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và ký tự đặc biệt",
                     },
@@ -220,7 +242,11 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
                 {user ? (
                   <Form.Item
                     name="re-password"
-                    label={<span className="font-semibold text-gray-700">Nhập lại mật khẩu</span>}
+                    label={
+                      <span className="font-semibold text-gray-700">
+                        Nhập lại mật khẩu
+                      </span>
+                    }
                     rules={[
                       {
                         required: true,
@@ -245,7 +271,11 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
                 ) : (
                   <Form.Item
                     name="roleId"
-                    label={<span className="font-semibold text-gray-700">Chức vụ</span>}
+                    label={
+                      <span className="font-semibold text-gray-700">
+                        Chức vụ
+                      </span>
+                    }
                   >
                     <Select
                       placeholder="Chọn chức vụ"
@@ -278,7 +308,11 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="name"
-                  label={<span className="font-semibold text-gray-700">Họ và tên</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">
+                      Họ và tên
+                    </span>
+                  }
                   rules={[
                     {
                       required: true,
@@ -298,7 +332,9 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="citizenIdentification"
-                  label={<span className="font-semibold text-gray-700">Số CCCD</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">Số CCCD</span>
+                  }
                   rules={[
                     {
                       required: true,
@@ -318,7 +354,11 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="gender"
-                  label={<span className="font-semibold text-gray-700">Giới tính</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">
+                      Giới tính
+                    </span>
+                  }
                   rules={[{ required: true }]}
                 >
                   <Select
@@ -335,7 +375,11 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="birthDay"
-                  label={<span className="font-semibold text-gray-700">Ngày sinh</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">
+                      Ngày sinh
+                    </span>
+                  }
                   rules={[{ required: true }]}
                 >
                   <DatePicker
@@ -343,7 +387,9 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
                     placeholder="Chọn ngày sinh"
                     allowClear={false}
                     readOnly
-                    suffixIcon={<CalendarOutlined className="text-purple-500" />}
+                    suffixIcon={
+                      <CalendarOutlined className="text-purple-500" />
+                    }
                     className="h-12 w-full rounded-xl border-2 bg-gray-50 cursor-not-allowed"
                   />
                 </Form.Item>
@@ -352,7 +398,11 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="nationality"
-                  label={<span className="font-semibold text-gray-700">Quốc tịch</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">
+                      Quốc tịch
+                    </span>
+                  }
                   rules={[{ required: true }]}
                 >
                   <Input
@@ -366,7 +416,9 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="issueBy"
-                  label={<span className="font-semibold text-gray-700">Nơi cấp</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">Nơi cấp</span>
+                  }
                   rules={[{ required: true }]}
                 >
                   <Input
@@ -392,7 +444,11 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24}>
                 <Form.Item
                   name="originLocation"
-                  label={<span className="font-semibold text-gray-700">Nguyên quán</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">
+                      Nguyên quán
+                    </span>
+                  }
                   rules={[{ required: true }]}
                 >
                   <Input
@@ -406,7 +462,11 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24}>
                 <Form.Item
                   name="recentLocation"
-                  label={<span className="font-semibold text-gray-700">Hộ khẩu thường trú</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">
+                      Hộ khẩu thường trú
+                    </span>
+                  }
                   rules={[{ required: true }]}
                 >
                   <Input
@@ -432,7 +492,11 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="issueDate"
-                  label={<span className="font-semibold text-gray-700">Ngày cấp CCCD</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">
+                      Ngày cấp CCCD
+                    </span>
+                  }
                   rules={[{ required: true }]}
                 >
                   <DatePicker
@@ -440,7 +504,9 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
                     placeholder="Ngày cấp CCCD"
                     allowClear={false}
                     readOnly
-                    suffixIcon={<CalendarOutlined className="text-orange-500" />}
+                    suffixIcon={
+                      <CalendarOutlined className="text-orange-500" />
+                    }
                     className="h-12 w-full rounded-xl border-2 bg-gray-50 cursor-not-allowed"
                   />
                 </Form.Item>
@@ -449,7 +515,11 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="validDate"
-                  label={<span className="font-semibold text-gray-700">Ngày hết hạn CCCD</span>}
+                  label={
+                    <span className="font-semibold text-gray-700">
+                      Ngày hết hạn CCCD
+                    </span>
+                  }
                   rules={[{ required: true }]}
                 >
                   <DatePicker
@@ -457,7 +527,9 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({ account, user
                     placeholder="Ngày hết hạn CCCD"
                     allowClear={false}
                     readOnly
-                    suffixIcon={<CalendarOutlined className="text-orange-500" />}
+                    suffixIcon={
+                      <CalendarOutlined className="text-orange-500" />
+                    }
                     className="h-12 w-full rounded-xl border-2 bg-gray-50 cursor-not-allowed"
                   />
                 </Form.Item>

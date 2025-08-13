@@ -34,31 +34,43 @@ const SearchAuctionTable = ({ auctionCategory, onSearch }: Props) => {
         form={form}
         onValuesChange={handleFormChange}
       >
-        <Form.Item name="auctionName" className="flex-1 min-w-[200px]" label="Tên buổi đấu giá">
-          <Input placeholder="Tên buổi đấu giá" className="w-full h-10 rounded-lg" />
+        <Form.Item
+          name="auctionName"
+          className="flex-1 min-w-[200px]"
+          label="Tên buổi đấu giá"
+        >
+          <Input
+            placeholder="Tên buổi đấu giá"
+            className="w-full h-10 rounded-lg"
+          />
         </Form.Item>
-        <Form.Item name="CategoryId" className="flex-1 min-w-[200px]" label="Loại tài sản">
+        <Form.Item
+          name="CategoryId"
+          className="flex-1 min-w-[200px]"
+          label="Loại tài sản"
+        >
           <Select
             className="w-full rounded-lg"
             style={{ height: "40px" }}
             placeholder="Danh mục tài sản"
             options={dataAuctionCategoryList}
-            onSelect={(val) => console.log(val)}
             allowClear
           />
         </Form.Item>
-        <Form.Item name="AuctionType" className="flex-1 min-w-[200px]" label="Loại đấu giá">
+        <Form.Item
+          name="AuctionType"
+          className="flex-1 min-w-[200px]"
+          label="Loại đấu giá"
+        >
           <Select
             className="w-full rounded-lg"
             style={{ height: "40px" }}
             placeholder="Loại đấu giá"
             defaultValue={"1"}
             options={optionSearchbyType}
-            onSelect={(val) => console.log("Check", val)}
             allowClear
           />
         </Form.Item>
-
       </Form>
     </div>
   );

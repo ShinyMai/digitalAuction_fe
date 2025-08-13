@@ -61,7 +61,6 @@ const BlogTable = ({
   };
 
   const [openModal, setOpenModal] = useState<string>("");
-  console.log("Open Modal:", openModal);
 
   const handleApprove = async (record: BlogData) => {
     try {

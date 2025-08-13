@@ -56,8 +56,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               onChange={setTicketFilter}
               options={[
                 { value: "all", label: "Tất cả" },
-                { value: 1, label: "Đã nhận" },
-                { value: 0, label: "Chưa nhận" },
+                { value: 2, label: "Đã nhận" },
+                { value: 1, label: "Chưa nhận" },
               ]}
             />
           </Space>

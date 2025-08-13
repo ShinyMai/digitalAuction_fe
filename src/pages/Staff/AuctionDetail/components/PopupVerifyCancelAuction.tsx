@@ -1,6 +1,10 @@
 import React from "react";
 import { Modal, Button, Form, Input, Typography } from "antd";
-import { UploadOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import CustomUploadFile from "../../PostAuction/components/Upload";
 import AuctionServices from "../../../../services/AuctionServices";
 import { toast } from "react-toastify";
@@ -102,13 +106,18 @@ const PopupVerifyCancelAuction: React.FC<WarningModalProps> = ({
             </Title>
 
             <Text className="text-slate-600 text-base leading-relaxed block max-w-md mx-auto">
-              Việc hủy phiên đấu giá cần có lý do chính đáng và tài liệu chứng minh. Vui lòng cung
-              cấp đầy đủ thông tin bên dưới.
+              Việc hủy phiên đấu giá cần có lý do chính đáng và tài liệu chứng
+              minh. Vui lòng cung cấp đầy đủ thông tin bên dưới.
             </Text>
           </div>
 
           {/* Form Section */}
-          <Form form={form} layout="vertical" onFinish={handleSubmit} className="space-y-6">
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
+            className="space-y-6"
+          >
             {/* File Upload Section */}
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
               {" "}
@@ -116,11 +125,18 @@ const PopupVerifyCancelAuction: React.FC<WarningModalProps> = ({
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
                   <UploadOutlined className="text-white text-sm" />
                 </div>
-                <Text className="font-semibold text-slate-700 text-lg">Tài liệu chứng minh</Text>
+                <Text className="font-semibold text-slate-700 text-lg">
+                  Tài liệu chứng minh
+                </Text>
               </div>
               <Form.Item
                 name="CancelReasonFile"
-                rules={[{ required: true, message: "Vui lòng tải lên file lý do hủy!" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng tải lên file lý do hủy!",
+                  },
+                ]}
                 className="mb-0"
               >
                 <CustomUploadFile contentName="CancelReasonFile" />
@@ -136,12 +152,16 @@ const PopupVerifyCancelAuction: React.FC<WarningModalProps> = ({
                 <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center mr-3">
                   <CloseCircleOutlined className="text-white text-sm" />
                 </div>
-                <Text className="font-semibold text-slate-700 text-lg">Lý do hủy</Text>
+                <Text className="font-semibold text-slate-700 text-lg">
+                  Lý do hủy
+                </Text>
               </div>
 
               <Form.Item
                 name="CancelReason"
-                rules={[{ required: true, message: "Vui lòng nhập lý do hủy!" }]}
+                rules={[
+                  { required: true, message: "Vui lòng nhập lý do hủy!" },
+                ]}
                 className="mb-0"
               >
                 <Input.TextArea

@@ -21,10 +21,10 @@ interface AuctionAsset {
   startingPrice: number; // Thêm trường startingPrice
 }
 
-
 const AuctionDetailSuccesfull = () => {
   const location = useLocation();
-  const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
+  const [auctionDetailData, setAuctionDetailData] =
+    useState<AuctionDataDetail>();
   const [auctionDateModal, setAuctionDateModal] = useState<AuctionDateModal>();
   const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
   const { user } = useSelector((state: RootState) => state.auth);
@@ -47,11 +47,16 @@ const AuctionDetailSuccesfull = () => {
       };
 
       // Xử lý và set auction assets từ response data
-      if (response.data?.listAuctionAssets && Array.isArray(response.data.listAuctionAssets)) {
-        const assets: AuctionAsset[] = response.data.listAuctionAssets.map((asset: any) => ({
-          auctionAssetsId: asset.auctionAssetsId,
-          tagName: asset.tagName
-        }));
+      if (
+        response.data?.listAuctionAssets &&
+        Array.isArray(response.data.listAuctionAssets)
+      ) {
+        const assets: AuctionAsset[] = response.data.listAuctionAssets.map(
+          (asset: any) => ({
+            auctionAssetsId: asset.auctionAssetsId,
+            tagName: asset.tagName,
+          })
+        );
         setAuctionAssets(assets);
       }
 
@@ -67,12 +72,11 @@ const AuctionDetailSuccesfull = () => {
     try {
       const response = await AuctionServices.getListAuctionRounds(auctionId);
       setAuctionRounds(response.data.auctionRounds);
-      setIsHaveAuctionRound(true)
-      console.log("Auction rounds fetched successfully:", response.data);
+      setIsHaveAuctionRound(true);
     } catch (error) {
       console.error("Error fetching auction rounds:", error);
     }
-  }
+  };
 
   const onCreateAuctionRound = async () => {
     // Logic to create a new auction round
@@ -83,11 +87,11 @@ const AuctionDetailSuccesfull = () => {
       }
       const dataRequest = {
         auctionId: auctionDetailData.auctionId,
-        createdBy: user?.id
-      }
+        createdBy: user?.id,
+      };
       const response = await AuctionServices.createAuctionRound(dataRequest);
       toast.success(response.data);
-      onGetListAuctionRound(auctionDetailData.auctionId)
+      onGetListAuctionRound(auctionDetailData.auctionId);
     } catch (error) {
       console.error("Error creating auction round:", error);
       toast.error("Error creating auction round");
@@ -117,7 +121,9 @@ const AuctionDetailSuccesfull = () => {
               label: (
                 <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-blue-50 hover:scale-105 hover:shadow-md">
                   <FileTextOutlined className="text-blue-600 text-lg transition-colors duration-300" />
-                  <span className="font-semibold text-gray-700 transition-colors duration-300">Thông tin đấu giá</span>
+                  <span className="font-semibold text-gray-700 transition-colors duration-300">
+                    Thông tin đấu giá
+                  </span>
                 </div>
               ),
               children: (
@@ -135,7 +141,9 @@ const AuctionDetailSuccesfull = () => {
               label: (
                 <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-teal-50 hover:scale-105 hover:shadow-md">
                   <TeamOutlined className="text-teal-600 text-lg transition-colors duration-300" />
-                  <span className="font-semibold text-gray-700 transition-colors duration-300">Danh sách tham gia đấu giá</span>
+                  <span className="font-semibold text-gray-700 transition-colors duration-300">
+                    Danh sách tham gia đấu giá
+                  </span>
                 </div>
               ),
               children: (
@@ -148,24 +156,30 @@ const AuctionDetailSuccesfull = () => {
                 </div>
               ),
             },
-            ...(auctionRounds.length > 0 ? [{
-              key: "3",
-              label: (
-                <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-purple-50 hover:scale-105 hover:shadow-md">
-                  <TeamOutlined className="text-purple-600 text-lg transition-colors duration-300" />
-                  <span className="font-semibold text-gray-700 transition-colors duration-300">Kết quả phiên đấu giá</span>
-                </div>
-              ),
-              children: (
-                <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 min-h-[500px] transition-all duration-300 hover:shadow-2xl">
-                  <AuctionRounds
-                    auctionId={location.state.key}
-                    auction={auctionDetailData}
-                    auctionAsset={auctionAssets}
-                  />
-                </div>
-              ),
-            }] : []),
+            ...(auctionRounds.length > 0
+              ? [
+                  {
+                    key: "3",
+                    label: (
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-purple-50 hover:scale-105 hover:shadow-md">
+                        <TeamOutlined className="text-purple-600 text-lg transition-colors duration-300" />
+                        <span className="font-semibold text-gray-700 transition-colors duration-300">
+                          Kết quả phiên đấu giá
+                        </span>
+                      </div>
+                    ),
+                    children: (
+                      <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 min-h-[500px] transition-all duration-300 hover:shadow-2xl">
+                        <AuctionRounds
+                          auctionId={location.state.key}
+                          auction={auctionDetailData}
+                          auctionAsset={auctionAssets}
+                        />
+                      </div>
+                    ),
+                  },
+                ]
+              : []),
           ]}
         />
       </div>

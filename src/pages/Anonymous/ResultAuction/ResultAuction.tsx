@@ -25,20 +25,20 @@ const AuctionListAnonyMous = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<"list" | "detail">("list");
   const [selectedAuctionId, setSelectedAuctionId] = useState<string>("");
-  const [selectedAuctionData, setSelectedAuctionData] = useState<AuctionDataList | null>(null);
+  const [selectedAuctionData, setSelectedAuctionData] =
+    useState<AuctionDataList | null>(null);
   const location = useLocation();
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
     PageSize: 8,
     CategoryId: location.state?.key,
-    Status: 3,
+    Status: 2,
     SortBy: "register_open_date",
     IsAscending: false,
     ConditionAuction: 0,
   });
   const [totalData, setTotalData] = useState<number>(0);
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
-  console.log(location.state?.key);
   useEffect(() => {
     getListAuction();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,7 +89,9 @@ const AuctionListAnonyMous = () => {
     }));
   };
   const handleViewAuctionResults = (auctionId: string) => {
-    const auctionData = auctionList.find((auction) => auction.auctionId === auctionId);
+    const auctionData = auctionList.find(
+      (auction) => auction.auctionId === auctionId
+    );
     setSelectedAuctionId(auctionId);
     setSelectedAuctionData(auctionData || null);
     setViewMode("detail");
@@ -104,9 +106,15 @@ const AuctionListAnonyMous = () => {
     return (
       <AuctionResultsDetail
         auctionId={selectedAuctionId}
-        auctionTitle={selectedAuctionData?.auctionName || "Phiên Đấu Giá Tài Sản"}
-        auctionEndDate={selectedAuctionData?.auctionEndDate || new Date().toISOString()}
-        auctionStartDate={selectedAuctionData?.auctionStartDate || new Date().toISOString()}
+        auctionTitle={
+          selectedAuctionData?.auctionName || "Phiên Đấu Giá Tài Sản"
+        }
+        auctionEndDate={
+          selectedAuctionData?.auctionEndDate || new Date().toISOString()
+        }
+        auctionStartDate={
+          selectedAuctionData?.auctionStartDate || new Date().toISOString()
+        }
         onBack={handleBackToList}
       />
     );
@@ -183,7 +191,10 @@ const AuctionListAnonyMous = () => {
                 <div className="w-20 h-20 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
                 <div
                   className="absolute inset-0 w-20 h-20 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"
-                  style={{ animationDirection: "reverse", animationDuration: "1.5s" }}
+                  style={{
+                    animationDirection: "reverse",
+                    animationDuration: "1.5s",
+                  }}
                 ></div>
               </div>
               <p className="mt-6 text-lg text-gray-600 animate-pulse">
@@ -200,8 +211,9 @@ const AuctionListAnonyMous = () => {
                 <div className="inline-flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg">
                   <span className="text-2xl">📊</span>
                   <span className="font-medium text-gray-700">
-                    Tìm thấy <span className="font-bold text-blue-600">{totalData}</span> phiên đấu
-                    giá đã hoàn thành
+                    Tìm thấy{" "}
+                    <span className="font-bold text-blue-600">{totalData}</span>{" "}
+                    phiên đấu giá đã hoàn thành
                   </span>
                 </div>
               </div>
@@ -215,7 +227,10 @@ const AuctionListAnonyMous = () => {
                       className="animate-slide-in-up hover-lift"
                       style={{ animationDelay: `${0.1 * index}s` }}
                     >
-                      <AuctionCard dataCard={item} onViewResults={handleViewAuctionResults} />
+                      <AuctionCard
+                        dataCard={item}
+                        onViewResults={handleViewAuctionResults}
+                      />
                     </div>
                   ))
                 ) : (
@@ -228,11 +243,16 @@ const AuctionListAnonyMous = () => {
                         Không tìm thấy đấu giá đã hoàn thành nào
                       </h3>
                       <p className="text-gray-500 text-lg mb-8 max-w-md mx-auto">
-                        Hiện tại chưa có phiên đấu giá nào đã hoàn thành phù hợp với tiêu chí tìm
-                        kiếm của bạn
+                        Hiện tại chưa có phiên đấu giá nào đã hoàn thành phù hợp
+                        với tiêu chí tìm kiếm của bạn
                       </p>
                       <button
-                        onClick={() => setSearchParams((prev) => ({ ...prev, AuctionName: "" }))}
+                        onClick={() =>
+                          setSearchParams((prev) => ({
+                            ...prev,
+                            AuctionName: "",
+                          }))
+                        }
                         className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105"
                       >
                         Xem tất cả đấu giá đã hoàn thành
@@ -258,7 +278,8 @@ const AuctionListAnonyMous = () => {
                       showQuickJumper
                       showTotal={(total, range) => (
                         <span className="text-gray-600 font-medium">
-                          Hiển thị {range[0]}-{range[1]} / {total} đấu giá đã hoàn thành
+                          Hiển thị {range[0]}-{range[1]} / {total} đấu giá đã
+                          hoàn thành
                         </span>
                       )}
                       className="[&_.ant-pagination-item]:bg-gradient-to-r [&_.ant-pagination-item]:from-blue-50 [&_.ant-pagination-item]:to-purple-50 [&_.ant-pagination-item]:border-blue-200 [&_.ant-pagination-item]:hover:border-blue-400 [&_.ant-pagination-item-active]:from-blue-500 [&_.ant-pagination-item-active]:to-purple-600 [&_.ant-pagination-item-active]:text-white [&_.ant-pagination-item-active]:border-blue-500"

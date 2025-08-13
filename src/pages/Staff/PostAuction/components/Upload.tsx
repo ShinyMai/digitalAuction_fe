@@ -66,13 +66,9 @@ const CustomUploadFile = ({ contentName, value, onChange, accept = ".xlsx,.xls,.
         message.error("File phải nhỏ hơn 10MB!");
         return Upload.LIST_IGNORE;
       }
-
-      console.log("File uploaded successfully:", file.name, "Size:", file.size, "Type:", file.type);
       return false;
     },
     onChange: (info) => {
-      console.log("Upload onChange - contentName:", contentName, "info:", info);
-
       let newFileList = [...info.fileList];
 
       // Chỉ giữ file cuối cùng
@@ -84,14 +80,10 @@ const CustomUploadFile = ({ contentName, value, onChange, accept = ".xlsx,.xls,.
         status: file.status || "done",
       }));
 
-      console.log("Processed fileList for", contentName, ":", newFileList);
-
       setFileList(newFileList);
       onChange?.(newFileList);
     },
-    customRequest: ({ file, onSuccess, onError }) => {
-      console.log("Custom request for file:", file);
-
+    customRequest: ({ onSuccess, onError }) => {
       // Simulate upload success
       setTimeout(() => {
         try {
@@ -103,7 +95,6 @@ const CustomUploadFile = ({ contentName, value, onChange, accept = ".xlsx,.xls,.
       }, 100);
     },
     onRemove: () => {
-      console.log("File removed for", contentName);
       setFileList([]);
       onChange?.([]);
     },
@@ -115,7 +106,11 @@ const CustomUploadFile = ({ contentName, value, onChange, accept = ".xlsx,.xls,.
   return (
     <div>
       <Upload {...props}>
-        <Button icon={<UploadOutlined />} style={{ width: 250, height: 40 }} className="rounded-lg">
+        <Button
+          icon={<UploadOutlined />}
+          style={{ width: 250, height: 40 }}
+          className="rounded-lg"
+        >
           {contentName}
         </Button>
       </Upload>{" "}

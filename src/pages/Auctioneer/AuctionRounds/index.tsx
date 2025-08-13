@@ -123,11 +123,12 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
     } catch (error) {
       console.error("Error fetching auction statistic:", error);
     }
-  }
+  };
 
   useEffect(() => {
     getAuctionStatistic();
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getAuctionRoundPrices = useCallback(() => {
     try {
@@ -148,7 +149,6 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
         if (response.code === 200) {
           setAuctionRoundPriceWinners(response.data.auctionRoundPrices);
         }
-        console.log("Auction round price winners:", response.data);
       }
     } catch (error) {
       console.error("Error fetching auction round price winners:", error);
@@ -361,7 +361,6 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
             >
               {role === USER_ROLES.AUCTIONEER && (
                 <AuctionRoundDetail
-
                   auctionRound={selectedRound}
                   auction={auction}
                   onBackToList={handleBackToList}

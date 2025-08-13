@@ -61,7 +61,6 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
   const getaAuctionDocumentById = async (id: string) => {
     try {
       const res = await AuctionServices.getAuctionById(id);
-      console.log(res?.data?.status);
       if (res?.data?.statusTicket === 1) {
         setIsPaid(true);
         setIsChecking(false);
@@ -85,7 +84,9 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
         callCount++;
         setCountdown(45 - callCount * 3);
 
-        const isPaidResult = await getaAuctionDocumentById(dataQrSepay.auctionDocumentsId);
+        const isPaidResult = await getaAuctionDocumentById(
+          dataQrSepay.auctionDocumentsId
+        );
 
         if (isPaidResult || callCount >= maxCalls) {
           clearInterval(intervalId);
@@ -93,7 +94,9 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
 
           if (!isPaidResult && callCount >= maxCalls) {
             setIsPaid(false);
-            message.error("Thanh toán thất bại! Vui lòng thử lại hoặc liên hệ hỗ trợ.");
+            message.error(
+              "Thanh toán thất bại! Vui lòng thử lại hoặc liên hệ hỗ trợ."
+            );
           }
         }
       }, 3000);
@@ -132,12 +135,16 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
               Hoàn Tất Đăng Ký
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Vui lòng thực hiện thanh toán để hoàn tất quá trình đăng ký tham gia đấu giá
+              Vui lòng thực hiện thanh toán để hoàn tất quá trình đăng ký tham
+              gia đấu giá
             </p>
           </div>
 
           {/* Payment Status Card */}
-          <div className="mb-8 animate-slide-in-up" style={{ animationDelay: "0.1s" }}>
+          <div
+            className="mb-8 animate-slide-in-up"
+            style={{ animationDelay: "0.1s" }}
+          >
             <Card className="text-center bg-white/80 backdrop-blur-sm shadow-2xl border-0 rounded-3xl overflow-hidden">
               <div
                 className={`p-6 ${isPaid
@@ -155,7 +162,9 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <CheckCircleOutlined className="text-3xl text-white" />
                       </div>
                       <div>
-                        <h3 className="text-2xl font-bold">Thanh toán thành công!</h3>
+                        <h3 className="text-2xl font-bold">
+                          Thanh toán thành công!
+                        </h3>
                         <p className="opacity-90">Đăng ký đã được xác nhận</p>
                       </div>
                     </div>
@@ -169,8 +178,12 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         />
                       </div>
                       <div>
-                        <h3 className="text-2xl font-bold">Đang kiểm tra thanh toán...</h3>
-                        <p className="opacity-90">Thời gian còn lại: {countdown}s</p>
+                        <h3 className="text-2xl font-bold">
+                          Đang kiểm tra thanh toán...
+                        </h3>
+                        <p className="opacity-90">
+                          Thời gian còn lại: {countdown}s
+                        </p>
                       </div>
                     </div>
                   ) : (
@@ -191,14 +204,19 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* QR Code Section */}
-            <div className="animate-slide-in-up" style={{ animationDelay: "0.2s" }}>
+            <div
+              className="animate-slide-in-up"
+              style={{ animationDelay: "0.2s" }}
+            >
               <Card className="h-full bg-white/80 backdrop-blur-sm shadow-2xl border-0 rounded-3xl overflow-hidden">
                 <div className="p-8">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
                       <QrcodeOutlined className="text-white text-xl" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800">Mã QR Thanh Toán</h2>
+                    <h2 className="text-2xl font-bold text-gray-800">
+                      Mã QR Thanh Toán
+                    </h2>
                   </div>
 
                   <div className="text-center">
@@ -212,12 +230,16 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                       />
                       {!isPaid && (
                         <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-red-500 to-pink-600 rounded-full flex items-center justify-center animate-pulse">
-                          <span className="text-white text-xs font-bold">!</span>
+                          <span className="text-white text-xs font-bold">
+                            !
+                          </span>
                         </div>
                       )}
                     </div>
 
-                    <p className="text-gray-600 mb-4">Sử dụng ứng dụng ngân hàng để quét mã QR</p>
+                    <p className="text-gray-600 mb-4">
+                      Sử dụng ứng dụng ngân hàng để quét mã QR
+                    </p>
 
                     {isPaid && (
                       <Button
@@ -236,14 +258,19 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
             </div>
 
             {/* Payment Information */}
-            <div className="animate-slide-in-up" style={{ animationDelay: "0.3s" }}>
+            <div
+              className="animate-slide-in-up"
+              style={{ animationDelay: "0.3s" }}
+            >
               <Card className="h-full bg-white/80 backdrop-blur-sm shadow-2xl border-0 rounded-3xl overflow-hidden">
                 <div className="p-8">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
                       <BankOutlined className="text-white text-xl" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800">Thông Tin Thanh Toán</h2>
+                    <h2 className="text-2xl font-bold text-gray-800">
+                      Thông Tin Thanh Toán
+                    </h2>
                   </div>
 
                   <div className="space-y-4">
@@ -252,7 +279,9 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <CreditCardOutlined className="text-blue-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Số Tài Khoản</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Số Tài Khoản
+                        </p>
                         <p className="font-bold text-gray-800 text-lg">
                           {dataQrSepay?.accountNumber || "Chưa có"}
                         </p>
@@ -264,7 +293,9 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <BankOutlined className="text-purple-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Ngân Hàng</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Ngân Hàng
+                        </p>
                         <p className="font-bold text-gray-800 text-lg">
                           {dataQrSepay?.beneficiaryBank || "Chưa có"}
                         </p>
@@ -276,7 +307,9 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <DollarOutlined className="text-green-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Phí Đăng Ký</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Phí Đăng Ký
+                        </p>
                         <p className="font-bold text-gray-800 text-lg">
                           {formatNumber(dataQrSepay?.amountTicket)} VND
                         </p>
@@ -285,8 +318,12 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
 
                     {dataQrSepay?.description && (
                       <div className="p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl border border-gray-200">
-                        <p className="text-sm text-gray-600 font-medium mb-2">Mô Tả</p>
-                        <p className="text-gray-800 leading-relaxed">{dataQrSepay.description}</p>
+                        <p className="text-sm text-gray-600 font-medium mb-2">
+                          Mô Tả
+                        </p>
+                        <p className="text-gray-800 leading-relaxed">
+                          {dataQrSepay.description}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -296,14 +333,19 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
           </div>
 
           {/* User Information */}
-          <div className="mt-8 animate-slide-in-up" style={{ animationDelay: "0.4s" }}>
+          <div
+            className="mt-8 animate-slide-in-up"
+            style={{ animationDelay: "0.4s" }}
+          >
             <Card className="bg-white/80 backdrop-blur-sm shadow-2xl border-0 rounded-3xl overflow-hidden">
               <div className="p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
                     <UserOutlined className="text-white text-xl" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-800">Thông Tin Người Đăng Ký</h2>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Thông Tin Người Đăng Ký
+                  </h2>
                 </div>
 
                 <Row gutter={[24, 24]}>
@@ -313,8 +355,12 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <UserOutlined className="text-blue-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Họ Tên</p>
-                        <p className="font-bold text-gray-800">{dataUser?.name || "Chưa có"}</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Họ Tên
+                        </p>
+                        <p className="font-bold text-gray-800">
+                          {dataUser?.name || "Chưa có"}
+                        </p>
                       </div>
                     </div>
                   </Col>
@@ -325,8 +371,12 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <CalendarOutlined className="text-green-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Ngày Sinh</p>
-                        <p className="font-bold text-gray-800">{dataUser?.birthDay || "Chưa có"}</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Ngày Sinh
+                        </p>
+                        <p className="font-bold text-gray-800">
+                          {dataUser?.birthDay || "Chưa có"}
+                        </p>
                       </div>
                     </div>
                   </Col>
@@ -337,7 +387,9 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <IdcardOutlined className="text-purple-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Số CCCD</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Số CCCD
+                        </p>
                         <p className="font-bold text-gray-800">
                           {dataUser?.citizenIdentification || "Chưa có"}
                         </p>
@@ -351,7 +403,9 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <CalendarOutlined className="text-orange-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Ngày Cấp</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Ngày Cấp
+                        </p>
                         <p className="font-bold text-gray-800">
                           {dataUser?.issueDate || "Chưa có"}
                         </p>
@@ -365,8 +419,12 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <EnvironmentOutlined className="text-red-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Nơi Cấp</p>
-                        <p className="font-bold text-gray-800">{dataUser?.issueBy || "Chưa có"}</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Nơi Cấp
+                        </p>
+                        <p className="font-bold text-gray-800">
+                          {dataUser?.issueBy || "Chưa có"}
+                        </p>
                       </div>
                     </div>
                   </Col>
@@ -377,7 +435,9 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <PhoneOutlined className="text-cyan-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Số Điện Thoại</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Số Điện Thoại
+                        </p>
                         <p className="font-bold text-gray-800">
                           {dataUser?.phoneNumber || "Chưa có"}
                         </p>
@@ -391,7 +451,9 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <EnvironmentOutlined className="text-gray-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Hộ khẩu thường trú</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Hộ khẩu thường trú
+                        </p>
                         <p className="font-bold text-gray-800 leading-relaxed">
                           {dataUser?.originLocation || "Chưa có"}
                         </p>
@@ -404,14 +466,19 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
           </div>
 
           {/* Asset Information */}
-          <div className="mt-8 animate-slide-in-up" style={{ animationDelay: "0.5s" }}>
+          <div
+            className="mt-8 animate-slide-in-up"
+            style={{ animationDelay: "0.5s" }}
+          >
             <Card className="bg-white/80 backdrop-blur-sm shadow-2xl border-0 rounded-3xl overflow-hidden">
               <div className="p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
                     <SafetyOutlined className="text-white text-xl" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-800">Thông Tin Tài Sản Đấu Giá</h2>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Thông Tin Tài Sản Đấu Giá
+                  </h2>
                 </div>
 
                 <Row gutter={[24, 24]}>
@@ -421,7 +488,9 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <TagOutlined className="text-indigo-600 text-lg" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Tên Tài Sản</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Tên Tài Sản
+                        </p>
                         <p className="font-bold text-gray-800 text-lg">
                           {dataAutionAsset?.tagName || "Chưa có"}
                         </p>
@@ -435,7 +504,9 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <DollarOutlined className="text-green-600 text-lg" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Giá Khởi Điểm</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Giá Khởi Điểm
+                        </p>
                         <p className="font-bold text-gray-800 text-lg">
                           {formatNumber(dataAutionAsset?.startingPrice)}{" "}
                           {dataAutionAsset?.unit || "VND"}
@@ -450,9 +521,12 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
                         <SafetyOutlined className="text-orange-600 text-lg" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Tiền Đặt Cọc</p>
+                        <p className="text-sm text-gray-600 font-medium">
+                          Tiền Đặt Cọc
+                        </p>
                         <p className="font-bold text-gray-800 text-lg">
-                          {formatNumber(dataAutionAsset?.deposit)} {dataAutionAsset?.unit || "VND"}
+                          {formatNumber(dataAutionAsset?.deposit)}{" "}
+                          {dataAutionAsset?.unit || "VND"}
                         </p>
                       </div>
                     </div>

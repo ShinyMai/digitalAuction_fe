@@ -1,6 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Form, Button, Table, Row, Col, Card, Typography, InputNumber, AutoComplete, Select, Tabs } from "antd";
+import {
+  Form,
+  Button,
+  Table,
+  Row,
+  Col,
+  Card,
+  Typography,
+  InputNumber,
+  AutoComplete,
+  Select,
+  Tabs,
+} from "antd";
 import {
   PlusOutlined,
   DeleteOutlined,
@@ -17,6 +29,7 @@ import type { AuctionRoundModals } from "../../Modals";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import { toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
 
 const { Title, Text } = Typography;
 
@@ -30,7 +43,7 @@ const GRADIENT_STYLES = [
   "!bg-gradient-to-br !from-blue-500 !via-blue-600 !to-indigo-700",
   "!bg-gradient-to-br !from-emerald-400 !via-teal-500 !to-teal-600",
   "!bg-gradient-to-br !from-amber-400 !via-orange-500 !to-orange-600",
-  "!bg-gradient-to-br !from-rose-400 !via-pink-500 !to-pink-600"
+  "!bg-gradient-to-br !from-rose-400 !via-pink-500 !to-pink-600",
 ] as const;
 
 // Interface definitions
@@ -68,10 +81,20 @@ interface props {
   onBackToList?: () => void;
 }
 
-const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onBackToList, auctionRoundIdBefore }: props) => {
+const InputAuctionPrice = ({
+  auctionId,
+  roundData,
+  auctionAssetsToStatistic,
+  onBackToList,
+  auctionRoundIdBefore,
+}: props) => {
   // State cho danh sách dữ liệu
-  const [auctionRoundPriceList, setAuctionRoundPriceList] = useState<InputAuctionPriceModals[]>([]);
-  const [auctionRoundPriceListOther, setAuctionRoundPriceListOther] = useState<InputAuctionPriceModals[]>([]);
+  const [auctionRoundPriceList, setAuctionRoundPriceList] = useState<
+    InputAuctionPriceModals[]
+  >([]);
+  const [auctionRoundPriceListOther, setAuctionRoundPriceListOther] = useState<
+    InputAuctionPriceModals[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [citizenOptions, setCitizenOptions] = useState<{ value: string }[]>([]);
@@ -79,7 +102,6 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
   const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<AuctionAsset | null>(null);
-  console.log("Auction Round ID Before:", auctionRoundIdBefore);
   // Form instance từ antd
   const [form] = Form.useForm();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -87,59 +109,84 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
   // Memoized calculations for performance
   const statistics = useMemo(() => {
     const totalMine = auctionRoundPriceList.length;
-    const totalOther = Array.isArray(auctionRoundPriceListOther) ? auctionRoundPriceListOther.length : 0;
+    const totalOther = Array.isArray(auctionRoundPriceListOther)
+      ? auctionRoundPriceListOther.length
+      : 0;
     const totalAll = totalMine + totalOther;
 
-    const assetStats = auctionAssetsToStatistic?.map((asset, index) => {
-      const assetCountMine = auctionRoundPriceList.filter(
-        (item) => item.auctionAssetId === asset.auctionAssetsId
-      ).length;
+    const assetStats =
+      auctionAssetsToStatistic?.map((asset, index) => {
+        const assetCountMine = auctionRoundPriceList.filter(
+          (item) => item.auctionAssetId === asset.auctionAssetsId
+        ).length;
 
-      const assetCountOther = Array.isArray(auctionRoundPriceListOther)
-        ? auctionRoundPriceListOther.filter((item) => item.tagName === asset.tagName).length
-        : 0;
+        const assetCountOther = Array.isArray(auctionRoundPriceListOther)
+          ? auctionRoundPriceListOther.filter(
+              (item) => item.tagName === asset.tagName
+            ).length
+          : 0;
 
-      return {
-        ...asset,
-        assetCountMine,
-        assetCountOther,
-        totalAssetCount: assetCountMine + assetCountOther,
-        gradientStyle: GRADIENT_STYLES[index % GRADIENT_STYLES.length]
-      };
-    }) || [];
+        return {
+          ...asset,
+          assetCountMine,
+          assetCountOther,
+          totalAssetCount: assetCountMine + assetCountOther,
+          gradientStyle: GRADIENT_STYLES[index % GRADIENT_STYLES.length],
+        };
+      }) || [];
 
     return {
       totalMine,
       totalOther,
       totalAll,
-      assetStats
+      assetStats,
     };
-  }, [auctionRoundPriceList, auctionRoundPriceListOther, auctionAssetsToStatistic]);
+  }, [
+    auctionRoundPriceList,
+    auctionRoundPriceListOther,
+    auctionAssetsToStatistic,
+  ]);
 
   // Memoized filtered data for tabs
   const filteredData = useMemo(() => {
     const filterMine = selectedAssetId
-      ? auctionRoundPriceList.filter(item => item.auctionAssetId === selectedAssetId)
+      ? auctionRoundPriceList.filter(
+          (item) => item.auctionAssetId === selectedAssetId
+        )
       : auctionRoundPriceList;
 
-    const filterOther = selectedAssetId && Array.isArray(auctionRoundPriceListOther)
-      ? auctionRoundPriceListOther.filter(item => {
-        const selectedAsset = auctionAssetsToStatistic?.find(asset => asset.auctionAssetsId === selectedAssetId);
-        return selectedAsset && item.tagName === selectedAsset.tagName;
-      })
-      : (Array.isArray(auctionRoundPriceListOther) ? auctionRoundPriceListOther : []);
+    const filterOther =
+      selectedAssetId && Array.isArray(auctionRoundPriceListOther)
+        ? auctionRoundPriceListOther.filter((item) => {
+            const selectedAsset = auctionAssetsToStatistic?.find(
+              (asset) => asset.auctionAssetsId === selectedAssetId
+            );
+            return selectedAsset && item.tagName === selectedAsset.tagName;
+          })
+        : Array.isArray(auctionRoundPriceListOther)
+        ? auctionRoundPriceListOther
+        : [];
 
     return { filterMine, filterOther };
-  }, [selectedAssetId, auctionRoundPriceList, auctionRoundPriceListOther, auctionAssetsToStatistic]);
+  }, [
+    selectedAssetId,
+    auctionRoundPriceList,
+    auctionRoundPriceListOther,
+    auctionAssetsToStatistic,
+  ]);
 
   // API để lấy danh sách giá đấu từ những người khác
   const getListAuctionRoundPrice = useCallback(async () => {
     try {
       if (roundData?.auctionRoundId) {
-        const response = await AuctionServices.getListAuctionRoundPrices(roundData?.auctionRoundId);
+        const response = await AuctionServices.getListAuctionRoundPrices(
+          roundData?.auctionRoundId
+        );
         if (response.code === 200) {
           // Đảm bảo response.data là array
-          const dataArray = Array.isArray(response.data.listAuctionRoundPrices) ? response.data.listAuctionRoundPrices : [];
+          const dataArray = Array.isArray(response.data.listAuctionRoundPrices)
+            ? response.data.listAuctionRoundPrices
+            : [];
           setAuctionRoundPriceListOther(dataArray);
         } else {
           setAuctionRoundPriceListOther([]);
@@ -157,13 +204,19 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
   }, [getListAuctionRoundPrice]);
 
   // Gọi API để lấy thông tin người dùng
-  const getUserRegistedAuctionByCitizenIdentification = async (citizenIdentification: string) => {
+  const getUserRegistedAuctionByCitizenIdentification = async (
+    citizenIdentification: string
+  ) => {
     try {
       if (!auctionId) {
         toast.error("Không có thông tin đấu giá");
         return;
       }
-      const response = await AuctionServices.userRegistedAuction({ citizenIdentification, auctionId: auctionId, auctionRoundId: auctionRoundIdBefore || null });
+      const response = await AuctionServices.userRegistedAuction({
+        citizenIdentification,
+        auctionId: auctionId,
+        auctionRoundId: auctionRoundIdBefore || null,
+      });
       if (
         response.data &&
         response.data.auctionAssets &&
@@ -208,7 +261,7 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
 
   // Xử lý khi chọn tài sản
   const handleAssetSelect = (assetId: string) => {
-    const asset = auctionAssets.find(a => a.auctionAssetsId === assetId);
+    const asset = auctionAssets.find((a) => a.auctionAssetsId === assetId);
     setSelectedAsset(asset || null);
     form.setFieldsValue({ auctionAssetId: assetId });
   };
@@ -218,8 +271,15 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
     setLoading(true);
     try {
       // Kiểm tra giá đấu so với giá khởi điểm của tài sản được chọn
-      if (selectedAsset?.startingPrice && values.price < selectedAsset.startingPrice) {
-        setErrorMessage(`Giá đấu phải lớn hơn hoặc bằng giá khởi điểm ${selectedAsset.startingPrice.toLocaleString("vi-VN")} VND`);
+      if (
+        selectedAsset?.startingPrice &&
+        values.price < selectedAsset.startingPrice
+      ) {
+        setErrorMessage(
+          `Giá đấu phải lớn hơn hoặc bằng giá khởi điểm ${selectedAsset.startingPrice.toLocaleString(
+            "vi-VN"
+          )} VND`
+        );
         setLoading(false);
         return;
       }
@@ -229,19 +289,25 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
         ...values,
         price: values.price,
         userName: userInfo?.UserName || "-",
-        auctionAssetName: auctionAssets.find(asset => asset.auctionAssetsId === values.auctionAssetId)?.tagName || "-",
-        id: crypto.randomUUID(),
+        auctionAssetName:
+          auctionAssets.find(
+            (asset) => asset.auctionAssetsId === values.auctionAssetId
+          )?.tagName || "-",
+        id: uuidv4(),
       };
 
       // Kiểm tra trùng lặp
       const isDuplicate = auctionRoundPriceList.some(
-        item =>
-          item.citizenIdentification === formattedValues.citizenIdentification &&
+        (item) =>
+          item.citizenIdentification ===
+            formattedValues.citizenIdentification &&
           item.auctionAssetId === formattedValues.auctionAssetId
       );
 
       if (isDuplicate) {
-        setErrorMessage("Người đấu giá tài sản này đã được bạn nhập giá đấu trước đây");
+        setErrorMessage(
+          "Người đấu giá tài sản này đã được bạn nhập giá đấu trước đây"
+        );
         setLoading(false);
         return;
       }
@@ -255,7 +321,7 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
       // Reset form nhưng giữ lại số CMND/CCCD
       form.resetFields();
       form.setFieldsValue({
-        citizenIdentification: currentCitizenId
+        citizenIdentification: currentCitizenId,
       });
 
       // Reset selected asset khi submit thành công
@@ -277,10 +343,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
 
   // Xử lý khi click nút Hoàn thành
   const handleComplete = async () => {
-    console.log("Danh sách giá đấu giá:", auctionRoundPriceList);
     const dataSubmit = {
       auctionRoundId: roundData?.auctionRoundId,
-      resultDTOs: auctionRoundPriceList.map(item => ({
+      resultDTOs: auctionRoundPriceList.map((item) => ({
         userName: item.userName || "-",
         citizenIdentification: item.citizenIdentification,
         recentLocation: item.recentLocation || "",
@@ -289,9 +354,10 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
         createdBy: user?.id,
       })),
     };
-    console.log("Dữ liệu gửi đi:", dataSubmit);
     try {
-      const response = await AuctionServices.saveListAuctionRoundPrice(dataSubmit);
+      const response = await AuctionServices.saveListAuctionRoundPrice(
+        dataSubmit
+      );
       if (response.code === 200) {
         toast.success(response.message || "Lưu danh sách giá đấu thành công");
       }
@@ -303,7 +369,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
 
   // Xử lý xóa hàng
   const handleDelete = (index: number) => {
-    setAuctionRoundPriceList(auctionRoundPriceList.filter((_, i) => i !== index));
+    setAuctionRoundPriceList(
+      auctionRoundPriceList.filter((_, i) => i !== index)
+    );
   };
 
   // Cấu hình cột cho Table của antd
@@ -336,7 +404,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
       dataIndex: "auctionAssetName",
       key: "auctionAssetName",
       width: 200,
-      render: (text: string) => <Text className="font-medium text-gray-700">{text || "-"}</Text>,
+      render: (text: string) => (
+        <Text className="font-medium text-gray-700">{text || "-"}</Text>
+      ),
     },
     {
       title: "Giá đấu (VND)",
@@ -346,7 +416,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
       render: (text: number) => (
         <div className="flex items-center gap-2">
           <DollarOutlined className="text-green-500" />
-          <Text className="font-bold text-green-600">{text?.toLocaleString("vi-VN")}</Text>
+          <Text className="font-bold text-green-600">
+            {text?.toLocaleString("vi-VN")}
+          </Text>
         </div>
       ),
     },
@@ -359,7 +431,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
           <Button
             type="text"
             danger
-            icon={<DeleteOutlined className="text-gray-400 hover:text-red-500 transition-colors duration-300" />}
+            icon={
+              <DeleteOutlined className="text-gray-400 hover:text-red-500 transition-colors duration-300" />
+            }
             onClick={() => handleDelete(index)}
             className="hover:scale-110 transition-transform duration-200 !border-none"
             size="middle"
@@ -370,30 +444,35 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
   ];
 
   // Memoized validation rules
-  const validationRules = useMemo(() => ({
-    citizenIdentification: [
-      { required: true, message: "Vui lòng nhập số CMND/CCCD" },
-      { len: FORM_VALIDATION_RULES.CITIZEN_ID_LENGTH, message: "Số CMND/CCND phải có 12 ký tự" },
-    ],
-    auctionAssetId: [
-      { required: true, message: "Vui lòng chọn tài sản đấu giá" }
-    ],
-    price: [
-      { required: true, message: "Vui lòng nhập giá đấu" },
-    ]
-  }), []);
+  const validationRules = useMemo(
+    () => ({
+      citizenIdentification: [
+        { required: true, message: "Vui lòng nhập số CMND/CCCD" },
+        {
+          len: FORM_VALIDATION_RULES.CITIZEN_ID_LENGTH,
+          message: "Số CMND/CCND phải có 12 ký tự",
+        },
+      ],
+      auctionAssetId: [
+        { required: true, message: "Vui lòng chọn tài sản đấu giá" },
+      ],
+      price: [{ required: true, message: "Vui lòng nhập giá đấu" }],
+    }),
+    []
+  );
 
   // Memoized pagination config
-  const paginationConfig = useMemo(() =>
-    statistics.totalMine > FORM_VALIDATION_RULES.PAGINATION_SIZE
-      ? {
-        pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
-        showSizeChanger: true,
-        showQuickJumper: true,
-        showTotal: (total: number, range: [number, number]) =>
-          `${range[0]}-${range[1]} của ${total} mục`,
-      }
-      : false,
+  const paginationConfig = useMemo(
+    () =>
+      statistics.totalMine > FORM_VALIDATION_RULES.PAGINATION_SIZE
+        ? {
+            pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total: number, range: [number, number]) =>
+              `${range[0]}-${range[1]} của ${total} mục`,
+          }
+        : false,
     [statistics.totalMine]
   );
   const columnsOther = [
@@ -425,7 +504,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
       dataIndex: "tagName",
       key: "tagName",
       width: 200,
-      render: (text: string) => <Text className="font-medium text-gray-700">{text || "-"}</Text>,
+      render: (text: string) => (
+        <Text className="font-medium text-gray-700">{text || "-"}</Text>
+      ),
     },
     {
       title: "Giá đấu (VND)",
@@ -435,7 +516,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
       render: (text: number) => (
         <div className="flex items-center gap-2">
           <DollarOutlined className="text-green-500" />
-          <Text className="font-bold text-green-600">{text?.toLocaleString("vi-VN")}</Text>
+          <Text className="font-bold text-green-600">
+            {text?.toLocaleString("vi-VN")}
+          </Text>
         </div>
       ),
     },
@@ -480,16 +563,24 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
             {/* Tổng số phiếu */}
             <Col xs={24} sm={12} lg={6}>
               <Card
-                className={`!bg-gradient-to-br !from-violet-500 !via-purple-500 !to-purple-600 !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${!selectedAssetId ? '!ring-4 !ring-blue-400' : ''}`}
+                className={`!bg-gradient-to-br !from-violet-500 !via-purple-500 !to-purple-600 !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${
+                  !selectedAssetId ? "!ring-4 !ring-blue-400" : ""
+                }`}
                 onClick={() => setSelectedAssetId(null)}
               >
                 <div className="!flex !flex-col !items-center">
-                  <Text className="!text-white/90 !text-lg !mb-2 !font-medium">Tổng số phiếu</Text>
-                  <Title level={2} className="!text-white !mb-0 !drop-shadow-lg">
+                  <Text className="!text-white/90 !text-lg !mb-2 !font-medium">
+                    Tổng số phiếu
+                  </Text>
+                  <Title
+                    level={2}
+                    className="!text-white !mb-0 !drop-shadow-lg"
+                  >
                     {statistics.totalAll}
                   </Title>
                   <div className="!text-white/70 !text-sm">
-                    Của tôi: {statistics.totalMine} | Khác: {statistics.totalOther}
+                    Của tôi: {statistics.totalMine} | Khác:{" "}
+                    {statistics.totalOther}
                   </div>
                 </div>
               </Card>
@@ -499,18 +590,31 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
             {statistics.assetStats.map((assetStat) => (
               <Col xs={24} sm={12} lg={6} key={assetStat.auctionAssetsId}>
                 <Card
-                  className={`${assetStat.gradientStyle} !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${selectedAssetId === assetStat.auctionAssetsId ? '!ring-4 !ring-blue-400' : ''}`}
+                  className={`${
+                    assetStat.gradientStyle
+                  } !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${
+                    selectedAssetId === assetStat.auctionAssetsId
+                      ? "!ring-4 !ring-blue-400"
+                      : ""
+                  }`}
                   onClick={() => setSelectedAssetId(assetStat.auctionAssetsId)}
                 >
                   <div className="!flex !flex-col !items-center">
-                    <Text className="!text-white/90 !text-lg !mb-2 !truncate !font-medium" title={assetStat.tagName}>
+                    <Text
+                      className="!text-white/90 !text-lg !mb-2 !truncate !font-medium"
+                      title={assetStat.tagName}
+                    >
                       {assetStat.tagName}
                     </Text>
-                    <Title level={2} className="!text-white !mb-0 !drop-shadow-lg">
+                    <Title
+                      level={2}
+                      className="!text-white !mb-0 !drop-shadow-lg"
+                    >
                       {assetStat.totalAssetCount}
                     </Title>
                     <div className="!text-white/70 !text-xs">
-                      Của tôi: {assetStat.assetCountMine} | Khác: {assetStat.assetCountOther}
+                      Của tôi: {assetStat.assetCountMine} | Khác:{" "}
+                      {assetStat.assetCountOther}
                     </div>
                   </div>
                 </Card>
@@ -541,12 +645,12 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
               }
               styles={{
                 body: {
-                  padding: '24px',
-                  height: 'calc(100% - 80px)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  overflow: 'hidden'
-                }
+                  padding: "24px",
+                  height: "calc(100% - 80px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                },
               }}
             >
               <div className="flex-1 flex flex-col h-full">
@@ -557,7 +661,10 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                   className="flex-1 flex flex-col h-full"
                 >
                   {/* Form fields - scrollable area */}
-                  <div className="flex-1 overflow-y-auto pr-2 space-y-5" style={{ maxHeight: 'calc(100% - 160px)' }}>
+                  <div
+                    className="flex-1 overflow-y-auto pr-2 space-y-5"
+                    style={{ maxHeight: "calc(100% - 160px)" }}
+                  >
                     <Form.Item
                       name="citizenIdentification"
                       label={
@@ -577,8 +684,8 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                         className="w-full"
                         size="large"
                         style={{
-                          borderRadius: '12px',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                          borderRadius: "12px",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                         }}
                       />
                     </Form.Item>
@@ -599,16 +706,19 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                         disabled={!auctionAssets.length}
                         onChange={handleAssetSelect}
                         style={{
-                          borderRadius: '12px',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                          borderRadius: "12px",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                         }}
                         dropdownStyle={{
-                          borderRadius: '12px',
-                          boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
+                          borderRadius: "12px",
+                          boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
                         }}
                       >
-                        {auctionAssets.map(asset => (
-                          <Select.Option key={asset.auctionAssetsId} value={asset.auctionAssetsId}>
+                        {auctionAssets.map((asset) => (
+                          <Select.Option
+                            key={asset.auctionAssetsId}
+                            value={asset.auctionAssetsId}
+                          >
                             <div className="flex items-center gap-2">
                               <HomeOutlined className="text-emerald-500" />
                               {asset.tagName}
@@ -626,9 +736,14 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                             <DollarOutlined className="text-white text-sm" />
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-emerald-700">Giá khởi điểm</div>
+                            <div className="text-sm font-medium text-emerald-700">
+                              Giá khởi điểm
+                            </div>
                             <div className="text-lg font-bold text-emerald-800">
-                              {selectedAsset.startingPrice?.toLocaleString("vi-VN")} VND
+                              {selectedAsset.startingPrice?.toLocaleString(
+                                "vi-VN"
+                              )}{" "}
+                              VND
                             </div>
                           </div>
                         </div>
@@ -655,11 +770,13 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                         step={1000}
                         style={{
                           width: "100%",
-                          borderRadius: '12px',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                          borderRadius: "12px",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                         }}
-                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                        parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
+                        formatter={(value) =>
+                          `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        }
+                        parser={(value) => value!.replace(/\$\s?|(,*)/g, "")}
                       />
                     </Form.Item>
                   </div>
@@ -690,9 +807,13 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                     {/* Status indicator */}
                     <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600 font-medium">Phiếu đã nhập:</span>
+                        <span className="text-gray-600 font-medium">
+                          Phiếu đã nhập:
+                        </span>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-blue-600 text-lg">{statistics.totalMine}</span>
+                          <span className="font-bold text-blue-600 text-lg">
+                            {statistics.totalMine}
+                          </span>
                           <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                         </div>
                       </div>
@@ -724,12 +845,12 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
               }
               styles={{
                 body: {
-                  padding: '24px',
-                  height: 'calc(100% - 80px)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  overflow: 'hidden'
-                }
+                  padding: "24px",
+                  height: "calc(100% - 80px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                },
               }}
             >
               <div className="flex-1 overflow-hidden">
@@ -738,7 +859,7 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                   className="h-full flex flex-col"
                   items={[
                     {
-                      key: '1',
+                      key: "1",
                       label: (
                         <span className="flex items-center gap-2 px-3 py-1">
                           <TrophyOutlined />
@@ -760,8 +881,13 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                                   <div className="w-20 h-20 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <TrophyOutlined className="text-4xl text-blue-400" />
                                   </div>
-                                  <div className="text-gray-500 text-lg font-medium mb-2">Chưa có dữ liệu giá đấu</div>
-                                  <div className="text-gray-400 text-sm">Thêm giá đấu đầu tiên của bạn bằng form bên trái</div>
+                                  <div className="text-gray-500 text-lg font-medium mb-2">
+                                    Chưa có dữ liệu giá đấu
+                                  </div>
+                                  <div className="text-gray-400 text-sm">
+                                    Thêm giá đấu đầu tiên của bạn bằng form bên
+                                    trái
+                                  </div>
                                 </div>
                               ),
                             }}
@@ -775,11 +901,13 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                       ),
                     },
                     {
-                      key: '2',
+                      key: "2",
                       label: (
                         <span className="flex items-center gap-2 px-3 py-1">
                           <UserOutlined />
-                          <span className="font-medium">Phiếu của người khác</span>
+                          <span className="font-medium">
+                            Phiếu của người khác
+                          </span>
                           <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-xs font-bold">
                             {statistics.totalOther}
                           </span>
@@ -790,27 +918,39 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                           <Table
                             dataSource={filteredData.filterOther}
                             columns={columnsOther}
-                            rowKey={(record, index) => record?.id || index?.toString() || ""}
+                            rowKey={(record, index) =>
+                              record?.id || index?.toString() || ""
+                            }
                             locale={{
                               emptyText: (
                                 <div className="text-center py-16">
                                   <div className="w-20 h-20 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <UserOutlined className="text-4xl text-emerald-400" />
                                   </div>
-                                  <div className="text-gray-500 text-lg font-medium mb-2">Chưa có dữ liệu từ người khác</div>
-                                  <div className="text-gray-400 text-sm">Danh sách sẽ hiển thị khi có người khác nhập phiếu đấu giá</div>
+                                  <div className="text-gray-500 text-lg font-medium mb-2">
+                                    Chưa có dữ liệu từ người khác
+                                  </div>
+                                  <div className="text-gray-400 text-sm">
+                                    Danh sách sẽ hiển thị khi có người khác nhập
+                                    phiếu đấu giá
+                                  </div>
                                 </div>
                               ),
                             }}
                             pagination={
-                              statistics.totalOther > FORM_VALIDATION_RULES.PAGINATION_SIZE
+                              statistics.totalOther >
+                              FORM_VALIDATION_RULES.PAGINATION_SIZE
                                 ? {
-                                  pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
-                                  showSizeChanger: true,
-                                  showQuickJumper: true,
-                                  showTotal: (total: number, range: [number, number]) =>
-                                    `${range[0]}-${range[1]} của ${total} mục`,
-                                }
+                                    pageSize:
+                                      FORM_VALIDATION_RULES.PAGINATION_SIZE,
+                                    showSizeChanger: true,
+                                    showQuickJumper: true,
+                                    showTotal: (
+                                      total: number,
+                                      range: [number, number]
+                                    ) =>
+                                      `${range[0]}-${range[1]} của ${total} mục`,
+                                  }
                                 : false
                             }
                             className="!rounded-xl !overflow-hidden [&_.ant-table]:!bg-transparent [&_.ant-table-thead>tr>th]:!bg-gradient-to-r [&_.ant-table-thead>tr>th]:!from-emerald-50 [&_.ant-table-thead>tr>th]:!to-teal-50 [&_.ant-table-thead>tr>th]:!border-emerald-200"

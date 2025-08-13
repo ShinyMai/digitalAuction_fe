@@ -12,9 +12,10 @@ interface AuctionDetailProps {
 
 const API_BASE_URL_NODE = import.meta.env.VITE_BE_URL_NODE;
 
-const AuctionDetail = ({ auctionDetailData, auctionType }: AuctionDetailProps) => {
-  console.log("auctionDetailData", auctionDetailData);
-
+const AuctionDetail = ({
+  auctionDetailData,
+  auctionType,
+}: AuctionDetailProps) => {
   return (
     <section className="bg-gradient-to-b from-blue-50 to-teal-50 min-h-screen">
       <div className="w-full mx-auto bg-white shadow-lg rounded-xl p-6">
@@ -37,22 +38,31 @@ const AuctionDetail = ({ auctionDetailData, auctionType }: AuctionDetailProps) =
                   XEM CHI TIẾT THÔNG BÁO ĐẤU GIÁ TÀI SẢN
                 </h1>
                 <p className="text-teal-700 mb-4">
-                  {auctionDetailData.auctionName || "Ngân hàng TMCP Quốc tế Việt Nam"}
+                  {auctionDetailData.auctionName ||
+                    "Ngân hàng TMCP Quốc tế Việt Nam"}
                 </p>
                 <div className="space-y-2 bg-blue-50 p-4 rounded-lg">
                   <div className="flex justify-between">
-                    <span className="font-medium text-blue-900">Ngày mở đăng ký:</span>
+                    <span className="font-medium text-blue-900">
+                      Ngày mở đăng ký:
+                    </span>
                     <span className="text-teal-800">
                       {auctionDetailData.registerOpenDate
-                        ? dayjs(auctionDetailData.registerOpenDate).format("DD/MM/YYYY")
+                        ? dayjs(auctionDetailData.registerOpenDate).format(
+                            "DD/MM/YYYY"
+                          )
                         : "-"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-blue-900">Hạn đăng ký:</span>
+                    <span className="font-medium text-blue-900">
+                      Hạn đăng ký:
+                    </span>
                     <span className="text-teal-800">
                       {auctionDetailData.registerEndDate
-                        ? dayjs(auctionDetailData.registerEndDate).format("DD/MM/YYYY")
+                        ? dayjs(auctionDetailData.registerEndDate).format(
+                            "DD/MM/YYYY"
+                          )
                         : "-"}
                     </span>
                   </div>
@@ -62,7 +72,9 @@ const AuctionDetail = ({ auctionDetailData, auctionType }: AuctionDetailProps) =
                     </span>
                     <span className="text-teal-800">
                       {auctionDetailData.auctionStartDate
-                        ? dayjs(auctionDetailData.auctionStartDate).format("DD/MM/YYYY")
+                        ? dayjs(auctionDetailData.auctionStartDate).format(
+                            "DD/MM/YYYY"
+                          )
                         : "-"}
                     </span>
                   </div>
@@ -72,28 +84,42 @@ const AuctionDetail = ({ auctionDetailData, auctionType }: AuctionDetailProps) =
                     </span>
                     <span className="text-teal-800">
                       {auctionDetailData.auctionEndDate
-                        ? dayjs(auctionDetailData.auctionEndDate).format("DD/MM/YYYY")
+                        ? dayjs(auctionDetailData.auctionEndDate).format(
+                            "DD/MM/YYYY"
+                          )
                         : "-"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-blue-900">Số vòng quy định:</span>
-                    <span className="text-teal-800">{auctionDetailData.numberRoundMax || "-"}</span>
+                    <span className="font-medium text-blue-900">
+                      Số vòng quy định:
+                    </span>
+                    <span className="text-teal-800">
+                      {auctionDetailData.numberRoundMax || "-"}
+                    </span>
                   </div>
                   {auctionDetailData.winnerData && (
                     <div className="flex justify-between">
-                      <span className="font-medium text-blue-900">Giá trúng:</span>
-                      <span className="text-teal-800">{auctionDetailData.winnerData}</span>
+                      <span className="font-medium text-blue-900">
+                        Giá trúng:
+                      </span>
+                      <span className="text-teal-800">
+                        {auctionDetailData.winnerData}
+                      </span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="font-medium text-blue-900">Tiền đặt trước:</span>
+                    <span className="font-medium text-blue-900">
+                      Tiền đặt trước:
+                    </span>
                     <span className="text-teal-800">
                       {auctionDetailData.qrLink ? "500,000 VND" : "-"}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-medium text-blue-900">Đấu giá viên:</span>
+                    <span className="font-medium text-blue-900">
+                      Đấu giá viên:
+                    </span>
                     <span className="text-teal-800">
                       {auctionDetailData.auctioneerBy
                         ? auctionDetailData.auctioneerBy
@@ -106,7 +132,9 @@ const AuctionDetail = ({ auctionDetailData, auctionType }: AuctionDetailProps) =
 
             {/* Mô tả tài sản và danh sách tài sản */}
             <div>
-              <h3 className="text-lg font-semibold text-blue-800 mb-4">Mô tả chung</h3>
+              <h3 className="text-lg font-semibold text-blue-800 mb-4">
+                Mô tả chung
+              </h3>
               <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg">
                 {auctionDetailData.auctionDescription || "Không có mô tả."}
               </p>
@@ -115,7 +143,7 @@ const AuctionDetail = ({ auctionDetailData, auctionType }: AuctionDetailProps) =
                 Danh sách tài sản đấu giá
               </h3>
               {auctionDetailData.listAuctionAssets &&
-                auctionDetailData.listAuctionAssets.length > 0 ? (
+              auctionDetailData.listAuctionAssets.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {auctionDetailData.listAuctionAssets.map((asset) => (
                     <Card
@@ -134,39 +162,57 @@ const AuctionDetail = ({ auctionDetailData, auctionType }: AuctionDetailProps) =
                     >
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="font-medium text-blue-900">Giá khởi điểm:</span>
+                          <span className="font-medium text-blue-900">
+                            Giá khởi điểm:
+                          </span>
                           <span className="text-teal-800">
                             {asset.startingPrice
-                              ? `${parseFloat(asset.startingPrice).toLocaleString("vi-VN")} VND`
+                              ? `${parseFloat(
+                                  asset.startingPrice
+                                ).toLocaleString("vi-VN")} VND`
                               : "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="font-medium text-blue-900">Tiền đặt trước:</span>
+                          <span className="font-medium text-blue-900">
+                            Tiền đặt trước:
+                          </span>
                           <span className="text-teal-800">
                             {asset.deposit
-                              ? `${parseFloat(asset.deposit).toLocaleString("vi-VN")} VND`
+                              ? `${parseFloat(asset.deposit).toLocaleString(
+                                  "vi-VN"
+                                )} VND`
                               : "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="font-medium text-blue-900">Phí đăng ký:</span>
+                          <span className="font-medium text-blue-900">
+                            Phí đăng ký:
+                          </span>
                           <span className="text-teal-800">
                             {asset.registrationFee
-                              ? `${parseFloat(asset.registrationFee).toLocaleString("vi-VN")} VND`
+                              ? `${parseFloat(
+                                  asset.registrationFee
+                                ).toLocaleString("vi-VN")} VND`
                               : "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="font-medium text-blue-900">Mô tả:</span>
+                          <span className="font-medium text-blue-900">
+                            Mô tả:
+                          </span>
                           <span className="text-teal-700 text-right">
                             {asset.description || "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="font-medium text-blue-900">Ngày tạo:</span>
+                          <span className="font-medium text-blue-900">
+                            Ngày tạo:
+                          </span>
                           <span className="text-teal-800">
-                            {asset.createdAt ? dayjs(asset.createdAt).format("DD/MM/YYYY") : "-"}
+                            {asset.createdAt
+                              ? dayjs(asset.createdAt).format("DD/MM/YYYY")
+                              : "-"}
                           </span>
                         </div>
                       </div>
@@ -182,14 +228,18 @@ const AuctionDetail = ({ auctionDetailData, auctionType }: AuctionDetailProps) =
 
             {/* Điều khoản tuân thủ */}
             <div className="mt-8">
-              <h3 className="text-lg font-semibold text-blue-800 mb-4">Điều khoản tuân thủ</h3>
+              <h3 className="text-lg font-semibold text-blue-800 mb-4">
+                Điều khoản tuân thủ
+              </h3>
               <div className="bg-blue-50 p-4 rounded-lg">
                 {auctionDetailData.auctionRules ? (
                   <Typography.Link
                     href={
                       auctionType === "SQL"
                         ? auctionDetailData.auctionRules
-                        : API_BASE_URL_NODE + "/" + auctionDetailData.auctionRules
+                        : API_BASE_URL_NODE +
+                          "/" +
+                          auctionDetailData.auctionRules
                     }
                     target="_blank"
                     className="text-teal-600"
@@ -202,46 +252,55 @@ const AuctionDetail = ({ auctionDetailData, auctionType }: AuctionDetailProps) =
               </div>
             </div>
             {/* Thông tin bản đồ */}
-            {(auctionDetailData.auctionMap && auctionDetailData.auctionMap !== "No file uploaded") ||
-              (auctionDetailData.auctionPlanningMap && auctionDetailData.auctionPlanningMap !== "No file uploaded") ? (
+            {(auctionDetailData.auctionMap &&
+              auctionDetailData.auctionMap !== "No file uploaded") ||
+            (auctionDetailData.auctionPlanningMap &&
+              auctionDetailData.auctionPlanningMap !== "No file uploaded") ? (
               <div className="mt-8">
                 <h3 className="text-lg font-semibold text-blue-800 mb-4">
                   Thông tin bản đồ tài sản
                 </h3>
                 <div className="bg-blue-50 border border-teal-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
                   <div>
-                    {auctionDetailData.auctionPlanningMap && auctionDetailData.auctionPlanningMap !== "No file uploaded" && (
-                      <div className="flex items-center bg-blue-50 pt-4 pl-4 rounded-lg">
-                        <EnvironmentOutlined className="text-teal-600 mr-2" />
-                        <Typography.Link
-                          href={
-                            auctionType === "SQL"
-                              ? auctionDetailData.auctionPlanningMap
-                              : API_BASE_URL_NODE + "/" + auctionDetailData.auctionPlanningMap
-                          }
-                          target="_blank"
-                          className="text-teal-600 font-medium hover:text-teal-800 "
-                        >
-                          Xem bản đồ tài sản
-                        </Typography.Link>
-                      </div>
-                    )}
-                    {auctionDetailData.auctionMap && auctionDetailData.auctionMap !== "No file uploaded" && (
-                      <div className="flex items-center bg-blue-50 p-4 rounded-lg">
-                        <EnvironmentOutlined className="text-teal-600 mr-2" />
-                        <Typography.Link
-                          href={
-                            auctionType === "SQL"
-                              ? auctionDetailData.auctionMap
-                              : API_BASE_URL_NODE + "/" + auctionDetailData.auctionMap
-                          }
-                          target="_blank"
-                          className="text-teal-600 font-medium hover:text-teal-800"
-                        >
-                          Xem trên Google Maps
-                        </Typography.Link>
-                      </div>
-                    )}
+                    {auctionDetailData.auctionPlanningMap &&
+                      auctionDetailData.auctionPlanningMap !==
+                        "No file uploaded" && (
+                        <div className="flex items-center bg-blue-50 pt-4 pl-4 rounded-lg">
+                          <EnvironmentOutlined className="text-teal-600 mr-2" />
+                          <Typography.Link
+                            href={
+                              auctionType === "SQL"
+                                ? auctionDetailData.auctionPlanningMap
+                                : API_BASE_URL_NODE +
+                                  "/" +
+                                  auctionDetailData.auctionPlanningMap
+                            }
+                            target="_blank"
+                            className="text-teal-600 font-medium hover:text-teal-800 "
+                          >
+                            Xem bản đồ tài sản
+                          </Typography.Link>
+                        </div>
+                      )}
+                    {auctionDetailData.auctionMap &&
+                      auctionDetailData.auctionMap !== "No file uploaded" && (
+                        <div className="flex items-center bg-blue-50 p-4 rounded-lg">
+                          <EnvironmentOutlined className="text-teal-600 mr-2" />
+                          <Typography.Link
+                            href={
+                              auctionType === "SQL"
+                                ? auctionDetailData.auctionMap
+                                : API_BASE_URL_NODE +
+                                  "/" +
+                                  auctionDetailData.auctionMap
+                            }
+                            target="_blank"
+                            className="text-teal-600 font-medium hover:text-teal-800"
+                          >
+                            Xem trên Google Maps
+                          </Typography.Link>
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>

@@ -37,9 +37,9 @@ const Login: React.FC<LoginProps> = ({ onCancel, open }) => {
         toast.error(res.message || "Đăng nhập không thành công!");
       }
     } catch (error) {
+      console.error("Login error:", error);
       setLoginError(true);
-      toast.error("Email hoặc mật khẩu không đúng!");
-      console.log("Login Failed:", error);
+      toast.error("Đăng nhập không thành công!");
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,9 @@ const Login: React.FC<LoginProps> = ({ onCancel, open }) => {
               <h2 className="text-3xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text mb-2">
                 Chào mừng trở lại!
               </h2>
-              <p className="text-gray-600">Đăng nhập để tiếp tục sử dụng dịch vụ</p>
+              <p className="text-gray-600">
+                Đăng nhập để tiếp tục sử dụng dịch vụ
+              </p>
             </div>
 
             {/* Error Message */}
@@ -89,13 +91,20 @@ const Login: React.FC<LoginProps> = ({ onCancel, open }) => {
                   <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
                     <span className="text-white text-sm">!</span>
                   </div>
-                  <span className="text-red-700 font-medium">Email hoặc mật khẩu không đúng!</span>
+                  <span className="text-red-700 font-medium">
+                    Email hoặc mật khẩu không đúng!
+                  </span>
                 </div>
               </div>
             )}
 
             {/* Login Form */}
-            <Form form={formLogin} name="modern_login" className="space-y-6" layout="vertical">
+            <Form
+              form={formLogin}
+              name="modern_login"
+              className="space-y-6"
+              layout="vertical"
+            >
               <Form.Item
                 name="email"
                 rules={[
@@ -181,7 +190,10 @@ const Login: React.FC<LoginProps> = ({ onCancel, open }) => {
         </Spin>
 
         {forgotPassword && (
-          <VerifyOTP open={forgotPassword} onCancel={() => setForgotPassword(false)} />
+          <VerifyOTP
+            open={forgotPassword}
+            onCancel={() => setForgotPassword(false)}
+          />
         )}
       </div>
     </CustomModal>

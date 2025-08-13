@@ -15,8 +15,6 @@ const EditProfile = ({ open, onCancel }: EditProfileProps) => {
   const [current, setCurrent] = useState(0);
   const [account, setAccount] = useState({});
 
-  console.log("EditProfile account:", account);
-
   return (
     <CustomModal
       title={isEdit ? "Cập nhật thông tin" : "Thông báo"}

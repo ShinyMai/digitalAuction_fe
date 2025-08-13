@@ -12,7 +12,8 @@ const AuctionDetailCancel = () => {
   const auctionId = state?.key;
   const auctionType = state?.type;
 
-  const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
+  const [auctionDetailData, setAuctionDetailData] =
+    useState<AuctionDataDetail>();
   const [auctionDateModal, setAuctionDateModal] = useState<AuctionDateModal>();
 
   useEffect(() => {
@@ -40,8 +41,6 @@ const AuctionDetailCancel = () => {
       console.error("Error fetching auction detail:", error);
     }
   };
-
-  console.log("auctionDetailData", auctionDetailData);
 
   return (
     <section className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 relative overflow-hidden">
@@ -72,7 +71,9 @@ const AuctionDetailCancel = () => {
               label: (
                 <div className="flex items-center gap-2 px-4 py-2">
                   <FileTextOutlined className="text-red-600" />
-                  <span className="font-semibold text-gray-700">Thông tin đấu giá</span>
+                  <span className="font-semibold text-gray-700">
+                    Thông tin đấu giá
+                  </span>
                 </div>
               ),
               children: (
@@ -90,7 +91,9 @@ const AuctionDetailCancel = () => {
               label: (
                 <div className="flex items-center gap-2 px-4 py-2">
                   <MoneyCollectOutlined className="text-orange-600" />
-                  <span className="font-semibold text-gray-700">Danh sách cần hoàn tiền</span>
+                  <span className="font-semibold text-gray-700">
+                    Danh sách cần hoàn tiền
+                  </span>
                 </div>
               ),
               children: (

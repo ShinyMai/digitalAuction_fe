@@ -64,12 +64,12 @@ export const getAuctionStatus = (auction: RegisteredAuction) => {
 export const getDepositStatusTag = (status: number) => {
   switch (status) {
     case 1:
-      return <Tag color="green">Đã thanh toán</Tag>;
+      return <Tag color="green">Đã cọc</Tag>;
     case 2:
       return <Tag color="orange">Đã hoàn trả</Tag>;
     case 0:
     default:
-      return <Tag color="red">Chưa thanh toán</Tag>;
+      return <Tag color="red">Chưa cọc</Tag>;
   }
 };
 
@@ -77,11 +77,13 @@ export const getDepositStatusTag = (status: number) => {
 export const getTicketStatusTag = (status: number) => {
   switch (status) {
     case 1:
-      return <Tag color="green">Đã duyệt</Tag>;
+      return <Tag color="blue">Đã chuyển tiền</Tag>;
     case 2:
-      return <Tag color="red">Từ chối</Tag>;
+      return <Tag color="green">Đã nhận phiếu</Tag>;
+    case 3:
+      return <Tag color="red">Đã hoàn tiền hồ sơ</Tag>;
     case 0:
     default:
-      return <Tag color="blue">Chờ duyệt</Tag>;
+      return <Tag color="gray">Chưa chuyển</Tag>;
   }
 };

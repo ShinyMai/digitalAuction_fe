@@ -17,14 +17,14 @@ export const getStatusString = (auction: RegisteredAuction): StatusString => {
   const auctionEnd = dayjs(auction.auctionEndDate);
   const registerEnd = dayjs(auction.registerEndDate);
 
-  if (now.isBefore(registerEnd)) {
+  if (auction.status === 2) {
+    return "cancelled";
+  } else if (now.isBefore(registerEnd)) {
     return "registration";
   } else if (now.isBefore(auctionStart)) {
     return "upcoming";
   } else if (now.isBetween(auctionStart, auctionEnd, "day", "[]")) {
     return "ongoing";
-  } else if (auction.status === 2) {
-    return "cancelled";
   } else {
     return "completed";
   }

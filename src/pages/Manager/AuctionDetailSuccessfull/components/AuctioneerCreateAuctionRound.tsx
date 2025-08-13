@@ -42,21 +42,26 @@ const AuctioneerCreateAuctionRound = ({
 }: AuctioneerCreateAuctionRoundProps) => {
   const [highestPrices, setHighestPrices] = useState<AuctionRoundPrice[]>([]);
 
-  useEffect(() => {
-    console.log("Current Round Data:", auctionRoundData);
-  }, [auctionRoundData]);
+  useEffect(() => {}, [auctionRoundData]);
 
   // Tìm giá cao nhất cho từng loại tài sản
   useEffect(() => {
     if (auctionRoundPrices.length > 0) {
       const highestByTagName = Object.values(
-        auctionRoundPrices.reduce((acc: { [key: string]: AuctionRoundPrice }, current) => {
-          const tag = current.TagName;
-          if (!acc[tag] || parseFloat(current.AuctionPrice) > parseFloat(acc[tag].AuctionPrice)) {
-            acc[tag] = current;
-          }
-          return acc;
-        }, {})
+        auctionRoundPrices.reduce(
+          (acc: { [key: string]: AuctionRoundPrice }, current) => {
+            const tag = current.TagName;
+            if (
+              !acc[tag] ||
+              parseFloat(current.AuctionPrice) >
+                parseFloat(acc[tag].AuctionPrice)
+            ) {
+              acc[tag] = current;
+            }
+            return acc;
+          },
+          {}
+        )
       );
       setHighestPrices(highestByTagName);
     } else {
@@ -123,7 +128,9 @@ const AuctioneerCreateAuctionRound = ({
       width: 100,
       render: (price: string) => (
         <Tooltip title={formatNumber(parseFloat(price))}>
-          <span className="truncate block">{formatNumber(parseFloat(price))}</span>
+          <span className="truncate block">
+            {formatNumber(parseFloat(price))}
+          </span>
         </Tooltip>
       ),
     },
@@ -188,7 +195,10 @@ const AuctioneerCreateAuctionRound = ({
             bordered={false}
           >
             <div className="flex items-center justify-between mb-4">
-              <Title level={4} className="text-gray-800 m-0 text-lg flex items-center gap-2">
+              <Title
+                level={4}
+                className="text-gray-800 m-0 text-lg flex items-center gap-2"
+              >
                 <span className="bg-blue-100 p-2 rounded-lg">🏆</span>
                 Giá Đấu Cao Nhất
               </Title>
@@ -209,7 +219,9 @@ const AuctioneerCreateAuctionRound = ({
 
             {!loading && highestPrices.length > 0 && (
               <div
-                className={`space-y-3 ${highestPrices.length > 2 ? "scroll-container pr-2" : ""}`}
+                className={`space-y-3 ${
+                  highestPrices.length > 2 ? "scroll-container pr-2" : ""
+                }`}
               >
                 {highestPrices.map((price, index) => (
                   <motion.div
@@ -224,13 +236,19 @@ const AuctioneerCreateAuctionRound = ({
                         <span className="text-lg">💎</span>
                       </div>
                       <div className="flex-1">
-                        <Text className="block font-semibold text-blue-600">{price.TagName}</Text>
-                        <Text className="text-sm text-gray-500">{price.UserName}</Text>
+                        <Text className="block font-semibold text-blue-600">
+                          {price.TagName}
+                        </Text>
+                        <Text className="text-sm text-gray-500">
+                          {price.UserName}
+                        </Text>
                       </div>
                     </div>
                     <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-100">
                       <Text className="text-gray-600">Số CCCD:</Text>
-                      <Text className="font-medium">{price.CitizenIdentification}</Text>
+                      <Text className="font-medium">
+                        {price.CitizenIdentification}
+                      </Text>
                     </div>
                     <div className="flex justify-between items-center mt-2">
                       <Text className="text-gray-600">Giá đấu:</Text>
@@ -274,7 +292,10 @@ const AuctioneerCreateAuctionRound = ({
             bordered={false}
           >
             <div className="flex items-center justify-between mb-4">
-              <Title level={4} className="text-gray-800 m-0 text-lg flex items-center gap-2">
+              <Title
+                level={4}
+                className="text-gray-800 m-0 text-lg flex items-center gap-2"
+              >
                 <span className="bg-indigo-100 p-2 rounded-lg">📋</span>
                 Danh Sách Giá Đấu
               </Title>
