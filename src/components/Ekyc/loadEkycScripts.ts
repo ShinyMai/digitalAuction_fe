@@ -9,9 +9,7 @@ export const loadEkycScripts = async (): Promise<void> => {
 
   const loadScript = (src: string): Promise<void> =>
     new Promise((resolve, reject) => {
-      const existingScript = document.querySelector(
-        `script[src="${src}"]`
-      );
+      const existingScript = document.querySelector(`script[src="${src}"]`);
       if (existingScript && loadedScripts.has(src)) {
         resolve();
         return;
@@ -22,7 +20,6 @@ export const loadEkycScripts = async (): Promise<void> => {
       script.defer = true;
       script.onload = () => {
         loadedScripts.add(src);
-        console.log(`Script loaded successfully: ${src}`);
         resolve();
       };
       script.onerror = () => {
@@ -39,7 +36,6 @@ export const loadEkycScripts = async (): Promise<void> => {
 
   try {
     await Promise.all(scripts.map(loadScript));
-    console.log("All EKYC scripts loaded successfully");
   } catch (error) {
     console.error("Failed to load EKYC scripts:", error);
     throw error;

@@ -1,5 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Card, Col, DatePicker, Form, Input, message, Row, Select, Tooltip } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  message,
+  Row,
+  Select,
+  Tooltip,
+} from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useState, useEffect } from "react";
 import UploadFile from "./Upload";
@@ -44,11 +55,17 @@ interface Props {
 
 const REAL_ESTATE_CATEGORY_ID = 2; // Hằng số cho danh mục bất động sản
 
-const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelection }: Props) => {
+const AuctionCreateForm = ({
+  auctionCategoryList,
+  auctionType,
+  handleBackToSelection,
+}: Props) => {
   const [form] = useForm<AuctionFormValues>();
   const [isRealEstate, setIsRealEstate] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [registerRange, setRegisterRange] = useState<[Dayjs, Dayjs] | null>(null);
+  const [registerRange, setRegisterRange] = useState<[Dayjs, Dayjs] | null>(
+    null
+  );
 
   // File upload hooks
   const auctionAssetUpload = useFormFileUpload("AuctionAssetFile", form);
@@ -57,8 +74,6 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
 
   const { user } = useSelector((state: any) => state.auth);
   const CreatedBy = user?.id || "defaultUser";
-
-  console.log("auctionType: ", auctionType);
 
   // Chuyển danh sách danh mục thành options cho Select
   const dataAuctionCategoryList = auctionCategoryList.map((val) => ({
@@ -98,8 +113,6 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
   }): FormData => {
     const formData = new FormData();
 
-    console.log("Creating FormData with values:", formValues);
-
     // Define the fields to include in FormData
     const fields = {
       AuctionName: formValues.AuctionName,
@@ -116,22 +129,22 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
     // Append non-file fields to FormData
     Object.entries(fields).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        formData.append(key, typeof value === "object" ? JSON.stringify(value) : value.toString());
-        console.log(`Added field ${key}:`, value);
+        formData.append(
+          key,
+          typeof value === "object" ? JSON.stringify(value) : value.toString()
+        );
       }
     });
 
     // Append required files
     if (formValues.AuctionAssetFile) {
       formData.append("AuctionAssetFile", formValues.AuctionAssetFile);
-      console.log("Added AuctionAssetFile:", formValues.AuctionAssetFile.name);
     } else {
       console.error("AuctionAssetFile is missing!");
     }
 
     if (formValues.AuctionRulesFile) {
       formData.append("AuctionRulesFile", formValues.AuctionRulesFile);
-      console.log("Added AuctionRulesFile:", formValues.AuctionRulesFile.name);
     } else {
       console.error("AuctionRulesFile is missing!");
     }
@@ -139,15 +152,7 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
     // Append optional file if it exists
     if (formValues.AuctionPlanningMap) {
       formData.append("AuctionPlanningMap", formValues.AuctionPlanningMap);
-      console.log("Added AuctionPlanningMap:", formValues.AuctionPlanningMap.name);
     }
-
-    // Log all FormData entries
-    console.log("Final FormData entries:");
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
-
     return formData;
   };
 
@@ -166,7 +171,6 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
     setLoading(true);
 
     try {
-
       // Lấy file theo nhiều cách khác nhau để đảm bảo
       let auctionAssetFile = values.AuctionAssetFile?.[0]?.originFileObj;
       let auctionRulesFile = values.AuctionRulesFile?.[0]?.originFileObj;
@@ -193,9 +197,15 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
       }
 
       // Kiểm tra thời gian
-      const [registerOpenDate, registerEndDate] = values.RegisterTimeRange || [];
+      const [registerOpenDate, registerEndDate] =
+        values.RegisterTimeRange || [];
       const [auctionStartDate, auctionEndDate] = values.AuctionTimeRange || [];
-      if (!registerOpenDate || !registerEndDate || !auctionStartDate || !auctionEndDate) {
+      if (
+        !registerOpenDate ||
+        !registerEndDate ||
+        !auctionStartDate ||
+        !auctionEndDate
+      ) {
         toast.error("Vui lòng chọn đầy đủ thời gian đăng ký và đấu giá!");
         return;
       }
@@ -224,8 +234,6 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
       // Xóa các trường range picker
       delete formattedValues.RegisterTimeRange;
       delete formattedValues.AuctionTimeRange;
-
-      console.log("Formatted values before creating FormData:", formattedValues);
 
       const formData = createFormData(formattedValues);
       if (auctionType === "SQL") {
@@ -310,15 +318,18 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
       transition={{ duration: 0.5 }}
       className="!p-6"
     >
-      <Card
-        className="!shadow-lg !border-0 !bg-gradient-to-r !from-blue-50 !to-teal-50"
-      >
+      <Card className="!shadow-lg !border-0 !bg-gradient-to-r !from-blue-50 !to-teal-50">
         <div className="flex items-center justify-between mb-8">
           <Button
             onClick={handleBackToSelection}
             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -329,7 +340,8 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
             Quay lại
           </Button>
           <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-center flex-1">
-            Tạo Đấu Giá Mới - {auctionType === "NODE" ? "Theo lô" : "Từng tài sản"}
+            Tạo Đấu Giá Mới -{" "}
+            {auctionType === "NODE" ? "Theo lô" : "Từng tài sản"}
           </h1>
           <div className="w-20"></div>
         </div>
@@ -369,8 +381,14 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
               >
                 <Form.Item
                   name="AuctionName"
-                  label={<span className="!font-medium !text-blue-900">Tên đấu giá</span>}
-                  rules={[{ required: true, message: "Vui lòng nhập tên đấu giá!" }]}
+                  label={
+                    <span className="!font-medium !text-blue-900">
+                      Tên đấu giá
+                    </span>
+                  }
+                  rules={[
+                    { required: true, message: "Vui lòng nhập tên đấu giá!" },
+                  ]}
                 >
                   <Input
                     placeholder="Nhập tên đấu giá"
@@ -389,15 +407,23 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
               >
                 <Form.Item
                   name="CategoryId"
-                  label={<span className="!font-medium !text-blue-900">Danh mục tài sản</span>}
-                  rules={[{ required: true, message: "Vui lòng chọn danh mục!" }]}
+                  label={
+                    <span className="!font-medium !text-blue-900">
+                      Danh mục tài sản
+                    </span>
+                  }
+                  rules={[
+                    { required: true, message: "Vui lòng chọn danh mục!" },
+                  ]}
                 >
                   <Select
                     placeholder="Chọn danh mục"
                     options={dataAuctionCategoryList}
                     className="!rounded-lg"
                     size="large"
-                    onSelect={(val) => setIsRealEstate(val === REAL_ESTATE_CATEGORY_ID)}
+                    onSelect={(val) =>
+                      setIsRealEstate(val === REAL_ESTATE_CATEGORY_ID)
+                    }
                   />
                 </Form.Item>
               </motion.div>
@@ -411,18 +437,27 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
               >
                 <Form.Item
                   name="NumberRoundMax"
-                  label={<span className="!font-medium !text-blue-900">Số vòng tối đa</span>}
+                  label={
+                    <span className="!font-medium !text-blue-900">
+                      Số vòng tối đa
+                    </span>
+                  }
                   rules={[
-                    { required: true, message: "Vui lòng nhập số vòng tối đa!" },
+                    {
+                      required: true,
+                      message: "Vui lòng nhập số vòng tối đa!",
+                    },
                     {
                       validator: (_, value) => {
                         const num = Number(value);
                         if (isNaN(num) || num < 1 || num > 5) {
-                          return Promise.reject(new Error('Số vòng tối đa phải từ 1 đến 5 vòng!'));
+                          return Promise.reject(
+                            new Error("Số vòng tối đa phải từ 1 đến 5 vòng!")
+                          );
                         }
                         return Promise.resolve();
-                      }
-                    }
+                      },
+                    },
                   ]}
                 >
                   <Input
@@ -445,7 +480,11 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
               >
                 <Form.Item
                   name="AuctionDescription"
-                  label={<span className="!font-medium !text-blue-900">Thông tin chi tiết tài sản</span>}
+                  label={
+                    <span className="!font-medium !text-blue-900">
+                      Thông tin chi tiết tài sản
+                    </span>
+                  }
                   rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
                 >
                   <Input.TextArea
@@ -478,15 +517,24 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
               >
                 <Form.Item
                   name="RegisterTimeRange"
-                  label={<span className="!font-medium !text-blue-900">Thời gian đăng ký (Từ - Đến)</span>}
-                  rules={[{ required: true, message: "Vui lòng chọn thời gian đăng ký!" }]}
+                  label={
+                    <span className="!font-medium !text-blue-900">
+                      Thời gian đăng ký (Từ - Đến)
+                    </span>
+                  }
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn thời gian đăng ký!",
+                    },
+                  ]}
                 >
                   <DatePicker.RangePicker
                     placeholder={["Ngày mở đăng ký", "Hạn đăng ký"]}
                     className="!w-full !rounded-lg !border-blue-200 hover:!border-blue-400 focus:!border-blue-500"
                     size="large"
                     format="DD/MM/YYYY HH:mm"
-                    showTime={{ format: 'HH' }}
+                    showTime={{ format: "HH" }}
                     disabledDate={disabledRegisterDate}
                   />
                 </Form.Item>
@@ -501,15 +549,24 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
               >
                 <Form.Item
                   name="AuctionTimeRange"
-                  label={<span className="!font-medium !text-blue-900">Thời gian đấu giá (Từ - Đến)</span>}
-                  rules={[{ required: true, message: "Vui lòng chọn thời gian đấu giá!" }]}
+                  label={
+                    <span className="!font-medium !text-blue-900">
+                      Thời gian đấu giá (Từ - Đến)
+                    </span>
+                  }
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn thời gian đấu giá!",
+                    },
+                  ]}
                 >
                   <DatePicker.RangePicker
                     placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
                     className="!w-full !rounded-lg !border-blue-200 hover:!border-blue-400 focus:!border-blue-500"
                     size="large"
                     format="DD/MM/YYYY HH:mm"
-                    showTime={{ format: 'HH' }}
+                    showTime={{ format: "HH" }}
                     disabledDate={disabledAuctionDate}
                     disabled={!registerRange}
                   />
@@ -542,22 +599,32 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
                     <div className="flex items-center justify-between">
                       <span className="!font-medium !text-blue-900 flex items-center">
                         Tệp tài sản đấu giá
-                        <Tooltip title="Chỉ nhận file đúng định dạng như file mẫu" placement="top">
+                        <Tooltip
+                          title="Chỉ nhận file đúng định dạng như file mẫu"
+                          placement="top"
+                        >
                           <QuestionCircleOutlined className="ml-2 text-blue-500 cursor-pointer" />
                         </Tooltip>
                       </span>
                     </div>
                   }
                   rules={[
-                    { required: true, message: "Vui lòng tải lên tệp tài sản!" },
+                    {
+                      required: true,
+                      message: "Vui lòng tải lên tệp tài sản!",
+                    },
                     {
                       validator: (_, value) => {
                         if (!value || value.length === 0) {
-                          return Promise.reject(new Error("Vui lòng tải lên tệp tài sản!"));
+                          return Promise.reject(
+                            new Error("Vui lòng tải lên tệp tài sản!")
+                          );
                         }
                         const file = value[0];
                         if (!file.originFileObj && !file.name) {
-                          return Promise.reject(new Error("File không hợp lệ!"));
+                          return Promise.reject(
+                            new Error("File không hợp lệ!")
+                          );
                         }
                         return Promise.resolve();
                       },
@@ -565,7 +632,10 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
                   ]}
                 >
                   <div className="space-y-3">
-                    <UploadFile contentName="AuctionAssetFile" onChange={auctionAssetUpload.onChange} />
+                    <UploadFile
+                      contentName="AuctionAssetFile"
+                      onChange={auctionAssetUpload.onChange}
+                    />
                     <div
                       className="cursor-pointer text-blue-500 hover:text-blue-700 underline text-sm"
                       onClick={handleDownloadTemplate}
@@ -585,24 +655,38 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
               >
                 <Form.Item
                   name="AuctionRulesFile"
-                  label={<span className="!font-medium !text-blue-900">Tệp quy tắc đấu giá</span>}
+                  label={
+                    <span className="!font-medium !text-blue-900">
+                      Tệp quy tắc đấu giá
+                    </span>
+                  }
                   rules={[
-                    { required: true, message: "Vui lòng tải lên tệp quy tắc!" },
+                    {
+                      required: true,
+                      message: "Vui lòng tải lên tệp quy tắc!",
+                    },
                     {
                       validator: (_, value) => {
                         if (!value || value.length === 0) {
-                          return Promise.reject(new Error("Vui lòng tải lên tệp quy tắc!"));
+                          return Promise.reject(
+                            new Error("Vui lòng tải lên tệp quy tắc!")
+                          );
                         }
                         const file = value[0];
                         if (!file.originFileObj && !file.name) {
-                          return Promise.reject(new Error("File không hợp lệ!"));
+                          return Promise.reject(
+                            new Error("File không hợp lệ!")
+                          );
                         }
                         return Promise.resolve();
                       },
                     },
                   ]}
                 >
-                  <UploadFile contentName="AuctionRulesFile" onChange={auctionRulesUpload.onChange} />
+                  <UploadFile
+                    contentName="AuctionRulesFile"
+                    onChange={auctionRulesUpload.onChange}
+                  />
                 </Form.Item>
               </motion.div>
             </Col>
@@ -618,9 +702,18 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
                   >
                     <Form.Item
                       name="AuctionPlanningMap"
-                      label={<span className="!font-medium !text-blue-900">Bản đồ kế hoạch đấu giá</span>}
+                      label={
+                        <span className="!font-medium !text-blue-900">
+                          Bản đồ kế hoạch đấu giá
+                        </span>
+                      }
                       valuePropName="fileList"
-                      rules={[{ required: true, message: "Vui lòng tải lên bản đồ kế hoạch!" }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng tải lên bản đồ kế hoạch!",
+                        },
+                      ]}
                     >
                       <UploadFile
                         contentName="AuctionPlanningMap"
@@ -638,8 +731,17 @@ const AuctionCreateForm = ({ auctionCategoryList, auctionType, handleBackToSelec
                   >
                     <Form.Item
                       name="AuctionMap"
-                      label={<span className="!font-medium !text-blue-900">Gắn link trên bản đồ</span>}
-                      rules={[{ required: true, message: "Gắn link vị trí trên bản đồ!" }]}
+                      label={
+                        <span className="!font-medium !text-blue-900">
+                          Gắn link trên bản đồ
+                        </span>
+                      }
+                      rules={[
+                        {
+                          required: true,
+                          message: "Gắn link vị trí trên bản đồ!",
+                        },
+                      ]}
                     >
                       <Input
                         placeholder="Gắn link vị trí trên bản đồ"

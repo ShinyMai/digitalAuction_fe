@@ -17,8 +17,6 @@ const FindNumbericalOrder = () => {
   const [isShow, setIsShow] = useState(false);
   const [auctionInfo, setAuctionInfo] = useState<AuctionResponse | null>(null);
 
-  console.log("urlParams:", urlParams);
-
   const handleSubmit = async (values: { cccd: string }) => {
     try {
       const res = await UserServices.getNumbericalOrder(
@@ -28,11 +26,11 @@ const FindNumbericalOrder = () => {
       if (res.code === 200 && res.data) {
         setAuctionInfo(res.data as AuctionResponse);
         setIsShow(true);
-        message.success(res.message || "Tìm thấy số thứ tự!");
       } else {
         message.error(res.message || "Không tìm thấy thông tin!");
       }
-    } catch {
+    } catch (error) {
+      console.error("Error fetching auction info:", error);
       message.error("Có lỗi xảy ra khi tìm kiếm!");
     }
   };

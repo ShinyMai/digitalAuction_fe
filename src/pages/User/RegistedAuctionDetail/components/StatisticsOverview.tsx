@@ -1,5 +1,14 @@
 import React from "react";
-import { Card, Row, Col, Tag, Space, Typography, Statistic, Divider } from "antd";
+import {
+  Card,
+  Row,
+  Col,
+  Tag,
+  Space,
+  Typography,
+  Statistic,
+  Divider,
+} from "antd";
 import {
   FileTextOutlined,
   DollarOutlined,
@@ -20,8 +29,10 @@ interface StatisticsData {
   paidDeposits: number;
   pendingDeposits: number;
   refundedDeposits: number;
-  approvedTickets: number;
-  pendingTickets: number;
+  paidMoney: number;
+  waitingMoney: number;
+  approvedTicket: number;
+  refundedTicket: number;
   // Thêm các trường mới
   attendedSessions: number;
   notAttendedSessions: number;
@@ -36,7 +47,9 @@ interface StatisticsOverviewProps {
   statistics: StatisticsData;
 }
 
-const StatisticsOverview: React.FC<StatisticsOverviewProps> = ({ statistics }) => {
+const StatisticsOverview: React.FC<StatisticsOverviewProps> = ({
+  statistics,
+}) => {
   return (
     <Card title="Tổng quan đăng ký tham gia" style={{ marginBottom: "24px " }}>
       <Row gutter={[16, 16]}>
@@ -68,14 +81,6 @@ const StatisticsOverview: React.FC<StatisticsOverviewProps> = ({ statistics }) =
             valueStyle={{ color: "#fa8c16 " }}
           />
         </Col>
-        <Col xs={24} sm={12} md={8} lg={6}>
-          <Statistic
-            title="Đăng ký đã duyệt"
-            value={statistics.approvedTickets}
-            prefix={<CheckCircleOutlined />}
-            valueStyle={{ color: "#52c41a " }}
-          />
-        </Col>
       </Row>
 
       <Divider />
@@ -97,13 +102,16 @@ const StatisticsOverview: React.FC<StatisticsOverviewProps> = ({ statistics }) =
           </Space>
         </Col>
         <Col xs={24} md={12}>
-          <Title level={5}>Trạng thái duyệt đăng ký:</Title>
+          <Title level={5}>Tình trạng đơn đăng ký:</Title>
           <Space wrap>
-            <Tag color="green" icon={<CheckCircleOutlined />}>
-              Đã nhận: {statistics.approvedTickets}
+            <Tag color="blue" icon={<UserOutlined />}>
+              Đã chuyển tiền: {statistics.paidMoney}
             </Tag>
-            <Tag color="orange" icon={<ClockCircleOutlined />}>
-              Chưa nhận: {statistics.pendingTickets}
+            <Tag color="red" icon={<ExclamationCircleOutlined />}>
+              Chưa nhận: {statistics.waitingMoney}
+            </Tag>
+            <Tag color="green" icon={<CheckCircleOutlined />}>
+              Đã nhận phiếu: {statistics.approvedTicket}
             </Tag>
           </Space>
         </Col>
@@ -114,13 +122,13 @@ const StatisticsOverview: React.FC<StatisticsOverviewProps> = ({ statistics }) =
       {/* Thêm phần thống kê mới cho các trường vừa thêm */}
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>
-          <Title level={5}>Tình trạng tham dự đấu giá:</Title>
+          <Title level={5}>Tài liệu hoàn cọc:</Title>
           <Space wrap>
-            <Tag color="green" icon={<UserOutlined />}>
-              Đã tham dự: {statistics.attendedSessions}
+            <Tag color="blue" icon={<FileProtectOutlined />}>
+              Có lý do hoàn cọc: {statistics.documentsWithRefundReason}
             </Tag>
-            <Tag color="red" icon={<ExclamationCircleOutlined />}>
-              Không tham dự: {statistics.notAttendedSessions}
+            <Tag color="cyan" icon={<FileTextOutlined />}>
+              Có minh chứng: {statistics.documentsWithRefundProof}
             </Tag>
           </Space>
         </Col>
@@ -135,23 +143,6 @@ const StatisticsOverview: React.FC<StatisticsOverviewProps> = ({ statistics }) =
             </Tag>
             <Tag color="red" icon={<ExclamationCircleOutlined />}>
               Từ chối: {statistics.rejectedRefunds}
-            </Tag>
-          </Space>
-        </Col>
-      </Row>
-
-      <Divider />
-
-      {/* Thống kê tài liệu hoàn cọc */}
-      <Row gutter={[16, 16]}>
-        <Col xs={24} md={12}>
-          <Title level={5}>Tài liệu hoàn cọc:</Title>
-          <Space wrap>
-            <Tag color="blue" icon={<FileProtectOutlined />}>
-              Có lý do hoàn cọc: {statistics.documentsWithRefundReason}
-            </Tag>
-            <Tag color="cyan" icon={<FileTextOutlined />}>
-              Có minh chứng: {statistics.documentsWithRefundProof}
             </Tag>
           </Space>
         </Col>

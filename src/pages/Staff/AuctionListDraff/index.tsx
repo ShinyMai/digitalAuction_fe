@@ -33,17 +33,14 @@ interface PaginationChangeParams {
   pageSize?: number;
 }
 
-
-
 const AuctionListDraff = () => {
-  const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
+  const [listAuctionCategory, setListAuctionCategory] = useState<
+    AuctionCategory[]
+  >([]);
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
   const [totalData, setTotalData] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const { user } = useSelector(
-    (state: RootState) => state.auth
-  );
-  console.log("user", user);
+  const { user } = useSelector((state: RootState) => state.auth);
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
     PageSize: 8,
@@ -56,7 +53,8 @@ const AuctionListDraff = () => {
 
   const fetchAuctionCategories = useCallback(async (): Promise<void> => {
     try {
-      const res: ApiResponse<AuctionCategory[]> = await AuctionServices.getListAuctionCategory();
+      const res: ApiResponse<AuctionCategory[]> =
+        await AuctionServices.getListAuctionCategory();
       if (res.code === 200 && res.data) {
         setListAuctionCategory(res.data);
       } else {
@@ -159,7 +157,10 @@ const AuctionListDraff = () => {
         <AuctionTable
           auctionData={auctionList}
           headerTable={
-            <SearchAuctionTable onSearch={onSearch} auctionCategory={listAuctionCategory} />
+            <SearchAuctionTable
+              onSearch={onSearch}
+              auctionCategory={listAuctionCategory}
+            />
           }
           onChange={onChangeTable}
           total={totalData}

@@ -77,10 +77,10 @@ const RegistedAuction = () => {
           search: {
             auctionName: searchValue ?? searchTerm ?? null,
             auctionStartDate: dateRange?.[0]
-              ? dayjs(dateRange[0]).toISOString()
+              ? dayjs(dateRange[0]).format("YYYY-MM-DD") + "T00:00:00.000Z"
               : null,
             auctionEndDate: dateRange?.[1]
-              ? dayjs(dateRange[1]).toISOString()
+              ? dayjs(dateRange[1]).format("YYYY-MM-DD") + "T23:59:59.999Z"
               : null,
           },
         };
@@ -200,7 +200,9 @@ const RegistedAuction = () => {
               size="large"
               className="!w-full md:!w-48"
               allowClear
+              defaultValue=""
             >
+              <Select.Option value="">Tất cả</Select.Option>
               <Select.Option value="registration">Đang đăng ký</Select.Option>
               <Select.Option value="upcoming">Sắp diễn ra</Select.Option>
               <Select.Option value="ongoing">Đang diễn ra</Select.Option>
@@ -208,7 +210,7 @@ const RegistedAuction = () => {
               <Select.Option value="cancelled">Đã hủy</Select.Option>
             </Select>
             <RangePicker
-              placeholder={["Từ ngày", "Đến ngày"]}
+              placeholder={["Ngày bắt đầu ", "Ngày kết thúc"]}
               value={dateRange}
               onChange={setDateRange}
               size="large"

@@ -61,6 +61,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       name: string;
       citizenIdentification: string;
       auctionId?: string;
+      userId?: string;
     } | null>(null);
 
   // Đã xóa kiểm tra thời gian đăng ký
@@ -117,6 +118,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       name: participant.name,
       citizenIdentification: participant.citizenIdentification,
       auctionId: auctionId,
+      userId: participant.userId,
     });
     setIsBiddingHistoryModalVisible(true);
   };

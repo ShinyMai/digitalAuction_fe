@@ -16,7 +16,7 @@ interface SearchParams {
   PageNumber?: number;
   PageSize?: number;
   Status: number;
-  ConditionAuction: number
+  ConditionAuction: number;
   AuctionName?: string;
   SortBy: "register_open_date";
   IsAscending: false;
@@ -36,7 +36,6 @@ const AuctionListAnonyMous = () => {
   });
   const [totalData, setTotalData] = useState<number>(0);
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
-  console.log(location.state?.key);
   useEffect(() => {
     getListAuction();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,7 +148,10 @@ const AuctionListAnonyMous = () => {
                 <div className="w-20 h-20 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
                 <div
                   className="absolute inset-0 w-20 h-20 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"
-                  style={{ animationDirection: "reverse", animationDuration: "1.5s" }}
+                  style={{
+                    animationDirection: "reverse",
+                    animationDuration: "1.5s",
+                  }}
                 ></div>
               </div>
               <p className="mt-6 text-lg text-gray-600 animate-pulse">
@@ -166,8 +168,9 @@ const AuctionListAnonyMous = () => {
                 <div className="inline-flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg">
                   <span className="text-2xl">📊</span>
                   <span className="font-medium text-gray-700">
-                    Tìm thấy <span className="font-bold text-blue-600">{totalData}</span> phiên đấu
-                    giá
+                    Tìm thấy{" "}
+                    <span className="font-bold text-blue-600">{totalData}</span>{" "}
+                    phiên đấu giá
                   </span>
                 </div>
               </div>
@@ -194,10 +197,16 @@ const AuctionListAnonyMous = () => {
                         Không tìm thấy phiên đấu giá nào
                       </h3>
                       <p className="text-gray-500 text-lg mb-8 max-w-md mx-auto">
-                        Hiện tại chưa có phiên đấu giá nào phù hợp với tiêu chí tìm kiếm của bạn
+                        Hiện tại chưa có phiên đấu giá nào phù hợp với tiêu chí
+                        tìm kiếm của bạn
                       </p>
                       <button
-                        onClick={() => setSearchParams((prev) => ({ ...prev, AuctionName: "" }))}
+                        onClick={() =>
+                          setSearchParams((prev) => ({
+                            ...prev,
+                            AuctionName: "",
+                          }))
+                        }
                         className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105"
                       >
                         Xem tất cả đấu giá

@@ -21,7 +21,8 @@ import {
 
 const AuctionDetailAnonymous = () => {
   const location = useLocation();
-  const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
+  const [auctionDetailData, setAuctionDetailData] =
+    useState<AuctionDataDetail>();
   const navigate = useNavigate();
   const { user } = useSelector(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,7 +30,6 @@ const AuctionDetailAnonymous = () => {
   );
 
   useEffect(() => {
-    console.log(location.state.key);
     getAuctionDetailById(location.state.key);
   }, []);
 
@@ -127,7 +127,9 @@ const AuctionDetailAnonymous = () => {
       render: (text: string) => (
         <div className="max-w-xs">
           {text ? (
-            <span className="text-gray-600 text-sm leading-relaxed">{text}</span>
+            <span className="text-gray-600 text-sm leading-relaxed">
+              {text}
+            </span>
           ) : (
             <span className="text-gray-400 italic">Không có mô tả</span>
           )}
@@ -185,10 +187,13 @@ const AuctionDetailAnonymous = () => {
                       </div>
                       <h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-4 leading-tight">
                         Chi Tiết Thông Báo
-                        <span className="block text-yellow-300">Đấu Giá Tài Sản</span>
+                        <span className="block text-yellow-300">
+                          Đấu Giá Tài Sản
+                        </span>
                       </h1>
                       <p className="text-xl text-blue-100 mb-6 max-w-2xl">
-                        {auctionDetailData.auctionName || "Thông tin đấu giá tài sản"}
+                        {auctionDetailData.auctionName ||
+                          "Thông tin đấu giá tài sản"}
                       </p>
 
                       {/* Quick Stats */}
@@ -199,10 +204,14 @@ const AuctionDetailAnonymous = () => {
                               <CalendarOutlined className="text-xl text-blue-200" />
                             </div>
                             <div>
-                              <p className="text-sm text-blue-200">Ngày đấu giá</p>
+                              <p className="text-sm text-blue-200">
+                                Ngày đấu giá
+                              </p>
                               <p className="font-bold text-white">
                                 {auctionDetailData.auctionStartDate
-                                  ? dayjs(auctionDetailData.auctionStartDate).format("DD/MM/YYYY")
+                                  ? dayjs(
+                                      auctionDetailData.auctionStartDate
+                                    ).format("DD/MM/YYYY")
                                   : "Chưa xác định"}
                               </p>
                             </div>
@@ -215,10 +224,14 @@ const AuctionDetailAnonymous = () => {
                               <ClockCircleOutlined className="text-xl text-green-200" />
                             </div>
                             <div>
-                              <p className="text-sm text-green-200">Hạn đăng ký</p>
+                              <p className="text-sm text-green-200">
+                                Hạn đăng ký
+                              </p>
                               <p className="font-bold text-white">
                                 {auctionDetailData.registerEndDate
-                                  ? dayjs(auctionDetailData.registerEndDate).format("DD/MM/YYYY")
+                                  ? dayjs(
+                                      auctionDetailData.registerEndDate
+                                    ).format("DD/MM/YYYY")
                                   : "Chưa xác định"}
                               </p>
                             </div>
@@ -233,7 +246,8 @@ const AuctionDetailAnonymous = () => {
                             <div>
                               <p className="text-sm text-purple-200">Số vòng</p>
                               <p className="font-bold text-white">
-                                {auctionDetailData.numberRoundMax || "Không giới hạn"}
+                                {auctionDetailData.numberRoundMax ||
+                                  "Không giới hạn"}
                               </p>
                             </div>
                           </div>
@@ -249,7 +263,8 @@ const AuctionDetailAnonymous = () => {
                 defaultActiveKey="1"
                 className="w-full enhanced-tabs"
                 tabBarStyle={{
-                  background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+                  background:
+                    "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
                   padding: "20px",
                   borderRadius: "0",
                   margin: "0",
@@ -279,34 +294,50 @@ const AuctionDetailAnonymous = () => {
                             <div className="space-y-4">
                               {[
                                 {
-                                  icon: <CalendarOutlined className="text-green-600" />,
+                                  icon: (
+                                    <CalendarOutlined className="text-green-600" />
+                                  ),
                                   label: "Ngày mở đăng ký",
                                   value: auctionDetailData.registerOpenDate
-                                    ? dayjs(auctionDetailData.registerOpenDate).format("DD/MM/YYYY")
+                                    ? dayjs(
+                                        auctionDetailData.registerOpenDate
+                                      ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "green",
                                 },
                                 {
-                                  icon: <ClockCircleOutlined className="text-red-600" />,
+                                  icon: (
+                                    <ClockCircleOutlined className="text-red-600" />
+                                  ),
                                   label: "Hạn đăng ký",
                                   value: auctionDetailData.registerEndDate
-                                    ? dayjs(auctionDetailData.registerEndDate).format("DD/MM/YYYY")
+                                    ? dayjs(
+                                        auctionDetailData.registerEndDate
+                                      ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "red",
                                 },
                                 {
-                                  icon: <TrophyOutlined className="text-blue-600" />,
+                                  icon: (
+                                    <TrophyOutlined className="text-blue-600" />
+                                  ),
                                   label: "Bắt đầu đấu giá",
                                   value: auctionDetailData.auctionStartDate
-                                    ? dayjs(auctionDetailData.auctionStartDate).format("DD/MM/YYYY")
+                                    ? dayjs(
+                                        auctionDetailData.auctionStartDate
+                                      ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "blue",
                                 },
                                 {
-                                  icon: <FileTextOutlined className="text-purple-600" />,
+                                  icon: (
+                                    <FileTextOutlined className="text-purple-600" />
+                                  ),
                                   label: "Kết thúc đấu giá",
                                   value: auctionDetailData.auctionEndDate
-                                    ? dayjs(auctionDetailData.auctionEndDate).format("DD/MM/YYYY")
+                                    ? dayjs(
+                                        auctionDetailData.auctionEndDate
+                                      ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "purple",
                                 },
@@ -354,7 +385,8 @@ const AuctionDetailAnonymous = () => {
                                   </span>
                                 </div>
                                 <span className="font-bold text-yellow-700 text-lg bg-white/50 px-3 py-1 rounded-lg">
-                                  {auctionDetailData.numberRoundMax || "Không giới hạn"}
+                                  {auctionDetailData.numberRoundMax ||
+                                    "Không giới hạn"}
                                 </span>
                               </div>
 
@@ -364,7 +396,9 @@ const AuctionDetailAnonymous = () => {
                                     <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
                                       <TrophyOutlined className="text-green-600" />
                                     </div>
-                                    <span className="font-semibold text-gray-800">Giá trúng:</span>
+                                    <span className="font-semibold text-gray-800">
+                                      Giá trúng:
+                                    </span>
                                   </div>
                                   <span className="font-bold text-green-700 text-lg bg-white/50 px-3 py-1 rounded-lg">
                                     {auctionDetailData.winnerData}
@@ -382,7 +416,9 @@ const AuctionDetailAnonymous = () => {
                                   </span>
                                 </div>
                                 <span className="font-bold text-blue-700 text-lg bg-white/50 px-3 py-1 rounded-lg">
-                                  {auctionDetailData.qrLink ? "500,000 VND" : "Chưa xác định"}
+                                  {auctionDetailData.qrLink
+                                    ? "500,000 VND"
+                                    : "Chưa xác định"}
                                 </span>
                               </div>
                             </div>
@@ -409,13 +445,16 @@ const AuctionDetailAnonymous = () => {
                             >
                               <span className="flex items-center gap-3">
                                 <TeamOutlined className="text-xl" />
-                                {user ? "Đăng ký tham gia" : "Vui lòng đăng nhập"}
+                                {user
+                                  ? "Đăng ký tham gia"
+                                  : "Vui lòng đăng nhập"}
                                 <ArrowRightOutlined className="text-lg" />
                               </span>
                             </Button>
                             {!user && (
                               <p className="text-gray-600 mt-4 text-sm">
-                                Quý khách cần đăng ký tài khoản để có thể tham gia đấu giá
+                                Quý khách cần đăng ký tài khoản để có thể tham
+                                gia đấu giá
                               </p>
                             )}
                           </div>
@@ -444,7 +483,9 @@ const AuctionDetailAnonymous = () => {
                             <div
                               className="text-gray-700 leading-relaxed prose prose-blue max-w-none"
                               dangerouslySetInnerHTML={{
-                                __html: auctionDetailData.auctionDescription || "Không có mô tả.",
+                                __html:
+                                  auctionDetailData.auctionDescription ||
+                                  "Không có mô tả.",
                               }}
                             />
                           </div>
@@ -557,7 +598,9 @@ const AuctionDetailAnonymous = () => {
                 <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full flex items-center justify-center animate-pulse">
                   <FileTextOutlined className="text-3xl text-blue-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">Đang tải thông tin</h3>
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                  Đang tải thông tin
+                </h3>
                 <p className="text-gray-500">Vui lòng chờ trong giây lát...</p>
                 <div className="flex justify-center mt-4">
                   <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>

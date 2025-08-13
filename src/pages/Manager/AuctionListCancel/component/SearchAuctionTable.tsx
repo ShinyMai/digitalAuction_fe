@@ -8,10 +8,7 @@ interface Props {
   onSearch: (searchValue: any) => void;
 }
 
-const SearchAuctionTable = ({
-  auctionCategory,
-  onSearch,
-}: Props) => {
+const SearchAuctionTable = ({ auctionCategory, onSearch }: Props) => {
   const [form] = useForm();
 
   const optionSearchbyType = [
@@ -19,12 +16,10 @@ const SearchAuctionTable = ({
     { label: "Đấu giá theo lô", value: "2" },
   ];
 
-  const dataAuctionCategoryList = auctionCategory?.map(
-    (val) => ({
-      value: val.categoryId,
-      label: val.categoryName,
-    })
-  );
+  const dataAuctionCategoryList = auctionCategory?.map((val) => ({
+    value: val.categoryId,
+    label: val.categoryName,
+  }));
 
   const handleFormChange = (_changedValues: any, allValues: any) => {
     onSearch(allValues);
@@ -58,7 +53,6 @@ const SearchAuctionTable = ({
             style={{ height: "40px" }}
             placeholder="Danh mục tài sản"
             options={dataAuctionCategoryList}
-            onSelect={(val) => console.log(val)}
             allowClear
           />
         </Form.Item>
@@ -73,11 +67,9 @@ const SearchAuctionTable = ({
             placeholder="Loại đấu giá"
             defaultValue={"1"}
             options={optionSearchbyType}
-            onSelect={(val) => console.log("Check", val)}
             allowClear
           />
         </Form.Item>
-
       </Form>
     </div>
   );

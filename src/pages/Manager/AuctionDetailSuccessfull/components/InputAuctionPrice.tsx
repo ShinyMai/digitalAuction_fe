@@ -1,6 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { Form, Button, Table, Row, Col, Card, Typography, InputNumber, AutoComplete, Select, Space } from "antd";
+import {
+  Form,
+  Button,
+  Table,
+  Row,
+  Col,
+  Card,
+  Typography,
+  InputNumber,
+  AutoComplete,
+  Select,
+  Space,
+} from "antd";
 import {
   PlusOutlined,
   DeleteOutlined,
@@ -16,6 +28,7 @@ import type { AuctionRoundModals } from "../../Modals";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import { toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
 
 const { Title, Text } = Typography;
 
@@ -47,9 +60,16 @@ interface props {
   onBackToList?: () => void;
 }
 
-const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onBackToList }: props) => {
+const InputAuctionPrice = ({
+  auctionId,
+  roundData,
+  auctionAssetsToStatistic,
+  onBackToList,
+}: props) => {
   // State cho danh sách dữ liệu
-  const [auctionRoundPriceList, setAuctionRoundPriceList] = useState<InputAuctionPriceModals[]>([]);
+  const [auctionRoundPriceList, setAuctionRoundPriceList] = useState<
+    InputAuctionPriceModals[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [citizenOptions, setCitizenOptions] = useState<{ value: string }[]>([]);
@@ -60,13 +80,18 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
   const [form] = Form.useForm();
   const { user } = useSelector((state: RootState) => state.auth);
   // Gọi API để lấy thông tin người dùng
-  const getUserRegistedAuctionByCitizenIdentification = async (citizenIdentification: string) => {
+  const getUserRegistedAuctionByCitizenIdentification = async (
+    citizenIdentification: string
+  ) => {
     try {
       if (!auctionId) {
         toast.error("Không có thông tin đấu giá");
         return;
       }
-      const response = await AuctionServices.userRegistedAuction({ citizenIdentification, auctionId: auctionId });
+      const response = await AuctionServices.userRegistedAuction({
+        citizenIdentification,
+        auctionId: auctionId,
+      });
       if (
         response.data &&
         response.data.auctionAssets &&
@@ -115,19 +140,25 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
         ...values,
         price: values.price,
         userName: userInfo?.UserName || "-",
-        auctionAssetName: auctionAssets.find(asset => asset.auctionAssetsId === values.auctionAssetId)?.tagName || "-",
-        id: crypto.randomUUID(),
+        auctionAssetName:
+          auctionAssets.find(
+            (asset) => asset.auctionAssetsId === values.auctionAssetId
+          )?.tagName || "-",
+        id: uuidv4(),
       };
 
       // Kiểm tra trùng lặp
       const isDuplicate = auctionRoundPriceList.some(
-        item =>
-          item.citizenIdentification === formattedValues.citizenIdentification &&
+        (item) =>
+          item.citizenIdentification ===
+            formattedValues.citizenIdentification &&
           item.auctionAssetId === formattedValues.auctionAssetId
       );
 
       if (isDuplicate) {
-        setErrorMessage("Người đấu giá tài sản này đã được bạn nhập giá đấu trước đây");
+        setErrorMessage(
+          "Người đấu giá tài sản này đã được bạn nhập giá đấu trước đây"
+        );
         setLoading(false);
         return;
       }
@@ -151,10 +182,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
 
   // Xử lý khi click nút Hoàn thành
   const handleComplete = async () => {
-    console.log("Danh sách giá đấu giá:", auctionRoundPriceList);
     const dataSubmit = {
       auctionRoundId: roundData?.auctionRoundId,
-      resultDTOs: auctionRoundPriceList.map(item => ({
+      resultDTOs: auctionRoundPriceList.map((item) => ({
         userName: item.userName || "-",
         citizenIdentification: item.citizenIdentification,
         recentLocation: item.recentLocation || "",
@@ -163,9 +193,10 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
         createdBy: user?.id,
       })),
     };
-    console.log("Dữ liệu gửi đi:", dataSubmit);
     try {
-      const response = await AuctionServices.saveListAuctionRoundPrice(dataSubmit);
+      const response = await AuctionServices.saveListAuctionRoundPrice(
+        dataSubmit
+      );
       if (response.code === 200) {
         toast.success(response.message || "Lưu danh sách giá đấu thành công");
       }
@@ -177,7 +208,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
 
   // Xử lý xóa hàng
   const handleDelete = (index: number) => {
-    setAuctionRoundPriceList(auctionRoundPriceList.filter((_, i) => i !== index));
+    setAuctionRoundPriceList(
+      auctionRoundPriceList.filter((_, i) => i !== index)
+    );
   };
 
   // Cấu hình cột cho Table của antd
@@ -210,7 +243,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
       dataIndex: "auctionAssetName",
       key: "auctionAssetName",
       width: 200,
-      render: (text: string) => <Text className="font-medium text-gray-700">{text || "-"}</Text>,
+      render: (text: string) => (
+        <Text className="font-medium text-gray-700">{text || "-"}</Text>
+      ),
     },
     {
       title: "Giá đấu (VND)",
@@ -220,7 +255,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
       render: (text: number) => (
         <div className="flex items-center gap-2">
           <DollarOutlined className="text-green-500" />
-          <Text className="font-bold text-green-600">{text?.toLocaleString("vi-VN")}</Text>
+          <Text className="font-bold text-green-600">
+            {text?.toLocaleString("vi-VN")}
+          </Text>
         </div>
       ),
     },
@@ -233,7 +270,9 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
           <Button
             type="text"
             danger
-            icon={<DeleteOutlined className="text-gray-400 hover:text-red-500 transition-colors duration-300" />}
+            icon={
+              <DeleteOutlined className="text-gray-400 hover:text-red-500 transition-colors duration-300" />
+            }
             onClick={() => handleDelete(index)}
             className="hover:scale-110 transition-transform duration-200 !border-none"
             size="middle"
@@ -247,12 +286,12 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
   const paginationConfig =
     auctionRoundPriceList.length > 8
       ? {
-        pageSize: 8,
-        showSizeChanger: true,
-        showQuickJumper: true,
-        showTotal: (total: number, range: [number, number]) =>
-          `${range[0]}-${range[1]} của ${total} mục`,
-      }
+          pageSize: 8,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total: number, range: [number, number]) =>
+            `${range[0]}-${range[1]} của ${total} mục`,
+        }
       : false;
 
   return (
@@ -285,12 +324,19 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
             {/* Tổng số phiếu */}
             <Col xs={24} sm={12} lg={6}>
               <Card
-                className={`!bg-gradient-to-br !from-violet-500 !via-purple-500 !to-purple-600 !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${!selectedAssetId ? '!ring-4 !ring-blue-400' : ''}`}
+                className={`!bg-gradient-to-br !from-violet-500 !via-purple-500 !to-purple-600 !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${
+                  !selectedAssetId ? "!ring-4 !ring-blue-400" : ""
+                }`}
                 onClick={() => setSelectedAssetId(null)}
               >
                 <div className="!flex !flex-col !items-center">
-                  <Text className="!text-white/90 !text-lg !mb-2 !font-medium">Tổng số phiếu</Text>
-                  <Title level={2} className="!text-white !mb-0 !drop-shadow-lg">
+                  <Text className="!text-white/90 !text-lg !mb-2 !font-medium">
+                    Tổng số phiếu
+                  </Text>
+                  <Title
+                    level={2}
+                    className="!text-white !mb-0 !drop-shadow-lg"
+                  >
                     {auctionRoundPriceList.length}
                   </Title>
                 </div>
@@ -308,20 +354,32 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                 "!bg-gradient-to-br !from-blue-500 !via-blue-600 !to-indigo-700",
                 "!bg-gradient-to-br !from-emerald-400 !via-teal-500 !to-teal-600",
                 "!bg-gradient-to-br !from-amber-400 !via-orange-500 !to-orange-600",
-                "!bg-gradient-to-br !from-rose-400 !via-pink-500 !to-pink-600"
+                "!bg-gradient-to-br !from-rose-400 !via-pink-500 !to-pink-600",
               ];
 
               return (
                 <Col xs={24} sm={12} lg={6} key={asset.auctionAssetsId}>
                   <Card
-                    className={`${gradients[index % gradients.length]} !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${selectedAssetId === asset.auctionAssetsId ? '!ring-4 !ring-blue-400' : ''}`}
+                    className={`${
+                      gradients[index % gradients.length]
+                    } !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${
+                      selectedAssetId === asset.auctionAssetsId
+                        ? "!ring-4 !ring-blue-400"
+                        : ""
+                    }`}
                     onClick={() => setSelectedAssetId(asset.auctionAssetsId)}
                   >
                     <div className="!flex !flex-col !items-center">
-                      <Text className="!text-white/90 !text-lg !mb-2 !truncate !font-medium" title={asset.tagName}>
+                      <Text
+                        className="!text-white/90 !text-lg !mb-2 !truncate !font-medium"
+                        title={asset.tagName}
+                      >
                         {asset.tagName}
                       </Text>
-                      <Title level={2} className="!text-white !mb-0 !drop-shadow-lg">
+                      <Title
+                        level={2}
+                        className="!text-white !mb-0 !drop-shadow-lg"
+                      >
                         {assetCount}
                       </Title>
                     </div>
@@ -339,11 +397,18 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
               className="shadow-xl bg-white/90 backdrop-blur-sm border-0 transition-shadow duration-300"
               title={
                 <div className="flex items-center gap-3 text-gray-800">
-                  <span className="text-lg font-semibold">Nhập Thông Tin Đấu Giá</span>
+                  <span className="text-lg font-semibold">
+                    Nhập Thông Tin Đấu Giá
+                  </span>
                 </div>
               }
             >
-              <Form form={form} layout="vertical" onFinish={onFinish} className="space-y-4">
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={onFinish}
+                className="space-y-4"
+              >
                 <Form.Item
                   name="citizenIdentification"
                   label={
@@ -376,15 +441,23 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                       Tài Sản Đấu Giá
                     </span>
                   }
-                  rules={[{ required: true, message: "Vui lòng chọn tài sản đấu giá" }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn tài sản đấu giá",
+                    },
+                  ]}
                 >
                   <Select
                     placeholder="Chọn tài sản đấu giá"
                     className="rounded-lg h-12"
                     disabled={!auctionAssets.length}
                   >
-                    {auctionAssets.map(asset => (
-                      <Select.Option key={asset.auctionAssetsId} value={asset.auctionAssetsId}>
+                    {auctionAssets.map((asset) => (
+                      <Select.Option
+                        key={asset.auctionAssetsId}
+                        value={asset.auctionAssetsId}
+                      >
                         {asset.tagName}
                       </Select.Option>
                     ))}
@@ -401,7 +474,11 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                   }
                   rules={[
                     { required: true, message: "Vui lòng nhập giá đấu" },
-                    { type: "number", min: 1000, message: "Giá đấu phải lớn hơn 1,000 VND" },
+                    {
+                      type: "number",
+                      min: 1000,
+                      message: "Giá đấu phải lớn hơn 1,000 VND",
+                    },
                   ]}
                 >
                   <InputNumber
@@ -426,7 +503,11 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                     </Button>
                     <Button
                       type="primary"
-                      icon={<div className="text-red-600"><CheckOutlined /></div>}
+                      icon={
+                        <div className="text-red-600">
+                          <CheckOutlined />
+                        </div>
+                      }
                       onClick={handleComplete}
                       className="h-12 rounded-lg font-semibold"
                     >
@@ -447,14 +528,19 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                   <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-600 rounded-full flex items-center justify-center">
                     <TrophyOutlined className="text-white" />
                   </div>
-                  <span className="text-lg font-semibold">Danh Sách Giá Đấu</span>
+                  <span className="text-lg font-semibold">
+                    Danh Sách Giá Đấu
+                  </span>
                 </div>
               }
             >
               <Table
-                dataSource={selectedAssetId
-                  ? auctionRoundPriceList.filter(item => item.auctionAssetId === selectedAssetId)
-                  : auctionRoundPriceList
+                dataSource={
+                  selectedAssetId
+                    ? auctionRoundPriceList.filter(
+                        (item) => item.auctionAssetId === selectedAssetId
+                      )
+                    : auctionRoundPriceList
                 }
                 columns={columns}
                 rowKey={(_, index) => index?.toString() || ""}
@@ -462,9 +548,13 @@ const InputAuctionPrice = ({ auctionId, roundData, auctionAssetsToStatistic, onB
                   emptyText: (
                     <div className="text-center py-12">
                       <TrophyOutlined className="text-6xl text-gray-300 mb-4" />
-                      <Text className="text-gray-500 text-lg">Chưa có dữ liệu giá đấu</Text>
+                      <Text className="text-gray-500 text-lg">
+                        Chưa có dữ liệu giá đấu
+                      </Text>
                       <br />
-                      <Text className="text-gray-400">Thêm giá đấu đầu tiên của bạn</Text>
+                      <Text className="text-gray-400">
+                        Thêm giá đấu đầu tiên của bạn
+                      </Text>
                     </div>
                   ),
                 }}

@@ -2,7 +2,11 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card, Button } from "antd";
-import { ArrowLeftOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
+import {
+  ArrowLeftOutlined,
+  EditOutlined,
+  SendOutlined,
+} from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import AuctionServices from "../../../services/AuctionServices";
 import AuctionDetail from "./components/AuctionDetail";
@@ -19,7 +23,8 @@ const AuctionDetailAnonymous = () => {
   const auctionType = state?.type;
   const { user } = useSelector((state: any) => state.auth);
   const role = user?.roleName;
-  const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
+  const [auctionDetailData, setAuctionDetailData] =
+    useState<AuctionDataDetail>();
   const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
@@ -62,8 +67,6 @@ const AuctionDetailAnonymous = () => {
     }
   };
 
-  console.log("auctionDetailData", auctionDetailData);
-
   return (
     <section className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -94,10 +97,11 @@ const AuctionDetailAnonymous = () => {
                 icon={<SendOutlined />}
                 onClick={handleSendToManager}
                 disabled={isEditMode}
-                className={`${isEditMode
-                  ? "bg-gray-300 border-0 text-gray-500 cursor-not-allowed opacity-50"
-                  : "bg-gradient-to-r from-emerald-500 to-teal-500 border-0 hover:from-emerald-600 hover:to-teal-600 text-white"
-                  } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[160px] group`}
+                className={`${
+                  isEditMode
+                    ? "bg-gray-300 border-0 text-gray-500 cursor-not-allowed opacity-50"
+                    : "bg-gradient-to-r from-emerald-500 to-teal-500 border-0 hover:from-emerald-600 hover:to-teal-600 text-white"
+                } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[160px] group`}
                 size="large"
               >
                 <span className="ml-1">Gửi cho quản lý</span>
@@ -107,17 +111,19 @@ const AuctionDetailAnonymous = () => {
                 type={isEditMode ? "default" : "primary"}
                 icon={<EditOutlined />}
                 onClick={handleEditToggle}
-                className={`${isEditMode
-                  ? "bg-gradient-to-r from-slate-500 to-gray-500 border-0 text-white hover:from-slate-600 hover:to-gray-600"
-                  : "bg-gradient-to-r from-blue-500 to-indigo-500 border-0 hover:from-blue-600 hover:to-indigo-600 text-white"
-                  } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[140px] group`}
+                className={`${
+                  isEditMode
+                    ? "bg-gradient-to-r from-slate-500 to-gray-500 border-0 text-white hover:from-slate-600 hover:to-gray-600"
+                    : "bg-gradient-to-r from-blue-500 to-indigo-500 border-0 hover:from-blue-600 hover:to-indigo-600 text-white"
+                } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[140px] group`}
                 size="large"
               >
-                <span className="ml-1">{isEditMode ? "Xem chi tiết" : "Chỉnh sửa"}</span>
+                <span className="ml-1">
+                  {isEditMode ? "Xem chi tiết" : "Chỉnh sửa"}
+                </span>
               </Button>
             </div>
           </div>
-
         </div>
 
         <Card className="shadow-xl bg-white/70 backdrop-blur-sm border-0 rounded-2xl overflow-hidden">

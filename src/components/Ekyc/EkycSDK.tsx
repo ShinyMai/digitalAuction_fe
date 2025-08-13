@@ -66,8 +66,7 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
 }) => {
   const tokenKey = import.meta.env.VITE_EKYC_TOKEN_KEY;
   const tokenId = import.meta.env.VITE_EKYC_TOKEN_ID;
-  const accessToken = import.meta.env
-    .VITE_EKYC_ACCESS_TOKEN;
+  const accessToken = import.meta.env.VITE_EKYC_ACCESS_TOKEN;
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -110,20 +109,14 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
   useEffect(() => {
     if (!isInitialized || !window.SDK?.launch) return;
 
-    const container = document.getElementById(
-      "ekyc_sdk_intergrated"
-    );
+    const container = document.getElementById("ekyc_sdk_intergrated");
     if (container) {
       container.innerHTML = "";
     }
 
-    const CALL_BACK_END_FLOW = async (
-      result: EkycResult
-    ) => {
+    const CALL_BACK_END_FLOW = async (result: EkycResult) => {
       if (!result?.ocr) {
-        toast.error(
-          "Không thể nhận diện thông tin từ giấy tờ."
-        );
+        toast.error("Không thể nhận diện thông tin từ giấy tờ.");
         return;
       }
 
@@ -134,51 +127,30 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
           ? dayjs(result.ocr.object.birth_day, "DD/MM/YYYY")
           : null,
         issueDate: result.ocr.object.issue_date
-          ? dayjs(
-            result.ocr.object.issue_date,
-            "DD/MM/YYYY"
-          )
+          ? dayjs(result.ocr.object.issue_date, "DD/MM/YYYY")
           : null,
         validDate: result.ocr.object.valid_date
-          ? dayjs(
-            result.ocr.object.valid_date,
-            "DD/MM/YYYY"
-          )
+          ? dayjs(result.ocr.object.valid_date, "DD/MM/YYYY")
           : null,
         nationality: result.ocr.object.nationality || "",
         gender: result.ocr.object.gender === "Nam",
-        originLocation:
-          result.ocr.object.origin_location || "",
-        recentLocation:
-          result.ocr.object.recent_location || "",
+        originLocation: result.ocr.object.origin_location || "",
+        recentLocation: result.ocr.object.recent_location || "",
         issueBy: result.ocr.object.issue_place || "",
       });
 
-      if (
-        result.liveness_card_front?.object.liveness ===
-        "failure"
-      ) {
-        toast.error(
-          "Giấy tờ mặt trước không hợp lệ, vui lòng thử lại."
-        );
+      if (result.liveness_card_front?.object.liveness === "failure") {
+        toast.error("Giấy tờ mặt trước không hợp lệ, vui lòng thử lại.");
         return;
       }
 
-      if (
-        result.liveness_card_back?.object.liveness ===
-        "failure"
-      ) {
-        toast.error(
-          "Giấy tờ mặt sau không hợp lệ, vui lòng thử lại."
-        );
+      if (result.liveness_card_back?.object.liveness === "failure") {
+        toast.error("Giấy tờ mặt sau không hợp lệ, vui lòng thử lại.");
         return;
       }
 
       if (setCurrent) setCurrent(1);
-      toast.success(
-        "Xác thực thành công, sang bước tiếp theo."
-      );
-      console.log("result ==>", result);
+      toast.success("Xác thực thành công, sang bước tiếp theo.");
     };
 
     const dataConfig = {
@@ -207,18 +179,13 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
     };
 
     if (window.SDK?.launch) {
-      console.log("Initializing EKYC SDK...");
       window.SDK.launch(dataConfig);
     } else {
-      console.error(
-        "SDK không được tải hoặc không có phương thức launch."
-      );
+      console.error("SDK không được tải hoặc không có phương thức launch.");
     }
 
     return () => {
-      const container = document.getElementById(
-        "ekyc_sdk_intergrated"
-      );
+      const container = document.getElementById("ekyc_sdk_intergrated");
       if (container) {
         container.innerHTML = "";
       }
@@ -226,9 +193,7 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInitialized, face]);
 
-  return (
-    <div id="ekyc_sdk_intergrated" className={className} />
-  );
+  return <div id="ekyc_sdk_intergrated" className={className} />;
 };
 
 export default EkycSDK;

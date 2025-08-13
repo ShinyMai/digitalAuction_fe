@@ -6,8 +6,6 @@ import { toast } from "react-toastify";
 import AuctionTable from "./component/AuctionTable";
 import SearchAuctionTable from "./component/SearchAuctionTable";
 import type { AuctionCategory, AuctionDataList } from "../Modals";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../store/store";
 
 interface SearchParams {
   AuctionName?: string;
@@ -26,7 +24,9 @@ interface PaginationChangeParams {
 }
 
 const AuctionListNow = () => {
-  const [listAuctionCategory, setListAuctionCategory] = useState<AuctionCategory[]>([]);
+  const [listAuctionCategory, setListAuctionCategory] = useState<
+    AuctionCategory[]
+  >([]);
   const [totalData, setTotalData] = useState<number>(0);
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -36,8 +36,6 @@ const AuctionListNow = () => {
     ConditionAuction: 3,
     Status: 1,
   });
-  const { user } = useSelector((state: RootState) => state.auth);
-  console.log("Check", user);
   useEffect(() => {
     getListAuctionCategory();
   }, [location.search]);
@@ -75,11 +73,16 @@ const AuctionListNow = () => {
         ConditionAuction: searchParams.ConditionAuction,
         CategoryId: searchParams.CategoryId,
       };
-      if (searchParams.AuctionName) params.AuctionName = searchParams.AuctionName;
+      if (searchParams.AuctionName)
+        params.AuctionName = searchParams.AuctionName;
       if (searchParams.CategoryId) params.CategoryId = searchParams.CategoryId;
       if (searchParams.SortBy)
-        params.SortBy = searchParams.SortBy.replace("auctionName", "auction_name");
-      if (searchParams.IsAscending !== undefined) params.IsAscending = searchParams.IsAscending;
+        params.SortBy = searchParams.SortBy.replace(
+          "auctionName",
+          "auction_name"
+        );
+      if (searchParams.IsAscending !== undefined)
+        params.IsAscending = searchParams.IsAscending;
 
       const response = await AuctionServices.getListAuction(params);
       setTotalData(response.data.totalCount);
@@ -124,7 +127,10 @@ const AuctionListNow = () => {
           <AuctionTable
             auctionData={auctionList}
             headerTable={
-              <SearchAuctionTable onSearch={onSearch} auctionCategory={listAuctionCategory} />
+              <SearchAuctionTable
+                onSearch={onSearch}
+                auctionCategory={listAuctionCategory}
+              />
             }
             onChange={onChangeTable}
             total={totalData}

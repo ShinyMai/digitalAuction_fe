@@ -50,7 +50,6 @@ export const useParticipantBiddingHistory = (
       totalAmountSpent: 0,
     }
   );
-
   // Calculate statistics from documents
   const calculateStatistics = useCallback((docs: AuctionDocument[]) => {
     const stats: Statistics = {
@@ -60,11 +59,15 @@ export const useParticipantBiddingHistory = (
         (sum, doc) => sum + (doc.registrationFee || 0),
         0
       ),
-      approvedTickets: docs.filter((doc) => doc.statusTicket === 1).length,
-      pendingTickets: docs.filter((doc) => doc.statusTicket === 0).length,
-      paidDeposits: docs.filter((doc) => doc.statusDeposit === 1).length,
-      pendingDeposits: docs.filter((doc) => doc.statusDeposit === 0).length,
-      refundedDeposits: docs.filter((doc) => doc.statusDeposit === 2).length,
+      // statusTicket: 0-Chưa chuyển tiền, 1-Đã chuyển tiền, 2-Đã nhận phiếu, 3-Đã hoàn tiền
+      approvedTickets: docs.filter((doc) => doc.statusTicket === 2).length,
+      pendingTickets: docs.filter(
+        (doc) => doc.statusTicket === 0 || doc.statusTicket === 1
+      ).length,
+      // statusDeposit: 0-Chưa cọc, 1-Đã cọc, 2-Đã hoàn tiền cọc
+      paidDeposits: docs.filter((doc) => doc.statusDeposit === 1).length, // Đã cọc
+      pendingDeposits: docs.filter((doc) => doc.statusDeposit === 0).length, // Chưa cọc
+      refundedDeposits: docs.filter((doc) => doc.statusDeposit === 2).length, // Đã hoàn tiền cọc
     };
     setStatistics(stats);
   }, []);
@@ -102,9 +105,7 @@ export const useParticipantBiddingHistory = (
             error
           );
         }
-      }
-
-      // Calculate overall statistics
+      } // Calculate overall statistics
       const totalRegistrations = allDocuments.length;
       const totalDeposit = allDocuments.reduce(
         (sum, doc) => sum + (doc.deposit || 0),
@@ -114,24 +115,26 @@ export const useParticipantBiddingHistory = (
         (sum, doc) => sum + (doc.registrationFee || 0),
         0
       );
+      // statusTicket: 0-Chưa chuyển tiền, 1-Đã chuyển tiền, 2-Đã nhận phiếu, 3-Đã hoàn tiền
       const totalApprovedTickets = allDocuments.filter(
-        (doc) => doc.statusTicket === 1
-      ).length;
-      const totalPendingTickets = allDocuments.filter(
-        (doc) => doc.statusTicket === 0
-      ).length;
-      const totalRejectedTickets = allDocuments.filter(
         (doc) => doc.statusTicket === 2
-      ).length;
+      ).length; // Đã nhận phiếu
+      const totalPendingTickets = allDocuments.filter(
+        (doc) => doc.statusTicket === 0 || doc.statusTicket === 1
+      ).length; // Chưa chuyển tiền + Đã chuyển tiền
+      const totalRejectedTickets = allDocuments.filter(
+        (doc) => doc.statusTicket === 3
+      ).length; // Đã hoàn tiền
+      // statusDeposit: 0-Chưa cọc, 1-Đã cọc, 2-Đã hoàn tiền cọc
       const totalPaidDeposits = allDocuments.filter(
         (doc) => doc.statusDeposit === 1
-      ).length;
+      ).length; // Đã cọc
       const totalPendingDeposits = allDocuments.filter(
         (doc) => doc.statusDeposit === 0
-      ).length;
+      ).length; // Chưa cọc
       const totalRefundedDeposits = allDocuments.filter(
         (doc) => doc.statusDeposit === 2
-      ).length;
+      ).length; // Đã hoàn tiền cọc
 
       const stats: OverallStatistics = {
         totalAuctionsParticipated: registeredAuctions.length,
@@ -180,15 +183,20 @@ export const useParticipantBiddingHistory = (
     });
   }, []);
 
-  console.log("Participant Info:", participantInfo);
-
   // Fetch registered auctions
   const fetchRegisteredAuctions = useCallback(async () => {
+    if (!participantInfo?.userId) {
+      console.warn("No userId found in participantInfo:", participantInfo);
+      message.warning("Không tìm thấy userId của người tham gia");
+      setRegisteredAuctions([]);
+      return;
+    }
+
     try {
       setLoading(true);
 
       const requestBody = {
-        userId: participantInfo?.userId,
+        userId: participantInfo.userId,
         pageNumber: 1,
         pageSize: 100,
         search: {
@@ -216,8 +224,9 @@ export const useParticipantBiddingHistory = (
     } finally {
       setLoading(false);
     }
-  }, [participantInfo?.citizenIdentification, participantInfo?.userId]);
-  // Fetch participant data for specific auction
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [participantInfo?.userId]);
+
   const fetchParticipantData = useCallback(async () => {
     if (!selectedAuctionId || !participantInfo?.citizenIdentification) return;
 

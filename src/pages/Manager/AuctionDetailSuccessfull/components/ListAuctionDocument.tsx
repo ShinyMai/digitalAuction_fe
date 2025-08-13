@@ -2,7 +2,17 @@ import { useEffect, useState, useMemo } from "react";
 import { toast } from "react-toastify";
 import AuctionServices from "../../../../services/AuctionServices";
 import type { AuctionDocument, AuctionDateModal } from "../../Modals";
-import { Table, Input, Tag, Select, Button, Card, Modal, Divider, Space } from "antd";
+import {
+  Table,
+  Input,
+  Tag,
+  Select,
+  Button,
+  Card,
+  Modal,
+  Divider,
+  Space,
+} from "antd";
 import {
   HistoryOutlined,
   UserOutlined,
@@ -92,7 +102,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
     const grouped = new Map<string, GroupedParticipant>();
 
     auctionDocuments.forEach((doc) => {
-      const key = doc.citizenIdentification; // Dùng CMND/CCCD làm key
+      const key = doc.citizenIdentification;
 
       if (grouped.has(key)) {
         const existing = grouped.get(key)!;
@@ -188,18 +198,26 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
   };
 
   // Xử lý đánh dấu không tham gia đấu giá
-  const handleMarkNotParticipating = async (participant: GroupedParticipant) => {
-    const auctionDocumentIds = participant.assets.map(asset => asset.auctionDocumentsId);
+  const handleMarkNotParticipating = async (
+    participant: GroupedParticipant
+  ) => {
+    const auctionDocumentIds = participant.assets.map(
+      (asset) => asset.auctionDocumentsId
+    );
     const dataSubmit = {
       auctionDocumentIds: auctionDocumentIds,
-      isAttended: false
-    }
+      isAttended: false,
+    };
     try {
-      const response = await AuctionServices.confirmAttendance(dataSubmit)
+      const response = await AuctionServices.confirmAttendance(dataSubmit);
       if (response.code === 200) {
-        toast.success(`Đã đánh dấu ${participant.name} không tham gia đấu giá cho ${auctionDocumentIds.length} tài sản`);
+        toast.success(
+          `Đã đánh dấu ${participant.name} không tham gia đấu giá cho ${auctionDocumentIds.length} tài sản`
+        );
       } else {
-        toast.warning(`Không thể đánh dấu ${participant.name} không tham gia đấu giá cho ${auctionDocumentIds.length} tài sản`);
+        toast.warning(
+          `Không thể đánh dấu ${participant.name} không tham gia đấu giá cho ${auctionDocumentIds.length} tài sản`
+        );
       }
     } catch (error) {
       console.log(error);
@@ -208,17 +226,23 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
 
   // Xử lý đánh dấu tham gia lại đấu giá
   const handleMarkParticipating = async (participant: GroupedParticipant) => {
-    const auctionDocumentIds = participant.assets.map(asset => asset.auctionDocumentsId);
+    const auctionDocumentIds = participant.assets.map(
+      (asset) => asset.auctionDocumentsId
+    );
     const dataSubmit = {
       auctionDocumentIds: auctionDocumentIds,
-      isAttended: true
-    }
+      isAttended: true,
+    };
     try {
-      const response = await AuctionServices.confirmAttendance(dataSubmit)
+      const response = await AuctionServices.confirmAttendance(dataSubmit);
       if (response.code === 200) {
-        toast.success(`Đã đánh dấu ${participant.name} tham gia lại đấu giá cho ${auctionDocumentIds.length} tài sản`);
+        toast.success(
+          `Đã đánh dấu ${participant.name} tham gia lại đấu giá cho ${auctionDocumentIds.length} tài sản`
+        );
       } else {
-        toast.warning(`Không thể đánh dấu ${participant.name} tham gia lại đấu giá cho ${auctionDocumentIds.length} tài sản`);
+        toast.warning(
+          `Không thể đánh dấu ${participant.name} tham gia lại đấu giá cho ${auctionDocumentIds.length} tài sản`
+        );
       }
     } catch (error) {
       console.log(error);
@@ -287,20 +311,20 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     parseInt(status) === 0
                       ? "gray"
                       : parseInt(status) === 1
-                        ? "blue"
-                        : parseInt(status) === 2
-                          ? "green"
-                          : "orange"
+                      ? "blue"
+                      : parseInt(status) === 2
+                      ? "green"
+                      : "orange"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa chuyển tiền`
                     : parseInt(status) === 1
-                      ? `${count} đã chuyển tiền`
-                      : parseInt(status) === 2
-                        ? `${count} đã nhận phiếu`
-                        : `${count} đã hoàn tiền`}
+                    ? `${count} đã chuyển tiền`
+                    : parseInt(status) === 2
+                    ? `${count} đã nhận phiếu`
+                    : `${count} đã hoàn tiền`}
                 </Tag>
               ))}
             </div>
@@ -433,9 +457,11 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
             </Card>
             <Card className="text-center bg-white border-l-4 border-l-orange-500">
               <div className="text-2xl font-bold text-orange-600">
-                {groupedParticipants
-                  .flatMap(p => p.assets)
-                  .filter(asset => asset.statusDeposit === true).length}
+                {
+                  groupedParticipants
+                    .flatMap((p) => p.assets)
+                    .filter((asset) => asset.statusDeposit === true).length
+                }
               </div>
               <div className="text-sm text-gray-600">Đã cọc</div>
             </Card>
@@ -445,7 +471,9 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                   .reduce((sum, p) => sum + p.totalRegistrationFee, 0)
                   .toLocaleString("vi-VN")}
               </div>
-              <div className="text-sm text-gray-600">Tổng phí đăng ký (VND)</div>
+              <div className="text-sm text-gray-600">
+                Tổng phí đăng ký (VND)
+              </div>
             </Card>
           </div>
         </div>
@@ -638,10 +666,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
               </div>
             </div>
 
-            <Divider
-              orientation="left"
-              className="text-gray-600 text-sm my-3"
-            >
+            <Divider orientation="left" className="text-gray-600 text-sm my-3">
               Danh sách tài sản ({selectedParticipant.assets.length})
             </Divider>
 
@@ -682,20 +707,20 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                           asset.statusTicket === 0
                             ? "gray"
                             : asset.statusTicket === 1
-                              ? "blue"
-                              : asset.statusTicket === 2
-                                ? "green"
-                                : "orange"
+                            ? "blue"
+                            : asset.statusTicket === 2
+                            ? "green"
+                            : "orange"
                         }
                         className="text-xs"
                       >
                         {asset.statusTicket === 0
                           ? "Chưa chuyển tiền"
                           : asset.statusTicket === 1
-                            ? "Đã chuyển tiền"
-                            : asset.statusTicket === 2
-                              ? "Đã nhận phiếu"
-                              : "Đã hoàn tiền"}
+                          ? "Đã chuyển tiền"
+                          : asset.statusTicket === 2
+                          ? "Đã nhận phiếu"
+                          : "Đã hoàn tiền"}
                       </Tag>
 
                       <Tag
@@ -714,8 +739,8 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
             <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
               <div className="flex justify-between items-center text-xs">
                 <span className="text-gray-600">
-                  <strong>{selectedParticipant.assets.length}</strong> tài sản
-                  • Tổng:{" "}
+                  <strong>{selectedParticipant.assets.length}</strong> tài sản •
+                  Tổng:{" "}
                   <strong className="text-green-600">
                     {selectedParticipant.totalRegistrationFee.toLocaleString(
                       "vi-VN"
