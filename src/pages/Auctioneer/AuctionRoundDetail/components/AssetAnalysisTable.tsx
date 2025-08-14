@@ -334,7 +334,7 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
                 title={
                     <div className="!flex !items-center !gap-2 !text-lg">
                         <TrophyOutlined className="!text-yellow-500" />
-                        <span>Danh sách người trả giá cao nhất - {selectedAsset}</span>
+                        <span className='text-black'>Danh sách người trả giá cao nhất - {selectedAsset}</span>
                     </div>
                 }
                 open={modalVisible}

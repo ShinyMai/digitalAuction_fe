@@ -306,7 +306,7 @@ const InputAuctionPrice = ({
 
       if (isDuplicate) {
         setErrorMessage(
-          "Người đấu giá tài sản này đã được bạn nhập giá đấu trước đây"
+          "Khách hàng đấu giá tài sản này đã được thêm vào danh sách trước đây!"
         );
         setLoading(false);
         return;

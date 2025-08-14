@@ -34,7 +34,7 @@ const EmployeeDetailModal: React.FC<EmployeeDetailModalProps> = ({
 
   return (
     <CustomModal
-      title="Thông tin nhân viên"
+      title="Thông tin khách hàng"
       open={open}
       onCancel={onClose}
       footer={null}

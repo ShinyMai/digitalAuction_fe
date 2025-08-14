@@ -151,13 +151,13 @@ const InputAuctionPrice = ({
       const isDuplicate = auctionRoundPriceList.some(
         (item) =>
           item.citizenIdentification ===
-            formattedValues.citizenIdentification &&
+          formattedValues.citizenIdentification &&
           item.auctionAssetId === formattedValues.auctionAssetId
       );
 
       if (isDuplicate) {
         setErrorMessage(
-          "Người đấu giá tài sản này đã được bạn nhập giá đấu trước đây"
+          "Khách hàng đấu giá tài sản này đã được thêm vào danh sách trước đây!"
         );
         setLoading(false);
         return;
@@ -286,12 +286,12 @@ const InputAuctionPrice = ({
   const paginationConfig =
     auctionRoundPriceList.length > 8
       ? {
-          pageSize: 8,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total: number, range: [number, number]) =>
-            `${range[0]}-${range[1]} của ${total} mục`,
-        }
+        pageSize: 8,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        showTotal: (total: number, range: [number, number]) =>
+          `${range[0]}-${range[1]} của ${total} mục`,
+      }
       : false;
 
   return (
@@ -324,9 +324,8 @@ const InputAuctionPrice = ({
             {/* Tổng số phiếu */}
             <Col xs={24} sm={12} lg={6}>
               <Card
-                className={`!bg-gradient-to-br !from-violet-500 !via-purple-500 !to-purple-600 !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${
-                  !selectedAssetId ? "!ring-4 !ring-blue-400" : ""
-                }`}
+                className={`!bg-gradient-to-br !from-violet-500 !via-purple-500 !to-purple-600 !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${!selectedAssetId ? "!ring-4 !ring-blue-400" : ""
+                  }`}
                 onClick={() => setSelectedAssetId(null)}
               >
                 <div className="!flex !flex-col !items-center">
@@ -360,13 +359,11 @@ const InputAuctionPrice = ({
               return (
                 <Col xs={24} sm={12} lg={6} key={asset.auctionAssetsId}>
                   <Card
-                    className={`${
-                      gradients[index % gradients.length]
-                    } !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${
-                      selectedAssetId === asset.auctionAssetsId
+                    className={`${gradients[index % gradients.length]
+                      } !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${selectedAssetId === asset.auctionAssetsId
                         ? "!ring-4 !ring-blue-400"
                         : ""
-                    }`}
+                      }`}
                     onClick={() => setSelectedAssetId(asset.auctionAssetsId)}
                   >
                     <div className="!flex !flex-col !items-center">
@@ -538,8 +535,8 @@ const InputAuctionPrice = ({
                 dataSource={
                   selectedAssetId
                     ? auctionRoundPriceList.filter(
-                        (item) => item.auctionAssetId === selectedAssetId
-                      )
+                      (item) => item.auctionAssetId === selectedAssetId
+                    )
                     : auctionRoundPriceList
                 }
                 columns={columns}

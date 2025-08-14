@@ -97,6 +97,11 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       userId?: string;
     } | null>(null);
 
+  // State cho modal xác nhận không tham gia
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState<boolean>(false);
+  const [selectedParticipantToConfirm, setSelectedParticipantToConfirm] =
+    useState<GroupedParticipant | null>(null);
+
   // Nhóm dữ liệu theo CMND/CCCD
   const groupedParticipants = useMemo(() => {
     const grouped = new Map<string, GroupedParticipant>();
@@ -214,6 +219,8 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
         toast.success(
           `Đã đánh dấu ${participant.name} không tham gia đấu giá cho ${auctionDocumentIds.length} tài sản`
         );
+        // Reload dữ liệu để cập nhật trạng thái
+        getListAuctionDocument();
       } else {
         toast.warning(
           `Không thể đánh dấu ${participant.name} không tham gia đấu giá cho ${auctionDocumentIds.length} tài sản`
@@ -221,32 +228,32 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       }
     } catch (error) {
       console.log(error);
+      toast.error("Có lỗi xảy ra khi cập nhật trạng thái tham gia!");
     }
   };
 
-  // Xử lý đánh dấu tham gia lại đấu giá
-  const handleMarkParticipating = async (participant: GroupedParticipant) => {
-    const auctionDocumentIds = participant.assets.map(
-      (asset) => asset.auctionDocumentsId
-    );
-    const dataSubmit = {
-      auctionDocumentIds: auctionDocumentIds,
-      isAttended: true,
-    };
-    try {
-      const response = await AuctionServices.confirmAttendance(dataSubmit);
-      if (response.code === 200) {
-        toast.success(
-          `Đã đánh dấu ${participant.name} tham gia lại đấu giá cho ${auctionDocumentIds.length} tài sản`
-        );
-      } else {
-        toast.warning(
-          `Không thể đánh dấu ${participant.name} tham gia lại đấu giá cho ${auctionDocumentIds.length} tài sản`
-        );
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  // Xử lý hiển thị modal xác nhận không tham gia
+  const showNotParticipatingConfirm = (participant: GroupedParticipant) => {
+    console.log("showNotParticipatingConfirm called", participant);
+    setSelectedParticipantToConfirm(participant);
+    setIsConfirmModalVisible(true);
+  };
+
+  // Xử lý xác nhận không tham gia
+  const handleConfirmNotParticipating = async () => {
+    if (!selectedParticipantToConfirm) return;
+
+    console.log("handleConfirmNotParticipating called");
+    await handleMarkNotParticipating(selectedParticipantToConfirm);
+    setIsConfirmModalVisible(false);
+    setSelectedParticipantToConfirm(null);
+  };
+
+  // Xử lý hủy modal xác nhận
+  const handleCancelConfirm = () => {
+    console.log("handleCancelConfirm called");
+    setIsConfirmModalVisible(false);
+    setSelectedParticipantToConfirm(null);
   };
 
   const columns = [
@@ -311,20 +318,20 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     parseInt(status) === 0
                       ? "gray"
                       : parseInt(status) === 1
-                      ? "blue"
-                      : parseInt(status) === 2
-                      ? "green"
-                      : "orange"
+                        ? "blue"
+                        : parseInt(status) === 2
+                          ? "green"
+                          : "orange"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa chuyển tiền`
                     : parseInt(status) === 1
-                    ? `${count} đã chuyển tiền`
-                    : parseInt(status) === 2
-                    ? `${count} đã nhận phiếu`
-                    : `${count} đã hoàn tiền`}
+                      ? `${count} đã chuyển tiền`
+                      : parseInt(status) === 2
+                        ? `${count} đã nhận phiếu`
+                        : `${count} đã hoàn tiền`}
                 </Tag>
               ))}
             </div>
@@ -401,28 +408,17 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
             >
               Lịch sử đấu giá
             </Button>
-            {isAttended ? (
+            {isAttended && (
               <Button
                 type="primary"
                 danger
                 size="small"
                 icon={<StopOutlined />}
-                onClick={() => handleMarkNotParticipating(record)}
+                onClick={() => showNotParticipatingConfirm(record)}
                 className="w-full"
                 title="Đánh dấu không tham gia đấu giá"
               >
                 Không tham gia
-              </Button>
-            ) : (
-              <Button
-                type="primary"
-                size="small"
-                icon={<CheckCircleOutlined />}
-                onClick={() => handleMarkParticipating(record)}
-                className="bg-green-500 hover:bg-green-600 w-full"
-                title="Đánh dấu tham gia lại đấu giá"
-              >
-                Tham gia lại
               </Button>
             )}
           </Space>
@@ -707,20 +703,20 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                           asset.statusTicket === 0
                             ? "gray"
                             : asset.statusTicket === 1
-                            ? "blue"
-                            : asset.statusTicket === 2
-                            ? "green"
-                            : "orange"
+                              ? "blue"
+                              : asset.statusTicket === 2
+                                ? "green"
+                                : "orange"
                         }
                         className="text-xs"
                       >
                         {asset.statusTicket === 0
                           ? "Chưa chuyển tiền"
                           : asset.statusTicket === 1
-                          ? "Đã chuyển tiền"
-                          : asset.statusTicket === 2
-                          ? "Đã nhận phiếu"
-                          : "Đã hoàn tiền"}
+                            ? "Đã chuyển tiền"
+                            : asset.statusTicket === 2
+                              ? "Đã nhận phiếu"
+                              : "Đã hoàn tiền"}
                       </Tag>
 
                       <Tag
@@ -767,6 +763,96 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
         onClose={handleCloseBiddingHistoryModal}
         participantInfo={selectedParticipantForHistory}
       />
+
+      {/* Modal xác nhận không tham gia */}
+      <Modal
+        title={
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+              <StopOutlined className="text-red-600 text-lg" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 m-0">
+                Xác nhận đánh dấu không tham gia
+              </h3>
+              <p className="text-sm text-gray-500 m-0">
+                Hành động này sẽ thay đổi trạng thái khách hàng
+              </p>
+            </div>
+          </div>
+        }
+        open={isConfirmModalVisible}
+        onCancel={handleCancelConfirm}
+        width={600}
+        footer={[
+          <Button key="cancel" onClick={handleCancelConfirm} size="large">
+            Hủy
+          </Button>,
+          <Button
+            key="confirm"
+            type="primary"
+            danger
+            onClick={handleConfirmNotParticipating}
+            size="large"
+            icon={<StopOutlined />}
+          >
+            Xác nhận
+          </Button>,
+        ]}
+        className="confirm-modal"
+      >
+        {selectedParticipantToConfirm && (
+          <div className="py-4">
+            {/* Cảnh báo chính */}
+            <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
+              <div className="flex items-start">
+                <div className="ml-3">
+                  <h4 className="text-yellow-800 font-semibold text-base mb-2">
+                    ⚠️ Lưu ý quan trọng
+                  </h4>
+                  <p className="text-yellow-700 text-sm leading-relaxed">
+                    <strong>Hãy kiểm tra lại trong danh sách ký tham gia để chắc chắn khách hàng không tham gia.</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Thông tin khách hàng */}
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <h4 className="text-gray-800 font-semibold mb-3 flex items-center gap-2">
+                <UserOutlined className="text-blue-500" />
+                Thông tin khách hàng
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-600">Họ tên:</span>
+                  <p className="font-medium text-gray-800">{selectedParticipantToConfirm.name}</p>
+                </div>
+                <div>
+                  <span className="text-gray-600">CMND/CCCD:</span>
+                  <p className="font-medium text-gray-800">{selectedParticipantToConfirm.citizenIdentification}</p>
+                </div>
+                <div>
+                  <span className="text-gray-600">Số tài sản đăng ký:</span>
+                  <p className="font-medium text-blue-600">{selectedParticipantToConfirm.assets.length} tài sản</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Thông báo kết quả */}
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-800 text-sm mb-2">
+                <strong>Sau khi xác nhận:</strong>
+              </p>
+              <ul className="text-blue-700 text-sm space-y-1 ml-4">
+                <li>• Khách hàng sẽ được đánh dấu là <strong>"Không tham gia"</strong></li>
+                <li>• Trạng thái sẽ được cập nhật trong hệ thống</li>
+                <li>• Không thể hoàn tác hành động này từ giao diện này</li>
+              </ul>
+            </div>
+          </div>
+        )}
+      </Modal>
     </section>
   );
 };
