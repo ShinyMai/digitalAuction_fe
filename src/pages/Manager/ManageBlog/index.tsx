@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import NewsServices from "../../../services/NewsService";
 import BlogTable from "./components/BlogTable";
 import SearchBlogTable from "./components/SearchBlogTable";
+import DetailBlog from "./modal/DetailBlog";
 import type { ApiResponse } from "../../../types/responseAxios";
 import type {
   BlogData,
@@ -39,6 +40,8 @@ const ManageBlog = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [searchParams, setSearchParams] =
     useState<SearchParams>(DEFAULT_PARAMS);
+  const [selectedBlog, setSelectedBlog] = useState<BlogData | null>(null);
+  const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
   const fetchBlogList = useCallback(async (): Promise<void> => {
     try {
       setLoading(true);
@@ -102,7 +105,6 @@ const ManageBlog = () => {
 
     setSearchParams(newParams);
   };
-
   const onChangeTable = (pagination: PaginationChangeParams): void => {
     const newParams: SearchParams = {
       ...searchParams,
@@ -113,9 +115,20 @@ const ManageBlog = () => {
     setSearchParams(newParams);
   };
 
+  const handleRowClick = (record: BlogData): void => {
+    setSelectedBlog(record);
+    setDetailModalOpen(true);
+  };
+
+  const handleCloseDetailModal = (): void => {
+    setDetailModalOpen(false);
+    setSelectedBlog(null);
+  };
+
   return (
     <section className="w-full h-full p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
+        {" "}
         {/* Main Content */}
         <div className="w-full" id="blog-table-list">
           <BlogTable
@@ -127,8 +140,15 @@ const ManageBlog = () => {
             pageSize={searchParams.PageSize}
             currentPage={searchParams.PageNumber}
             onStatusChange={fetchBlogList}
+            onRowClick={handleRowClick}
           />
         </div>
+        {/* Detail Blog Modal */}
+        <DetailBlog
+          open={detailModalOpen}
+          onCancel={handleCloseDetailModal}
+          blogData={selectedBlog}
+        />
       </div>
     </section>
   );

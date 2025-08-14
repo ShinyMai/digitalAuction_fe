@@ -9,9 +9,9 @@ import {
   type PopconfirmProps,
 } from "antd";
 import {
-  DeleteOutlined,
   CheckOutlined,
   CloseOutlined,
+  EyeInvisibleOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import NewsServices from "../../../../services/NewsService";
@@ -246,8 +246,8 @@ const BlogTable = ({
               >
                 <Button
                   type="text"
-                  icon={<DeleteOutlined />}
-                  className="!text-red-600 !hover:bg-red-50"
+                  icon={<EyeInvisibleOutlined />}
+                  className="!text-gray-600 !hover:bg-red-50"
                 />
               </Popconfirm>
             </Tooltip>
