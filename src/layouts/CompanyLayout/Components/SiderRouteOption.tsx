@@ -7,7 +7,6 @@ import {
   MenuUnfoldOutlined,
   SolutionOutlined,
   FormOutlined,
-  PieChartOutlined,
   LineChartOutlined,
   DashboardOutlined,
   FileSearchOutlined,
@@ -50,16 +49,9 @@ const items: MenuItem[] = [
   {
     key: "dashboard",
     icon: <BarChartOutlined className="text-xl" />,
-    label: "Dashboard & Thống kê",
-    roleView: ["Manager", "Director", "Admin", "Auctioneer"],
+    label: "Thống kê",
+    roleView: ["Manager", "Director"],
     children: [
-      {
-        key: "1",
-        icon: <PieChartOutlined />,
-        label: "Thống kê tổng quan",
-        url: STAFF_ROUTES.SUB.STATISTICS,
-        roleView: ["Manager", "Director", "Admin"],
-      },
       {
         key: "2",
         icon: <LineChartOutlined />,
@@ -70,9 +62,9 @@ const items: MenuItem[] = [
       {
         key: "3",
         icon: <DashboardOutlined />,
-        label: "Manager Dashboard ( Chưa API )",
+        label: "Thống kê tổng quan",
         url: MANAGER_ROUTES.SUB.MANAGER_DASHBOARD,
-        roleView: ["Manager"],
+        roleView: ["Manager", "Director"],
       },
     ],
   },

@@ -43,6 +43,7 @@ const AuctionDetailAnonymous = () => {
       setAuctionDetailData(data);
     } catch (error) {
       console.error("Error fetching auction detail:", error);
+      toast.error("Không thể tải thông tin phiên đấu giá!");
     }
   };
 
@@ -54,13 +55,18 @@ const AuctionDetailAnonymous = () => {
     setIsEditMode(!isEditMode);
   };
 
-  // const handleUpdateSuccess = () => {
-  //   setIsEditMode(false);
-  //   // Refresh data sau khi update thành công
-  //   if (auctionId) {
-  //     fetchAuctionDetail(auctionId);
-  //   }
-  // };
+  const handleUpdateSuccess = async () => {
+    setIsEditMode(false);
+    // Refresh data sau khi update thành công
+    if (auctionId) {
+      try {
+        await fetchAuctionDetail(auctionId);
+        toast.success("Dữ liệu đã được cập nhật và tải lại thành công!");
+      } catch {
+        toast.error("Cập nhật thành công nhưng không thể tải lại dữ liệu!");
+      }
+    }
+  };
 
   const handleSendToManager = async () => {
     try {
@@ -147,6 +153,7 @@ const AuctionDetailAnonymous = () => {
                   auctionDetailData={auctionDetailData}
                   auctionType={auctionType}
                   auctionId={auctionId}
+                  onUpdateSuccess={handleUpdateSuccess}
                 />
               </motion.div>
             ) : (

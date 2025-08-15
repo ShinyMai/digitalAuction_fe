@@ -28,6 +28,7 @@ interface UpdateAuctionProps {
   auctionDetailData: AuctionDataDetail | undefined;
   auctionType?: string;
   auctionId?: string;
+  onUpdateSuccess?: () => void;
 }
 
 const { TextArea } = Input;
@@ -36,6 +37,7 @@ const { RangePicker } = DatePicker;
 const UpdateAuction = ({
   auctionDetailData,
   auctionId,
+  onUpdateSuccess,
 }: UpdateAuctionProps) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -180,6 +182,10 @@ const UpdateAuction = ({
       const response = await AuctionServices.updateAuction(formData);
       if (response.code === 200) {
         toast.success(response.message);
+        // Gọi callback để quay lại màn detail và reload data
+        if (onUpdateSuccess) {
+          onUpdateSuccess();
+        }
       } else {
         toast.error("Cập nhật phiên đấu giá thất bại");
       }
