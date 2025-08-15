@@ -242,10 +242,6 @@ const AuctionListAnonyMous = () => {
                       <h3 className="text-2xl font-bold text-gray-700 mb-4">
                         Không tìm thấy đấu giá đã hoàn thành nào
                       </h3>
-                      <p className="text-gray-500 text-lg mb-8 max-w-md mx-auto">
-                        Hiện tại chưa có phiên đấu giá nào đã hoàn thành phù hợp
-                        với tiêu chí tìm kiếm của bạn
-                      </p>
                       <button
                         onClick={() =>
                           setSearchParams((prev) => ({
