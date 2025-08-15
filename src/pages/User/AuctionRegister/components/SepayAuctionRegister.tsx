@@ -1,5 +1,5 @@
 // src/components/SepayAuctionregister.tsx
-import { Image, Row, Col, message, Card, Button, Spin } from "antd";
+import { Image, Row, Col, Card, Button, Spin } from "antd";
 import {
   QrcodeOutlined,
   BankOutlined,
@@ -26,18 +26,26 @@ import ExportDocx from "../../../../components/Common/ExportDocs";
 import AuctionServices from "../../../../services/AuctionServices";
 import { useEffect, useState } from "react";
 import { formatNumber } from "../../../../utils/numberFormat";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   dataQrSepay?: dataPayment;
   dataUser?: UserInfomation;
   dataAutionAsset?: AuctionAsset;
-  onBackSelectAsset: () => void
+  onBackSelectAsset: () => void;
 }
 
-const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAutionAsset, onBackSelectAsset }) => {
+const SepayAuctionregister: React.FC<Props> = ({
+  dataQrSepay,
+  dataUser,
+  dataAutionAsset,
+  onBackSelectAsset,
+}) => {
   const [isPaid, setIsPaid] = useState<boolean>(false);
   const [isChecking, setIsChecking] = useState<boolean>(true);
   const [countdown, setCountdown] = useState<number>(45);
+  const navigate = useNavigate();
 
   const getDataExport = () => {
     const valueReturn: RegistrationAuctionModals = {
@@ -78,7 +86,7 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
   useEffect(() => {
     if (dataQrSepay?.auctionDocumentsId) {
       let callCount = 0;
-      const maxCalls = 15;
+      const maxCalls = 30;
 
       const intervalId = setInterval(async () => {
         callCount++;
@@ -94,16 +102,17 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
 
           if (!isPaidResult && callCount >= maxCalls) {
             setIsPaid(false);
-            message.error(
+            toast.error(
               "Thanh toán thất bại! Vui lòng thử lại hoặc liên hệ hỗ trợ."
             );
+            navigate("/");
           }
         }
-      }, 3000);
+      }, 1000);
 
       return () => clearInterval(intervalId);
     }
-  }, [dataQrSepay]);
+  }, [dataQrSepay, navigate]);
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
@@ -147,12 +156,13 @@ const SepayAuctionregister: React.FC<Props> = ({ dataQrSepay, dataUser, dataAuti
           >
             <Card className="text-center bg-white/80 backdrop-blur-sm shadow-2xl border-0 rounded-3xl overflow-hidden">
               <div
-                className={`p-6 ${isPaid
-                  ? "bg-gradient-to-r from-green-500 to-emerald-600"
-                  : isChecking
+                className={`p-6 ${
+                  isPaid
+                    ? "bg-gradient-to-r from-green-500 to-emerald-600"
+                    : isChecking
                     ? "bg-gradient-to-r from-blue-500 to-purple-600"
                     : "bg-gradient-to-r from-orange-500 to-red-600"
-                  } text-white relative`}
+                } text-white relative`}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent"></div>
                 <div className="relative z-10">
