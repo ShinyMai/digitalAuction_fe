@@ -125,7 +125,7 @@ const AuctionDetail = ({ auctionDetailData, auctionType, onApprove, onReject }: 
                       className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg !ml-2"
                       onClick={onReject}
                     >
-                      Hủy thông tin
+                      Từ chối phê duyệt thông tin
                     </Button>
                   </div>
                 )}
@@ -134,8 +134,8 @@ const AuctionDetail = ({ auctionDetailData, auctionType, onApprove, onReject }: 
 
             {/* Mô tả tài sản và danh sách tài sản */}
             <div>
-              <h3 className="text-lg font-semibold text-blue-800 mb-4">Mô tả chung</h3>
-              <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-blue-800 mb-4">Thông tin người có tài sản</h3>
+              <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">
                 {auctionDetailData.auctionDescription || "Không có mô tả."}
               </p>
 

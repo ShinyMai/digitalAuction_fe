@@ -78,8 +78,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.registerOpenDate
                         ? dayjs(auctionDetailData.registerOpenDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -90,8 +90,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.registerEndDate
                         ? dayjs(auctionDetailData.registerEndDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -102,8 +102,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.auctionStartDate
                         ? dayjs(auctionDetailData.auctionStartDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -114,8 +114,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.auctionEndDate
                         ? dayjs(auctionDetailData.auctionEndDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -162,9 +162,9 @@ const AuctionDetail = ({
             {/* Mô tả tài sản và danh sách tài sản */}
             <div>
               <h3 className="text-lg font-semibold text-blue-800 mb-4">
-                Mô tả chung
+                Thông tin người có tài sản
               </h3>
-              <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg">
+              <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">
                 {auctionDetailData.auctionDescription || "Không có mô tả."}
               </p>
 
@@ -172,7 +172,7 @@ const AuctionDetail = ({
                 Danh sách tài sản đấu giá
               </h3>
               {auctionDetailData.listAuctionAssets &&
-              auctionDetailData.listAuctionAssets.length > 0 ? (
+                auctionDetailData.listAuctionAssets.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {auctionDetailData.listAuctionAssets.map((asset) => (
                     <Card
@@ -197,8 +197,8 @@ const AuctionDetail = ({
                           <span className="text-teal-800">
                             {asset.startingPrice
                               ? `${parseFloat(
-                                  asset.startingPrice
-                                ).toLocaleString("vi-VN")} VND`
+                                asset.startingPrice
+                              ).toLocaleString("vi-VN")} VND`
                               : "-"}
                           </span>
                         </div>
@@ -209,8 +209,8 @@ const AuctionDetail = ({
                           <span className="text-teal-800">
                             {asset.deposit
                               ? `${parseFloat(asset.deposit).toLocaleString(
-                                  "vi-VN"
-                                )} VND`
+                                "vi-VN"
+                              )} VND`
                               : "-"}
                           </span>
                         </div>
@@ -221,8 +221,8 @@ const AuctionDetail = ({
                           <span className="text-teal-800">
                             {asset.registrationFee
                               ? `${parseFloat(
-                                  asset.registrationFee
-                                ).toLocaleString("vi-VN")} VND`
+                                asset.registrationFee
+                              ).toLocaleString("vi-VN")} VND`
                               : "-"}
                           </span>
                         </div>
@@ -267,8 +267,8 @@ const AuctionDetail = ({
                       auctionType === "SQL"
                         ? auctionDetailData.auctionRules
                         : API_BASE_URL_NODE +
-                          "/" +
-                          auctionDetailData.auctionRules
+                        "/" +
+                        auctionDetailData.auctionRules
                     }
                     target="_blank"
                     className="text-teal-600"
@@ -282,7 +282,7 @@ const AuctionDetail = ({
             </div>
             {/* Thông tin bản đồ */}
             {auctionDetailData.auctionMap ||
-            auctionDetailData.auctionPlanningMap ? (
+              auctionDetailData.auctionPlanningMap ? (
               <div className="mt-8">
                 <h3 className="text-lg font-semibold text-blue-800 mb-4">
                   Thông tin bản đồ tài sản
@@ -297,8 +297,8 @@ const AuctionDetail = ({
                             auctionType === "SQL"
                               ? auctionDetailData.auctionPlanningMap
                               : API_BASE_URL_NODE +
-                                "/" +
-                                auctionDetailData.auctionPlanningMap
+                              "/" +
+                              auctionDetailData.auctionPlanningMap
                           }
                           target="_blank"
                           className="text-teal-600 font-medium hover:text-teal-800 "
@@ -315,8 +315,8 @@ const AuctionDetail = ({
                             auctionType === "SQL"
                               ? auctionDetailData.auctionMap
                               : API_BASE_URL_NODE +
-                                "/" +
-                                auctionDetailData.auctionMap
+                              "/" +
+                              auctionDetailData.auctionMap
                           }
                           target="_blank"
                           className="text-teal-600 font-medium hover:text-teal-800"

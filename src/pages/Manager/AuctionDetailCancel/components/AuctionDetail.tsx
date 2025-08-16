@@ -42,77 +42,77 @@ const AuctionDetail = ({
             {/* Thông báo hủy đấu giá - Hiển thị nổi bật ở đầu trang */}
             {(auctionDetailData.cancelReason ||
               auctionDetailData.cancelReasonFile) && (
-              <div className="mb-8">
-                <Alert
-                  message={
-                    <div className="flex items-center">
-                      <WarningOutlined className="text-orange-600 mr-2 text-xl" />
-                      <span className="font-bold text-orange-800 text-lg">
-                        Phiên đấu giá này đã bị hủy
-                      </span>
-                    </div>
-                  }
-                  description={
-                    <div className="mt-4">
-                      {/* Lý do hủy */}
-                      {auctionDetailData.cancelReason && (
-                        <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400 mb-4">
-                          <h4 className="font-semibold text-orange-800 mb-3 flex items-center">
-                            <FileTextOutlined className="mr-2" />
-                            Lý do hủy đấu giá:
-                          </h4>
-                          <div className="bg-white p-3 rounded-md border border-orange-200">
-                            <p className="text-orange-700 whitespace-pre-wrap leading-relaxed text-sm">
-                              {auctionDetailData.cancelReason}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* File lý do hủy */}
-                      {auctionDetailData.cancelReasonFile && (
-                        <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
-                          <h4 className="font-semibold text-orange-800 mb-3 flex items-center">
-                            <FileTextOutlined className="mr-2" />
-                            Tài liệu lý do hủy:
-                          </h4>
-                          <div className="bg-white p-3 rounded-md border border-orange-200">
-                            <Button
-                              type="link"
-                              icon={<DownloadOutlined />}
-                              href={
-                                auctionType === "SQL"
-                                  ? auctionDetailData.cancelReasonFile
-                                  : API_BASE_URL_NODE +
-                                    "/" +
-                                    auctionDetailData.cancelReasonFile
-                              }
-                              target="_blank"
-                              className="text-orange-600 hover:text-orange-800 font-medium p-0"
-                            >
-                              Tải xuống tài liệu lý do hủy đấu giá
-                            </Button>
-                            <div className="mt-2">
-                              <span className="text-xs text-orange-500">
-                                Click để xem chi tiết tài liệu giải trình
-                              </span>
+                <div className="mb-8">
+                  <Alert
+                    message={
+                      <div className="flex items-center">
+                        <WarningOutlined className="text-orange-600 mr-2 text-xl" />
+                        <span className="font-bold text-orange-800 text-lg">
+                          Phiên đấu giá này đã bị hủy
+                        </span>
+                      </div>
+                    }
+                    description={
+                      <div className="mt-4">
+                        {/* Lý do hủy */}
+                        {auctionDetailData.cancelReason && (
+                          <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400 mb-4">
+                            <h4 className="font-semibold text-orange-800 mb-3 flex items-center">
+                              <FileTextOutlined className="mr-2" />
+                              Lý do hủy đấu giá:
+                            </h4>
+                            <div className="bg-white p-3 rounded-md border border-orange-200">
+                              <p className="text-orange-700 whitespace-pre-wrap leading-relaxed text-sm">
+                                {auctionDetailData.cancelReason}
+                              </p>
                             </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  }
-                  type="warning"
-                  showIcon={false}
-                  className="border-orange-300 shadow-lg"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%)",
-                    borderRadius: "12px",
-                  }}
-                />
-              </div>
-            )}
+                        )}
+
+                        {/* File lý do hủy */}
+                        {auctionDetailData.cancelReasonFile && (
+                          <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
+                            <h4 className="font-semibold text-orange-800 mb-3 flex items-center">
+                              <FileTextOutlined className="mr-2" />
+                              Tài liệu lý do hủy:
+                            </h4>
+                            <div className="bg-white p-3 rounded-md border border-orange-200">
+                              <Button
+                                type="link"
+                                icon={<DownloadOutlined />}
+                                href={
+                                  auctionType === "SQL"
+                                    ? auctionDetailData.cancelReasonFile
+                                    : API_BASE_URL_NODE +
+                                    "/" +
+                                    auctionDetailData.cancelReasonFile
+                                }
+                                target="_blank"
+                                className="text-orange-600 hover:text-orange-800 font-medium p-0"
+                              >
+                                Tải xuống tài liệu lý do hủy đấu giá
+                              </Button>
+                              <div className="mt-2">
+                                <span className="text-xs text-orange-500">
+                                  Click để xem chi tiết tài liệu giải trình
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    }
+                    type="warning"
+                    showIcon={false}
+                    className="border-orange-300 shadow-lg"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%)",
+                      borderRadius: "12px",
+                    }}
+                  />
+                </div>
+              )}
 
             {/* Thông tin đấu giá */}
             <div className="flex flex-col md:flex-row items-stretch mb-6">
@@ -142,8 +142,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.registerOpenDate
                         ? dayjs(auctionDetailData.registerOpenDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -154,8 +154,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.registerEndDate
                         ? dayjs(auctionDetailData.registerEndDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -166,8 +166,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.auctionStartDate
                         ? dayjs(auctionDetailData.auctionStartDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -178,8 +178,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.auctionEndDate
                         ? dayjs(auctionDetailData.auctionEndDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -216,9 +216,9 @@ const AuctionDetail = ({
             {/* Mô tả tài sản và danh sách tài sản */}
             <div>
               <h3 className="text-lg font-semibold text-blue-800 mb-4">
-                Mô tả chung
+                Thông tin người có tài sản
               </h3>
-              <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg">
+              <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">
                 {auctionDetailData.auctionDescription || "Không có mô tả."}
               </p>
 
@@ -226,7 +226,7 @@ const AuctionDetail = ({
                 Danh sách tài sản đấu giá
               </h3>
               {auctionDetailData.listAuctionAssets &&
-              auctionDetailData.listAuctionAssets.length > 0 ? (
+                auctionDetailData.listAuctionAssets.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {auctionDetailData.listAuctionAssets.map((asset) => (
                     <Card
@@ -251,8 +251,8 @@ const AuctionDetail = ({
                           <span className="text-teal-800">
                             {asset.startingPrice
                               ? `${parseFloat(
-                                  asset.startingPrice
-                                ).toLocaleString("vi-VN")} VND`
+                                asset.startingPrice
+                              ).toLocaleString("vi-VN")} VND`
                               : "-"}
                           </span>
                         </div>
@@ -263,8 +263,8 @@ const AuctionDetail = ({
                           <span className="text-teal-800">
                             {asset.deposit
                               ? `${parseFloat(asset.deposit).toLocaleString(
-                                  "vi-VN"
-                                )} VND`
+                                "vi-VN"
+                              )} VND`
                               : "-"}
                           </span>
                         </div>
@@ -275,8 +275,8 @@ const AuctionDetail = ({
                           <span className="text-teal-800">
                             {asset.registrationFee
                               ? `${parseFloat(
-                                  asset.registrationFee
-                                ).toLocaleString("vi-VN")} VND`
+                                asset.registrationFee
+                              ).toLocaleString("vi-VN")} VND`
                               : "-"}
                           </span>
                         </div>
@@ -321,8 +321,8 @@ const AuctionDetail = ({
                       auctionType === "SQL"
                         ? auctionDetailData.auctionRules
                         : API_BASE_URL_NODE +
-                          "/" +
-                          auctionDetailData.auctionRules
+                        "/" +
+                        auctionDetailData.auctionRules
                     }
                     target="_blank"
                     className="text-teal-600"
@@ -337,7 +337,7 @@ const AuctionDetail = ({
 
             {/* Thông tin bản đồ */}
             {auctionDetailData.auctionMap ||
-            auctionDetailData.auctionPlanningMap ? (
+              auctionDetailData.auctionPlanningMap ? (
               <div className="mt-8">
                 <h3 className="text-lg font-semibold text-blue-800 mb-4">
                   Thông tin bản đồ tài sản
@@ -352,8 +352,8 @@ const AuctionDetail = ({
                             auctionType === "SQL"
                               ? auctionDetailData.auctionPlanningMap
                               : API_BASE_URL_NODE +
-                                "/" +
-                                auctionDetailData.auctionPlanningMap
+                              "/" +
+                              auctionDetailData.auctionPlanningMap
                           }
                           target="_blank"
                           className="text-teal-600 font-medium hover:text-teal-800 "
@@ -370,8 +370,8 @@ const AuctionDetail = ({
                             auctionType === "SQL"
                               ? auctionDetailData.auctionMap
                               : API_BASE_URL_NODE +
-                                "/" +
-                                auctionDetailData.auctionMap
+                              "/" +
+                              auctionDetailData.auctionMap
                           }
                           target="_blank"
                           className="text-teal-600 font-medium hover:text-teal-800"

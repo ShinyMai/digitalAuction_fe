@@ -129,7 +129,7 @@ const AuctionDetailDraff = () => {
       // Có thể redirect về trang danh sách sau khi từ chối
 
     } catch (error: any) {
-      toast.error(error.message || "Lỗi khi từ chối đăng tải phiên đấu giá!");
+      toast.error("Lỗi khi từ chối đăng tải phiên đấu giá!");
       console.error(error);
     } finally {
       setRejectLoading(false);

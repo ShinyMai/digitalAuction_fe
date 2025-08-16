@@ -210,8 +210,8 @@ const AuctionDetailAnonymous = () => {
                               <p className="font-bold text-white">
                                 {auctionDetailData.auctionStartDate
                                   ? dayjs(
-                                      auctionDetailData.auctionStartDate
-                                    ).format("DD/MM/YYYY")
+                                    auctionDetailData.auctionStartDate
+                                  ).format("DD/MM/YYYY")
                                   : "Chưa xác định"}
                               </p>
                             </div>
@@ -230,8 +230,8 @@ const AuctionDetailAnonymous = () => {
                               <p className="font-bold text-white">
                                 {auctionDetailData.registerEndDate
                                   ? dayjs(
-                                      auctionDetailData.registerEndDate
-                                    ).format("DD/MM/YYYY")
+                                    auctionDetailData.registerEndDate
+                                  ).format("DD/MM/YYYY")
                                   : "Chưa xác định"}
                               </p>
                             </div>
@@ -300,8 +300,8 @@ const AuctionDetailAnonymous = () => {
                                   label: "Ngày mở đăng ký",
                                   value: auctionDetailData.registerOpenDate
                                     ? dayjs(
-                                        auctionDetailData.registerOpenDate
-                                      ).format("DD/MM/YYYY")
+                                      auctionDetailData.registerOpenDate
+                                    ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "green",
                                 },
@@ -312,8 +312,8 @@ const AuctionDetailAnonymous = () => {
                                   label: "Hạn đăng ký",
                                   value: auctionDetailData.registerEndDate
                                     ? dayjs(
-                                        auctionDetailData.registerEndDate
-                                      ).format("DD/MM/YYYY")
+                                      auctionDetailData.registerEndDate
+                                    ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "red",
                                 },
@@ -324,8 +324,8 @@ const AuctionDetailAnonymous = () => {
                                   label: "Bắt đầu đấu giá",
                                   value: auctionDetailData.auctionStartDate
                                     ? dayjs(
-                                        auctionDetailData.auctionStartDate
-                                      ).format("DD/MM/YYYY")
+                                      auctionDetailData.auctionStartDate
+                                    ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "blue",
                                 },
@@ -336,8 +336,8 @@ const AuctionDetailAnonymous = () => {
                                   label: "Kết thúc đấu giá",
                                   value: auctionDetailData.auctionEndDate
                                     ? dayjs(
-                                        auctionDetailData.auctionEndDate
-                                      ).format("DD/MM/YYYY")
+                                      auctionDetailData.auctionEndDate
+                                    ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "purple",
                                 },
@@ -477,17 +477,12 @@ const AuctionDetailAnonymous = () => {
                             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                               <FileTextOutlined className="text-white text-sm" />
                             </div>
-                            Mô tả chung
+                            Thông tin người có tài sản
                           </h3>
                           <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-xl border border-blue-200">
-                            <div
-                              className="text-gray-700 leading-relaxed prose prose-blue max-w-none"
-                              dangerouslySetInnerHTML={{
-                                __html:
-                                  auctionDetailData.auctionDescription ||
-                                  "Không có mô tả.",
-                              }}
-                            />
+                            <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">
+                              {auctionDetailData.auctionDescription || "Không có mô tả."}
+                            </p>
                           </div>
                         </div>
 
@@ -500,7 +495,7 @@ const AuctionDetailAnonymous = () => {
                             Danh sách tài sản đấu giá
                           </h3>
                           {auctionDetailData.listAuctionAssets &&
-                          auctionDetailData.listAuctionAssets.length > 0 ? (
+                            auctionDetailData.listAuctionAssets.length > 0 ? (
                             <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
                               <Table
                                 columns={assetColumns}

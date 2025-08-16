@@ -131,8 +131,8 @@ const AuctionDetail = ({
 
             {/* Mô tả tài sản và danh sách tài sản */}
             <div>
-              <h3 className="text-lg font-semibold text-blue-800 mb-4">Mô tả chung</h3>
-              <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-blue-800 mb-4">Thông tin người có tài sản</h3>
+              <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">
                 {auctionDetailData.auctionDescription || "Không có mô tả."}
               </p>
 
