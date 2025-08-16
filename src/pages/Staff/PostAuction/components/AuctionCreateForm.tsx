@@ -483,7 +483,7 @@ const AuctionCreateForm = ({
                   name="AuctionDescription"
                   label={
                     <span className="!font-medium !text-blue-900">
-                      Thông tin chi tiết tài sản
+                      Thông tin chủ tài sản
                     </span>
                   }
                   rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}

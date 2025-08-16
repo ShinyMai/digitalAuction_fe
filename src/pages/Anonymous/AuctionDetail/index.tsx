@@ -477,7 +477,7 @@ const AuctionDetailAnonymous = () => {
                             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                               <FileTextOutlined className="text-white text-sm" />
                             </div>
-                            Thông tin người có tài sản
+                            Thông tin chủ tài sản
                           </h3>
                           <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-xl border border-blue-200">
                             <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">

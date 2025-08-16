@@ -10,11 +10,9 @@ import {
   Space,
   Button,
   Modal,
-  Checkbox,
   Input,
   Upload,
   Form,
-  Divider,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -118,6 +116,12 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
 
   // Handle cancel modal functions
   const handleOpenCancelModal = () => {
+    // Tự động chọn tất cả tài sản có statusDeposit = 1 (đã xác nhận cọc)
+    const confirmedDepositAssets = filteredDocuments
+      .filter(doc => doc.statusDeposit === 1)
+      .map(doc => doc.auctionDocumentsId);
+
+    setSelectedAssets(confirmedDepositAssets);
     setIsCancelModalVisible(true);
   };
 
@@ -139,22 +143,6 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
     setSelectedDocument(null);
   };
 
-  const handleAssetSelection = (assetId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedAssets(prev => [...prev, assetId]);
-    } else {
-      setSelectedAssets(prev => prev.filter(id => id !== assetId));
-    }
-  };
-
-  const handleSelectAllAssets = (checked: boolean) => {
-    if (checked) {
-      setSelectedAssets(filteredDocuments.map(doc => doc.auctionDocumentsId));
-    } else {
-      setSelectedAssets([]);
-    }
-  };
-
   const handleFileUpload = (info: any) => {
     const { file } = info;
 
@@ -167,8 +155,11 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
   };
 
   const handleSubmitCancelRequest = async () => {
-    if (selectedAssets.length === 0) {
-      toast.error("Vui lòng chọn ít nhất một tài sản để hủy tham gia!");
+    // Kiểm tra có tài sản nào đã xác nhận cọc không
+    const confirmedDepositAssets = filteredDocuments.filter(doc => doc.statusDeposit === 1);
+
+    if (confirmedDepositAssets.length === 0) {
+      toast.error("Không có tài sản nào đã xác nhận cọc để hủy tham gia!");
       return;
     }
 
@@ -202,13 +193,14 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
         const fileToUpload = uploadedFile.originFileObj || uploadedFile;
         formData.append('RefundProof', fileToUpload);
       }
-      const response = await AuctionServices.userRequestRefund(formData);
-      if (response.code == 200) {
-        toast.success(response.message)
-      } else {
-        toast.error(response.message || "Có lỗi xảy ra khi gửi yêu cầu!");
-      }
-      handleCloseCancelModal();
+      // const response = await AuctionServices.userRequestRefund(formData);
+      // if (response.code == 200) {
+      //   toast.success(response.message)
+      // } else {
+      //   toast.error(response.message || "Có lỗi xảy ra khi gửi yêu cầu!");
+      // }
+      // handleCloseCancelModal();
+      console.log("Check check: ", selectedAssets)
     } catch (error) {
       console.error("Error submitting cancel request:", error);
       toast.error("Có lỗi xảy ra khi gửi yêu cầu!");
@@ -585,15 +577,18 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
         title={
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>Danh sách đăng ký tham gia đấu giá</span>
-            <Button
-              type="primary"
-              danger
-              size="small"
-              icon={<DeleteOutlined />}
-              onClick={handleOpenCancelModal}
-            >
-              Xin hủy tham gia đấu giá
-            </Button>
+            {/* Chỉ hiển thị button khi có ít nhất 1 tài sản đã xác nhận cọc */}
+            {filteredDocuments.some(doc => doc.statusDeposit === 1) && (
+              <Button
+                type="primary"
+                danger
+                size="small"
+                icon={<DeleteOutlined />}
+                onClick={handleOpenCancelModal}
+              >
+                Xin hủy tham gia đấu giá
+              </Button>
+            )}
           </div>
         }
         style={{ marginBottom: "24px " }}
@@ -615,176 +610,452 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
       {/* Cancel Participation Modal */}
       <Modal
         title={
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <ExclamationCircleOutlined style={{ color: "#ff4d4f", fontSize: "20px" }} />
-            <span style={{ fontSize: "16px", fontWeight: "600" }} className="text-black">
-              Xin hủy tham gia đấu giá
-            </span>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "2px 0",
+            borderBottom: "1px solid #f0f0f0",
+            marginBottom: "8px"
+          }}>
+            <div style={{
+              width: "28px",
+              height: "28px",
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #ff7875 0%, #ff4d4f 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 8px rgba(255, 77, 79, 0.3)"
+            }}>
+              <ExclamationCircleOutlined style={{ color: "white", fontSize: "12px" }} />
+            </div>
+            <div>
+              <div style={{ fontSize: "17px", fontWeight: "600", color: "#262626", lineHeight: "1.1" }}>
+                Xin hủy tham gia đấu giá
+              </div>
+              <div style={{ fontSize: "13px", color: "#8c8c8c", marginTop: "1px" }}>
+                Yêu cầu hủy tham gia các tài sản đã xác nhận cọc
+              </div>
+            </div>
           </div>
         }
         open={isCancelModalVisible}
         onCancel={handleCloseCancelModal}
-        width={700}
+        width={650}
         footer={null}
         destroyOnClose
         className="cancel-participation-modal"
+        style={{
+          top: "30px"
+        }}
+        bodyStyle={{
+          padding: "12px 16px 16px 16px",
+          background: "#fafafa"
+        }}
       >
-        <div style={{ padding: "20px 0" }}>
-          {/* Warning Message */}
-          <div
-            style={{
+        {/* Warning Message */}
+        <div
+          style={{
+            background: "linear-gradient(135deg, #fff2f0 0%, #fff1f0 100%)",
+            border: "1px solid #ffa39e",
+            borderRadius: "6px",
+            padding: "8px",
+            marginBottom: "12px",
+            position: "relative",
+            overflow: "hidden"
+          }}
+        >
+          <div style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "3px",
+            height: "100%",
+            background: "linear-gradient(180deg, #ff7875 0%, #ff4d4f 100%)"
+          }} />
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "6px", marginLeft: "6px" }}>
+            <div style={{
+              width: "20px",
+              height: "20px",
+              borderRadius: "50%",
               background: "#fff2f0",
-              border: "1px solid #ffccc7",
-              borderRadius: "6px",
-              padding: "12px 16px",
-              marginBottom: "24px",
+              border: "2px solid #ff7875",
               display: "flex",
               alignItems: "center",
-              gap: "8px"
-            }}
-          >
-            <ExclamationCircleOutlined style={{ color: "#ff4d4f" }} />
-            <Text style={{ color: "#ff4d4f", fontSize: "14px" }}>
-              Việc hủy tham gia đấu giá sẽ được xem xét trong các trường hợp bất khả kháng.
-              <strong> Bắt buộc phải có tài liệu chứng minh lý do hủy.</strong> Vui lòng cân nhắc kỹ trước khi thực hiện.
-            </Text>
-          </div>
-
-          <Form layout="vertical">
-            {/* Asset Selection */}
-            <Form.Item
-              label={<Text strong style={{ fontSize: "14px" }}>Chọn tài sản muốn hủy tham gia</Text>}
-              required
-            >
-              <div style={{
-                border: "1px solid #d9d9d9",
-                borderRadius: "6px",
-                padding: "16px",
-                background: "#fafafa"
+              justifyContent: "center",
+              flexShrink: 0,
+              marginTop: "1px"
+            }}>
+              <ExclamationCircleOutlined style={{ color: "#ff4d4f", fontSize: "10px" }} />
+            </div>
+            <div>
+              <Text style={{
+                color: "#5c0011",
+                fontSize: "14px",
+                fontWeight: "600",
+                display: "block",
+                marginBottom: "3px"
               }}>
-                <div style={{ marginBottom: "12px" }}>
-                  <Checkbox
-                    checked={selectedAssets.length === filteredDocuments.length && filteredDocuments.length > 0}
-                    indeterminate={selectedAssets.length > 0 && selectedAssets.length < filteredDocuments.length}
-                    onChange={(e) => handleSelectAllAssets(e.target.checked)}
-                  >
-                    <Text strong>Chọn tất cả ({filteredDocuments.length} tài sản)</Text>
-                  </Checkbox>
+                Điều kiện hủy tham gia đấu giá
+              </Text>
+              <Text style={{ color: "#a8071a", fontSize: "13px", lineHeight: "1.4" }}>
+                Việc hủy tham gia đấu giá chỉ được xem xét trong các trường hợp <strong>bất khả kháng</strong>.
+                Bạn <strong>bắt buộc phải cung cấp tài liệu chứng minh</strong> lý do hủy hợp lệ.
+              </Text>
+            </div>
+          </div>
+        </div>
+
+        <Form layout="vertical" style={{ background: "white", borderRadius: "6px", padding: "12px" }}>
+          {/* Asset Selection */}
+          <Form.Item
+            label={
+              <div style={{ marginBottom: "6px" }}>
+                <Text strong style={{ fontSize: "15px", color: "#262626" }}>
+                  Tài sản sẽ được hủy tham gia
+                </Text>
+                <div style={{
+                  fontSize: "13px",
+                  color: "#8c8c8c",
+                  marginTop: "1px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "3px"
+                }}>
+                  <div style={{
+                    width: "3px",
+                    height: "3px",
+                    borderRadius: "50%",
+                    background: "#52c41a"
+                  }} />
+                  Chỉ áp dụng cho các tài sản đã được xác nhận cọc
                 </div>
-                <Divider style={{ margin: "12px 0" }} />
-                <div style={{ maxHeight: "200px", overflowY: "auto" }}>
-                  {filteredDocuments.map((asset) => (
+              </div>
+            }
+          >
+            <div style={{
+              border: "1px solid #e8f4fd",
+              borderRadius: "6px",
+              background: "linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%)",
+              overflow: "hidden"
+            }}>
+              {/* Header Summary */}
+              <div style={{
+                background: "linear-gradient(135deg, #e6f7ff 0%, #f6ffed 100%)",
+                padding: "8px 12px",
+                borderBottom: "1px solid #d9f7be"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <div style={{
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "50%",
+                      background: "linear-gradient(135deg, #52c41a 0%, #389e0d 100%)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "white",
+                      fontSize: "12px",
+                      fontWeight: "bold"
+                    }}>
+                      {selectedAssets.length}
+                    </div>
+                    <div>
+                      <Text strong style={{ fontSize: "14px", color: "#262626" }}>
+                        Tài sản đã xác nhận cọc
+                      </Text>
+                      <div style={{ fontSize: "12px", color: "#52c41a", marginTop: "0px" }}>
+                        Sẽ được gửi yêu cầu hủy tham gia
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{
+                    background: "#fff",
+                    padding: "3px 6px",
+                    borderRadius: "10px",
+                    border: "1px solid #b7eb8f",
+                    fontSize: "12px",
+                    color: "#389e0d",
+                    fontWeight: "500"
+                  }}>
+                    Đã chọn tự động
+                  </div>
+                </div>
+              </div>
+
+              {/* Assets List */}
+              <div style={{ padding: "8px 12px", maxHeight: "160px", overflowY: "auto" }}>
+                {filteredDocuments
+                  .filter(asset => asset.statusDeposit === 1)
+                  .map((asset, index) => (
                     <div
                       key={asset.auctionDocumentsId}
                       style={{
-                        marginBottom: "8px",
-                        padding: "8px 12px",
-                        background: "white",
+                        marginBottom: index === filteredDocuments.filter(a => a.statusDeposit === 1).length - 1 ? "0" : "6px",
+                        padding: "6px",
+                        background: "rgba(255, 255, 255, 0.8)",
                         borderRadius: "4px",
-                        border: "1px solid #f0f0f0"
+                        border: "1px solid #e6f7ff",
+                        boxShadow: "0 1px 2px rgba(82, 196, 26, 0.08)",
+                        transition: "all 0.2s ease"
                       }}
                     >
-                      <Checkbox
-                        checked={selectedAssets.includes(asset.auctionDocumentsId)}
-                        onChange={(e) => handleAssetSelection(asset.auctionDocumentsId, e.target.checked)}
-                      >
-                        <div>
-                          <Text strong style={{ color: "#1890ff" }}>{asset.tagName}</Text>
-                          <br />
-                          <Text type="secondary" style={{ fontSize: "12px" }}>
-                            STT: {asset.numericalOrder} • Cọc: {formatNumber(asset.deposit)} VNĐ
-                          </Text>
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
+                        <div style={{
+                          width: "14px",
+                          height: "14px",
+                          borderRadius: "2px",
+                          background: "#52c41a",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                          marginTop: "1px"
+                        }}>
+                          <CheckCircleOutlined style={{ color: "white", fontSize: "8px" }} />
                         </div>
-                      </Checkbox>
+                        <div style={{ flex: 1 }}>
+                          <Text strong style={{ color: "#1890ff", fontSize: "14px", display: "block", marginBottom: "2px" }}>
+                            {asset.tagName}
+                          </Text>
+                          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                            <span style={{ fontSize: "12px", color: "#8c8c8c" }}>
+                              <strong style={{ color: "#595959" }}>STT:</strong> {asset.numericalOrder}
+                            </span>
+                            <span style={{ fontSize: "12px", color: "#8c8c8c" }}>
+                              <strong style={{ color: "#595959" }}>Tiền cọc:</strong> {formatNumber(asset.deposit)} VNĐ
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   ))}
-                </div>
-              </div>
-            </Form.Item>
 
-            {/* Reason TextArea */}
-            <Form.Item
-              label={<Text strong style={{ fontSize: "14px" }}>Lý do hủy tham gia</Text>}
-              required
-            >
-              <TextArea
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                placeholder="Vui lòng nhập lý do chi tiết tại sao bạn muốn hủy tham gia đấu giá..."
-                rows={4}
-                maxLength={500}
-                showCount
-                style={{
-                  borderRadius: "6px",
-                  fontSize: "14px"
-                }}
-              />
-            </Form.Item>
-
-            {/* File Upload */}
-            <Form.Item
-              label={<Text strong style={{ fontSize: "14px" }}>Tài liệu đính kèm <span style={{ color: 'red' }}>*</span></Text>}
-              required
-            >
-              <Upload
-                name="file"
-                maxCount={1}
-                beforeUpload={() => false} // Prevent auto upload
-                onChange={handleFileUpload}
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                style={{ width: '100%' }}
-              >
-                <Button
-                  icon={<UploadOutlined />}
-                  style={{
-                    borderRadius: "6px",
-                    border: uploadedFile ? "1px solid #52c41a" : "1px dashed #d9d9d9",
-                    borderColor: uploadedFile ? "#52c41a" : "#d9d9d9",
-                    color: uploadedFile ? "#52c41a" : undefined,
-                    width: '100%'
-                  }}
-                >
-                  {uploadedFile ? `Đã chọn: ${uploadedFile.name}` : "Chọn file đính kèm (Bắt buộc)"}
-                </Button>
-              </Upload>
-              <div style={{ marginTop: "8px" }}>
-                <Text type="secondary" style={{ fontSize: "12px", display: "block" }}>
-                  <span style={{ color: 'red' }}>* Bắt buộc:</span> Hỗ trợ PDF, DOC, DOCX, JPG, PNG (tối đa 10MB)
-                </Text>
-                {uploadedFile && (
-                  <Text style={{ fontSize: "12px", color: "#52c41a", display: "block", marginTop: "4px" }}>
-                    ✓ File đã được chọn: {uploadedFile.name} ({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)
-                  </Text>
+                {/* Disabled Assets Section */}
+                {filteredDocuments.filter(asset => asset.statusDeposit !== 1).length > 0 && (
+                  <div style={{ marginTop: "12px" }}>
+                    <div style={{
+                      padding: "8px 12px",
+                      background: "#fafafa",
+                      borderRadius: "6px",
+                      border: "1px solid #f0f0f0",
+                      marginBottom: "8px"
+                    }}>
+                      <Text style={{ fontSize: "11px", color: "#8c8c8c", display: "flex", alignItems: "center", gap: "4px" }}>
+                        <CloseCircleOutlined />
+                        Tài sản chưa xác nhận cọc (không thể hủy)
+                      </Text>
+                    </div>
+                    {filteredDocuments
+                      .filter(asset => asset.statusDeposit !== 1)
+                      .map((asset, index) => (
+                        <div
+                          key={asset.auctionDocumentsId}
+                          style={{
+                            marginBottom: index === filteredDocuments.filter(a => a.statusDeposit !== 1).length - 1 ? "0" : "6px",
+                            padding: "8px 12px",
+                            background: "#f5f5f5",
+                            borderRadius: "4px",
+                            border: "1px solid #e8e8e8",
+                            opacity: 0.7
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            <CloseCircleOutlined style={{ color: "#bfbfbf", fontSize: "12px" }} />
+                            <div>
+                              <Text style={{ color: "#8c8c8c", fontSize: "12px" }}>{asset.tagName}</Text>
+                              <div style={{ fontSize: "10px", color: "#bfbfbf", marginTop: "1px" }}>
+                                STT: {asset.numericalOrder} • Chưa xác nhận cọc
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
                 )}
               </div>
-            </Form.Item>
+            </div>
+          </Form.Item>
 
-            {/* Action Buttons */}
-            <Form.Item style={{ marginBottom: 0, marginTop: "32px" }}>
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-                <Button
-                  onClick={handleCloseCancelModal}
-                  style={{ borderRadius: "6px" }}
-                >
-                  Hủy bỏ
-                </Button>
-                <Button
-                  type="primary"
-                  danger
-                  loading={isSubmitting}
-                  onClick={handleSubmitCancelRequest}
-                  icon={<DeleteOutlined />}
-                  style={{
-                    borderRadius: "6px",
-                    boxShadow: "0 2px 4px rgba(255, 77, 79, 0.3)"
-                  }}
-                >
-                  {isSubmitting ? "Đang gửi..." : "Xác nhận hủy tham gia"}
-                </Button>
+          {/* Reason TextArea */}
+          <Form.Item
+            label={
+              <div style={{ marginBottom: "4px" }}>
+                <Text strong style={{ fontSize: "15px", color: "#262626" }}>
+                  Lý do hủy tham gia
+                </Text>
+                <div style={{ fontSize: "13px", color: "#8c8c8c", marginTop: "1px" }}>
+                  Vui lòng mô tả chi tiết lý do bất khả kháng
+                </div>
               </div>
-            </Form.Item>
-          </Form>
-        </div>
+            }
+            required
+          >
+            <TextArea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              placeholder="Ví dụ: Lý do sức khỏe, công việc khẩn cấp, hoàn cảnh gia đình..."
+              rows={2}
+              maxLength={500}
+              showCount
+              style={{
+                borderRadius: "4px",
+                fontSize: "14px",
+                border: "1px solid #d9d9d9",
+                background: "#fdfdfd"
+              }}
+            />
+          </Form.Item>
+
+          {/* File Upload */}
+          <Form.Item
+            label={
+              <div style={{ marginBottom: "4px" }}>
+                <Text strong style={{ fontSize: "15px", color: "#262626" }}>
+                  Tài liệu chứng minh <span style={{ color: '#ff4d4f' }}>*</span>
+                </Text>
+                <div style={{ fontSize: "13px", color: "#8c8c8c", marginTop: "1px" }}>
+                  Cung cấp tài liệu chứng minh lý do hủy tham gia (bắt buộc)
+                </div>
+              </div>
+            }
+            required
+          >
+            <Upload
+              name="file"
+              maxCount={1}
+              beforeUpload={() => false}
+              onChange={handleFileUpload}
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              style={{ width: '100%' }}
+            >
+              <div style={{
+                border: uploadedFile ? "1px solid #52c41a" : "1px dashed #d9d9d9",
+                borderRadius: "4px",
+                padding: "8px 12px",
+                background: uploadedFile ? "#f6ffed" : "#fafafa",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px"
+              }}>
+                {uploadedFile ? (
+                  <>
+                    <div style={{
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "50%",
+                      background: "#52c41a",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "white",
+                      fontSize: "10px",
+                      flexShrink: 0
+                    }}>
+                      <CheckCircleOutlined />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <Text strong style={{ color: "#52c41a", fontSize: "13px", display: "block" }}>
+                        Đã chọn file
+                      </Text>
+                      <Text style={{ color: "#8c8c8c", fontSize: "11px" }}>
+                        {uploadedFile.name.length > 35 ? uploadedFile.name.substring(0, 35) + '...' : uploadedFile.name}
+                      </Text>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "50%",
+                      background: "#f0f0f0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#8c8c8c",
+                      fontSize: "10px",
+                      flexShrink: 0
+                    }}>
+                      <UploadOutlined />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <Text strong style={{ color: "#262626", fontSize: "13px", display: "block" }}>
+                        Chọn file tài liệu
+                      </Text>
+                      <Text style={{ color: "#8c8c8c", fontSize: "11px" }}>
+                        Hỗ trợ PDF, DOC, DOCX, JPG, PNG (tối đa 10MB)
+                      </Text>
+                    </div>
+                  </>
+                )}
+              </div>
+            </Upload>
+
+            {!uploadedFile && (
+              <div style={{
+                marginTop: "4px",
+                padding: "4px",
+                background: "#fff7e6",
+                border: "1px solid #ffd591",
+                borderRadius: "3px",
+                fontSize: "11px",
+                color: "#d46b08"
+              }}>
+                <ExclamationCircleOutlined style={{ marginRight: "2px", fontSize: "10px" }} />
+                <strong>Bắt buộc:</strong> Cung cấp tài liệu chứng minh
+              </div>
+            )}
+          </Form.Item>
+
+          {/* Action Buttons */}
+          <Form.Item style={{ marginBottom: 0, marginTop: "12px" }}>
+            <div style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "8px",
+              paddingTop: "12px",
+              borderTop: "1px solid #f0f0f0"
+            }}>
+              <Button
+                onClick={handleCloseCancelModal}
+                style={{
+                  borderRadius: "4px",
+                  padding: "4px 16px",
+                  height: "auto",
+                  border: "1px solid #d9d9d9",
+                  fontWeight: "500",
+                  fontSize: "14px"
+                }}
+              >
+                Hủy bỏ
+              </Button>
+              <Button
+                type="primary"
+                danger
+                loading={isSubmitting}
+                onClick={handleSubmitCancelRequest}
+                icon={<DeleteOutlined />}
+                style={{
+                  borderRadius: "4px",
+                  padding: "4px 16px",
+                  height: "auto",
+                  background: "linear-gradient(135deg, #ff7875 0%, #ff4d4f 100%)",
+                  border: "none",
+                  boxShadow: "0 2px 6px rgba(255, 77, 79, 0.3)",
+                  fontWeight: "600",
+                  fontSize: "14px"
+                }}
+              >
+                {isSubmitting ? "Đang gửi yêu cầu..." : "Xác nhận hủy tham gia"}
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
       </Modal>
 
       {/* Detail Information Modal */}

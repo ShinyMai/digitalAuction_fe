@@ -70,7 +70,6 @@ const AuctionListNow = () => {
         PageSize: searchParams.PageSize || 8,
         Status: searchParams.Status,
         AuctionName: searchParams.AuctionName,
-
         CategoryId: searchParams.CategoryId,
       };
       if (searchParams.AuctionName)
