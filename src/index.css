@@ -174,15 +174,6 @@ body {
   background-clip: text;
 }
 
-.hover-lift {
-  transition: all 0.3s var(--animation-bounce);
-}
-
-.hover-lift:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-lg);
-}
-
 .hover-glow:hover {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 0 20px rgba(59, 130, 246, 0.3);
   transition: box-shadow 0.3s ease;
@@ -291,11 +282,6 @@ body {
   border: none !important;
   overflow: hidden !important;
   transition: all 0.3s var(--animation-bounce) !important;
-}
-
-.ant-card:hover {
-  transform: translateY(-8px) !important;
-  box-shadow: var(--shadow-lg) !important;
 }
 
 .ant-btn-primary {
