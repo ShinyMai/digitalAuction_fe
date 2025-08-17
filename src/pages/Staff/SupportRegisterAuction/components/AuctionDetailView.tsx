@@ -49,6 +49,7 @@ const AuctionDetailView = ({
 }: AuctionDetailViewProps) => {
   const [form] = Form.useForm();
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(5);
   const [isUserRegistered, setIsUserRegistered] = useState<boolean>(false);
@@ -78,6 +79,16 @@ const AuctionDetailView = ({
       (currentPage - 1) * pageSize,
       currentPage * pageSize
     ) || [];
+
+  const totalRegistrationFee = selectedRows?.reduce(
+    (total, asset) => total + (asset.registrationFee || 0),
+    0
+  );
+
+  const totalDeposit = selectedRows?.reduce(
+    (total, asset) => total + (asset.deposit || 0),
+    0
+  );
 
   /** Handle registration submission */
   const handleSubmit = async () => {
@@ -240,7 +251,10 @@ const AuctionDetailView = ({
                     rowSelection={{
                       type: "checkbox",
                       selectedRowKeys,
-                      onChange: (keys) => setSelectedRowKeys(keys as string[]),
+                      onChange: (keys, rows) => {
+                        setSelectedRowKeys(keys as string[]);
+                        setSelectedRows(rows);
+                      },
                     }}
                     columns={columns}
                     dataSource={paginatedAssets}
@@ -262,6 +276,14 @@ const AuctionDetailView = ({
               ) : (
                 <Text>Không có tài sản đấu giá.</Text>
               )}
+              <div className="mt-2 font-semibold text-gray-700 text-lg">
+                Tổng phí đăng ký tham gia phải trả:{" "}
+                <span className="text-red-400">{totalRegistrationFee} VNĐ</span>
+              </div>
+              <div className="mt-2 font-semibold text-gray-700 text-lg">
+                Tổng tiền đặt cọc phải trả:{" "}
+                <span className="text-red-400">{totalDeposit} VNĐ</span>
+              </div>
             </div>
           </Card>
 

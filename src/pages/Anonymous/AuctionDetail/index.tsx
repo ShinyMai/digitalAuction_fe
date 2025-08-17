@@ -18,11 +18,13 @@ import {
   TrophyOutlined,
   ArrowRightOutlined,
 } from "@ant-design/icons";
+import Login from "../Login/Login";
 
 const AuctionDetailAnonymous = () => {
   const location = useLocation();
   const [auctionDetailData, setAuctionDetailData] =
     useState<AuctionDataDetail>();
+  const [openLoginModal, setOpenLoginModal] = useState(false);
   const navigate = useNavigate();
   const { user } = useSelector(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -431,26 +433,38 @@ const AuctionDetailAnonymous = () => {
                             <h4 className="text-xl font-bold text-gray-800 mb-4">
                               Sẵn sàng tham gia đấu giá?
                             </h4>
-                            <Button
-                              type="primary"
-                              size="large"
-                              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 px-8 py-6 h-auto text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                              disabled={!user}
-                              onClick={() =>
-                                navigate(USER_ROUTERS.SUB.AUCTION_REGISTER, {
-                                  replace: true,
-                                  state: { key: auctionDetailData },
-                                })
-                              }
-                            >
-                              <span className="flex items-center gap-3">
-                                <TeamOutlined className="text-xl" />
-                                {user
-                                  ? "Đăng ký tham gia"
-                                  : "Vui lòng đăng nhập"}
-                                <ArrowRightOutlined className="text-lg" />
-                              </span>
-                            </Button>
+                            {user ? (
+                              <Button
+                                type="primary"
+                                size="large"
+                                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 px-8 py-6 h-auto text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                                onClick={() =>
+                                  navigate(USER_ROUTERS.SUB.AUCTION_REGISTER, {
+                                    replace: true,
+                                    state: { key: auctionDetailData },
+                                  })
+                                }
+                              >
+                                <span className="flex items-center gap-3">
+                                  <TeamOutlined className="text-xl" />
+                                  Đăng ký tham gia
+                                  <ArrowRightOutlined className="text-lg" />
+                                </span>
+                              </Button>
+                            ) : (
+                              <Button
+                                type="primary"
+                                size="large"
+                                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 px-8 py-6 h-auto text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                                onClick={() => setOpenLoginModal(true)}
+                              >
+                                <span className="flex items-center gap-3">
+                                  <TeamOutlined className="text-xl" />
+                                  Vui lòng đăng nhập
+                                  <ArrowRightOutlined className="text-lg" />
+                                </span>
+                              </Button>
+                            )}
                             {!user && (
                               <p className="text-gray-600 mt-4 text-sm">
                                 Quý khách cần đăng ký tài khoản để có thể tham
@@ -487,7 +501,6 @@ const AuctionDetailAnonymous = () => {
                         </div>
 
                         <div>
-                          {" "}
                           <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
                             <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-teal-600 rounded-lg flex items-center justify-center">
                               <DollarOutlined className="text-white text-sm" />
@@ -604,7 +617,14 @@ const AuctionDetailAnonymous = () => {
             </div>
           )}
         </div>
-      </div>{" "}
+      </div>
+      {/* Login Modal */}
+      {openLoginModal && (
+        <Login
+          open={openLoginModal}
+          onCancel={() => setOpenLoginModal(false)}
+        />
+      )}
       <style>{`
         .enhanced-tabs .ant-tabs-tab {
           border-radius: 12px !important;
