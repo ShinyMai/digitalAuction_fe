@@ -193,14 +193,13 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
         const fileToUpload = uploadedFile.originFileObj || uploadedFile;
         formData.append('RefundProof', fileToUpload);
       }
-      // const response = await AuctionServices.userRequestRefund(formData);
-      // if (response.code == 200) {
-      //   toast.success(response.message)
-      // } else {
-      //   toast.error(response.message || "Có lỗi xảy ra khi gửi yêu cầu!");
-      // }
-      // handleCloseCancelModal();
-      console.log("Check check: ", selectedAssets)
+      const response = await AuctionServices.userRequestRefund(formData);
+      if (response.code == 200) {
+        toast.success(response.message)
+      } else {
+        toast.error(response.message || "Có lỗi xảy ra khi gửi yêu cầu!");
+      }
+      handleCloseCancelModal();
     } catch (error) {
       console.error("Error submitting cancel request:", error);
       toast.error("Có lỗi xảy ra khi gửi yêu cầu!");
