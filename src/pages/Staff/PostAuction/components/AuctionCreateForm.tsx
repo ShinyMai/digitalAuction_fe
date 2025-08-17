@@ -212,7 +212,7 @@ const AuctionCreateForm = ({
       const dayDifferStart = auctionStart.diff(registerStart, "day");
       if (dayDifferStart < 7) {
         toast.error(
-          "Thời gian bắt đầu đấu giá phải trước thời gian bắt đầu đăng ký tham gia ít nhất 7 ngày!"
+          "Thời gian bắt đầu đấu giá phải sau thời gian bắt đầu đăng ký tham gia ít nhất 7 ngày!"
         );
         setLoading(false);
         return;
