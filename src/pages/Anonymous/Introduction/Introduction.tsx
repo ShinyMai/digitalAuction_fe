@@ -10,11 +10,11 @@ const Introduction = () => {
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
               CHÀO MỪNG ĐẾN VỚI {""}
               <span className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent font-extrabold">
-                DIGITAL AUCTION
+                TUẤN LINH DIGITAL AUCTION
               </span>
             </h1>
             <p className="text-lg sm:text-xl lg:text-2xl mb-6 sm:mb-8 opacity-90 leading-relaxed">
-              Hệ thống đăng ký tham gia đấu giá trực tuyến - Kết nối bạn với các
+              Hệ thống đăng ký tham gia đấu giá Tuấn Linh - Kết nối bạn với các
               phiên đấu giá chính thức
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">

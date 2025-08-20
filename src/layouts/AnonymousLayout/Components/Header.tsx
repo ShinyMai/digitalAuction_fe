@@ -71,9 +71,9 @@ const Header = memo(() => {
             />
           </div>
           <div className="hidden sm:block">
-            <h1 className="text-xl font-bold text-white gradient-text bg-gradient-to-r from-white to-blue-100 bg-clip-text">
-              Digital Auction
-            </h1>
+            <div className="text-xl font-bold text-white gradient-text bg-gradient-to-r from-white to-blue-100 bg-clip-text">
+              Tuấn Linh Digital Auction
+            </div>
             <p className="text-xs text-blue-100 opacity-80">
               Nền tảng đấu giá số #1
             </p>

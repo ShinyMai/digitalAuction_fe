@@ -44,7 +44,7 @@ const SepayAuctionregister: React.FC<Props> = ({
 }) => {
   const [isPaid, setIsPaid] = useState<boolean>(false);
   const [isChecking, setIsChecking] = useState<boolean>(true);
-  const [countdown, setCountdown] = useState<number>(45);
+  const [countdown, setCountdown] = useState<number>(300); // 5 phút
   const navigate = useNavigate();
 
   const getDataExport = () => {
@@ -84,35 +84,46 @@ const SepayAuctionregister: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (dataQrSepay?.auctionDocumentsId) {
-      let callCount = 0;
-      const maxCalls = 30;
+    const id = dataQrSepay?.auctionDocumentsId;
+    if (!id) return;
 
-      const intervalId = setInterval(async () => {
-        callCount++;
-        setCountdown(45 - callCount * 3);
+    const TOTAL_TIME = 5 * 60; // 5 phút = 300 giây
+    const POLL_INTERVAL = 5; // 5 giây/lần
 
-        const isPaidResult = await getaAuctionDocumentById(
-          dataQrSepay.auctionDocumentsId
-        );
+    setCountdown(TOTAL_TIME);
+    setIsChecking(true);
 
-        if (isPaidResult || callCount >= maxCalls) {
-          clearInterval(intervalId);
+    let remaining = TOTAL_TIME;
+
+    const timer = setInterval(async () => {
+      remaining -= 1;
+      setCountdown(remaining);
+
+      // call API mỗi 5 giây
+      if (remaining % POLL_INTERVAL === 0) {
+        const isPaidResult = await getaAuctionDocumentById(id);
+
+        if (isPaidResult) {
+          clearInterval(timer);
           setIsChecking(false);
-
-          if (!isPaidResult && callCount >= maxCalls) {
-            setIsPaid(false);
-            toast.error(
-              "Thanh toán thất bại! Vui lòng thử lại hoặc liên hệ hỗ trợ."
-            );
-            navigate("/");
-          }
+          setIsPaid(true);
         }
-      }, 1000);
+      }
 
-      return () => clearInterval(intervalId);
-    }
-  }, [dataQrSepay, navigate]);
+      // hết giờ
+      if (remaining <= 0) {
+        clearInterval(timer);
+        setIsChecking(false);
+        setIsPaid(false);
+        toast.error(
+          "Thanh toán thất bại! Vui lòng thử lại hoặc liên hệ hỗ trợ."
+        );
+        navigate("/");
+      }
+    }, 1000); // đếm từng giây
+
+    return () => clearInterval(timer);
+  }, [dataQrSepay?.auctionDocumentsId, navigate]);
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
@@ -192,7 +203,8 @@ const SepayAuctionregister: React.FC<Props> = ({
                           Đang kiểm tra thanh toán...
                         </h3>
                         <p className="opacity-90">
-                          Thời gian còn lại: {countdown}s
+                          Thời gian còn lại: {Math.floor(countdown / 60)}:
+                          {(countdown % 60).toString().padStart(2, "0")}
                         </p>
                       </div>
                     </div>

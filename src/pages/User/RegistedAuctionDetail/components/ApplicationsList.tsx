@@ -40,6 +40,7 @@ import { exportToDocx } from "../../../../components/Common/ExportDocs/DocumentG
 import UserServices from "../../../../services/UserServices";
 import { useSelector } from "react-redux";
 import type { RegistrationAuctionModals } from "../../../Anonymous/Modals";
+import CustomModal from "../../../../components/Common/CustomModal";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -64,7 +65,8 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
   // Modal states
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<AuctionDocument | null>(null);
+  const [selectedDocument, setSelectedDocument] =
+    useState<AuctionDocument | null>(null);
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const [cancelReason, setCancelReason] = useState("");
   const [uploadedFile, setUploadedFile] = useState<any>(null);
@@ -118,8 +120,8 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
   const handleOpenCancelModal = () => {
     // Tự động chọn tất cả tài sản có statusDeposit = 1 (đã xác nhận cọc)
     const confirmedDepositAssets = filteredDocuments
-      .filter(doc => doc.statusDeposit === 1)
-      .map(doc => doc.auctionDocumentsId);
+      .filter((doc) => doc.statusDeposit === 1)
+      .map((doc) => doc.auctionDocumentsId);
 
     setSelectedAssets(confirmedDepositAssets);
     setIsCancelModalVisible(true);
@@ -156,7 +158,9 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
 
   const handleSubmitCancelRequest = async () => {
     // Kiểm tra có tài sản nào đã xác nhận cọc không
-    const confirmedDepositAssets = filteredDocuments.filter(doc => doc.statusDeposit === 1);
+    const confirmedDepositAssets = filteredDocuments.filter(
+      (doc) => doc.statusDeposit === 1
+    );
 
     if (confirmedDepositAssets.length === 0) {
       toast.error("Không có tài sản nào đã xác nhận cọc để hủy tham gia!");
@@ -185,17 +189,17 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
       });
 
       // Thêm RefundReason
-      formData.append('RefundReason', cancelReason);
+      formData.append("RefundReason", cancelReason);
 
       // Thêm file nếu có
       if (uploadedFile) {
         // Khi sử dụng beforeUpload: false, file object chính là originFileObj
         const fileToUpload = uploadedFile.originFileObj || uploadedFile;
-        formData.append('RefundProof', fileToUpload);
+        formData.append("RefundProof", fileToUpload);
       }
       const response = await AuctionServices.userRequestRefund(formData);
       if (response.code == 200) {
-        toast.success(response.message)
+        toast.success(response.message);
       } else {
         toast.error(response.message || "Có lỗi xảy ra khi gửi yêu cầu!");
       }
@@ -330,15 +334,17 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
       };
     }
 
-    return isAttended ? {
-      color: "green",
-      text: "Đã tham dự",
-      icon: <UserOutlined />,
-    } : {
-      color: "red",
-      text: "Chưa tham dự",
-      icon: <ExclamationCircleOutlined />,
-    };
+    return isAttended
+      ? {
+          color: "green",
+          text: "Đã tham dự",
+          icon: <UserOutlined />,
+        }
+      : {
+          color: "red",
+          text: "Chưa tham dự",
+          icon: <ExclamationCircleOutlined />,
+        };
   };
 
   const getRefundStatus = (statusRefund?: number) => {
@@ -574,10 +580,16 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
     <>
       <Card
         title={
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <span>Danh sách đăng ký tham gia đấu giá</span>
             {/* Chỉ hiển thị button khi có ít nhất 1 tài sản đã xác nhận cọc */}
-            {filteredDocuments.some(doc => doc.statusDeposit === 1) && (
+            {filteredDocuments.some((doc) => doc.statusDeposit === 1) && (
               <Button
                 type="primary"
                 danger
@@ -607,38 +619,8 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
       </Card>
 
       {/* Cancel Participation Modal */}
-      <Modal
-        title={
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "2px 0",
-            borderBottom: "1px solid #f0f0f0",
-            marginBottom: "8px"
-          }}>
-            <div style={{
-              width: "28px",
-              height: "28px",
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #ff7875 0%, #ff4d4f 100%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 2px 8px rgba(255, 77, 79, 0.3)"
-            }}>
-              <ExclamationCircleOutlined style={{ color: "white", fontSize: "12px" }} />
-            </div>
-            <div>
-              <div style={{ fontSize: "17px", fontWeight: "600", color: "#262626", lineHeight: "1.1" }}>
-                Xin hủy tham gia đấu giá
-              </div>
-              <div style={{ fontSize: "13px", color: "#8c8c8c", marginTop: "1px" }}>
-                Yêu cầu hủy tham gia các tài sản đã xác nhận cọc
-              </div>
-            </div>
-          </div>
-        }
+      <CustomModal
+        title="Yêu cầu hủy tham gia đấu giá"
         open={isCancelModalVisible}
         onCancel={handleCloseCancelModal}
         width={650}
@@ -646,11 +628,11 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
         destroyOnClose
         className="cancel-participation-modal"
         style={{
-          top: "30px"
+          top: "30px",
         }}
         bodyStyle={{
           padding: "12px 16px 16px 16px",
-          background: "#fafafa"
+          background: "#fafafa",
         }}
       >
         {/* Warning Message */}
@@ -662,51 +644,77 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
             padding: "8px",
             marginBottom: "12px",
             position: "relative",
-            overflow: "hidden"
+            overflow: "hidden",
           }}
         >
-          <div style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "3px",
-            height: "100%",
-            background: "linear-gradient(180deg, #ff7875 0%, #ff4d4f 100%)"
-          }} />
-          <div style={{ display: "flex", alignItems: "flex-start", gap: "6px", marginLeft: "6px" }}>
-            <div style={{
-              width: "20px",
-              height: "20px",
-              borderRadius: "50%",
-              background: "#fff2f0",
-              border: "2px solid #ff7875",
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "3px",
+              height: "100%",
+              background: "linear-gradient(180deg, #ff7875 0%, #ff4d4f 100%)",
+            }}
+          />
+          <div
+            style={{
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-              marginTop: "1px"
-            }}>
-              <ExclamationCircleOutlined style={{ color: "#ff4d4f", fontSize: "10px" }} />
+              alignItems: "flex-start",
+              gap: "6px",
+              marginLeft: "6px",
+            }}
+          >
+            <div
+              style={{
+                width: "20px",
+                height: "20px",
+                borderRadius: "50%",
+                background: "#fff2f0",
+                border: "2px solid #ff7875",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                marginTop: "1px",
+              }}
+            >
+              <ExclamationCircleOutlined
+                style={{ color: "#ff4d4f", fontSize: "10px" }}
+              />
             </div>
             <div>
-              <Text style={{
-                color: "#5c0011",
-                fontSize: "14px",
-                fontWeight: "600",
-                display: "block",
-                marginBottom: "3px"
-              }}>
+              <Text
+                style={{
+                  color: "#5c0011",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  display: "block",
+                  marginBottom: "3px",
+                }}
+              >
                 Điều kiện hủy tham gia đấu giá
               </Text>
-              <Text style={{ color: "#a8071a", fontSize: "13px", lineHeight: "1.4" }}>
-                Việc hủy tham gia đấu giá chỉ được xem xét trong các trường hợp <strong>bất khả kháng</strong>.
-                Bạn <strong>bắt buộc phải cung cấp tài liệu chứng minh</strong> lý do hủy hợp lệ.
+              <Text
+                style={{
+                  color: "#a8071a",
+                  fontSize: "13px",
+                  lineHeight: "1.4",
+                }}
+              >
+                Việc hủy tham gia đấu giá chỉ được xem xét trong các trường hợp{" "}
+                <strong>bất khả kháng</strong>. Bạn{" "}
+                <strong>bắt buộc phải cung cấp tài liệu chứng minh</strong> lý
+                do hủy hợp lệ.
               </Text>
             </div>
           </div>
         </div>
 
-        <Form layout="vertical" style={{ background: "white", borderRadius: "6px", padding: "12px" }}>
+        <Form
+          layout="vertical"
+          style={{ background: "white", borderRadius: "6px", padding: "12px" }}
+        >
           {/* Asset Selection */}
           <Form.Item
             label={
@@ -714,117 +722,196 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                 <Text strong style={{ fontSize: "15px", color: "#262626" }}>
                   Tài sản sẽ được hủy tham gia
                 </Text>
-                <div style={{
-                  fontSize: "13px",
-                  color: "#8c8c8c",
-                  marginTop: "1px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "3px"
-                }}>
-                  <div style={{
-                    width: "3px",
-                    height: "3px",
-                    borderRadius: "50%",
-                    background: "#52c41a"
-                  }} />
+                <div
+                  style={{
+                    fontSize: "13px",
+                    color: "#8c8c8c",
+                    marginTop: "1px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "3px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "3px",
+                      height: "3px",
+                      borderRadius: "50%",
+                      background: "#52c41a",
+                    }}
+                  />
                   Chỉ áp dụng cho các tài sản đã được xác nhận cọc
                 </div>
               </div>
             }
           >
-            <div style={{
-              border: "1px solid #e8f4fd",
-              borderRadius: "6px",
-              background: "linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%)",
-              overflow: "hidden"
-            }}>
+            <div
+              style={{
+                border: "1px solid #e8f4fd",
+                borderRadius: "6px",
+                background: "linear-gradient(135deg, #f6ffed 0%, #f0f9ff 100%)",
+                overflow: "hidden",
+              }}
+            >
               {/* Header Summary */}
-              <div style={{
-                background: "linear-gradient(135deg, #e6f7ff 0%, #f6ffed 100%)",
-                padding: "8px 12px",
-                borderBottom: "1px solid #d9f7be"
-              }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <div style={{
-                      width: "24px",
-                      height: "24px",
-                      borderRadius: "50%",
-                      background: "linear-gradient(135deg, #52c41a 0%, #389e0d 100%)",
+              <div
+                style={{
+                  background:
+                    "linear-gradient(135deg, #e6f7ff 0%, #f6ffed 100%)",
+                  padding: "8px 12px",
+                  borderBottom: "1px solid #d9f7be",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div
+                    style={{
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      color: "white",
-                      fontSize: "12px",
-                      fontWeight: "bold"
-                    }}>
+                      gap: "6px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                        borderRadius: "50%",
+                        background:
+                          "linear-gradient(135deg, #52c41a 0%, #389e0d 100%)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "white",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                      }}
+                    >
                       {selectedAssets.length}
                     </div>
                     <div>
-                      <Text strong style={{ fontSize: "14px", color: "#262626" }}>
+                      <Text
+                        strong
+                        style={{ fontSize: "14px", color: "#262626" }}
+                      >
                         Tài sản đã xác nhận cọc
                       </Text>
-                      <div style={{ fontSize: "12px", color: "#52c41a", marginTop: "0px" }}>
+                      <div
+                        style={{
+                          fontSize: "12px",
+                          color: "#52c41a",
+                          marginTop: "0px",
+                        }}
+                      >
                         Sẽ được gửi yêu cầu hủy tham gia
                       </div>
                     </div>
                   </div>
-                  <div style={{
-                    background: "#fff",
-                    padding: "3px 6px",
-                    borderRadius: "10px",
-                    border: "1px solid #b7eb8f",
-                    fontSize: "12px",
-                    color: "#389e0d",
-                    fontWeight: "500"
-                  }}>
+                  <div
+                    style={{
+                      background: "#fff",
+                      padding: "3px 6px",
+                      borderRadius: "10px",
+                      border: "1px solid #b7eb8f",
+                      fontSize: "12px",
+                      color: "#389e0d",
+                      fontWeight: "500",
+                    }}
+                  >
                     Đã chọn tự động
                   </div>
                 </div>
               </div>
 
               {/* Assets List */}
-              <div style={{ padding: "8px 12px", maxHeight: "160px", overflowY: "auto" }}>
+              <div
+                style={{
+                  padding: "8px 12px",
+                  maxHeight: "160px",
+                  overflowY: "auto",
+                }}
+              >
                 {filteredDocuments
-                  .filter(asset => asset.statusDeposit === 1)
+                  .filter((asset) => asset.statusDeposit === 1)
                   .map((asset, index) => (
                     <div
                       key={asset.auctionDocumentsId}
                       style={{
-                        marginBottom: index === filteredDocuments.filter(a => a.statusDeposit === 1).length - 1 ? "0" : "6px",
+                        marginBottom:
+                          index ===
+                          filteredDocuments.filter((a) => a.statusDeposit === 1)
+                            .length -
+                            1
+                            ? "0"
+                            : "6px",
                         padding: "6px",
                         background: "rgba(255, 255, 255, 0.8)",
                         borderRadius: "4px",
                         border: "1px solid #e6f7ff",
                         boxShadow: "0 1px 2px rgba(82, 196, 26, 0.08)",
-                        transition: "all 0.2s ease"
+                        transition: "all 0.2s ease",
                       }}
                     >
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: "6px" }}>
-                        <div style={{
-                          width: "14px",
-                          height: "14px",
-                          borderRadius: "2px",
-                          background: "#52c41a",
+                      <div
+                        style={{
                           display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                          marginTop: "1px"
-                        }}>
-                          <CheckCircleOutlined style={{ color: "white", fontSize: "8px" }} />
+                          alignItems: "flex-start",
+                          gap: "6px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "14px",
+                            height: "14px",
+                            borderRadius: "2px",
+                            background: "#52c41a",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                            marginTop: "1px",
+                          }}
+                        >
+                          <CheckCircleOutlined
+                            style={{ color: "white", fontSize: "8px" }}
+                          />
                         </div>
                         <div style={{ flex: 1 }}>
-                          <Text strong style={{ color: "#1890ff", fontSize: "14px", display: "block", marginBottom: "2px" }}>
+                          <Text
+                            strong
+                            style={{
+                              color: "#1890ff",
+                              fontSize: "14px",
+                              display: "block",
+                              marginBottom: "2px",
+                            }}
+                          >
                             {asset.tagName}
                           </Text>
-                          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                            <span style={{ fontSize: "12px", color: "#8c8c8c" }}>
-                              <strong style={{ color: "#595959" }}>STT:</strong> {asset.numericalOrder}
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "8px",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            <span
+                              style={{ fontSize: "12px", color: "#8c8c8c" }}
+                            >
+                              <strong style={{ color: "#595959" }}>STT:</strong>{" "}
+                              {asset.numericalOrder}
                             </span>
-                            <span style={{ fontSize: "12px", color: "#8c8c8c" }}>
-                              <strong style={{ color: "#595959" }}>Tiền cọc:</strong> {formatNumber(asset.deposit)} VNĐ
+                            <span
+                              style={{ fontSize: "12px", color: "#8c8c8c" }}
+                            >
+                              <strong style={{ color: "#595959" }}>
+                                Tiền cọc:
+                              </strong>{" "}
+                              {formatNumber(asset.deposit)} VNĐ
                             </span>
                           </div>
                         </div>
@@ -833,39 +920,75 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                   ))}
 
                 {/* Disabled Assets Section */}
-                {filteredDocuments.filter(asset => asset.statusDeposit !== 1).length > 0 && (
+                {filteredDocuments.filter((asset) => asset.statusDeposit !== 1)
+                  .length > 0 && (
                   <div style={{ marginTop: "12px" }}>
-                    <div style={{
-                      padding: "8px 12px",
-                      background: "#fafafa",
-                      borderRadius: "6px",
-                      border: "1px solid #f0f0f0",
-                      marginBottom: "8px"
-                    }}>
-                      <Text style={{ fontSize: "11px", color: "#8c8c8c", display: "flex", alignItems: "center", gap: "4px" }}>
+                    <div
+                      style={{
+                        padding: "8px 12px",
+                        background: "#fafafa",
+                        borderRadius: "6px",
+                        border: "1px solid #f0f0f0",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: "11px",
+                          color: "#8c8c8c",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                      >
                         <CloseCircleOutlined />
                         Tài sản chưa xác nhận cọc (không thể hủy)
                       </Text>
                     </div>
                     {filteredDocuments
-                      .filter(asset => asset.statusDeposit !== 1)
+                      .filter((asset) => asset.statusDeposit !== 1)
                       .map((asset, index) => (
                         <div
                           key={asset.auctionDocumentsId}
                           style={{
-                            marginBottom: index === filteredDocuments.filter(a => a.statusDeposit !== 1).length - 1 ? "0" : "6px",
+                            marginBottom:
+                              index ===
+                              filteredDocuments.filter(
+                                (a) => a.statusDeposit !== 1
+                              ).length -
+                                1
+                                ? "0"
+                                : "6px",
                             padding: "8px 12px",
                             background: "#f5f5f5",
                             borderRadius: "4px",
                             border: "1px solid #e8e8e8",
-                            opacity: 0.7
+                            opacity: 0.7,
                           }}
                         >
-                          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                            <CloseCircleOutlined style={{ color: "#bfbfbf", fontSize: "12px" }} />
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "6px",
+                            }}
+                          >
+                            <CloseCircleOutlined
+                              style={{ color: "#bfbfbf", fontSize: "12px" }}
+                            />
                             <div>
-                              <Text style={{ color: "#8c8c8c", fontSize: "12px" }}>{asset.tagName}</Text>
-                              <div style={{ fontSize: "10px", color: "#bfbfbf", marginTop: "1px" }}>
+                              <Text
+                                style={{ color: "#8c8c8c", fontSize: "12px" }}
+                              >
+                                {asset.tagName}
+                              </Text>
+                              <div
+                                style={{
+                                  fontSize: "10px",
+                                  color: "#bfbfbf",
+                                  marginTop: "1px",
+                                }}
+                              >
                                 STT: {asset.numericalOrder} • Chưa xác nhận cọc
                               </div>
                             </div>
@@ -885,7 +1008,13 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                 <Text strong style={{ fontSize: "15px", color: "#262626" }}>
                   Lý do hủy tham gia
                 </Text>
-                <div style={{ fontSize: "13px", color: "#8c8c8c", marginTop: "1px" }}>
+                <div
+                  style={{
+                    fontSize: "13px",
+                    color: "#8c8c8c",
+                    marginTop: "1px",
+                  }}
+                >
                   Vui lòng mô tả chi tiết lý do bất khả kháng
                 </div>
               </div>
@@ -903,7 +1032,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                 borderRadius: "4px",
                 fontSize: "14px",
                 border: "1px solid #d9d9d9",
-                background: "#fdfdfd"
+                background: "#fdfdfd",
               }}
             />
           </Form.Item>
@@ -913,9 +1042,16 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
             label={
               <div style={{ marginBottom: "4px" }}>
                 <Text strong style={{ fontSize: "15px", color: "#262626" }}>
-                  Tài liệu chứng minh <span style={{ color: '#ff4d4f' }}>*</span>
+                  Tài liệu chứng minh{" "}
+                  <span style={{ color: "#ff4d4f" }}>*</span>
                 </Text>
-                <div style={{ fontSize: "13px", color: "#8c8c8c", marginTop: "1px" }}>
+                <div
+                  style={{
+                    fontSize: "13px",
+                    color: "#8c8c8c",
+                    marginTop: "1px",
+                  }}
+                >
                   Cung cấp tài liệu chứng minh lý do hủy tham gia (bắt buộc)
                 </div>
               </div>
@@ -928,62 +1064,86 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
               beforeUpload={() => false}
               onChange={handleFileUpload}
               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             >
-              <div style={{
-                border: uploadedFile ? "1px solid #52c41a" : "1px dashed #d9d9d9",
-                borderRadius: "4px",
-                padding: "8px 12px",
-                background: uploadedFile ? "#f6ffed" : "#fafafa",
-                transition: "all 0.3s ease",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px"
-              }}>
+              <div
+                style={{
+                  border: uploadedFile
+                    ? "1px solid #52c41a"
+                    : "1px dashed #d9d9d9",
+                  borderRadius: "4px",
+                  padding: "8px 12px",
+                  background: uploadedFile ? "#f6ffed" : "#fafafa",
+                  transition: "all 0.3s ease",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
                 {uploadedFile ? (
                   <>
-                    <div style={{
-                      width: "20px",
-                      height: "20px",
-                      borderRadius: "50%",
-                      background: "#52c41a",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "white",
-                      fontSize: "10px",
-                      flexShrink: 0
-                    }}>
+                    <div
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "50%",
+                        background: "#52c41a",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "white",
+                        fontSize: "10px",
+                        flexShrink: 0,
+                      }}
+                    >
                       <CheckCircleOutlined />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <Text strong style={{ color: "#52c41a", fontSize: "13px", display: "block" }}>
+                      <Text
+                        strong
+                        style={{
+                          color: "#52c41a",
+                          fontSize: "13px",
+                          display: "block",
+                        }}
+                      >
                         Đã chọn file
                       </Text>
                       <Text style={{ color: "#8c8c8c", fontSize: "11px" }}>
-                        {uploadedFile.name.length > 35 ? uploadedFile.name.substring(0, 35) + '...' : uploadedFile.name}
+                        {uploadedFile.name.length > 35
+                          ? uploadedFile.name.substring(0, 35) + "..."
+                          : uploadedFile.name}
                       </Text>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div style={{
-                      width: "20px",
-                      height: "20px",
-                      borderRadius: "50%",
-                      background: "#f0f0f0",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "#8c8c8c",
-                      fontSize: "10px",
-                      flexShrink: 0
-                    }}>
+                    <div
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "50%",
+                        background: "#f0f0f0",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#8c8c8c",
+                        fontSize: "10px",
+                        flexShrink: 0,
+                      }}
+                    >
                       <UploadOutlined />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <Text strong style={{ color: "#262626", fontSize: "13px", display: "block" }}>
+                      <Text
+                        strong
+                        style={{
+                          color: "#262626",
+                          fontSize: "13px",
+                          display: "block",
+                        }}
+                      >
                         Chọn file tài liệu
                       </Text>
                       <Text style={{ color: "#8c8c8c", fontSize: "11px" }}>
@@ -996,16 +1156,20 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
             </Upload>
 
             {!uploadedFile && (
-              <div style={{
-                marginTop: "4px",
-                padding: "4px",
-                background: "#fff7e6",
-                border: "1px solid #ffd591",
-                borderRadius: "3px",
-                fontSize: "11px",
-                color: "#d46b08"
-              }}>
-                <ExclamationCircleOutlined style={{ marginRight: "2px", fontSize: "10px" }} />
+              <div
+                style={{
+                  marginTop: "4px",
+                  padding: "4px",
+                  background: "#fff7e6",
+                  border: "1px solid #ffd591",
+                  borderRadius: "3px",
+                  fontSize: "11px",
+                  color: "#d46b08",
+                }}
+              >
+                <ExclamationCircleOutlined
+                  style={{ marginRight: "2px", fontSize: "10px" }}
+                />
                 <strong>Bắt buộc:</strong> Cung cấp tài liệu chứng minh
               </div>
             )}
@@ -1013,13 +1177,15 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
 
           {/* Action Buttons */}
           <Form.Item style={{ marginBottom: 0, marginTop: "12px" }}>
-            <div style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: "8px",
-              paddingTop: "12px",
-              borderTop: "1px solid #f0f0f0"
-            }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "8px",
+                paddingTop: "12px",
+                borderTop: "1px solid #f0f0f0",
+              }}
+            >
               <Button
                 onClick={handleCloseCancelModal}
                 style={{
@@ -1028,7 +1194,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                   height: "auto",
                   border: "1px solid #d9d9d9",
                   fontWeight: "500",
-                  fontSize: "14px"
+                  fontSize: "14px",
                 }}
               >
                 Hủy bỏ
@@ -1043,11 +1209,12 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                   borderRadius: "4px",
                   padding: "4px 16px",
                   height: "auto",
-                  background: "linear-gradient(135deg, #ff7875 0%, #ff4d4f 100%)",
+                  background:
+                    "linear-gradient(135deg, #ff7875 0%, #ff4d4f 100%)",
                   border: "none",
                   boxShadow: "0 2px 6px rgba(255, 77, 79, 0.3)",
                   fontWeight: "600",
-                  fontSize: "14px"
+                  fontSize: "14px",
                 }}
               >
                 {isSubmitting ? "Đang gửi yêu cầu..." : "Xác nhận hủy tham gia"}
@@ -1055,13 +1222,18 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
             </div>
           </Form.Item>
         </Form>
-      </Modal>
+      </CustomModal>
 
       {/* Detail Information Modal */}
       <Modal
         title={
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }} className="text-black">
-            <InfoCircleOutlined style={{ color: "#1890ff", fontSize: "18px" }} />
+          <div
+            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+            className="text-black"
+          >
+            <InfoCircleOutlined
+              style={{ color: "#1890ff", fontSize: "18px" }}
+            />
             <span style={{ fontSize: "15px", fontWeight: "600" }}>
               Thông tin xin hủy
             </span>
@@ -1073,7 +1245,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
         footer={[
           <Button key="close" onClick={handleCloseDetailModal} size="small">
             Đóng
-          </Button>
+          </Button>,
         ]}
         destroyOnClose
         className="detail-modal"
@@ -1082,19 +1254,36 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
           <div style={{ padding: "16px 0" }}>
             {/* New Fields Information */}
             <div style={{ marginBottom: "20px" }}>
-              <div style={{
-                background: "#f0f9ff",
-                padding: "12px",
-                borderRadius: "6px",
-                border: "1px solid #bae7ff"
-              }}>
+              <div
+                style={{
+                  background: "#f0f9ff",
+                  padding: "12px",
+                  borderRadius: "6px",
+                  border: "1px solid #bae7ff",
+                }}
+              >
                 {/* Attendance Status */}
-                <div style={{ marginBottom: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <Text type="secondary" style={{ fontSize: "12px" }}>Tham dự:</Text>
+                <div
+                  style={{
+                    marginBottom: "12px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text type="secondary" style={{ fontSize: "12px" }}>
+                    Tham dự:
+                  </Text>
                   {(() => {
-                    const attendanceStatus = getAttendanceStatus(selectedDocument.isAttended);
+                    const attendanceStatus = getAttendanceStatus(
+                      selectedDocument.isAttended
+                    );
                     return (
-                      <Tag color={attendanceStatus.color} icon={attendanceStatus.icon} style={{ fontSize: "11px" }}>
+                      <Tag
+                        color={attendanceStatus.color}
+                        icon={attendanceStatus.icon}
+                        style={{ fontSize: "11px" }}
+                      >
                         {attendanceStatus.text}
                       </Tag>
                     );
@@ -1102,15 +1291,34 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                 </div>
 
                 {/* Refund Status */}
-                <div style={{ marginBottom: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <Text type="secondary" style={{ fontSize: "12px" }}>Hoàn cọc:</Text>
+                <div
+                  style={{
+                    marginBottom: "12px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text type="secondary" style={{ fontSize: "12px" }}>
+                    Hoàn cọc:
+                  </Text>
                   {(() => {
-                    const refundStatus = getRefundStatus(selectedDocument.statusRefund);
+                    const refundStatus = getRefundStatus(
+                      selectedDocument.statusRefund
+                    );
                     if (!refundStatus) {
-                      return <Text type="secondary" style={{ fontSize: "11px" }}>Chưa có yêu cầu</Text>;
+                      return (
+                        <Text type="secondary" style={{ fontSize: "11px" }}>
+                          Chưa có yêu cầu
+                        </Text>
+                      );
                     }
                     return (
-                      <Tag color={refundStatus.color} icon={refundStatus.icon} style={{ fontSize: "11px" }}>
+                      <Tag
+                        color={refundStatus.color}
+                        icon={refundStatus.icon}
+                        style={{ fontSize: "11px" }}
+                      >
                         {refundStatus.text}
                       </Tag>
                     );
@@ -1120,16 +1328,27 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                 {/* Refund Reason */}
                 {selectedDocument.refundReason && (
                   <div style={{ marginBottom: "12px" }}>
-                    <Text type="secondary" style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>
+                    <Text
+                      type="secondary"
+                      style={{
+                        fontSize: "12px",
+                        display: "block",
+                        marginBottom: "4px",
+                      }}
+                    >
                       Lý do xin rút:
                     </Text>
-                    <div style={{
-                      background: "white",
-                      padding: "8px",
-                      borderRadius: "4px",
-                      border: "1px solid #d9d9d9"
-                    }}>
-                      <Text style={{ fontSize: "12px" }}>{selectedDocument.refundReason}</Text>
+                    <div
+                      style={{
+                        background: "white",
+                        padding: "8px",
+                        borderRadius: "4px",
+                        border: "1px solid #d9d9d9",
+                      }}
+                    >
+                      <Text style={{ fontSize: "12px" }}>
+                        {selectedDocument.refundReason}
+                      </Text>
                     </div>
                   </div>
                 )}
@@ -1137,14 +1356,23 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                 {/* Refund Proof */}
                 {selectedDocument.refundProof && (
                   <div>
-                    <Text type="secondary" style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>
+                    <Text
+                      type="secondary"
+                      style={{
+                        fontSize: "12px",
+                        display: "block",
+                        marginBottom: "4px",
+                      }}
+                    >
                       Minh chứng:
                     </Text>
                     <Button
                       type="primary"
                       size="small"
                       icon={<FileProtectOutlined />}
-                      onClick={() => window.open(selectedDocument.refundProof, '_blank')}
+                      onClick={() =>
+                        window.open(selectedDocument.refundProof, "_blank")
+                      }
                       style={{ borderRadius: "4px", fontSize: "11px" }}
                     >
                       Xem tài liệu

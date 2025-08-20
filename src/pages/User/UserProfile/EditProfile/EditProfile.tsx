@@ -19,7 +19,6 @@ const EditProfile = ({ open, onCancel }: EditProfileProps) => {
     <CustomModal
       title={isEdit ? "Cập nhật thông tin" : "Thông báo"}
       open={open}
-      onCancel={onCancel}
       footer={null}
       style={{
         top: 20,
@@ -31,6 +30,7 @@ const EditProfile = ({ open, onCancel }: EditProfileProps) => {
           padding: "16px",
         },
       }}
+      closable={false}
     >
       <Spin spinning={loading}>
         {isEdit ? (
@@ -82,9 +82,6 @@ const EditProfile = ({ open, onCancel }: EditProfileProps) => {
             <div className="">
               <Button type="primary" onClick={() => setIsEdit(true)}>
                 Cập nhật
-              </Button>
-              <Button onClick={onCancel} style={{ marginLeft: 10 }}>
-                Để sau
               </Button>
             </div>
           </div>

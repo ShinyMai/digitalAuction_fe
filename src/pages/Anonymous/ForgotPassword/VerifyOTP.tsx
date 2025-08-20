@@ -160,7 +160,7 @@ const VerifyOTP: React.FC<VerifyOTPProps> = ({ open, onCancel }) => {
                   <ClockCircleOutlined className="text-amber-600 text-lg" />
                   <Text className="text-amber-700 font-semibold">
                     Gửi lại mã OTP sau{" "}
-                    <span className="text-orange-600 font-bold">{seconds}</span>
+                    <span className="text-orange-600 font-bold">{seconds}</span>{" "}
                     giây
                   </Text>
                 </div>

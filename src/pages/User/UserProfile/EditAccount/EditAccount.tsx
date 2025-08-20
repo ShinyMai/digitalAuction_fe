@@ -143,7 +143,7 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
               <h4 className="text-2xl font-bold text-gray-800 mb-2">
                 Xác minh OTP
               </h4>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-600 pb-4">
                 Chúng tôi đã gửi mã xác minh đến email của bạn. Vui lòng nhập mã
                 để hoàn tất việc cập nhật.
               </p>
@@ -151,7 +151,7 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
               <Form
                 form={formOTP}
                 onFinish={handleSubmitOTP}
-                className="max-w-md mx-auto"
+                className="!max-w-md !mx-auto"
               >
                 <Form.Item
                   name="otpCode"
