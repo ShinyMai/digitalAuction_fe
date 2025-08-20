@@ -30,7 +30,6 @@ const AuctionResults = ({
   onBack,
 }: AuctionResultsProps) => {
   const [downloading, setDownloading] = useState(false);
-  const [downloadingRefund, setDownloadingRefund] = useState(false);
   const [selectedFile, setSelectedFile] = useState<any>();
 
   // Function to handle file selection and auto download
@@ -116,9 +115,8 @@ const AuctionResults = ({
           const url = window.URL.createObjectURL(response.data);
           const link = document.createElement("a");
           link.href = url;
-          link.download = `So_tay_dau_gia_${
-            new Date().toISOString().split("T")[0]
-          }.pdf`;
+          link.download = `So_tay_dau_gia_${new Date().toISOString().split("T")[0]
+            }.pdf`;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -134,57 +132,6 @@ const AuctionResults = ({
       toast.error("Lỗi khi tải sổ tay: " + (error.message || "Không xác định"));
     } finally {
       setDownloading(false);
-    }
-  };
-
-  // Function to handle download refund list
-  const handleDownloadRefundList = async () => {
-    setDownloadingRefund(true);
-    try {
-      const response = await AuctionServices.exportRefundList({
-        auctionId: auctionID,
-      });
-      if (response && response.data) {
-        // Check if response contains base64 data
-        if (
-          response.data.base64 &&
-          response.data.fileName &&
-          response.data.contentType
-        ) {
-          // Convert base64 to blob
-          const base64Data = response.data.base64;
-          const byteCharacters = atob(base64Data);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], {
-            type: response.data.contentType,
-          });
-
-          // Create download link
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = response.data.fileName;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-
-          toast.success("Tải danh sách hoàn tiền thành công!");
-        } else {
-          toast.success(
-            response.message || "Xuất file danh sách hoàn tiền thành công!"
-          );
-        }
-      }
-    } catch (error: any) {
-      toast.error("Lỗi khi tải danh sách hoàn tiền!");
-      console.error(error);
-    } finally {
-      setDownloadingRefund(false);
     }
   };
 
@@ -394,16 +341,6 @@ const AuctionResults = ({
             </div>
           </div>
           <Space size="middle">
-            <Button
-              type="default"
-              size="large"
-              icon={<DownloadOutlined />}
-              onClick={handleDownloadRefundList}
-              loading={downloadingRefund}
-              className="!bg-white !border-orange-500 !text-orange-600 hover:!bg-orange-50 hover:!border-orange-600 !shadow-md hover:!shadow-lg !transition-all !duration-300 !h-12 !px-6"
-            >
-              {downloadingRefund ? "Đang tải..." : "Tải danh sách hoàn tiền"}
-            </Button>
             <Button
               type="default"
               size="large"

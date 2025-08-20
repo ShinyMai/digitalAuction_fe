@@ -22,6 +22,7 @@ import {
   StopOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  DownloadOutlined,
 } from "@ant-design/icons";
 import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal/ParticipantBiddingHistoryModal";
 
@@ -101,6 +102,9 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState<boolean>(false);
   const [selectedParticipantToConfirm, setSelectedParticipantToConfirm] =
     useState<GroupedParticipant | null>(null);
+
+  // State cho tải danh sách hoàn tiền
+  const [downloadingRefund, setDownloadingRefund] = useState<boolean>(false);
 
   // Nhóm dữ liệu theo CMND/CCCD
   const groupedParticipants = useMemo(() => {
@@ -254,6 +258,57 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
     console.log("handleCancelConfirm called");
     setIsConfirmModalVisible(false);
     setSelectedParticipantToConfirm(null);
+  };
+
+  // Function to handle download refund list
+  const handleDownloadRefundList = async () => {
+    setDownloadingRefund(true);
+    try {
+      const response = await AuctionServices.exportRefundList({
+        auctionId: auctionId,
+      });
+      if (response && response.data) {
+        // Check if response contains base64 data
+        if (
+          response.data.base64 &&
+          response.data.fileName &&
+          response.data.contentType
+        ) {
+          // Convert base64 to blob
+          const base64Data = response.data.base64;
+          const byteCharacters = atob(base64Data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], {
+            type: response.data.contentType,
+          });
+
+          // Create download link
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = response.data.fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+
+          toast.success("Tải danh sách hoàn tiền thành công!");
+        } else {
+          toast.success(
+            response.message || "Xuất file danh sách hoàn tiền thành công!"
+          );
+        }
+      }
+    } catch (error: unknown) {
+      toast.error("Lỗi khi tải danh sách hoàn tiền!");
+      console.error(error);
+    } finally {
+      setDownloadingRefund(false);
+    }
   };
 
   const columns = [
@@ -432,10 +487,22 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       <div className="w-full mx-auto bg-white rounded-xl">
         {/* Thống kê tổng quan */}
         <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
-          <h2 className="text-lg font-semibold text-emerald-800 mb-4 flex items-center gap-2">
-            <UserOutlined className="text-emerald-600" />
-            Tổng quan danh sách đăng ký
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold text-emerald-800 flex items-center gap-2">
+              <UserOutlined className="text-emerald-600" />
+              Tổng quan danh sách đăng ký
+            </h2>
+            <Button
+              type="default"
+              size="large"
+              icon={<DownloadOutlined />}
+              onClick={handleDownloadRefundList}
+              loading={downloadingRefund}
+              className="!bg-white !border-orange-500 !text-orange-600 hover:!bg-orange-50 hover:!border-orange-600 !shadow-md hover:!shadow-lg !transition-all !duration-300"
+            >
+              {downloadingRefund ? "Đang tải..." : "Tải danh sách hoàn tiền"}
+            </Button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card className="text-center bg-white border-l-4 border-l-blue-500">
               <div className="text-2xl font-bold text-blue-600">
