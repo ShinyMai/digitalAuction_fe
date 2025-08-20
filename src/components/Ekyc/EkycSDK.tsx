@@ -148,6 +148,7 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
         toast.error("Giấy tờ mặt sau không hợp lệ, vui lòng thử lại.");
         return;
       }
+
       if (result.liveness_face?.object.liveness === "failure") {
         toast.error("Khuôn mặt không hợp lệ, vui lòng thử lại.");
         return;
@@ -156,6 +157,7 @@ const EkycSDK: React.FC<EkycSDKProps> = ({
         toast.error("So sánh khuôn mặt không thành công, vui lòng thử lại.");
         return;
       }
+
       if (setCurrent) setCurrent(1);
       toast.success("Xác thực thành công, sang bước tiếp theo.");
     };

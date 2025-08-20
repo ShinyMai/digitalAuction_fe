@@ -69,7 +69,7 @@ const HomePage = () => {
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
               HỆ THỐNG ĐĂNG KÝ THAM GIA{" "}
               <span className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent font-extrabold">
-                ĐẤU GIÁ TRỰC TUYẾN
+                ĐẤU GIÁ TUẤN LINH
               </span>
             </h1>
             <p className="text-lg sm:text-xl lg:text-2xl mb-6 sm:mb-8 opacity-90 leading-relaxed">

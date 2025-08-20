@@ -16,7 +16,6 @@ import {
   ClockCircleOutlined,
   UserOutlined,
   ExclamationCircleOutlined,
-  FileProtectOutlined,
 } from "@ant-design/icons";
 import { formatNumber } from "../../../../utils/numberFormat";
 
@@ -112,37 +111,6 @@ const StatisticsOverview: React.FC<StatisticsOverviewProps> = ({
             </Tag>
             <Tag color="green" icon={<CheckCircleOutlined />}>
               Đã nhận phiếu: {statistics.approvedTicket}
-            </Tag>
-          </Space>
-        </Col>
-      </Row>
-
-      <Divider />
-
-      {/* Thêm phần thống kê mới cho các trường vừa thêm */}
-      <Row gutter={[16, 16]}>
-        <Col xs={24} md={12}>
-          <Title level={5}>Tài liệu hoàn cọc:</Title>
-          <Space wrap>
-            <Tag color="blue" icon={<FileProtectOutlined />}>
-              Có lý do hoàn cọc: {statistics.documentsWithRefundReason}
-            </Tag>
-            <Tag color="cyan" icon={<FileTextOutlined />}>
-              Có minh chứng: {statistics.documentsWithRefundProof}
-            </Tag>
-          </Space>
-        </Col>
-        <Col xs={24} md={12}>
-          <Title level={5}>Trạng thái hoàn cọc:</Title>
-          <Space wrap>
-            <Tag color="orange" icon={<ClockCircleOutlined />}>
-              Chờ xử lý: {statistics.pendingRefunds}
-            </Tag>
-            <Tag color="green" icon={<CheckCircleOutlined />}>
-              Đã chấp nhận: {statistics.approvedRefunds}
-            </Tag>
-            <Tag color="red" icon={<ExclamationCircleOutlined />}>
-              Từ chối: {statistics.rejectedRefunds}
             </Tag>
           </Space>
         </Col>

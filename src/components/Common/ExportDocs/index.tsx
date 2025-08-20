@@ -22,7 +22,7 @@ const ExportDocxRegistration: React.FC<Props> = ({
   closable = true,
   maskClosable = true,
   keyboard = true,
-  onBackStep
+  onBackStep,
 }) => {
   const handleExportClick = () => {
     exportToDocx(data);
@@ -76,7 +76,7 @@ const ExportDocxRegistration: React.FC<Props> = ({
         </div>
 
         <button
-          className="bg-blue-600 hover:bg-blue-700 text-amber-50 font-semibold mt-8 py-2 px-6 rounded-xl transition-colors duration-300 mb-4 w-full md:w-auto"
+          className="bg-blue-600 hover:bg-blue-700 !text-amber-50 font-semibold mt-8 py-2 px-6 rounded-xl transition-colors duration-300 mb-4 w-full md:w-auto"
           onClick={handleExportClick}
         >
           📥 Tải phiếu đăng ký

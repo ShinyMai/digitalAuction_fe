@@ -10,6 +10,7 @@ import {
   CalendarOutlined,
   IdcardOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 interface Account {
   email?: string;
@@ -44,6 +45,8 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({
   const [formRegister] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
+
+  const navigate = useNavigate();
 
   const getRoles = async () => {
     try {
@@ -81,14 +84,12 @@ const RegisterAccountForm: React.FC<RegisterAccountFormProps> = ({
       });
       if (res.code === 200) {
         formRegister.resetFields();
-        toast.success(
-          "Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.",
-          {
-            position: "top-right",
-            autoClose: 5000,
-          }
-        );
+        toast.success("Đăng ký thành công!", {
+          position: "top-right",
+          autoClose: 5000,
+        });
         setLoading(false);
+        navigate("/", { replace: true });
       } else {
         throw new Error("Đăng ký không thành công");
       }

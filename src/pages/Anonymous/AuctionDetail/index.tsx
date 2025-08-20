@@ -17,12 +17,15 @@ import {
   TeamOutlined,
   TrophyOutlined,
   ArrowRightOutlined,
+  LeftOutlined,
 } from "@ant-design/icons";
+import Login from "../Login/Login";
 
 const AuctionDetailAnonymous = () => {
   const location = useLocation();
   const [auctionDetailData, setAuctionDetailData] =
     useState<AuctionDataDetail>();
+  const [openLoginModal, setOpenLoginModal] = useState(false);
   const navigate = useNavigate();
   const { user } = useSelector(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -137,6 +140,7 @@ const AuctionDetailAnonymous = () => {
       ),
     },
   ];
+
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -156,6 +160,9 @@ const AuctionDetailAnonymous = () => {
         ></div>
       </div>
       <div className="relative z-10 p-6 md:p-8 lg:p-12">
+        <LeftOutlined
+          onClick={() => navigate("/auction-list", { replace: true })}
+        />
         <div className="max-w-6xl mx-auto">
           {auctionDetailData ? (
             <div className="bg-white/80 backdrop-blur-sm shadow-2xl rounded-3xl overflow-hidden border border-white/20">
@@ -210,8 +217,8 @@ const AuctionDetailAnonymous = () => {
                               <p className="font-bold text-white">
                                 {auctionDetailData.auctionStartDate
                                   ? dayjs(
-                                    auctionDetailData.auctionStartDate
-                                  ).format("DD/MM/YYYY")
+                                      auctionDetailData.auctionStartDate
+                                    ).format("DD/MM/YYYY")
                                   : "Chưa xác định"}
                               </p>
                             </div>
@@ -230,8 +237,8 @@ const AuctionDetailAnonymous = () => {
                               <p className="font-bold text-white">
                                 {auctionDetailData.registerEndDate
                                   ? dayjs(
-                                    auctionDetailData.registerEndDate
-                                  ).format("DD/MM/YYYY")
+                                      auctionDetailData.registerEndDate
+                                    ).format("DD/MM/YYYY")
                                   : "Chưa xác định"}
                               </p>
                             </div>
@@ -300,8 +307,8 @@ const AuctionDetailAnonymous = () => {
                                   label: "Ngày mở đăng ký",
                                   value: auctionDetailData.registerOpenDate
                                     ? dayjs(
-                                      auctionDetailData.registerOpenDate
-                                    ).format("DD/MM/YYYY")
+                                        auctionDetailData.registerOpenDate
+                                      ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "green",
                                 },
@@ -312,8 +319,8 @@ const AuctionDetailAnonymous = () => {
                                   label: "Hạn đăng ký",
                                   value: auctionDetailData.registerEndDate
                                     ? dayjs(
-                                      auctionDetailData.registerEndDate
-                                    ).format("DD/MM/YYYY")
+                                        auctionDetailData.registerEndDate
+                                      ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "red",
                                 },
@@ -324,8 +331,8 @@ const AuctionDetailAnonymous = () => {
                                   label: "Bắt đầu đấu giá",
                                   value: auctionDetailData.auctionStartDate
                                     ? dayjs(
-                                      auctionDetailData.auctionStartDate
-                                    ).format("DD/MM/YYYY")
+                                        auctionDetailData.auctionStartDate
+                                      ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "blue",
                                 },
@@ -336,8 +343,8 @@ const AuctionDetailAnonymous = () => {
                                   label: "Kết thúc đấu giá",
                                   value: auctionDetailData.auctionEndDate
                                     ? dayjs(
-                                      auctionDetailData.auctionEndDate
-                                    ).format("DD/MM/YYYY")
+                                        auctionDetailData.auctionEndDate
+                                      ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "purple",
                                 },
@@ -431,26 +438,38 @@ const AuctionDetailAnonymous = () => {
                             <h4 className="text-xl font-bold text-gray-800 mb-4">
                               Sẵn sàng tham gia đấu giá?
                             </h4>
-                            <Button
-                              type="primary"
-                              size="large"
-                              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 px-8 py-6 h-auto text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                              disabled={!user}
-                              onClick={() =>
-                                navigate(USER_ROUTERS.SUB.AUCTION_REGISTER, {
-                                  replace: true,
-                                  state: { key: auctionDetailData },
-                                })
-                              }
-                            >
-                              <span className="flex items-center gap-3">
-                                <TeamOutlined className="text-xl" />
-                                {user
-                                  ? "Đăng ký tham gia"
-                                  : "Vui lòng đăng nhập"}
-                                <ArrowRightOutlined className="text-lg" />
-                              </span>
-                            </Button>
+                            {user ? (
+                              <Button
+                                type="primary"
+                                size="large"
+                                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 px-8 py-6 h-auto text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                                onClick={() =>
+                                  navigate(USER_ROUTERS.SUB.AUCTION_REGISTER, {
+                                    replace: true,
+                                    state: { key: auctionDetailData },
+                                  })
+                                }
+                              >
+                                <span className="flex items-center gap-3">
+                                  <TeamOutlined className="text-xl" />
+                                  Đăng ký tham gia
+                                  <ArrowRightOutlined className="text-lg" />
+                                </span>
+                              </Button>
+                            ) : (
+                              <Button
+                                type="primary"
+                                size="large"
+                                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 px-8 py-6 h-auto text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                                onClick={() => setOpenLoginModal(true)}
+                              >
+                                <span className="flex items-center gap-3">
+                                  <TeamOutlined className="text-xl" />
+                                  Vui lòng đăng nhập
+                                  <ArrowRightOutlined className="text-lg" />
+                                </span>
+                              </Button>
+                            )}
                             {!user && (
                               <p className="text-gray-600 mt-4 text-sm">
                                 Quý khách cần đăng ký tài khoản để có thể tham
@@ -481,13 +500,13 @@ const AuctionDetailAnonymous = () => {
                           </h3>
                           <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-xl border border-blue-200">
                             <p className="text-teal-700 mb-6 bg-blue-50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">
-                              {auctionDetailData.auctionDescription || "Không có mô tả."}
+                              {auctionDetailData.auctionDescription ||
+                                "Không có mô tả."}
                             </p>
                           </div>
                         </div>
 
                         <div>
-                          {" "}
                           <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
                             <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-teal-600 rounded-lg flex items-center justify-center">
                               <DollarOutlined className="text-white text-sm" />
@@ -495,7 +514,7 @@ const AuctionDetailAnonymous = () => {
                             Danh sách tài sản đấu giá
                           </h3>
                           {auctionDetailData.listAuctionAssets &&
-                            auctionDetailData.listAuctionAssets.length > 0 ? (
+                          auctionDetailData.listAuctionAssets.length > 0 ? (
                             <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
                               <Table
                                 columns={assetColumns}
@@ -604,7 +623,14 @@ const AuctionDetailAnonymous = () => {
             </div>
           )}
         </div>
-      </div>{" "}
+      </div>
+      {/* Login Modal */}
+      {openLoginModal && (
+        <Login
+          open={openLoginModal}
+          onCancel={() => setOpenLoginModal(false)}
+        />
+      )}
       <style>{`
         .enhanced-tabs .ant-tabs-tab {
           border-radius: 12px !important;

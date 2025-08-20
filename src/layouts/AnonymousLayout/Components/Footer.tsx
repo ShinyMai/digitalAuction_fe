@@ -3,10 +3,6 @@ import {
   PhoneOutlined,
   MailOutlined,
   EnvironmentOutlined,
-  FacebookOutlined,
-  TwitterOutlined,
-  InstagramOutlined,
-  LinkedinOutlined,
 } from "@ant-design/icons";
 
 const Footer = () => {
@@ -31,7 +27,7 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Company Info */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 pl-8">
                 <div className="relative group">
                   <div className="absolute inset-0 bg-white/20 rounded-2xl blur-sm group-hover:blur-md transition-all duration-300"></div>
                   <img
@@ -41,14 +37,16 @@ const Footer = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                    Digital Auction
-                  </h3>
-                  <p className="text-blue-200 text-sm">Nền tảng đấu giá số hàng đầu</p>
+                  <div className="text-xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent mt-4">
+                    Tuấn Linh Digital Auction
+                  </div>
+                  <p className="text-blue-200 text-sm">
+                    Nền tảng đấu giá số hàng đầu
+                  </p>
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 pl-8">
                 <h4 className="font-bold text-lg text-yellow-400 mb-4">
                   CÔNG TY HỢP DANH ĐẤU GIÁ TÀI SẢN SỐ VDA
                 </h4>
@@ -56,7 +54,8 @@ const Footer = () => {
                   <div className="flex items-start gap-3 group hover:text-white transition-colors duration-300">
                     <EnvironmentOutlined className="text-yellow-400 mt-1 group-hover:scale-110 transition-transform duration-300" />
                     <span className="text-sm leading-relaxed">
-                      Đại học FPT Hà Nội, Khu công nghệ cao Hòa Lạc, Thạch Thất, Hà Nội
+                      Đại học FPT Hà Nội, Khu công nghệ cao Hòa Lạc, Thạch Thất,
+                      Hà Nội
                     </span>
                   </div>
                   <div className="flex items-center gap-3 group hover:text-white transition-colors duration-300">
@@ -77,19 +76,23 @@ const Footer = () => {
                 Liên kết nhanh
               </h4>
               <ul className="space-y-3">
-                {["Trang chủ", "Giới thiệu", "Danh sách đấu giá", "Tin tức", "Hướng dẫn"].map(
-                  (link, index) => (
-                    <li key={index}>
-                      <a
-                        href="#"
-                        className="text-blue-200 hover:text-white hover:translate-x-2 transition-all duration-300 text-sm flex items-center gap-2 group"
-                      >
-                        <span className="w-1 h-1 bg-yellow-400 rounded-full group-hover:w-2 transition-all duration-300"></span>
-                        {link}
-                      </a>
-                    </li>
-                  )
-                )}
+                {[
+                  "Trang chủ",
+                  "Giới thiệu",
+                  "Danh sách đấu giá",
+                  "Tin tức",
+                  "Hướng dẫn",
+                ].map((link, index) => (
+                  <li key={index}>
+                    <a
+                      href="#"
+                      className="text-blue-200 hover:text-white hover:translate-x-2 transition-all duration-300 text-sm flex items-center gap-2 group"
+                    >
+                      <span className="w-1 h-1 bg-yellow-400 rounded-full group-hover:w-2 transition-all duration-300"></span>
+                      {link}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -119,69 +122,15 @@ const Footer = () => {
               </ul>
             </div>
           </div>
-
-          {/* Social Media & Newsletter */}
-          <div className="mt-12 pt-8 border-t border-white/20">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-              {/* Social Media */}
-              <div className="flex items-center gap-4">
-                <span className="text-blue-200 text-sm font-medium">Theo dõi chúng tôi:</span>
-                <div className="flex gap-3">
-                  {[
-                    { icon: FacebookOutlined, color: "hover:bg-blue-600" },
-                    { icon: TwitterOutlined, color: "hover:bg-sky-500" },
-                    { icon: InstagramOutlined, color: "hover:bg-pink-600" },
-                    { icon: LinkedinOutlined, color: "hover:bg-blue-700" },
-                  ].map((social, index) => (
-                    <a
-                      key={index}
-                      href="#"
-                      className={`w-10 h-10 bg-white/10 ${social.color} rounded-full flex items-center justify-center text-white hover:scale-110 hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm`}
-                    >
-                      <social.icon className="text-sm" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-
-              {/* Newsletter */}
-              <div className="flex items-center gap-3">
-                <span className="text-blue-200 text-sm font-medium hidden md:block">
-                  Đăng ký nhận tin:
-                </span>
-                <div className="flex">
-                  <input
-                    type="email"
-                    placeholder="Email của bạn..."
-                    className="px-4 py-2 rounded-l-full bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-blue-200 focus:outline-none focus:border-yellow-400 transition-all duration-300"
-                  />
-                  <button className="px-6 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 rounded-r-full font-semibold text-white transition-all duration-300 hover:scale-105">
-                    Đăng ký
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="border-t border-white/20 bg-black/20 backdrop-blur-sm">
           <div className="container mx-auto px-6 py-4">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-blue-200">
-              <div className="flex items-center gap-4">
-                <span>© 2024 Digital Auction VDA. Tất cả quyền được bảo lưu.</span>
-              </div>
-              <div className="flex items-center gap-6">
-                <a href="#" className="hover:text-white transition-colors duration-300">
-                  Chính sách bảo mật
-                </a>
-                <a href="#" className="hover:text-white transition-colors duration-300">
-                  Điều khoản sử dụng
-                </a>
-                <a href="#" className="hover:text-white transition-colors duration-300">
-                  Liên hệ
-                </a>
-              </div>
+              <span>
+                © 2024 Tuấn Linh Digital Auction. Tất cả quyền được bảo lưu.
+              </span>
             </div>
           </div>
         </div>
