@@ -184,7 +184,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
       // ✅ Cập nhật lại danh sách auction rounds sau khi tạo thành công
       if (response.code === 200) {
         await getListAuctionRounds();
-        toast.success(response.data);
+        toast.success("Vòng đấu giá mới đã được tạo");
       } else {
         toast.error("Lỗi khi tạo danh vòng đấu giá");
       }
