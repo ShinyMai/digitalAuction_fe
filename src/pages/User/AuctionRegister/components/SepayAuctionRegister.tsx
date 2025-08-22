@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 import { formatNumber } from "../../../../utils/numberFormat";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 
 interface Props {
   dataQrSepay?: dataPayment;
@@ -397,7 +398,8 @@ const SepayAuctionregister: React.FC<Props> = ({
                           Ngày Sinh
                         </p>
                         <p className="font-bold text-gray-800">
-                          {dataUser?.birthDay || "Chưa có"}
+                          {dayjs(dataUser?.birthDay).format("DD/MM/YYYY") ||
+                            "Chưa có"}
                         </p>
                       </div>
                     </div>

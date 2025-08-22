@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   BellOutlined,
@@ -58,33 +57,30 @@ const NotificationDropdown = () => {
   useEffect(() => {
     const startConnection = async () => {
       try {
-        if (connection.state === "Connected") {
-          console.log("SignalR already connected");
-          return;
-        }
+        if (connection.state !== "Disconnected") return;
 
-        if (connection.state === "Connecting") {
-          console.log("SignalR is already connecting...");
-          return;
-        }
         console.log("Starting SignalR connection...");
         await connection.start();
         console.log("SignalR connected successfully");
 
-        const userId = user?.id;
-        await connection.invoke("JoinGroup", userId);
-        console.log(`Joined SignalR group with userId: ${userId}`);
+        if (user?.id) {
+          await connection.invoke("JoinGroup", user.id);
+          console.log(`Joined SignalR group with userId: ${user.id}`);
+        }
       } catch (err) {
         console.error("SignalR connection error:", err);
         setTimeout(startConnection, 5000);
       }
     };
 
-    connection.on("ReceiveNotification", (message: object) => {
+    const handleNotification = (message: object) => {
       console.log("New notification received from SignalR:", message);
       toast.success(`🔔 Bạn có một thông báo mới`);
       setHasNewNotification(true);
-    });
+    };
+
+    connection.off("ReceiveNotification"); // đảm bảo không bị duplicate
+    connection.on("ReceiveNotification", handleNotification);
 
     connection.onreconnecting((error) => {
       console.log("SignalR reconnecting...", error);
@@ -94,17 +90,15 @@ const NotificationDropdown = () => {
       console.log("SignalR reconnected with ID:", connectionId);
     });
 
-    connection.onclose((error) => {
-      console.log("SignalR connection closed:", error);
-      setTimeout(startConnection, 3000);
-    });
-
     startConnection();
 
     return () => {
-      connection.off("ReceiveNotification");
+      if (user?.id) {
+        connection.invoke("LeaveGroup", user.id).catch(() => {});
+      }
+      connection.off("ReceiveNotification", handleNotification);
     };
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     getListNotifications();

@@ -71,6 +71,7 @@ const AuctionListNow = () => {
         Status: searchParams.Status,
         AuctionName: searchParams.AuctionName,
         CategoryId: searchParams.CategoryId,
+        ConditionAuction: searchParams.ConditionAuction || 3,
       };
       if (searchParams.AuctionName)
         params.AuctionName = searchParams.AuctionName;
