@@ -152,10 +152,6 @@ const AuctionRoundDetail = ({
     }
   };
 
-  const refreshData = async () => {
-    return Promise.resolve({ success: true });
-  };
-
   const refreshAllData = async () => {
     await loadAllData();
     toast.success("Dữ liệu đã được làm mới");
