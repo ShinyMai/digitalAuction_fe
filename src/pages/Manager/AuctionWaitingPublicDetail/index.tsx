@@ -11,6 +11,7 @@ import RejectReasonModal from "./components/RejectReasonModal";
 import { TrophyOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { MANAGER_ROUTES, STAFF_ROUTES } from "../../../routers";
+import AuthServices from "../../../services/AuthServices";
 
 const { Title } = Typography;
 
@@ -27,10 +28,12 @@ const AuctionDetailDraff = () => {
   const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(null);
   const [listAuctioners, setListAuctioners] = useState<ModalAuctioners[]>([]);
   const [rejectLoading, setRejectLoading] = useState<boolean>(false);
+  const [listStaff, setListStaff] = useState<{ staffId: string, staffName: string }[]>([]);
   useEffect(() => {
     if (auctionId) {
       fetchAuctionDetail(auctionId);
       fetchAuctioners();
+      onGetListStaff();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auctionId]);
@@ -41,6 +44,7 @@ const AuctionDetailDraff = () => {
         auctionType === "NODE"
           ? await AuctionServices.getAuctionDetailNode(id)
           : await AuctionServices.getAuctionDetail(id);
+
       setAuctionDetailData(data);
     } catch (error) {
       console.error("Error fetching auction detail:", error);
@@ -60,12 +64,13 @@ const AuctionDetailDraff = () => {
     }
   };
 
-  const handleSelectAuctioner = async (auctionerId: string) => {
+  const handleSelectAuctioner = async (auctionerId: string, selectedStaffIds: string[]) => {
     if (selectedAuctionId && auctionerId) {
       try {
         const response = await AuctionServices.assginAuctioneerAndPublicAuction({
           auctionId: selectedAuctionId,
           auctioneer: auctionerId,
+          staffInCharges: selectedStaffIds, // Thêm danh sách nhân viên
         });
         if (response.code === 200) {
           toast.success(`Gán đấu giá viên và công khai phiên đấu giá thành công!`);
@@ -140,6 +145,30 @@ const AuctionDetailDraff = () => {
     setIsRejectModalOpen(false);
   };
 
+  const onGetListStaff = async () => {
+    try {
+      const params = {
+        RoleId: 3,
+        PageNumber: 1,
+        PageSize: 10,
+      }
+      const response = await AuthServices.getListAccount(params);
+      if (response.code === 200) {
+        const valResponse = response.data.employeeAccounts.map((staff: any) => ({
+          staffId: staff.userId,
+          staffName: staff.name
+        }));
+        setListStaff(valResponse);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      console.error("Error fetching list of managers:", error);
+      toast.error("Không thể tải danh sách quản lý!");
+    }
+  };
+
+
   return (
     <section className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -188,6 +217,7 @@ const AuctionDetailDraff = () => {
         <ModalsSelectAuctioners
           isOpen={isModalOpen}
           listAuctioners={listAuctioners}
+          listStaff={listStaff}
           onClose={handleCloseModal}
           onSelect={handleSelectAuctioner}
         />
