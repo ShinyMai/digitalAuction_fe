@@ -103,7 +103,7 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
     <CustomModal
       open={open}
       onCancel={handleCancel}
-      width={700}
+      width={580}
       footer={null}
       title={
         <div className="text-xl font-bold text-white bg-clip-text text-left">
@@ -125,14 +125,14 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
           <div className="absolute inset-0 backdrop-blur-sm rounded-2xl z-50 flex items-center justify-center">
             <div className="text-center">
               <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-blue-600 font-semibold">
+              <div className="text-blue-600 font-semibold">
                 {isSendOTP ? "Đang xác minh..." : "Đang cập nhật..."}
-              </p>
+              </div>
             </div>
           </div>
         )}
 
-        <div className=" rounded-2xl p-8 border border-white/20 shadow-2xl">
+        <div className=" rounded-2xl border border-white/20 shadow-2xl">
           {isSendOTP ? (
             // OTP Form
             <div className="text-center">
@@ -140,13 +140,13 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
                 <CheckCircleOutlined className="text-3xl text-white" />
               </div>
 
-              <h4 className="text-2xl font-bold text-gray-800 mb-2">
+              <div className="text-2xl font-bold text-gray-800 mb-2">
                 Xác minh OTP
-              </h4>
-              <p className="text-gray-600 pb-4">
+              </div>
+              <div className="text-gray-600 pb-4">
                 Chúng tôi đã gửi mã xác minh đến email của bạn. Vui lòng nhập mã
                 để hoàn tất việc cập nhật.
-              </p>
+              </div>
 
               <Form
                 form={formOTP}
@@ -209,12 +209,12 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4 animate-pulse-glow">
                   <LockOutlined className="text-2xl text-white" />
                 </div>
-                <h4 className="text-2xl font-bold text-gray-800 mb-2">
+                <div className="text-2xl font-bold text-gray-800 mb-2">
                   Cập nhật thông tin liên lạc
-                </h4>
-                <p className="text-gray-600">
+                </div>
+                <div className="text-gray-600">
                   Thay đổi số điện thoại hoặc email để bảo mật tài khoản tốt hơn
-                </p>
+                </div>
               </div>
 
               <Form
@@ -224,12 +224,12 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
                 className="space-y-6"
               >
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-                  <h5 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                  <div className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                     <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-3">
                       <PhoneOutlined className="text-white text-xs" />
                     </div>
                     Thông tin liên lạc
-                  </h5>
+                  </div>
 
                   <div className="space-y-4">
                     <Col span={24}>
@@ -282,31 +282,15 @@ const EditAccount = ({ open, onCancel }: EditAccountProps) => {
                 </div>
 
                 <Form.Item className="mb-0">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className={`
-                      w-full h-12 rounded-xl font-bold text-lg transition-all duration-300 transform
-                      ${
-                        loading
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:scale-105 hover:shadow-xl glow-button"
-                      }
-                      text-white shadow-lg flex items-center justify-center space-x-2
-                    `}
-                  >
-                    {loading ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Đang cập nhật...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>💾</span>
-                        <span>Lưu thay đổi</span>
-                      </>
-                    )}
-                  </button>
+                  <div className="flex justify-center">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="!text-white shadow-lg mx-auto space-x-2 w-1/3 h-12 rounded-xl font-bold text-lg transition-all duration-300 transform bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:scale-105 hover:shadow-xl"
+                    >
+                      <span> 💾Lưu thay đổi</span>
+                    </button>
+                  </div>
                 </Form.Item>
               </Form>
             </div>

@@ -1,5 +1,10 @@
 import { Button, Divider } from "antd";
-import { CloseOutlined, EyeOutlined, UserOutlined, CalendarOutlined } from "@ant-design/icons";
+import {
+  CloseOutlined,
+  EyeOutlined,
+  UserOutlined,
+  CalendarOutlined,
+} from "@ant-design/icons";
 import type { BlogData } from "../types";
 
 interface BlogDetailViewProps {
@@ -30,23 +35,23 @@ const BlogDetailView = ({ blog, onClose }: BlogDetailViewProps) => {
       {/* Header with Close Button */}
       <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-100 p-4 z-10">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-800">Chi tiết tin tức</h2>
+          <div className="text-lg font-bold text-gray-800">
+            Chi tiết tin tức
+          </div>
           <Button
             type="text"
             icon={<CloseOutlined />}
             onClick={onClose}
-            className="rounded-full hover:bg-gray-100 lg:hover:scale-105 transition-transform duration-300"
+            className="!rounded-full !hover:bg-gray-100 lg:hover:scale-105 transition-transform duration-300"
             size="large"
           />
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-4 lg:p-6 overflow-y-auto h-full pb-20">
-        {/* Title */}
-        <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-8 leading-tight">
+        <div className="text-3xl lg:text-4xl font-bold text-gray-800 mb-8 leading-tight">
           {blog.title}
-        </h1>
+        </div>
         <Divider /> {/* Content */}
         <div className="prose max-w-none mb-10">
           <div

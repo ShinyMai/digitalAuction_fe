@@ -27,12 +27,14 @@ const AuctionDetailAnonymous = () => {
   const [auctionDetailData, setAuctionDetailData] =
     useState<AuctionDataDetail>();
   const [isEditMode, setIsEditMode] = useState(false);
-  const [listManager, setListManager] = useState<{ managerId: string, managerName: string }[]>([]);
+  const [listManager, setListManager] = useState<
+    { managerId: string; managerName: string }[]
+  >([]);
 
   useEffect(() => {
     if (auctionId) {
       fetchAuctionDetail(auctionId);
-      onGetListManager()
+      onGetListManager();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auctionId]);
@@ -52,8 +54,10 @@ const AuctionDetailAnonymous = () => {
   const onGetListManager = async () => {
     try {
       const params = {
-        RoleId: 6
-      }
+        RoleId: 6,
+        PageNumber: 1,
+        PageSize: 1000,
+      };
       const response = await AuthServices.getListAccount(params);
       if (response.code === 200) {
         setListManager(response.data.employeeAccounts);
@@ -92,7 +96,12 @@ const AuctionDetailAnonymous = () => {
       const response = await AuctionServices.waitingPublicAuction(auctionId);
       if (response.code === 200) {
         toast.success(response.message);
-        navigate(`/${role.toLowerCase()}/${STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC}`, { replace: true });
+        navigate(
+          `/${role.toLowerCase()}/${
+            STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC
+          }`,
+          { replace: true }
+        );
       } else {
         toast.error(response.message);
       }
@@ -131,10 +140,11 @@ const AuctionDetailAnonymous = () => {
                 icon={<SendOutlined />}
                 onClick={handleSendToManager}
                 disabled={isEditMode}
-                className={`${isEditMode
-                  ? "bg-gray-300 border-0 text-gray-500 cursor-not-allowed opacity-50"
-                  : "bg-gradient-to-r from-emerald-500 to-teal-500 border-0 hover:from-emerald-600 hover:to-teal-600 text-white"
-                  } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[160px] group`}
+                className={`${
+                  isEditMode
+                    ? "bg-gray-300 border-0 text-gray-500 cursor-not-allowed opacity-50"
+                    : "bg-gradient-to-r from-emerald-500 to-teal-500 border-0 hover:from-emerald-600 hover:to-teal-600 text-white"
+                } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[160px] group`}
                 size="large"
               >
                 <span className="ml-1">Gửi cho quản lý</span>
@@ -144,10 +154,11 @@ const AuctionDetailAnonymous = () => {
                 type={isEditMode ? "default" : "primary"}
                 icon={<EditOutlined />}
                 onClick={handleEditToggle}
-                className={`${isEditMode
-                  ? "bg-gradient-to-r from-slate-500 to-gray-500 border-0 text-white hover:from-slate-600 hover:to-gray-600"
-                  : "bg-gradient-to-r from-blue-500 to-indigo-500 border-0 hover:from-blue-600 hover:to-indigo-600 text-white"
-                  } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[140px] group`}
+                className={`${
+                  isEditMode
+                    ? "bg-gradient-to-r from-slate-500 to-gray-500 border-0 text-white hover:from-slate-600 hover:to-gray-600"
+                    : "bg-gradient-to-r from-blue-500 to-indigo-500 border-0 hover:from-blue-600 hover:to-indigo-600 text-white"
+                } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[140px] group`}
                 size="large"
               >
                 <span className="ml-1">

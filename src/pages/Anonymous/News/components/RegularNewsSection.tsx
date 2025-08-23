@@ -1,5 +1,10 @@
 import { Card, Tag, Button, Spin } from "antd";
-import { EyeOutlined, UserOutlined, ReadOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  EyeOutlined,
+  UserOutlined,
+  ReadOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import type { BlogData } from "../types";
 
 interface RegularNewsSectionProps {
@@ -19,7 +24,9 @@ const RegularNewsSection = ({
 }: RegularNewsSectionProps) => {
   const generateRandomViews = () => Math.floor(Math.random() * 1000) + 100;
   const createExcerpt = (content: string, maxLength: number = 200) => {
-    return content.length > maxLength ? content.substring(0, maxLength) + "..." : content;
+    return content.length > maxLength
+      ? content.substring(0, maxLength) + "..."
+      : content;
   };
 
   const formatDate = (dateString: string) => {
@@ -41,7 +48,9 @@ const RegularNewsSection = ({
       {loading ? (
         <div className="flex justify-center items-center py-16">
           <Spin size="large" />
-          <span className="ml-4 text-lg text-gray-600">Đang tải tin tức...</span>
+          <span className="ml-4 text-lg text-gray-600">
+            Đang tải tin tức...
+          </span>
         </div>
       ) : news.length > 0 ? (
         <div
@@ -53,10 +62,14 @@ const RegularNewsSection = ({
             <Card
               key={blog.blogId}
               hoverable
-              className="group overflow-hidden rounded-2xl shadow-lg border-0 hover:shadow-2xl transition-all duration-500 hover:scale-105 animate-slide-in-up"
+              className="!group !overflow-hidden !rounded-2xl !shadow-lg !border-0 !hover:shadow-2xl !transition-all !duration-500 !hover:scale-105 !animate-slide-in-up"
               style={{ animationDelay: `${0.1 * index}s` }}
               cover={
-                <div className={`relative ${isDetailOpen ? "h-40" : "h-48"} overflow-hidden`}>
+                <div
+                  className={`relative ${
+                    isDetailOpen ? "h-40" : "h-48"
+                  } overflow-hidden`}
+                >
                   <img
                     src={blog.thumbnailUrl}
                     alt={blog.title}
@@ -81,30 +94,33 @@ const RegularNewsSection = ({
                 </div>
               }
             >
-              {" "}
               <div className={`${isDetailOpen ? "p-3" : "p-4"}`}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <UserOutlined className="text-gray-500 text-xs" />
-                    <span className="text-xs text-gray-600">Digital Auction</span>
+                    <span className="text-xs text-gray-600">
+                      Digital Auction
+                    </span>
                   </div>
-                  <span className="text-xs text-gray-500">{formatDate(blog.createdAt)}</span>
+                  <span className="text-xs text-gray-500">
+                    {formatDate(blog.createdAt)}
+                  </span>
                 </div>
-                <h3
+                <div
                   className={`font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300 ${
                     isDetailOpen ? "text-base" : "text-lg"
                   }`}
                 >
                   {blog.title}
-                </h3>{" "}
+                </div>
                 {/* Limited to 3 lines for content */}
-                <p
+                <div
                   className={`text-gray-600 mb-3 line-clamp-3 leading-relaxed ${
                     isDetailOpen ? "text-xs" : "text-sm"
                   }`}
                 >
                   {createExcerpt(blog.content)}
-                </p>{" "}
+                </div>
                 <Button
                   type="primary"
                   size="small"
@@ -123,13 +139,17 @@ const RegularNewsSection = ({
           <div className="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
             <SearchOutlined className="text-6xl text-gray-400" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-700 mb-4">Không tìm thấy tin tức</h3>
-          <p className="text-gray-500 mb-6">Thử thay đổi từ khóa tìm kiếm hoặc danh mục</p>
+          <div className="text-2xl font-bold text-gray-700 mb-4">
+            Không tìm thấy tin tức
+          </div>
+          <div className="text-gray-500 mb-6">
+            Thử thay đổi từ khóa tìm kiếm hoặc danh mục
+          </div>
           <Button
             type="primary"
             size="large"
             onClick={onRefresh}
-            className="rounded-xl font-semibold bg-gradient-to-r from-blue-500 to-purple-600 border-0 hover:scale-105 transition-transform duration-300"
+            className="!rounded-xl !font-semibold !bg-gradient-to-r !from-blue-500 !to-purple-600 !border-0 !hover:scale-105 transition-transform duration-300"
           >
             Xem tất cả tin tức
           </Button>
