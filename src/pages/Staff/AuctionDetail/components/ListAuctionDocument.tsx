@@ -14,7 +14,10 @@ import {
   ShoppingOutlined,
   DollarOutlined,
   HistoryOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
+
+const { TextArea } = Input;
 import DepositConfirmationPopup from "./DepositConfirmationPopup";
 import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal/ParticipantBiddingHistoryModal";
 // Interface cho dữ liệu đã nhóm theo người
@@ -90,6 +93,11 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
       auctionId?: string;
       userId?: string;
     } | null>(null);
+
+  // State cho modal từ chối nhận phiếu
+  const [isRejectModalVisible, setIsRejectModalVisible] = useState<boolean>(false);
+  const [selectedAssetForReject, setSelectedAssetForReject] = useState<AuctionDocument | null>(null);
+  const [rejectReason, setRejectReason] = useState<string>("");
 
   // Function để lấy tên tài sản từ assetId
   const getAssetName = useCallback(
@@ -200,6 +208,7 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
       if (action === "receiveTicket") {
         await AuctionServices.receiveAuctionRegistrationDocument({
           auctionDocumentsId: record.auctionDocumentsId,
+          statusTicket: 2,
         });
         toast.success("Đã xác nhận nhận phiếu!");
         await getListAuctionDocument();
@@ -268,6 +277,55 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
   const handleCloseBiddingHistoryModal = () => {
     setIsBiddingHistoryModalVisible(false);
     setSelectedParticipantForHistory(null);
+  };
+
+  // Xử lý mở modal từ chối nhận phiếu
+  const handleShowRejectModal = (asset: AuctionDocument) => {
+    setSelectedAssetForReject(asset);
+    setIsAssetsModalVisible(false); // Đóng popup tài sản đăng ký
+    setIsRejectModalVisible(true); // Mở modal từ chối
+  };
+
+  // Xử lý đóng modal từ chối nhận phiếu
+  const handleCloseRejectModal = () => {
+    setIsRejectModalVisible(false);
+    setSelectedAssetForReject(null);
+    setRejectReason("");
+    setIsAssetsModalVisible(true); // Mở lại popup tài sản đăng ký
+  };
+
+  // Xử lý xác nhận từ chối nhận phiếu
+  const handleConfirmReject = async () => {
+    if (!selectedAssetForReject || !rejectReason.trim()) {
+      toast.error("Vui lòng nhập lý do từ chối!");
+      return;
+    }
+
+    try {
+      // TODO: Gọi API từ chối nhận phiếu - cần thêm API này
+      const response = await AuctionServices.receiveAuctionRegistrationDocument({
+        auctionDocumentsId: selectedAssetForReject.auctionDocumentsId,
+        statusTicket: 4,
+        note: rejectReason.trim(),
+      });
+      if (response.code === 200) {
+        toast.success("Đã từ chối nhận phiếu!");
+        setIsRejectModalVisible(false);
+        setSelectedAssetForReject(null);
+        setRejectReason("");
+        await getListAuctionDocument();
+
+        // Thông báo parent component để refresh
+        if (onDataChange) {
+          onDataChange();
+        }
+      } else {
+        toast.error("Lỗi khi từ chối nhận phiếu!");
+      }
+    } catch (error) {
+      toast.error("Lỗi kết nối mạng!!!");
+      console.error(error);
+    }
   };
 
   const columns = [
@@ -702,6 +760,16 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                       {userRole === 'staff' && (
                         <Space size="small">
                           <Button
+                            type="default"
+                            size="small"
+                            //disabled={asset.statusTicket !== 1}
+                            onClick={() => handleShowRejectModal(asset)}
+                            className="bg-red-500 text-white border-red-500 hover:bg-red-600 text-xs px-3"
+                          >
+                            Từ chối nhận phiếu
+                          </Button>
+
+                          <Button
                             type="primary"
                             size="small"
                             disabled={asset.statusTicket !== 1}
@@ -754,6 +822,68 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
               </div>
             </div>
           )}{" "}
+        </Modal>
+
+        {/* Modal từ chối nhận phiếu */}
+        <Modal
+          title={
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <ExclamationCircleOutlined className="text-red-600 text-lg" />
+              </div>
+              <div>
+                <div className="text-base font-semibold text-gray-800">
+                  Từ chối nhận phiếu đăng ký
+                </div>
+                <div className="text-xs text-gray-500">
+                  {selectedAssetForReject?.tagName}
+                </div>
+              </div>
+            </div>
+          }
+          open={isRejectModalVisible}
+          onCancel={handleCloseRejectModal}
+          width={500}
+          footer={[
+            <Button key="cancel" onClick={handleCloseRejectModal}>
+              Hủy
+            </Button>,
+            <Button
+              key="confirm"
+              type="primary"
+              danger
+              onClick={handleConfirmReject}
+              disabled={!rejectReason.trim()}
+            >
+              Xác nhận từ chối
+            </Button>,
+          ]}
+          className="reject-modal"
+        >
+          <div className="space-y-4">
+            {selectedAssetForReject && (
+              <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                <div className="text-sm text-red-800">
+                  <strong>Lưu ý:</strong> Sau khi từ chối, thông tin sẽ được ghi nhận và không thể hoàn tác.
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Lý do từ chối nhận phiếu <span className="text-red-500">*</span>
+              </label>
+              <TextArea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Vui lòng nhập lý do từ chối nhận phiếu đăng ký..."
+                rows={4}
+                maxLength={500}
+                showCount
+                className="w-full"
+              />
+            </div>
+          </div>
         </Modal>
 
         {/* Modal lịch sử đấu giá */}
