@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Card, Button } from "antd";
+import { Card, Button, Modal, Select, Form } from "antd";
 import {
   ArrowLeftOutlined,
   EditOutlined,
   SendOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import AuctionServices from "../../../services/AuctionServices";
@@ -28,6 +29,9 @@ const AuctionDetailAnonymous = () => {
     useState<AuctionDataDetail>();
   const [isEditMode, setIsEditMode] = useState(false);
   const [listManager, setListManager] = useState<{ managerId: string, managerName: string }[]>([]);
+  const [showManagerModal, setShowManagerModal] = useState(false);
+  const [selectedManagerId, setSelectedManagerId] = useState<string | null>(null);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     if (auctionId) {
@@ -52,11 +56,17 @@ const AuctionDetailAnonymous = () => {
   const onGetListManager = async () => {
     try {
       const params = {
-        RoleId: 6
+        RoleId: 6,
+        PageNumber: 1,
+        PageSize: 10,
       }
       const response = await AuthServices.getListAccount(params);
       if (response.code === 200) {
-        setListManager(response.data.employeeAccounts);
+        const valResponse = response.data.employeeAccounts.map((manager: any) => ({
+          managerId: manager.userId,
+          managerName: manager.name
+        }));
+        setListManager(valResponse);
       } else {
         toast.error(response.message);
       }
@@ -87,18 +97,37 @@ const AuctionDetailAnonymous = () => {
     }
   };
 
-  const handleSendToManager = async () => {
+  const handleSendToManager = () => {
+    setShowManagerModal(true);
+  };
+
+  const handleConfirmSendToManager = async () => {
+    if (!selectedManagerId) {
+      toast.error("Vui lòng chọn quản lý!");
+      return;
+    }
+
     try {
-      const response = await AuctionServices.waitingPublicAuction(auctionId);
+      const response = await AuctionServices.waitingPublicAuction({ auctionId: auctionId, managerInCharge: selectedManagerId });
       if (response.code === 200) {
         toast.success(response.message);
+        setShowManagerModal(false);
+        setSelectedManagerId(null);
+        form.resetFields();
         navigate(`/${role.toLowerCase()}/${STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC}`, { replace: true });
       } else {
         toast.error(response.message);
       }
     } catch (error) {
       console.error("Error sending auction to manager:", error);
+      toast.error("Có lỗi xảy ra khi gửi cho quản lý!");
     }
+  };
+
+  const handleCancelManagerModal = () => {
+    setShowManagerModal(false);
+    setSelectedManagerId(null);
+    form.resetFields();
   };
 
   return (
@@ -193,6 +222,104 @@ const AuctionDetailAnonymous = () => {
           </AnimatePresence>
         </Card>
       </div>
+
+      {/* Modal chọn quản lý */}
+      <Modal
+        title={
+          <div className="flex items-center gap-3 text-lg font-semibold">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+              <UserOutlined className="text-white" />
+            </div>
+            <span className="text-gray-600">Chọn quản lý để gửi phiên đấu giá</span>
+          </div>
+        }
+        open={showManagerModal}
+        onOk={handleConfirmSendToManager}
+        onCancel={handleCancelManagerModal}
+        okText="Gửi cho quản lý"
+        cancelText="Hủy"
+        width={500}
+        centered
+        okButtonProps={{
+          disabled: !selectedManagerId,
+          className: "bg-gradient-to-r from-blue-500 to-indigo-600 border-0 hover:from-blue-600 hover:to-indigo-700",
+          size: "large",
+        }}
+        cancelButtonProps={{
+          size: "large",
+        }}
+        className="rounded-xl"
+        styles={{
+          header: {
+            borderBottom: "2px solid #e5e7eb",
+            paddingBottom: "16px",
+          },
+          body: {
+            padding: "24px",
+          },
+        }}
+      >
+        <div className="py-4">
+          <Form form={form} layout="vertical">
+            <Form.Item
+              label={
+                <span className="text-gray-700 font-semibold flex items-center gap-2">
+                  <UserOutlined className="text-blue-500" />
+                  Chọn quản lý
+                </span>
+              }
+              name="managerId"
+              rules={[{ required: true, message: "Vui lòng chọn quản lý!" }]}
+            >
+              <Select
+                placeholder="Chọn quản lý để gửi phiên đấu giá"
+                size="large"
+                value={selectedManagerId}
+                onChange={setSelectedManagerId}
+                style={{
+                  borderRadius: "8px",
+                }}
+                dropdownStyle={{
+                  borderRadius: "8px",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+                }}
+                optionRender={(option) => (
+                  <div className="flex items-center gap-3 py-2">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
+                      <UserOutlined className="text-blue-600" />
+                    </div>
+                    <span className="font-medium">{option.label}</span>
+                  </div>
+                )}
+              >
+                {listManager.map((manager) => (
+                  <Select.Option key={manager.managerId} value={manager.managerId}>
+                    {manager.managerName}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Form>
+
+          {selectedManagerId && (
+            <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-6 h-6 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full flex items-center justify-center">
+                  <UserOutlined className="text-white text-sm" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-blue-700">
+                    Quản lý được chọn:
+                  </div>
+                  <div className="text-lg font-bold text-blue-800">
+                    {listManager.find(m => m.managerId === selectedManagerId)?.managerName}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>
 
       <style>{`
         @keyframes float {
