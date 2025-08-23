@@ -9,7 +9,6 @@ import {
   Card,
   Typography,
   InputNumber,
-  AutoComplete,
   Select,
   Tabs,
 } from "antd";
@@ -35,7 +34,6 @@ const { Title, Text } = Typography;
 
 // Constants
 const FORM_VALIDATION_RULES = {
-  CITIZEN_ID_LENGTH: 12,
   PAGINATION_SIZE: 4,
 } as const;
 
@@ -59,6 +57,7 @@ export interface InputAuctionPriceModals {
   recentLocation?: string;
   id: string;
   createdBy?: string; // Thêm field này cho dữ liệu từ API
+  numericalOrder?: number; // Thêm field số thứ tự
 }
 
 interface AuctionAsset {
@@ -97,7 +96,6 @@ const InputAuctionPrice = ({
   >([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [citizenOptions, setCitizenOptions] = useState<{ value: string }[]>([]);
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
@@ -204,8 +202,8 @@ const InputAuctionPrice = ({
   }, [getListAuctionRoundPrice]);
 
   // Gọi API để lấy thông tin người dùng
-  const getUserRegistedAuctionByCitizenIdentification = async (
-    citizenIdentification: string
+  const getUserRegistedAuctionByNumericalOrder = async (
+    numericalOrder: number
   ) => {
     try {
       if (!auctionId) {
@@ -213,7 +211,7 @@ const InputAuctionPrice = ({
         return;
       }
       const response = await AuctionServices.userRegistedAuction({
-        citizenIdentification,
+        numericalOrder,
         auctionId: auctionId,
         auctionRoundId: auctionRoundIdBefore || null,
       });
@@ -234,28 +232,26 @@ const InputAuctionPrice = ({
         setAuctionAssets([]);
         setUserInfo(null);
         setSelectedAsset(null);
-        setErrorMessage("Không tìm thấy dữ liệu với số CMND/CCCD này");
+        setErrorMessage("Không tìm thấy dữ liệu với số thứ tự này");
       }
     } catch (error) {
       console.error("Error fetching user registration:", error);
       setAuctionAssets([]);
       setUserInfo(null);
       setSelectedAsset(null);
-      setErrorMessage("Không tìm thấy dữ liệu với số CMND/CCCD này");
+      setErrorMessage("Không tìm thấy dữ liệu với số thứ tự này");
     }
   };
 
-  // Xử lý khi nhập citizenIdentification
-  const handleCitizenInput = (value: string) => {
-    if (value.length >= 12) {
-      getUserRegistedAuctionByCitizenIdentification(value);
-      setCitizenOptions([{ value }]);
+  // Xử lý khi nhập numericalOrder
+  const handleNumericalOrderInput = (value: number | null) => {
+    if (value && value > 0) {
+      getUserRegistedAuctionByNumericalOrder(value);
     } else {
       setAuctionAssets([]);
       setUserInfo(null);
       setSelectedAsset(null);
       setErrorMessage(null);
-      setCitizenOptions(value ? [{ value }] : []);
     }
   };
 
@@ -299,8 +295,7 @@ const InputAuctionPrice = ({
       // Kiểm tra trùng lặp
       const isDuplicate = auctionRoundPriceList.some(
         (item) =>
-          item.citizenIdentification ===
-          formattedValues.citizenIdentification &&
+          item.numericalOrder === formattedValues.numericalOrder &&
           item.auctionAssetId === formattedValues.auctionAssetId
       );
 
@@ -315,13 +310,13 @@ const InputAuctionPrice = ({
       // Thêm dữ liệu vào danh sách
       setAuctionRoundPriceList([...auctionRoundPriceList, formattedValues]);
 
-      // Lưu lại số CMND/CCCD để giữ lại sau khi submit
-      const currentCitizenId = values.citizenIdentification;
+      // Lưu lại số thứ tự để giữ lại sau khi submit
+      const currentNumericalOrder = values.numericalOrder;
 
-      // Reset form nhưng giữ lại số CMND/CCCD
+      // Reset form nhưng giữ lại số thứ tự
       form.resetFields();
       form.setFieldsValue({
-        citizenIdentification: currentCitizenId,
+        numericalOrder: currentNumericalOrder,
       });
 
       // Reset selected asset khi submit thành công
@@ -331,8 +326,6 @@ const InputAuctionPrice = ({
       // setAuctionAssets([]);
       // setUserInfo(null);
       setErrorMessage(null);
-      // Giữ lại citizenOptions với giá trị hiện tại
-      setCitizenOptions(currentCitizenId ? [{ value: currentCitizenId }] : []);
     } catch (error) {
       console.error("Error:", error);
       setErrorMessage("Đã xảy ra lỗi khi thêm giá đấu");
@@ -377,11 +370,11 @@ const InputAuctionPrice = ({
   // Cấu hình cột cho Table của antd
   const columns = [
     {
-      title: "CMND/CCCD",
-      dataIndex: "citizenIdentification",
-      key: "citizenIdentification",
+      title: "Số thứ tự",
+      dataIndex: "numericalOrder",
+      key: "numericalOrder",
       width: 150,
-      render: (text: string) => (
+      render: (text: number) => (
         <div className="flex items-center gap-2">
           <IdcardOutlined className="text-blue-500" />
           <Text className="font-medium">{text || "-"}</Text>
@@ -446,11 +439,12 @@ const InputAuctionPrice = ({
   // Memoized validation rules
   const validationRules = useMemo(
     () => ({
-      citizenIdentification: [
-        { required: true, message: "Vui lòng nhập số CMND/CCCD" },
+      numericalOrder: [
+        { required: true, message: "Vui lòng nhập số thứ tự" },
         {
-          len: FORM_VALIDATION_RULES.CITIZEN_ID_LENGTH,
-          message: "Số CMND/CCND phải có 12 ký tự",
+          type: "number" as const,
+          min: 1,
+          message: "Số thứ tự phải lớn hơn 0",
         },
       ],
       auctionAssetId: [
@@ -663,24 +657,28 @@ const InputAuctionPrice = ({
                     style={{ maxHeight: "calc(100% - 160px)" }}
                   >
                     <Form.Item
-                      name="citizenIdentification"
+                      name="numericalOrder"
                       label={
                         <span className="text-gray-700 font-semibold flex items-center gap-2 text-base">
                           <IdcardOutlined className="text-blue-500" />
-                          Số CMND/CCCD
+                          Số thứ tự
                         </span>
                       }
-                      rules={validationRules.citizenIdentification}
+                      rules={validationRules.numericalOrder}
                       help={errorMessage}
                       validateStatus={errorMessage ? "error" : undefined}
                     >
-                      <AutoComplete
-                        options={citizenOptions}
-                        onChange={handleCitizenInput}
-                        placeholder="Nhập số CMND/CCCD (12 số)"
+                      <InputNumber
+                        placeholder="Nhập số thứ tự"
+                        onChange={handleNumericalOrderInput}
                         className="w-full"
                         size="large"
+                        min={1}
+                        max={9999}
+                        controls={true}
+                        precision={0}
                         style={{
+                          width: "100%",
                           borderRadius: "12px",
                           boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                         }}

@@ -27,7 +27,6 @@ const AuctionDetailDraff = () => {
   const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(null);
   const [listAuctioners, setListAuctioners] = useState<ModalAuctioners[]>([]);
   const [rejectLoading, setRejectLoading] = useState<boolean>(false);
-
   useEffect(() => {
     if (auctionId) {
       fetchAuctionDetail(auctionId);

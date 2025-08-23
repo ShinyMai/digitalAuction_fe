@@ -15,14 +15,14 @@ interface SearchParams {
   PageSize?: number;
   Status: number;
   AuctionType?: string;
-  ConditionAuction?: number[] | number;
+  ConditionAuction?: number[];
 }
 
 interface SearchValue {
   auctionName?: string;
   CategoryId?: number;
   AuctionType?: string;
-  ConditionAuction?: number;
+  ConditionAuction?: number[];
 }
 
 interface PaginationChangeParams {
@@ -37,6 +37,7 @@ const DEFAULT_PARAMS: SearchParams = {
   AuctionType: "1",
   SortBy: "register_open_date",
   IsAscending: false,
+  ConditionAuction: [1, 2],
 };
 
 const AuctionList = () => {

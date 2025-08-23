@@ -15,6 +15,7 @@ import type { AuctionDataDetail } from "../Modals";
 import { STAFF_ROUTES } from "../../../routers";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import AuthServices from "../../../services/AuthServices";
 
 const AuctionDetailAnonymous = () => {
   const { state } = useLocation();
@@ -26,10 +27,12 @@ const AuctionDetailAnonymous = () => {
   const [auctionDetailData, setAuctionDetailData] =
     useState<AuctionDataDetail>();
   const [isEditMode, setIsEditMode] = useState(false);
+  const [listManager, setListManager] = useState<{ managerId: string, managerName: string }[]>([]);
 
   useEffect(() => {
     if (auctionId) {
       fetchAuctionDetail(auctionId);
+      onGetListManager()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auctionId]);
@@ -44,6 +47,22 @@ const AuctionDetailAnonymous = () => {
     } catch (error) {
       console.error("Error fetching auction detail:", error);
       toast.error("Không thể tải thông tin phiên đấu giá!");
+    }
+  };
+  const onGetListManager = async () => {
+    try {
+      const params = {
+        RoleId: 6
+      }
+      const response = await AuthServices.getListAccount(params);
+      if (response.code === 200) {
+        setListManager(response.data.employeeAccounts);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      console.error("Error fetching list of managers:", error);
+      toast.error("Không thể tải danh sách quản lý!");
     }
   };
 

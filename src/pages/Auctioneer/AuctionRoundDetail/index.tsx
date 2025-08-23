@@ -26,16 +26,13 @@ const AuctionRoundDetail = ({
   onBackToList,
   auction,
 }: AuctionRoundDetailProps) => {
-  // Current auction round ID - single source of truth
 
-  // State management
   const [auctionRoundPrice, setAuctionRoundPrice] = useState<
     AuctionRoundPrice[]
   >([]);
   const [activeTab, setActiveTab] = useState<string>("history");
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Load all data function - calls all API functions
   const loadAllData = async () => {
     setLoading(true);
     try {
@@ -48,7 +45,6 @@ const AuctionRoundDetail = ({
     }
   };
 
-  // Initialize data on component mount
   useEffect(() => {
     const initializeData = async () => {
       await loadAllData();
@@ -57,11 +53,9 @@ const AuctionRoundDetail = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auctionRound]);
 
-  // API Function 1: Get auction round prices (from service logic)
   const getListOfAuctionRoundPrices = async () => {
     try {
       if (auctionRound) {
-        // TODO: Replace with real API call when ready
         const response = await AuctionServices.getListAuctionRoundPrices(
           auctionRound?.auctionRoundId
         );
@@ -106,7 +100,6 @@ const AuctionRoundDetail = ({
   // API Function 6: End auction (MISSING API) Chưa test
   const endAuction = async () => {
     try {
-      // TODO: THIẾU API - Cần thêm vào AuctionServices
       const response = await AuctionServices.updateStatusAuctionRound({
         auctionRoundId: auctionRound?.auctionRoundId,
         status: 2,
@@ -124,22 +117,8 @@ const AuctionRoundDetail = ({
     }
   };
 
-  // API Function 7: Refresh all data (MISSING API)
-  const refreshData = async () => {
-    try {
-      // TODO: THIẾU API - Cần thêm vào AuctionServices
-      // const response = await AuctionServices.refreshAuctionData(auctionRound?.auctionRoundId);
-      // return response.data;
-      return Promise.resolve({ success: true });
-    } catch (error) {
-      console.error("Error refreshing data:", error);
-      throw error;
-    }
-  };
-
   // Refresh all data function
   const refreshAllData = async () => {
-    await refreshData();
     await loadAllData();
     toast.success("Dữ liệu đã được làm mới");
   };

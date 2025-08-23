@@ -15,7 +15,7 @@ interface SearchParams {
   PageNumber: number;
   PageSize: number;
   Status: number;
-  ConditionAuction?: number;
+  ConditionAuction?: number[];
 }
 
 interface PaginationChangeParams {
@@ -33,7 +33,7 @@ const AuctionListNow = () => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
     PageSize: 8,
-    ConditionAuction: 3,
+    ConditionAuction: [3],
     Status: 1,
   });
   useEffect(() => {
@@ -71,6 +71,7 @@ const AuctionListNow = () => {
         Status: searchParams.Status,
         AuctionName: searchParams.AuctionName,
         CategoryId: searchParams.CategoryId,
+        ConditionAuction: searchParams.ConditionAuction,
       };
       if (searchParams.AuctionName)
         params.AuctionName = searchParams.AuctionName;

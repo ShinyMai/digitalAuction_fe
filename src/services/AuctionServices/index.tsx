@@ -12,8 +12,19 @@ const addAuctionNode = (body: any): Promise<ApiResponse<any>> =>
 const getListAuctionCategory = (): Promise<ApiResponse<any>> =>
   http.get(AuctionAPI.AUCTION_CATEGORY);
 
-const getListAuction = (params?: any): Promise<ApiResponse<any>> =>
-  http.get(AuctionAPI.AUCTION_LIST, { params: params });
+const getListAuction = (params?: any): Promise<ApiResponse<any>> => {
+  // Xử lý ConditionAuction array để loại bỏ dấu [] khỏi URL
+  if (params && params.ConditionAuction && Array.isArray(params.ConditionAuction)) {
+    // Sử dụng paramsSerializer để custom cách serialize parameters
+    return http.get(AuctionAPI.AUCTION_LIST, {
+      params: params,
+      paramsSerializer: {
+        indexes: null // Loại bỏ index trong array params
+      }
+    });
+  }
+  return http.get(AuctionAPI.AUCTION_LIST, { params: params });
+};
 
 const getListAuctionNode = (params?: any): Promise<ApiResponse<any>> =>
   httpNode.get(AuctionAPI.AUCTION_LIST_PUBLIC_NODE, {
