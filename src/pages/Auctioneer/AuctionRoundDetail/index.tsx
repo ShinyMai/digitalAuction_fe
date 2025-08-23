@@ -14,6 +14,7 @@ import "./styles.css";
 import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 import type { AuctionDataDetail } from "../Modals";
+import connection from "../../../signalRConnection";
 
 interface AuctionRoundDetailProps {
   auctionRound?: AuctionRound;
@@ -26,19 +27,33 @@ const AuctionRoundDetail = ({
   onBackToList,
   auction,
 }: AuctionRoundDetailProps) => {
-
+  // State
   const [auctionRoundPrice, setAuctionRoundPrice] = useState<
     AuctionRoundPrice[]
   >([]);
   const [activeTab, setActiveTab] = useState<string>("history");
   const [loading, setLoading] = useState<boolean>(false);
 
+  // ---- 🔹 Load initial data ----
+  const getListOfAuctionRoundPrices = async () => {
+    try {
+      if (auctionRound) {
+        const response = await AuctionServices.getListAuctionRoundPrices(
+          auctionRound.auctionRoundId
+        );
+        setAuctionRoundPrice(response.data.listAuctionRoundPrices);
+      }
+    } catch (error) {
+      console.error("Error fetching auction round prices:", error);
+    }
+  };
+
   const loadAllData = async () => {
     setLoading(true);
     try {
       await getListOfAuctionRoundPrices();
     } catch (error) {
-      console.error("Error loading data:", error);
+      console.error("Error loading auction round data:", error);
       toast.error("Có lỗi xảy ra khi tải dữ liệu");
     } finally {
       setLoading(false);
@@ -46,31 +61,54 @@ const AuctionRoundDetail = ({
   };
 
   useEffect(() => {
-    const initializeData = async () => {
-      await loadAllData();
-    };
-    initializeData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auctionRound]);
+    if (!auctionRound?.auctionRoundId) return;
 
-  const getListOfAuctionRoundPrices = async () => {
-    try {
-      if (auctionRound) {
-        const response = await AuctionServices.getListAuctionRoundPrices(
-          auctionRound?.auctionRoundId
-        );
-        setAuctionRoundPrice(response.data.listAuctionRoundPrices);
-        console.log(
-          "Using real API data for auction round prices:",
-          auctionRound?.auctionRoundId
-        );
+    let isMounted = true;
+
+    async function startConnection() {
+      if (connection.state === "Disconnected") {
+        try {
+          await connection.start();
+          console.log("✅ SignalR connected");
+        } catch (err) {
+          console.error("❌ SignalR connect error:", err);
+        }
       }
-    } catch (error) {
-      console.error("Error fetching auction round prices:", error);
-    }
-  };
 
-  // API Function 5: Update winner flag (existing)
+      // Join group theo auctionRoundId
+      await connection.invoke(
+        "JoinGroup",
+        auctionRound?.auctionRoundId?.toString()
+      );
+
+      // Khi có sự kiện giá mới -> gọi lại API
+      const handler = async () => {
+        if (isMounted) {
+          console.log("📡 ReceiveLatestPrices -> reload API data");
+          await getListOfAuctionRoundPrices(); // gọi lại API
+        }
+      };
+
+      connection.on("ReceiveLatestPrices", handler);
+
+      // Cleanup
+      return () => {
+        isMounted = false;
+        connection.off("ReceiveLatestPrices", handler);
+        connection
+          .invoke("LeaveGroup", auctionRound?.auctionRoundId.toString())
+          .catch(() => { });
+      };
+    }
+
+    const cleanupPromise = startConnection();
+
+    return () => {
+      cleanupPromise.then((cleanup) => cleanup && cleanup());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auctionRound?.auctionRoundId]);
+
   const onUpdateWinnerFlag = async (
     auctionRoundPriceId: string,
     userName: string,
@@ -78,13 +116,12 @@ const AuctionRoundDetail = ({
   ) => {
     try {
       const response = await AuctionServices.updateWinnerFlag({
-        auctionRoundPriceId: auctionRoundPriceId,
+        auctionRoundPriceId,
       });
       if (response.data.statusUpdate) {
         toast.success(
           `Đã cập nhật ${userName} là người chiến thắng cho tài sản ${assetName}`
         );
-        // Refresh price history after update
         await getListOfAuctionRoundPrices();
       } else {
         toast.error(
@@ -97,7 +134,6 @@ const AuctionRoundDetail = ({
     }
   };
 
-  // API Function 6: End auction (MISSING API) Chưa test
   const endAuction = async () => {
     try {
       const response = await AuctionServices.updateStatusAuctionRound({
@@ -106,7 +142,6 @@ const AuctionRoundDetail = ({
       });
       if (response.data) {
         toast.success("Phiên đấu giá đã được kết thúc");
-        //await loadAllData(); // Refresh data
       } else {
         toast.error("Kết thúc phiên đấu giá thất bại");
       }
@@ -117,13 +152,16 @@ const AuctionRoundDetail = ({
     }
   };
 
-  // Refresh all data function
+  const refreshData = async () => {
+    return Promise.resolve({ success: true });
+  };
+
   const refreshAllData = async () => {
     await loadAllData();
     toast.success("Dữ liệu đã được làm mới");
   };
 
-  // Calculate basic stats from current data
+  // ---- 🔹 Derived data ----
   const totalParticipants = new Set(
     auctionRoundPrice.map((item) => item.citizenIdentification)
   ).size;
@@ -159,6 +197,7 @@ const AuctionRoundDetail = ({
     },
   ];
 
+  // ---- 🔹 Render ----
   return (
     <div className="min-h-fit bg-gray-50 p-6 w-full">
       <div className="max-w-7xl mx-auto">
@@ -186,7 +225,7 @@ const AuctionRoundDetail = ({
           onEndAuction={endAuction}
         />
 
-        {/* Tabs with Ant Design */}
+        {/* Tabs */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-4">
             <Typography.Title level={4} className="m-0">
