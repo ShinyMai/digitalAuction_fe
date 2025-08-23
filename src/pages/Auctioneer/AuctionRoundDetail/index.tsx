@@ -142,6 +142,9 @@ const AuctionRoundDetail = ({
       });
       if (response.data) {
         toast.success("Phiên đấu giá đã được kết thúc");
+        if (onBackToList) {
+          onBackToList();
+        }
       } else {
         toast.error("Kết thúc phiên đấu giá thất bại");
       }
