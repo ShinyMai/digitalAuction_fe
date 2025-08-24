@@ -191,7 +191,7 @@ const ListAuctionDocument = ({
       if (
         updatedParticipant &&
         JSON.stringify(updatedParticipant) !==
-          JSON.stringify(selectedParticipant)
+        JSON.stringify(selectedParticipant)
       ) {
         setSelectedParticipant(updatedParticipant);
       }
@@ -243,8 +243,7 @@ const ListAuctionDocument = ({
       }
     } catch (error) {
       toast.error(
-        `Lỗi khi thực hiện ${
-          action === "receiveTicket" ? "nhận phiếu" : "nhận cọc"
+        `Lỗi khi thực hiện ${action === "receiveTicket" ? "nhận phiếu" : "nhận cọc"
         }!`
       );
       console.error(error);
@@ -425,24 +424,24 @@ const ListAuctionDocument = ({
                     parseInt(status) === 0
                       ? "default"
                       : parseInt(status) === 1
-                      ? "processing"
-                      : parseInt(status) === 2
-                      ? "success"
-                      : parseInt(status) === 3
-                      ? "warning"
-                      : "error"
+                        ? "processing"
+                        : parseInt(status) === 2
+                          ? "success"
+                          : parseInt(status) === 3
+                            ? "warning"
+                            : "error"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa chuyển tiền hồ sơ`
                     : parseInt(status) === 1
-                    ? `${count} đã chuyển tiền hồ sơ`
-                    : parseInt(status) === 2
-                    ? `${count} đã nhận hồ sơ`
-                    : parseInt(status) === 3
-                    ? `${count} đã hoàn tiền hồ sơ`
-                    : `${count} không hợp lệ`}
+                      ? `${count} đã chuyển tiền hồ sơ`
+                      : parseInt(status) === 2
+                        ? `${count} đã nhận hồ sơ`
+                        : parseInt(status) === 3
+                          ? `${count} đã hoàn tiền hồ sơ`
+                          : `${count} không hợp lệ`}
                 </Tag>
               ))}
             </div>
@@ -774,24 +773,24 @@ const ListAuctionDocument = ({
                             asset.statusTicket === 0
                               ? "default"
                               : asset.statusTicket === 1
-                              ? "processing"
-                              : asset.statusTicket === 2
-                              ? "success"
-                              : asset.statusTicket === 3
-                              ? "warning"
-                              : "error"
+                                ? "processing"
+                                : asset.statusTicket === 2
+                                  ? "success"
+                                  : asset.statusTicket === 3
+                                    ? "warning"
+                                    : "error"
                           }
                           className="text-xs"
                         >
                           {asset.statusTicket === 0
                             ? "Chưa chuyển tiền"
                             : asset.statusTicket === 1
-                            ? "Đã chuyển tiền"
-                            : asset.statusTicket === 2
-                            ? "Đã nhận phiếu"
-                            : asset.statusTicket === 3
-                            ? "Đã hoàn tiền"
-                            : "Không hợp lệ"}
+                              ? "Đã chuyển tiền"
+                              : asset.statusTicket === 2
+                                ? "Đã nhận phiếu"
+                                : asset.statusTicket === 3
+                                  ? "Đã hoàn tiền"
+                                  : "Không hợp lệ"}
                         </Tag>
 
                         {asset.statusDeposit === 1 && (
@@ -815,7 +814,7 @@ const ListAuctionDocument = ({
                               disabled={
                                 loadingActionId !== null &&
                                 loadingActionId !==
-                                  `receivedTickeFee-${asset.auctionDocumentsId}`
+                                `receivedTickeFee-${asset.auctionDocumentsId}`
                               }
                               onClick={() =>
                                 handleAction("receivedTickeFee", asset)
@@ -853,7 +852,7 @@ const ListAuctionDocument = ({
                                   asset.statusTicket !== 1 ||
                                   (loadingActionId !== null &&
                                     loadingActionId !==
-                                      `receiveTicket-${asset.auctionDocumentsId}`)
+                                    `receiveTicket-${asset.auctionDocumentsId}`)
                                 }
                                 loading={
                                   loadingActionId ===
@@ -875,7 +874,7 @@ const ListAuctionDocument = ({
                                   asset.statusDeposit !== 0 ||
                                   (loadingActionId !== null &&
                                     loadingActionId !==
-                                      `receiveDeposit-${asset.auctionDocumentsId}`)
+                                    `receiveDeposit-${asset.auctionDocumentsId}`)
                                 }
                                 loading={
                                   loadingActionId ===

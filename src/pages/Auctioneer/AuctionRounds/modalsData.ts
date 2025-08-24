@@ -72,5 +72,11 @@ export type AuctionRoundPriceWinner = {
   auctionPrice: number;
   createdAt: string;
   createdBy: string;
-  flagWinner: boolean
+  flagWinner: boolean;
+  assetStatistic?: {
+    startingPrice: number;
+    highestPrice: number;
+    totalBids: number;
+    totalParticipants: number
+  }
 }

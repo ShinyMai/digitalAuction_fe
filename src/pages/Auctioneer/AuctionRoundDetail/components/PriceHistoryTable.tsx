@@ -2,7 +2,6 @@ import { Table, Card, Typography, Tag, Empty } from "antd";
 import {
   UserOutlined,
   IdcardOutlined,
-  EnvironmentOutlined,
   DollarOutlined,
   TrophyOutlined,
 } from "@ant-design/icons";
@@ -66,17 +65,6 @@ const PriceHistoryTable = ({ priceHistory }: PriceHistoryTableProps) => {
       render: (text: string) => (
         <span className="!font-mono !text-gray-600">{text}</span>
       ),
-    },
-    {
-      title: (
-        <span className="flex items-center gap-2">
-          <EnvironmentOutlined />
-          Địa điểm
-        </span>
-      ),
-      dataIndex: "recentLocation",
-      key: "recentLocation",
-      render: (text: string) => <Tag color="green">{text}</Tag>,
     },
     {
       title: (

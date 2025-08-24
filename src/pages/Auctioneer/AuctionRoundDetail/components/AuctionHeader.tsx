@@ -1,5 +1,5 @@
 import { Card, Statistic, Row, Col, Typography, Space, Divider, Button } from "antd";
-import { UserOutlined, HomeOutlined, ClockCircleOutlined, SyncOutlined, StopOutlined } from "@ant-design/icons";
+import { UserOutlined, HomeOutlined, ClockCircleOutlined, StopOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 
@@ -70,9 +70,6 @@ const AuctionHeader = ({
                             </Title>
                             {getStatusBadge()}
                         </Space>
-                        <Text type="secondary" className="!text-base">
-                            Quản lý và theo dõi tiến trình đấu giá tài sản
-                        </Text>
                     </Space>
                 </Col>
 
@@ -122,14 +119,6 @@ const AuctionHeader = ({
                         <ClockCircleOutlined className="!text-blue-500" />
                         <Text type="secondary">
                             Cập nhật: {new Date().toLocaleString('vi-VN')}
-                        </Text>
-                    </Space>
-                </Col>
-                <Col xs={24} sm={12}>
-                    <Space align="center">
-                        <SyncOutlined spin className="!text-green-500" />
-                        <Text type="secondary">
-                            Dữ liệu realtime
                         </Text>
                     </Space>
                 </Col>
