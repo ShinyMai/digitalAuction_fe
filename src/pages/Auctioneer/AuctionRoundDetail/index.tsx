@@ -90,6 +90,14 @@ const AuctionRoundDetail = ({
 
   const endAuction = async () => {
     try {
+      // Validate: Kiểm tra xem có dữ liệu giá đấu không
+      if (!auctionRoundPrice || auctionRoundPrice.length === 0) {
+        toast.warning(
+          "Không thể kết thúc vòng đấu giá. Vòng đấu giá chưa có dữ liệu giá đấu nào."
+        );
+        return;
+      }
+
       const response = await AuctionServices.updateStatusAuctionRound({
         auctionRoundId: auctionRound?.auctionRoundId,
         status: 2,
