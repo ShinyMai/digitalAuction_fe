@@ -132,6 +132,19 @@ const AuctionDetailAuctioneer = () => {
     );
   };
 
+  // Hàm để refresh tất cả data khi chuyển tab
+  const handleTabChange = async () => {
+    try {
+      // Gọi lại tất cả các API để refresh data
+      await Promise.all([
+        getAuctionDetailById(location.state.key),
+        onGetListAuctionRound(location.state.key)
+      ]);
+    } catch (error) {
+      console.error("Error refreshing data on tab change:", error);
+    }
+  };
+
   return (
     <section className="p-4 sm:p-6 h-full min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -149,6 +162,7 @@ const AuctionDetailAuctioneer = () => {
           tabBarGutter={8}
           centered={false}
           tabPosition="top"
+          onChange={handleTabChange}
           items={[
             {
               key: "1",
@@ -173,56 +187,56 @@ const AuctionDetailAuctioneer = () => {
             // Tab 2: Danh sách tham gia đấu giá - Kiểm tra quyền truy cập
             ...(canAccessTabs()
               ? [
-                  {
-                    key: "2",
-                    label: (
-                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-teal-50 hover:scale-105 hover:shadow-md">
-                        <TeamOutlined className="text-teal-600 text-lg transition-colors duration-300" />
-                        <span className="font-semibold text-gray-700 transition-colors duration-300">
-                          Danh sách tham gia đấu giá
-                        </span>
-                      </div>
-                    ),
-                    children: (
-                      <div>
-                        <ListAuctionDocument
-                          auctionId={location.state.key}
-                          auctionDateModals={auctionDateModal}
-                          auctionAssets={auctionAssets}
-                        />
-                      </div>
-                    ),
-                  },
-                ]
+                {
+                  key: "2",
+                  label: (
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-teal-50 hover:scale-105 hover:shadow-md">
+                      <TeamOutlined className="text-teal-600 text-lg transition-colors duration-300" />
+                      <span className="font-semibold text-gray-700 transition-colors duration-300">
+                        Danh sách tham gia đấu giá
+                      </span>
+                    </div>
+                  ),
+                  children: (
+                    <div>
+                      <ListAuctionDocument
+                        auctionId={location.state.key}
+                        auctionDateModals={auctionDateModal}
+                        auctionAssets={auctionAssets}
+                      />
+                    </div>
+                  ),
+                },
+              ]
               : []),
             // Tab 3: Quản lý phiên đấu giá - Kiểm tra quyền truy cập và có auction rounds
             ...(canAccessTabs() && auctionRounds.length > 0
               ? [
-                  {
-                    key: "3",
-                    label: (
-                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-purple-50 hover:scale-105 hover:shadow-md">
-                        <TeamOutlined className="text-purple-600 text-lg transition-colors duration-300" />
-                        <span className="font-semibold text-gray-700 transition-colors duration-300">
-                          {role == USER_ROLES.AUCTIONEER
-                            ? "Quản lý phiên đấu giá"
-                            : role == USER_ROLES.STAFF
+                {
+                  key: "3",
+                  label: (
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-purple-50 hover:scale-105 hover:shadow-md">
+                      <TeamOutlined className="text-purple-600 text-lg transition-colors duration-300" />
+                      <span className="font-semibold text-gray-700 transition-colors duration-300">
+                        {role == USER_ROLES.AUCTIONEER
+                          ? "Quản lý phiên đấu giá"
+                          : role == USER_ROLES.STAFF
                             ? "Tham gia phiên đấu giá"
                             : "Theo dõi phiên đấu giá"}
-                        </span>
-                      </div>
-                    ),
-                    children: (
-                      <div>
-                        <AuctionRounds
-                          auctionId={location.state.key}
-                          auction={auctionDetailData}
-                          auctionAsset={auctionAssets}
-                        />
-                      </div>
-                    ),
-                  },
-                ]
+                      </span>
+                    </div>
+                  ),
+                  children: (
+                    <div>
+                      <AuctionRounds
+                        auctionId={location.state.key}
+                        auction={auctionDetailData}
+                        auctionAsset={auctionAssets}
+                      />
+                    </div>
+                  ),
+                },
+              ]
               : []),
           ]}
         />

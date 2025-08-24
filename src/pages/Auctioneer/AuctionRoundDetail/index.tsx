@@ -122,6 +122,15 @@ const AuctionRoundDetail = ({
     toast.success("Dữ liệu đã được làm mới");
   };
 
+  // Hàm để refresh tất cả data khi chuyển tab
+  const handleTabChange = async () => {
+    try {
+      await loadAllData();
+    } catch (error) {
+      console.error("Error refreshing data on tab change:", error);
+    }
+  };
+
   // ---- 🔹 Derived data ----
   const totalParticipants = new Set(
     auctionRoundPrice.map((item) => item.citizenIdentification)
@@ -208,6 +217,7 @@ const AuctionRoundDetail = ({
           <Tabs
             activeKey={activeTab}
             onChange={setActiveTab}
+            onTabClick={handleTabChange}
             items={tabItems}
             size="large"
             className="custom-tabs"

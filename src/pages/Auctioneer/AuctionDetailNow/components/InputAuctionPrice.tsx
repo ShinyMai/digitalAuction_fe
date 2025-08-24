@@ -78,7 +78,6 @@ const InputAuctionPrice = ({
   onBackToList,
   auctionRoundIdBefore,
 }: props) => {
-  // State cho danh sách dữ liệu
   const [auctionRoundPriceList, setAuctionRoundPriceList] = useState<
     InputAuctionPriceModals[]
   >([]);
@@ -91,11 +90,9 @@ const InputAuctionPrice = ({
   const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<AuctionAsset | null>(null);
-  // Form instance từ antd
   const [form] = Form.useForm();
   const { user } = useSelector((state: RootState) => state.auth);
 
-  // Memoized calculations for performance
   const statistics = useMemo(() => {
     const totalMine = auctionRoundPriceList.length;
     const totalOther = Array.isArray(auctionRoundPriceListOther)
@@ -110,7 +107,6 @@ const InputAuctionPrice = ({
     };
   }, [auctionRoundPriceList, auctionRoundPriceListOther]);
 
-  // Memoized filtered data for tabs
   const filteredData = useMemo(() => {
     const filterMine = auctionRoundPriceList;
     const filterOther = Array.isArray(auctionRoundPriceListOther)
@@ -120,7 +116,20 @@ const InputAuctionPrice = ({
     return { filterMine, filterOther };
   }, [auctionRoundPriceList, auctionRoundPriceListOther]);
 
-  // API để lấy danh sách giá đấu từ những người khác
+  const availableAssets = useMemo(() => {
+    if (!userInfo || !Array.isArray(auctionRoundPriceListOther)) {
+      return auctionAssets;
+    }
+
+    const userExistingBids = auctionRoundPriceListOther.filter(
+      (bid) => bid.citizenIdentification === userInfo.CitizenIdentification
+    );
+
+    const biddenAssetNames = userExistingBids.map(bid => bid.tagName);
+
+    return auctionAssets.filter(asset => !biddenAssetNames.includes(asset.tagName));
+  }, [auctionAssets, auctionRoundPriceListOther, userInfo]);
+
   const getListAuctionRoundPrice = useCallback(async () => {
     try {
       if (roundData?.auctionRoundId) {
@@ -128,7 +137,6 @@ const InputAuctionPrice = ({
           roundData?.auctionRoundId
         );
         if (response.code === 200) {
-          // Đảm bảo response.data là array
           const dataArray = Array.isArray(response.data.listAuctionRoundPrices)
             ? response.data.listAuctionRoundPrices
             : [];
@@ -143,12 +151,50 @@ const InputAuctionPrice = ({
     }
   }, [roundData?.auctionRoundId]);
 
-  // Gọi API khi component mount
   useEffect(() => {
     getListAuctionRoundPrice();
   }, [getListAuctionRoundPrice]);
 
-  // Gọi API để lấy thông tin người dùng
+  const handleTabChange = async () => {
+    try {
+      await getListAuctionRoundPrice();
+    } catch (error) {
+      console.error("Error refreshing data on tab change:", error);
+    }
+  };
+
+  const getHighestBidForAsset = useCallback((assetId: string) => {
+    const selectedAssetName = auctionAssets.find(
+      (asset) => asset.auctionAssetsId === assetId
+    )?.tagName;
+
+    if (!selectedAssetName) return null;
+
+    const otherBidsForAsset = auctionRoundPriceListOther.filter(
+      (bid) => bid.tagName === selectedAssetName || bid.auctionAssetName === selectedAssetName
+    );
+
+    const myBidsForAsset = auctionRoundPriceList.filter(
+      (bid) => bid.auctionAssetName === selectedAssetName
+    );
+
+    const otherHighest = otherBidsForAsset.length > 0
+      ? Math.max(...otherBidsForAsset.map(bid => bid.auctionPrice || bid.price || 0))
+      : 0;
+
+    const myHighest = myBidsForAsset.length > 0
+      ? Math.max(...myBidsForAsset.map(bid => bid.price || 0))
+      : 0;
+
+    const overallHighest = Math.max(otherHighest, myHighest);
+
+    return {
+      highest: overallHighest > 0 ? overallHighest : null,
+      isMyBid: myHighest >= otherHighest && myHighest > 0,
+      assetName: selectedAssetName
+    };
+  }, [auctionAssets, auctionRoundPriceListOther, auctionRoundPriceList]);
+
   const getUserRegistedAuctionByNumericalOrder = async (
     numericalOrder: number
   ) => {
@@ -190,7 +236,6 @@ const InputAuctionPrice = ({
     }
   };
 
-  // Xử lý khi nhập numericalOrder
   const handleNumericalOrderInput = (value: number | null) => {
     if (value && value > 0) {
       getUserRegistedAuctionByNumericalOrder(value);
@@ -204,7 +249,9 @@ const InputAuctionPrice = ({
 
   // Xử lý khi chọn tài sản
   const handleAssetSelect = (assetId: string) => {
-    const asset = auctionAssets.find((a) => a.auctionAssetsId === assetId);
+    // Tìm trong availableAssets trước, nếu không có thì tìm trong auctionAssets gốc
+    const asset = availableAssets.find((a) => a.auctionAssetsId === assetId) ||
+      auctionAssets.find((a) => a.auctionAssetsId === assetId);
     setSelectedAsset(asset || null);
     form.setFieldsValue({ auctionAssetId: assetId });
   };
@@ -227,7 +274,56 @@ const InputAuctionPrice = ({
         return;
       }
 
-      // Chuyển price thành number và thêm id ngẫu nhiên
+      const selectedAssetName = auctionAssets.find(
+        (asset) => asset.auctionAssetsId === values.auctionAssetId
+      )?.tagName;
+
+      if (selectedAssetName && Array.isArray(auctionRoundPriceListOther)) {
+        const otherBidsForSameAsset = auctionRoundPriceListOther.filter(
+          (bid) => bid.tagName === selectedAssetName || bid.auctionAssetName === selectedAssetName
+        );
+
+        if (otherBidsForSameAsset.length > 0) {
+          const highestOtherBid = Math.max(
+            ...otherBidsForSameAsset.map((bid) =>
+              bid.auctionPrice || bid.price || 0
+            )
+          );
+
+          if (values.price <= highestOtherBid) {
+            setErrorMessage(
+              `Giá đấu phải cao hơn giá đấu hiện tại của người khác: ${highestOtherBid.toLocaleString(
+                "vi-VN"
+              )} VND cho tài sản "${selectedAssetName}"`
+            );
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
+      if (selectedAssetName && Array.isArray(auctionRoundPriceList)) {
+        const myBidsForSameAsset = auctionRoundPriceList.filter(
+          (bid) => bid.auctionAssetName === selectedAssetName
+        );
+
+        if (myBidsForSameAsset.length > 0) {
+          const highestMyBid = Math.max(
+            ...myBidsForSameAsset.map((bid) => bid.price || 0)
+          );
+
+          if (values.price <= highestMyBid) {
+            setErrorMessage(
+              `Giá đấu phải cao hơn giá đấu trước đó của bạn: ${highestMyBid.toLocaleString(
+                "vi-VN"
+              )} VND cho tài sản "${selectedAssetName}"`
+            );
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
       const formattedValues = {
         ...values,
         price: values.price,
@@ -239,7 +335,6 @@ const InputAuctionPrice = ({
         id: uuidv4(),
       };
 
-      // Kiểm tra trùng lặp
       const isDuplicate = auctionRoundPriceList.some(
         (item) =>
           item.numericalOrder === formattedValues.numericalOrder &&
@@ -254,25 +349,20 @@ const InputAuctionPrice = ({
         return;
       }
 
-      // Thêm dữ liệu vào danh sách
       setAuctionRoundPriceList([...auctionRoundPriceList, formattedValues]);
 
-      // Loại bỏ tài sản đã chọn khỏi danh sách auctionAssets
       const updatedAssets = auctionAssets.filter(
         (asset) => asset.auctionAssetsId !== formattedValues.auctionAssetId
       );
       setAuctionAssets(updatedAssets);
 
-      // Lưu lại số thứ tự để giữ lại sau khi submit
       const currentNumericalOrder = values.numericalOrder;
 
-      // Reset form nhưng giữ lại số thứ tự
       form.resetFields();
       form.setFieldsValue({
         numericalOrder: currentNumericalOrder,
       });
 
-      // Reset selected asset khi submit thành công
       setSelectedAsset(null);
 
       setErrorMessage(null);
@@ -284,7 +374,6 @@ const InputAuctionPrice = ({
     }
   };
 
-  // Xử lý khi click nút Hoàn thành
   const handleComplete = async () => {
     const dataSubmit = {
       auctionRoundId: roundData?.auctionRoundId,
@@ -314,25 +403,20 @@ const InputAuctionPrice = ({
     }
   };
 
-  // Xử lý xóa hàng
   const handleDelete = (index: number) => {
     const deletedItem = auctionRoundPriceList[index];
 
-    // Loại bỏ item khỏi danh sách giá đấu
     setAuctionRoundPriceList(
       auctionRoundPriceList.filter((_, i) => i !== index)
     );
 
-    // Thêm lại tài sản vào danh sách auctionAssets nếu userInfo hiện tại khớp với item bị xóa
     if (deletedItem && userInfo && deletedItem.userName === userInfo.UserName) {
-      // Tìm thông tin tài sản từ tagName/auctionAssetName
       const assetToRestore = {
         auctionAssetsId: deletedItem.auctionAssetId || "",
         tagName: deletedItem.auctionAssetName || "",
         startingPrice: selectedAsset?.startingPrice || 0,
       };
 
-      // Kiểm tra xem tài sản đã có trong danh sách chưa để tránh trùng lặp
       const assetExists = auctionAssets.some(
         (asset) => asset.auctionAssetsId === assetToRestore.auctionAssetsId
       );
@@ -343,7 +427,6 @@ const InputAuctionPrice = ({
     }
   };
 
-  // Cấu hình cột cho Table của antd
   const columns = [
     {
       title: "Số thứ tự",
@@ -599,9 +682,15 @@ const InputAuctionPrice = ({
                       rules={validationRules.auctionAssetId}
                     >
                       <Select
-                        placeholder="Chọn tài sản đấu giá"
+                        placeholder={
+                          availableAssets.length === 0
+                            ? userInfo
+                              ? "Không có tài sản khả dụng - tất cả đã được đấu giá"
+                              : "Vui lòng nhập số thứ tự trước"
+                            : "Chọn tài sản đấu giá"
+                        }
                         size="large"
-                        disabled={!auctionAssets.length}
+                        disabled={!availableAssets.length}
                         onChange={handleAssetSelect}
                         style={{
                           borderRadius: "12px",
@@ -612,7 +701,7 @@ const InputAuctionPrice = ({
                           boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
                         }}
                       >
-                        {auctionAssets.map((asset) => (
+                        {availableAssets.map((asset) => (
                           <Select.Option
                             key={asset.auctionAssetsId}
                             value={asset.auctionAssetsId}
@@ -625,6 +714,21 @@ const InputAuctionPrice = ({
                         ))}
                       </Select>
                     </Form.Item>
+
+                    {/* Hiển thị thông báo về tài sản đã đấu giá */}
+                    {userInfo && auctionAssets.length > availableAssets.length && (
+                      <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                        <div className="flex items-center gap-2 text-amber-700">
+                          <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                          <span className="text-sm font-medium">
+                            Một số tài sản không hiển thị vì {userInfo.UserName} đã đấu giá trước đó
+                          </span>
+                        </div>
+                        <div className="text-xs text-amber-600 mt-1">
+                          {auctionAssets.length - availableAssets.length} tài sản đã được loại bỏ khỏi danh sách
+                        </div>
+                      </div>
+                    )}
 
                     {/* Hiển thị giá khởi điểm khi đã chọn tài sản */}
                     {selectedAsset && (
@@ -649,6 +753,31 @@ const InputAuctionPrice = ({
                           <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>
                           Giá đấu phải lớn hơn hoặc bằng giá khởi điểm
                         </div>
+
+                        {/* Hiển thị giá đấu cao nhất hiện tại */}
+                        {(() => {
+                          const bidInfo = getHighestBidForAsset(selectedAsset.auctionAssetsId);
+                          if (bidInfo?.highest) {
+                            return (
+                              <div className="mt-3 pt-3 border-t border-emerald-200">
+                                <div className="flex items-center gap-3">
+                                  <div className={`w-6 h-6 bg-gradient-to-r ${bidInfo.isMyBid ? 'from-blue-400 to-indigo-500' : 'from-red-400 to-pink-500'} rounded-full flex items-center justify-center`}>
+                                    <TrophyOutlined className="text-white text-xs" />
+                                  </div>
+                                  <div>
+                                    <div className={`text-xs font-medium ${bidInfo.isMyBid ? 'text-blue-700' : 'text-red-700'}`}>
+                                      Giá đấu cao nhất {bidInfo.isMyBid ? '(Của bạn)' : '(Của người khác)'}
+                                    </div>
+                                    <div className={`text-sm font-bold ${bidInfo.isMyBid ? 'text-blue-800' : 'text-red-800'}`}>
+                                      {bidInfo.highest.toLocaleString("vi-VN")} VND
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
                       </div>
                     )}
 
@@ -759,6 +888,7 @@ const InputAuctionPrice = ({
                 <Tabs
                   defaultActiveKey="1"
                   className="h-full flex flex-col p-0"
+                  onChange={handleTabChange}
                   items={[
                     {
                       key: "1",

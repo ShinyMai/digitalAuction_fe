@@ -73,6 +73,18 @@ const AuctionDetailAnonymous = () => {
     setRefreshKey((prev) => prev + 1);
   };
 
+  // Hàm để refresh tất cả data khi chuyển tab
+  const handleTabChange = async () => {
+    try {
+      if (auctionId) {
+        await fetchAuctionDetail(auctionId);
+        setRefreshKey((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error("Error refreshing data on tab change:", error);
+    }
+  };
+
   // Hàm kiểm tra quyền truy cập tab 2 và tab 3
   const checkTabAccess = () => {
     if (!auctionDetailData || !user) return false;
@@ -121,49 +133,49 @@ const AuctionDetailAnonymous = () => {
     },
     ...(canAccessRegistrationTabs
       ? [
-          {
-            key: "2",
-            label: (
-              <div className="flex items-center gap-2 px-4 py-2">
-                <TeamOutlined className="!text-teal-600" />
-                <span className="font-semibold text-gray-700">
-                  Danh sách đăng ký
-                </span>
-              </div>
-            ),
-            children: (
-              <Card>
-                <ListAuctionDocument
-                  key={`auction-docs-${refreshKey}`}
-                  auctionId={auctionId}
-                  auctionDetailData={auctionDetailData}
-                  onDataChange={handleDataChange}
-                />
-              </Card>
-            ),
-          },
-          {
-            key: "3",
-            label: (
-              <div className="flex items-center gap-2 px-4 py-2">
-                <CheckCircleOutlined className="!text-green-600" />
-                <span className="font-semibold text-gray-700">
-                  Đăng ký thành công
-                </span>
-              </div>
-            ),
-            children: (
-              <Card>
-                <ListAuctionDocumentSuccessRegister
-                  key={`success-docs-${refreshKey}`}
-                  auctionId={auctionId}
-                  auctionDateModals={auctionDateModal}
-                  auctionDetailData={auctionDetailData}
-                />
-              </Card>
-            ),
-          },
-        ]
+        {
+          key: "2",
+          label: (
+            <div className="flex items-center gap-2 px-4 py-2">
+              <TeamOutlined className="!text-teal-600" />
+              <span className="font-semibold text-gray-700">
+                Danh sách đăng ký
+              </span>
+            </div>
+          ),
+          children: (
+            <Card>
+              <ListAuctionDocument
+                key={`auction-docs-${refreshKey}`}
+                auctionId={auctionId}
+                auctionDetailData={auctionDetailData}
+                onDataChange={handleDataChange}
+              />
+            </Card>
+          ),
+        },
+        {
+          key: "3",
+          label: (
+            <div className="flex items-center gap-2 px-4 py-2">
+              <CheckCircleOutlined className="!text-green-600" />
+              <span className="font-semibold text-gray-700">
+                Đăng ký thành công
+              </span>
+            </div>
+          ),
+          children: (
+            <Card>
+              <ListAuctionDocumentSuccessRegister
+                key={`success-docs-${refreshKey}`}
+                auctionId={auctionId}
+                auctionDateModals={auctionDateModal}
+                auctionDetailData={auctionDetailData}
+              />
+            </Card>
+          ),
+        },
+      ]
       : []),
   ];
 
@@ -181,6 +193,7 @@ const AuctionDetailAnonymous = () => {
         <Tabs
           defaultActiveKey="1"
           className="w-full staff-tabs"
+          onChange={handleTabChange}
           tabBarStyle={{
             background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
             padding: "24px",

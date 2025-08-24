@@ -53,6 +53,17 @@ const AuctionDetailCancel = () => {
     }
   };
 
+  // Hàm để refresh tất cả data khi chuyển tab
+  const handleTabChange = async () => {
+    try {
+      if (auctionId) {
+        await fetchAuctionDetail(auctionId);
+      }
+    } catch (error) {
+      console.error("Error refreshing data on tab change:", error);
+    }
+  };
+
   return (
     <section className="p-4 sm:p-6 min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -67,6 +78,7 @@ const AuctionDetailCancel = () => {
         <Tabs
           defaultActiveKey="1"
           className="w-full cancel-tabs"
+          onChange={handleTabChange}
           tabBarStyle={{
             background: "linear-gradient(135deg, #ffffff 0%, #fef7f7 100%)",
             borderRadius: "16px",
