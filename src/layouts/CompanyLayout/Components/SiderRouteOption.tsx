@@ -151,7 +151,7 @@ const items: MenuItem[] = [
         icon: <StopOutlined />,
         label: "Đã tổ chức thành công",
         url: STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL,
-        roleView: ["Manager", "Staff", "Auctioneer"],
+        roleView: ["Manager", "Staff", "Auctioneer", "Director"],
       },
     ],
   },
