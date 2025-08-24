@@ -54,8 +54,14 @@ interface Props {
   onDataChange?: () => void;
 }
 
-const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Props) => {
-  const { user } = useSelector((state: { auth: { user: { roleName: string } } }) => state.auth);
+const ListAuctionDocument = ({
+  auctionId,
+  auctionDetailData,
+  onDataChange,
+}: Props) => {
+  const { user } = useSelector(
+    (state: { auth: { user: { roleName: string } } }) => state.auth
+  );
   const userRole = user?.roleName?.toLowerCase();
 
   const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -95,8 +101,10 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
     } | null>(null);
 
   // State cho modal từ chối nhận phiếu
-  const [isRejectModalVisible, setIsRejectModalVisible] = useState<boolean>(false);
-  const [selectedAssetForReject, setSelectedAssetForReject] = useState<AuctionDocument | null>(null);
+  const [isRejectModalVisible, setIsRejectModalVisible] =
+    useState<boolean>(false);
+  const [selectedAssetForReject, setSelectedAssetForReject] =
+    useState<AuctionDocument | null>(null);
   const [rejectReason, setRejectReason] = useState<string>("");
 
   // Function để lấy tên tài sản từ assetId
@@ -177,12 +185,12 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
       if (
         updatedParticipant &&
         JSON.stringify(updatedParticipant) !==
-        JSON.stringify(selectedParticipant)
+          JSON.stringify(selectedParticipant)
       ) {
         setSelectedParticipant(updatedParticipant);
       }
     }
-  }, [groupedParticipants, isAssetsModalVisible, selectedParticipant]);  // Debounce effect cho search
+  }, [groupedParticipants, isAssetsModalVisible, selectedParticipant]); // Debounce effect cho search
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       // Trigger search sau 500ms delay
@@ -219,7 +227,8 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
       }
     } catch (error) {
       toast.error(
-        `Lỗi khi thực hiện ${action === "receiveTicket" ? "nhận phiếu" : "nhận cọc"
+        `Lỗi khi thực hiện ${
+          action === "receiveTicket" ? "nhận phiếu" : "nhận cọc"
         }!`
       );
       console.error(error);
@@ -303,11 +312,13 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
 
     try {
       // TODO: Gọi API từ chối nhận phiếu - cần thêm API này
-      const response = await AuctionServices.receiveAuctionRegistrationDocument({
-        auctionDocumentsId: selectedAssetForReject.auctionDocumentsId,
-        statusTicket: 4,
-        note: rejectReason.trim(),
-      });
+      const response = await AuctionServices.receiveAuctionRegistrationDocument(
+        {
+          auctionDocumentsId: selectedAssetForReject.auctionDocumentsId,
+          statusTicket: 4,
+          note: rejectReason.trim(),
+        }
+      );
       if (response.code === 200) {
         toast.success("Đã từ chối nhận phiếu!");
         setIsRejectModalVisible(false);
@@ -390,24 +401,24 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                     parseInt(status) === 0
                       ? "default"
                       : parseInt(status) === 1
-                        ? "processing"
-                        : parseInt(status) === 2
-                          ? "success"
-                          : parseInt(status) === 3
-                            ? "warning"
-                            : "error"
+                      ? "processing"
+                      : parseInt(status) === 2
+                      ? "success"
+                      : parseInt(status) === 3
+                      ? "warning"
+                      : "error"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa chuyển tiền hồ sơ`
                     : parseInt(status) === 1
-                      ? `${count} đã chuyển tiền hồ sơ`
-                      : parseInt(status) === 2
-                        ? `${count} đã nhận hồ sơ`
-                        : parseInt(status) === 3
-                          ? `${count} đã hoàn tiền hồ sơ`
-                          : `${count} không hợp lệ`}
+                    ? `${count} đã chuyển tiền hồ sơ`
+                    : parseInt(status) === 2
+                    ? `${count} đã nhận hồ sơ`
+                    : parseInt(status) === 3
+                    ? `${count} đã hoàn tiền hồ sơ`
+                    : `${count} không hợp lệ`}
                 </Tag>
               ))}
             </div>
@@ -738,24 +749,24 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                             asset.statusTicket === 0
                               ? "default"
                               : asset.statusTicket === 1
-                                ? "processing"
-                                : asset.statusTicket === 2
-                                  ? "success"
-                                  : asset.statusTicket === 3
-                                    ? "warning"
-                                    : "error"
+                              ? "processing"
+                              : asset.statusTicket === 2
+                              ? "success"
+                              : asset.statusTicket === 3
+                              ? "warning"
+                              : "error"
                           }
                           className="text-xs"
                         >
                           {asset.statusTicket === 0
                             ? "Chưa chuyển tiền"
                             : asset.statusTicket === 1
-                              ? "Đã chuyển tiền"
-                              : asset.statusTicket === 2
-                                ? "Đã nhận phiếu"
-                                : asset.statusTicket === 3
-                                  ? "Đã hoàn tiền"
-                                  : "Không hợp lệ"}
+                            ? "Đã chuyển tiền"
+                            : asset.statusTicket === 2
+                            ? "Đã nhận phiếu"
+                            : asset.statusTicket === 3
+                            ? "Đã hoàn tiền"
+                            : "Không hợp lệ"}
                         </Tag>
 
                         {asset.statusDeposit === 1 && (
@@ -765,12 +776,12 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                         )}
                       </div>
 
-                      {userRole === 'staff' && (
+                      {userRole === "staff" && (
                         <Space size="small">
                           <Button
                             type="default"
                             size="small"
-                            //disabled={asset.statusTicket !== 1}
+                            disabled={asset.statusTicket === 4}
                             onClick={() => handleShowRejectModal(asset)}
                             className="bg-red-500 text-white border-red-500 hover:bg-red-600 text-xs px-3"
                           >
@@ -794,7 +805,9 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                               asset.statusTicket !== 2 ||
                               asset.statusDeposit !== 0
                             }
-                            onClick={() => handleAction("receiveDeposit", asset)}
+                            onClick={() =>
+                              handleAction("receiveDeposit", asset)
+                            }
                             className="bg-green-500 border-none text-xs px-3"
                           >
                             Nhận cọc
@@ -872,7 +885,8 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
             {selectedAssetForReject && (
               <div className="bg-red-50 p-4 rounded-lg border border-red-200">
                 <div className="text-sm text-red-800">
-                  <strong>Lưu ý:</strong> Sau khi từ chối, thông tin sẽ được ghi nhận và không thể hoàn tác.
+                  <strong>Lưu ý:</strong> Sau khi từ chối, thông tin sẽ được ghi
+                  nhận và không thể hoàn tác.
                 </div>
               </div>
             )}
