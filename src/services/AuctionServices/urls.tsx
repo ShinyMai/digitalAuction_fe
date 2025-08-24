@@ -41,6 +41,8 @@ export const AuctionAPI = {
   CONFIRM_ATTENDANCE: "/AuctionDocuments/mark-attendance",
   AUCTION_ROUND_STATISTIC: "/AuctionStatistics",
   ASSET_INFO_STATISTIC: "/AuctionAssetStatistics",
+  BUSINESS_OVER_VIEW: "/GetBusinessOverview",
+  STATISTIC_OVER_VIEW: "/GetStatisticOverview",
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;

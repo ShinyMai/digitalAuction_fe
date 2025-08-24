@@ -6,6 +6,7 @@ interface DepositConfirmationPopupProps {
     onConfirm: (note: string) => void;
     onCancel: () => void;
     record: AuctionDocument;
+    loading?: boolean;
 }
 
 const DepositConfirmationPopup: React.FC<DepositConfirmationPopupProps> = ({
@@ -13,6 +14,7 @@ const DepositConfirmationPopup: React.FC<DepositConfirmationPopupProps> = ({
     onConfirm,
     onCancel,
     record,
+    loading = false,
 }) => {
     const [form] = Form.useForm();
 
@@ -34,6 +36,7 @@ const DepositConfirmationPopup: React.FC<DepositConfirmationPopupProps> = ({
             onCancel={onCancel}
             okText="Xác nhận"
             cancelText="Hủy"
+            confirmLoading={loading}
             okButtonProps={{ className: "bg-teal-500 hover:bg-teal-600" }}
         >
             <div className="mb-4">

@@ -158,27 +158,27 @@ const AuctionDetailSuccesfull = () => {
             },
             ...(auctionRounds.length > 0
               ? [
-                  {
-                    key: "3",
-                    label: (
-                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-purple-50 hover:scale-105 hover:shadow-md">
-                        <TeamOutlined className="text-purple-600 text-lg transition-colors duration-300" />
-                        <span className="font-semibold text-gray-700 transition-colors duration-300">
-                          Kết quả phiên đấu giá
-                        </span>
-                      </div>
-                    ),
-                    children: (
-                      <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 min-h-[500px] transition-all duration-300 hover:shadow-2xl">
-                        <AuctionRounds
-                          auctionId={location.state.key}
-                          auction={auctionDetailData}
-                          auctionAsset={auctionAssets}
-                        />
-                      </div>
-                    ),
-                  },
-                ]
+                {
+                  key: "3",
+                  label: (
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-purple-50 hover:scale-105 hover:shadow-md">
+                      <TeamOutlined className="text-purple-600 text-lg transition-colors duration-300" />
+                      <span className="font-semibold text-gray-700 transition-colors duration-300">
+                        Kết quả phiên đấu giá
+                      </span>
+                    </div>
+                  ),
+                  children: (
+                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 min-h-[500px] transition-all duration-300 hover:shadow-2xl">
+                      <AuctionRounds
+                        auctionId={location.state.key}
+                        auction={auctionDetailData}
+                        auctionAsset={auctionAssets}
+                      />
+                    </div>
+                  ),
+                },
+              ]
               : []),
           ]}
         />

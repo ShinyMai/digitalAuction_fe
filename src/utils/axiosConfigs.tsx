@@ -9,7 +9,7 @@ const API_BASE_URL_NODE = import.meta.env.VITE_BE_URL_NODE;
 function createHttpClient(baseURL: string): AxiosInstance {
   const instance = axios.create({
     baseURL,
-    timeout: 10000,
+    timeout: 60000,
     withCredentials: true,
   });
 
