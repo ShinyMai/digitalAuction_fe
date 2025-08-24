@@ -30,19 +30,12 @@ import type { RootState } from "../../../../store/store";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 // Constants
 const FORM_VALIDATION_RULES = {
   PAGINATION_SIZE: 4,
 } as const;
-
-const GRADIENT_STYLES = [
-  "!bg-gradient-to-br !from-blue-500 !via-blue-600 !to-indigo-700",
-  "!bg-gradient-to-br !from-emerald-400 !via-teal-500 !to-teal-600",
-  "!bg-gradient-to-br !from-amber-400 !via-orange-500 !to-orange-600",
-  "!bg-gradient-to-br !from-rose-400 !via-pink-500 !to-pink-600",
-] as const;
 
 // Interface definitions
 
@@ -76,14 +69,12 @@ interface props {
   auctionId?: string;
   roundData?: AuctionRoundModals;
   auctionRoundIdBefore?: string;
-  auctionAssetsToStatistic?: AuctionAsset[];
   onBackToList?: () => void;
 }
 
 const InputAuctionPrice = ({
   auctionId,
   roundData,
-  auctionAssetsToStatistic,
   onBackToList,
   auctionRoundIdBefore,
 }: props) => {
@@ -97,7 +88,6 @@ const InputAuctionPrice = ({
   const [loading, setLoading] = useState(false);
   const [completingLoading, setCompletingLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<AuctionAsset | null>(null);
@@ -113,65 +103,27 @@ const InputAuctionPrice = ({
       : 0;
     const totalAll = totalMine + totalOther;
 
-    const assetStats =
-      auctionAssetsToStatistic?.map((asset, index) => {
-        const assetCountMine = auctionRoundPriceList.filter(
-          (item) => item.auctionAssetId === asset.auctionAssetsId
-        ).length;
-
-        const assetCountOther = Array.isArray(auctionRoundPriceListOther)
-          ? auctionRoundPriceListOther.filter(
-            (item) => item.tagName === asset.tagName
-          ).length
-          : 0;
-
-        return {
-          ...asset,
-          assetCountMine,
-          assetCountOther,
-          totalAssetCount: assetCountMine + assetCountOther,
-          gradientStyle: GRADIENT_STYLES[index % GRADIENT_STYLES.length],
-        };
-      }) || [];
-
     return {
       totalMine,
       totalOther,
       totalAll,
-      assetStats,
     };
   }, [
     auctionRoundPriceList,
     auctionRoundPriceListOther,
-    auctionAssetsToStatistic,
   ]);
 
   // Memoized filtered data for tabs
   const filteredData = useMemo(() => {
-    const filterMine = selectedAssetId
-      ? auctionRoundPriceList.filter(
-        (item) => item.auctionAssetId === selectedAssetId
-      )
-      : auctionRoundPriceList;
-
-    const filterOther =
-      selectedAssetId && Array.isArray(auctionRoundPriceListOther)
-        ? auctionRoundPriceListOther.filter((item) => {
-          const selectedAsset = auctionAssetsToStatistic?.find(
-            (asset) => asset.auctionAssetsId === selectedAssetId
-          );
-          return selectedAsset && item.tagName === selectedAsset.tagName;
-        })
-        : Array.isArray(auctionRoundPriceListOther)
-          ? auctionRoundPriceListOther
-          : [];
+    const filterMine = auctionRoundPriceList;
+    const filterOther = Array.isArray(auctionRoundPriceListOther)
+      ? auctionRoundPriceListOther
+      : [];
 
     return { filterMine, filterOther };
   }, [
-    selectedAssetId,
     auctionRoundPriceList,
     auctionRoundPriceListOther,
-    auctionAssetsToStatistic,
   ]);
 
   // API để lấy danh sách giá đấu từ những người khác
@@ -555,69 +507,6 @@ const InputAuctionPrice = ({
             </Button>
           </div>
         )}
-
-        {/* Stats Section */}
-        <div className="mb-8">
-          <Row gutter={[16, 16]}>
-            {/* Tổng số phiếu */}
-            <Col xs={24} sm={12} lg={6}>
-              <Card
-                className={`!bg-gradient-to-br !from-violet-500 !via-purple-500 !to-purple-600 !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${!selectedAssetId ? "!ring-4 !ring-blue-400" : ""
-                  }`}
-                onClick={() => setSelectedAssetId(null)}
-              >
-                <div className="!flex !flex-col !items-center">
-                  <Text className="!text-white/90 !text-lg !mb-2 !font-medium">
-                    Tổng số phiếu
-                  </Text>
-                  <Title
-                    level={2}
-                    className="!text-white !mb-0 !drop-shadow-lg"
-                  >
-                    {statistics.totalAll}
-                  </Title>
-                  <div className="!text-white/70 !text-sm">
-                    Của tôi: {statistics.totalMine} | Khác:{" "}
-                    {statistics.totalOther}
-                  </div>
-                </div>
-              </Card>
-            </Col>
-
-            {/* Thống kê theo từng tài sản */}
-            {statistics.assetStats.map((assetStat) => (
-              <Col xs={24} sm={12} lg={6} key={assetStat.auctionAssetsId}>
-                <Card
-                  className={`${assetStat.gradientStyle
-                    } !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${selectedAssetId === assetStat.auctionAssetsId
-                      ? "!ring-4 !ring-blue-400"
-                      : ""
-                    }`}
-                  onClick={() => setSelectedAssetId(assetStat.auctionAssetsId)}
-                >
-                  <div className="!flex !flex-col !items-center">
-                    <Text
-                      className="!text-white/90 !text-lg !mb-2 !truncate !font-medium"
-                      title={assetStat.tagName}
-                    >
-                      {assetStat.tagName}
-                    </Text>
-                    <Title
-                      level={2}
-                      className="!text-white !mb-0 !drop-shadow-lg"
-                    >
-                      {assetStat.totalAssetCount}
-                    </Title>
-                    <div className="!text-white/70 !text-xs">
-                      Của tôi: {assetStat.assetCountMine} | Khác:{" "}
-                      {assetStat.assetCountOther}
-                    </div>
-                  </div>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </div>
 
         <Row gutter={[24, 24]} className="items-stretch">
           {/* Form nhập liệu bên trái */}
