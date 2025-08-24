@@ -401,7 +401,7 @@ const SiderRouteOption = ({
       >
         {!collapsed && (
           <img
-            src={assets.logoNo}
+            src={assets.logo}
             alt="Logo"
             className="h-auto max-h-16 object-contain border-2 border-sky-300 rounded-xl shadow-md"
           />

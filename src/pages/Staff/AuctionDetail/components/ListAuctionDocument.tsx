@@ -54,8 +54,14 @@ interface Props {
   onDataChange?: () => void;
 }
 
-const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Props) => {
-  const { user } = useSelector((state: { auth: { user: { roleName: string } } }) => state.auth);
+const ListAuctionDocument = ({
+  auctionId,
+  auctionDetailData,
+  onDataChange,
+}: Props) => {
+  const { user } = useSelector(
+    (state: { auth: { user: { roleName: string } } }) => state.auth
+  );
   const userRole = user?.roleName?.toLowerCase();
 
   const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -95,12 +101,15 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
     } | null>(null);
 
   // State cho modal từ chối nhận phiếu
-  const [isRejectModalVisible, setIsRejectModalVisible] = useState<boolean>(false);
-  const [selectedAssetForReject, setSelectedAssetForReject] = useState<AuctionDocument | null>(null);
+  const [isRejectModalVisible, setIsRejectModalVisible] =
+    useState<boolean>(false);
+  const [selectedAssetForReject, setSelectedAssetForReject] =
+    useState<AuctionDocument | null>(null);
   const [rejectReason, setRejectReason] = useState<string>("");
 
   // Loading states cho các button
-  const [isConfirmingDeposit, setIsConfirmingDeposit] = useState<boolean>(false);
+  const [isConfirmingDeposit, setIsConfirmingDeposit] =
+    useState<boolean>(false);
   const [isRejectingTicket, setIsRejectingTicket] = useState<boolean>(false);
   const [loadingActionId, setLoadingActionId] = useState<string | null>(null);
 
@@ -182,12 +191,12 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
       if (
         updatedParticipant &&
         JSON.stringify(updatedParticipant) !==
-        JSON.stringify(selectedParticipant)
+          JSON.stringify(selectedParticipant)
       ) {
         setSelectedParticipant(updatedParticipant);
       }
     }
-  }, [groupedParticipants, isAssetsModalVisible, selectedParticipant]);  // Debounce effect cho search
+  }, [groupedParticipants, isAssetsModalVisible, selectedParticipant]); // Debounce effect cho search
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       // Trigger search sau 500ms delay
@@ -234,7 +243,8 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
       }
     } catch (error) {
       toast.error(
-        `Lỗi khi thực hiện ${action === "receiveTicket" ? "nhận phiếu" : "nhận cọc"
+        `Lỗi khi thực hiện ${
+          action === "receiveTicket" ? "nhận phiếu" : "nhận cọc"
         }!`
       );
       console.error(error);
@@ -324,11 +334,13 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
     try {
       setIsRejectingTicket(true);
       // TODO: Gọi API từ chối nhận phiếu - cần thêm API này
-      const response = await AuctionServices.receiveAuctionRegistrationDocument({
-        auctionDocumentsId: selectedAssetForReject.auctionDocumentsId,
-        statusTicket: 4,
-        note: rejectReason.trim(),
-      });
+      const response = await AuctionServices.receiveAuctionRegistrationDocument(
+        {
+          auctionDocumentsId: selectedAssetForReject.auctionDocumentsId,
+          statusTicket: 4,
+          note: rejectReason.trim(),
+        }
+      );
       if (response.code === 200) {
         toast.success("Đã từ chối nhận phiếu!");
         setIsRejectModalVisible(false);
@@ -413,24 +425,24 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                     parseInt(status) === 0
                       ? "default"
                       : parseInt(status) === 1
-                        ? "processing"
-                        : parseInt(status) === 2
-                          ? "success"
-                          : parseInt(status) === 3
-                            ? "warning"
-                            : "error"
+                      ? "processing"
+                      : parseInt(status) === 2
+                      ? "success"
+                      : parseInt(status) === 3
+                      ? "warning"
+                      : "error"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa chuyển tiền hồ sơ`
                     : parseInt(status) === 1
-                      ? `${count} đã chuyển tiền hồ sơ`
-                      : parseInt(status) === 2
-                        ? `${count} đã nhận hồ sơ`
-                        : parseInt(status) === 3
-                          ? `${count} đã hoàn tiền hồ sơ`
-                          : `${count} không hợp lệ`}
+                    ? `${count} đã chuyển tiền hồ sơ`
+                    : parseInt(status) === 2
+                    ? `${count} đã nhận hồ sơ`
+                    : parseInt(status) === 3
+                    ? `${count} đã hoàn tiền hồ sơ`
+                    : `${count} không hợp lệ`}
                 </Tag>
               ))}
             </div>
@@ -762,24 +774,24 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                             asset.statusTicket === 0
                               ? "default"
                               : asset.statusTicket === 1
-                                ? "processing"
-                                : asset.statusTicket === 2
-                                  ? "success"
-                                  : asset.statusTicket === 3
-                                    ? "warning"
-                                    : "error"
+                              ? "processing"
+                              : asset.statusTicket === 2
+                              ? "success"
+                              : asset.statusTicket === 3
+                              ? "warning"
+                              : "error"
                           }
                           className="text-xs"
                         >
                           {asset.statusTicket === 0
                             ? "Chưa chuyển tiền"
                             : asset.statusTicket === 1
-                              ? "Đã chuyển tiền"
-                              : asset.statusTicket === 2
-                                ? "Đã nhận phiếu"
-                                : asset.statusTicket === 3
-                                  ? "Đã hoàn tiền"
-                                  : "Không hợp lệ"}
+                            ? "Đã chuyển tiền"
+                            : asset.statusTicket === 2
+                            ? "Đã nhận phiếu"
+                            : asset.statusTicket === 3
+                            ? "Đã hoàn tiền"
+                            : "Không hợp lệ"}
                         </Tag>
 
                         {asset.statusDeposit === 1 && (
@@ -789,16 +801,25 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                         )}
                       </div>
 
-                      {userRole === 'staff' && (
+                      {userRole === "staff" && (
                         <Space size="small">
                           {asset.statusTicket === 0 ? (
                             // Khi statusTicket = 0, chỉ hiển thị nút "Đã nhận tiền"
                             <Button
                               type="primary"
                               size="small"
-                              loading={loadingActionId === `receivedTickeFee-${asset.auctionDocumentsId}`}
-                              disabled={loadingActionId !== null && loadingActionId !== `receivedTickeFee-${asset.auctionDocumentsId}`}
-                              onClick={() => handleAction("receivedTickeFee", asset)}
+                              loading={
+                                loadingActionId ===
+                                `receivedTickeFee-${asset.auctionDocumentsId}`
+                              }
+                              disabled={
+                                loadingActionId !== null &&
+                                loadingActionId !==
+                                  `receivedTickeFee-${asset.auctionDocumentsId}`
+                              }
+                              onClick={() =>
+                                handleAction("receivedTickeFee", asset)
+                              }
                               className="bg-green-500 border-none text-xs px-3"
                             >
                               Đã nhận tiền hồ sơ
@@ -806,27 +827,41 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                           ) : (
                             // Khi statusTicket khác 0, hiển thị các nút khác
                             <>
-                              {
-                                asset.statusTicket !== 4 && (
-                                  <Button
-                                    type="default"
-                                    size="small"
-                                    disabled={asset.statusTicket !== 1 || loadingActionId !== null}
-                                    loading={loadingActionId === `rejectTicket-${asset.auctionDocumentsId}`}
-                                    onClick={() => handleShowRejectModal(asset)}
-                                    className="bg-red-500 text-white border-red-500 hover:bg-red-600 text-xs px-3"
-                                  >
-                                    Từ chối nhận phiếu
-                                  </Button>)
-                              }
-
+                              {asset.statusTicket !== 4 && (
+                                <Button
+                                  type="default"
+                                  size="small"
+                                  disabled={
+                                    asset.statusTicket !== 1 ||
+                                    loadingActionId !== null
+                                  }
+                                  loading={
+                                    loadingActionId ===
+                                    `rejectTicket-${asset.auctionDocumentsId}`
+                                  }
+                                  onClick={() => handleShowRejectModal(asset)}
+                                  className="bg-red-500 text-white border-red-500 hover:bg-red-600 text-xs px-3"
+                                >
+                                  Từ chối nhận phiếu
+                                </Button>
+                              )}
 
                               <Button
                                 type="primary"
                                 size="small"
-                                disabled={asset.statusTicket !== 1 || (loadingActionId !== null && loadingActionId !== `receiveTicket-${asset.auctionDocumentsId}`)}
-                                loading={loadingActionId === `receiveTicket-${asset.auctionDocumentsId}`}
-                                onClick={() => handleAction("receiveTicket", asset)}
+                                disabled={
+                                  asset.statusTicket !== 1 ||
+                                  (loadingActionId !== null &&
+                                    loadingActionId !==
+                                      `receiveTicket-${asset.auctionDocumentsId}`)
+                                }
+                                loading={
+                                  loadingActionId ===
+                                  `receiveTicket-${asset.auctionDocumentsId}`
+                                }
+                                onClick={() =>
+                                  handleAction("receiveTicket", asset)
+                                }
                                 className="bg-blue-500 border-none text-xs px-3"
                               >
                                 Nhận phiếu
@@ -838,10 +873,17 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                                 disabled={
                                   asset.statusTicket !== 2 ||
                                   asset.statusDeposit !== 0 ||
-                                  (loadingActionId !== null && loadingActionId !== `receiveDeposit-${asset.auctionDocumentsId}`)
+                                  (loadingActionId !== null &&
+                                    loadingActionId !==
+                                      `receiveDeposit-${asset.auctionDocumentsId}`)
                                 }
-                                loading={loadingActionId === `receiveDeposit-${asset.auctionDocumentsId}`}
-                                onClick={() => handleAction("receiveDeposit", asset)}
+                                loading={
+                                  loadingActionId ===
+                                  `receiveDeposit-${asset.auctionDocumentsId}`
+                                }
+                                onClick={() =>
+                                  handleAction("receiveDeposit", asset)
+                                }
                                 className="bg-green-500 border-none text-xs px-3"
                               >
                                 Nhận cọc
@@ -922,7 +964,8 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
             {selectedAssetForReject && (
               <div className="bg-red-50 p-4 rounded-lg border border-red-200">
                 <div className="text-sm text-red-800">
-                  <strong>Lưu ý:</strong> Sau khi từ chối, thông tin sẽ được ghi nhận và không thể hoàn tác.
+                  <strong>Lưu ý:</strong> Sau khi từ chối, thông tin sẽ được ghi
+                  nhận và không thể hoàn tác.
                 </div>
               </div>
             )}

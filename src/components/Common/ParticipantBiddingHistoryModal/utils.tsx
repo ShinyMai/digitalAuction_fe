@@ -36,7 +36,7 @@ export const getAuctionStatus = (auction: RegisteredAuction) => {
   if (now < registerEnd) {
     return (
       <Tag color="processing" icon={<SyncOutlined spin />}>
-        Đang đăng ký
+        Đang trong thời gian đăng ký
       </Tag>
     );
   } else if (now >= registerEnd && now < auctionStart) {
@@ -82,6 +82,8 @@ export const getTicketStatusTag = (status: number) => {
       return <Tag color="green">Đã nhận phiếu</Tag>;
     case 3:
       return <Tag color="red">Đã hoàn tiền hồ sơ</Tag>;
+    case 4:
+      return <Tag color="red">Từ chối nhận phiếu</Tag>;
     case 0:
     default:
       return <Tag color="gray">Chưa chuyển</Tag>;
