@@ -101,8 +101,11 @@ const AuctionDetailAuctioneer = () => {
         createdBy: user?.id,
       };
       const response = await AuctionServices.createAuctionRound(dataRequest);
-      toast.success(response.data);
-      onGetListAuctionRound(location.state.key);
+      if (response.code === 200) {
+        toast.success(response.data);
+        onGetListAuctionRound(location.state.key);
+      }
+
     } catch (error) {
       console.error("Error creating auction round:", error);
       toast.error("Error creating auction round");
