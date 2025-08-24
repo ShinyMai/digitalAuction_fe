@@ -278,6 +278,7 @@ const AuctionCreateForm = ({
     }
   };
 
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -613,7 +614,8 @@ const AuctionCreateForm = ({
                 {/* Download Template */}
                 <a
                   className="cursor-pointer text-blue-500 hover:text-blue-700 underline text-sm mt-2"
-                  href="https://s3.cloudfly.vn/file-tuanlinh/Mau_Thong_Tin_Dau_Gia.xlsm?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ZJ8WP1BLOUMBXA2C1U5A%2F20250824%2FHN%2Fs3%2Faws4_request&X-Amz-Date=20250824T075642Z&X-Amz-Expires=1800&X-Amz-Signature=0cbd5c93e35bbec1e05187cd444414f97bf826744da140ed21202705a31ac4b9&X-Amz-SignedHeaders=host&x-id=GetObject"
+                  href="https://s3.cloudfly.vn/file-tuanlinh/Mau_Thong_Tin_Dau_Gia.xlsm"
+
                 >
                   📁 Tải mẫu danh sách tài sản
                 </a>
