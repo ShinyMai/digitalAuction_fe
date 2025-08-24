@@ -46,7 +46,14 @@ const AuctionDetailAnonymous = () => {
           .map((id: string) => id.trim())
           .filter((id: string) => id !== '');
       }
-      console.log("Check Data", data)
+      if (data.legalDocumentUrls && typeof data.legalDocumentUrls === 'string') {
+        try {
+          data.legalDocumentUrls = JSON.parse(data.legalDocumentUrls);
+        } catch (parseError) {
+          console.error("Error parsing legalDocumentUrls:", parseError);
+          data.legalDocumentUrls = [];
+        }
+      }
       setAuctionDetailData(data);
     } catch (error) {
       console.error("Error fetching auction detail:", error);

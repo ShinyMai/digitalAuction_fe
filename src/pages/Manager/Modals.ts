@@ -59,6 +59,7 @@ export type AuctionDataDetail = {
   auctioneer?: string;
   cancelReason?: string;
   cancelReasonFile?: string;
+  legalDocumentUrls?: string[];
   listAuctionAssets?: AuctionAsset[];
 };
 

@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import type { AuctionDataDetail } from "../../Modals";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
-import { EnvironmentOutlined } from "@ant-design/icons";
+import { EnvironmentOutlined, FileTextOutlined } from "@ant-design/icons";
 
 interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
@@ -275,6 +275,35 @@ const AuctionDetail = ({ auctionDetailData, auctionType, onApprove, onReject }: 
             ) : (
               <></>
             )}
+            {/* Thông tin tài liệu pháp lý */}
+            {auctionDetailData.legalDocumentUrls &&
+              Array.isArray(auctionDetailData.legalDocumentUrls) &&
+              auctionDetailData.legalDocumentUrls.length > 0 &&
+              auctionDetailData.legalDocumentUrls.some(url => url && url.trim() !== '') ? (
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold text-blue-800 mb-4">
+                  Tài liệu pháp lý
+                </h3>
+                <div className="bg-blue-50 border border-teal-100 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-4">
+                  <div className="space-y-3">
+                    {auctionDetailData.legalDocumentUrls
+                      .filter(url => url && url.trim() !== '') // Lọc bỏ URL rỗng hoặc null
+                      .map((url: string, index: number) => (
+                        <div key={index} className="flex items-center bg-white p-3 rounded-lg border border-blue-100 hover:border-blue-300 transition-all duration-200">
+                          <FileTextOutlined className="text-teal-600 mr-3 text-lg" />
+                          <Typography.Link
+                            href={url}
+                            target="_blank"
+                            className="text-teal-600 font-medium hover:text-teal-800 flex-1"
+                          >
+                            Tài liệu pháp lý #{index + 1}
+                          </Typography.Link>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            ) : null}
           </div>
         ) : (
           <div className="text-center text-teal-600 py-6 bg-blue-50 rounded-lg">

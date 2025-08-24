@@ -388,12 +388,14 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                   key={status}
                   color={
                     parseInt(status) === 0
-                      ? "gray"
+                      ? "default"
                       : parseInt(status) === 1
-                        ? "blue"
+                        ? "processing"
                         : parseInt(status) === 2
-                          ? "cyan"
-                          : "green"
+                          ? "success"
+                          : parseInt(status) === 3
+                            ? "warning"
+                            : "error"
                   }
                   className="text-xs"
                 >
@@ -403,7 +405,9 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                       ? `${count} đã chuyển tiền hồ sơ`
                       : parseInt(status) === 2
                         ? `${count} đã nhận hồ sơ`
-                        : `${count} đã hoàn`}
+                        : parseInt(status) === 3
+                          ? `${count} đã hoàn tiền hồ sơ`
+                          : `${count} không hợp lệ`}
                 </Tag>
               ))}
             </div>
@@ -736,18 +740,22 @@ const ListAuctionDocument = ({ auctionId, auctionDetailData, onDataChange }: Pro
                               : asset.statusTicket === 1
                                 ? "processing"
                                 : asset.statusTicket === 2
-                                  ? "warning"
-                                  : "success"
+                                  ? "success"
+                                  : asset.statusTicket === 3
+                                    ? "warning"
+                                    : "error"
                           }
                           className="text-xs"
                         >
                           {asset.statusTicket === 0
-                            ? "Chưa chuyển tiền hồ sơ"
+                            ? "Chưa chuyển tiền"
                             : asset.statusTicket === 1
-                              ? "Đã chuyển tiền hồ sơ"
+                              ? "Đã chuyển tiền"
                               : asset.statusTicket === 2
-                                ? "Đã nhận hồ sơ"
-                                : "Đã hoàn"}
+                                ? "Đã nhận phiếu"
+                                : asset.statusTicket === 3
+                                  ? "Đã hoàn tiền"
+                                  : "Không hợp lệ"}
                         </Tag>
 
                         {asset.statusDeposit === 1 && (

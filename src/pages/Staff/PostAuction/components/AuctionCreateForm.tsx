@@ -14,6 +14,7 @@ import {
 import { useForm } from "antd/es/form/Form";
 import { useState, useEffect } from "react";
 import UploadFile from "./Upload";
+import UploadMultipleFile from "./UploadMultiple";
 import type { AuctionCategory } from "../../Modals.ts";
 import dayjs, { Dayjs } from "dayjs";
 import AuctionServices from "../../../../services/AuctionServices/index.tsx";
@@ -41,6 +42,10 @@ interface AuctionFormValues {
     name: string;
   }[];
   AuctionPlanningMap?: {
+    originFileObj: File;
+    name: string;
+  }[];
+  LegalDocuments?: {
     originFileObj: File;
     name: string;
   }[];
@@ -106,6 +111,7 @@ const AuctionCreateForm = ({
     AuctionAssetFile: File;
     AuctionRulesFile: File;
     AuctionPlanningMap?: File;
+    LegalDocuments?: File[];
     AuctionMap?: any;
   }): FormData => {
     const formData = new FormData();
@@ -150,6 +156,14 @@ const AuctionCreateForm = ({
     if (formValues.AuctionPlanningMap) {
       formData.append("AuctionPlanningMap", formValues.AuctionPlanningMap);
     }
+
+    // Append multiple legal documents if they exist
+    if (formValues.LegalDocuments && formValues.LegalDocuments.length > 0) {
+      formValues.LegalDocuments.forEach((file) => {
+        formData.append(`LegalDocuments`, file);
+      });
+    }
+
     return formData;
   };
 
@@ -172,6 +186,7 @@ const AuctionCreateForm = ({
       let auctionAssetFile = values.AuctionAssetFile?.[0]?.originFileObj;
       let auctionRulesFile = values.AuctionRulesFile?.[0]?.originFileObj;
       const auctionPlanningMap = values.AuctionPlanningMap?.[0]?.originFileObj;
+      const legalDocuments = values.LegalDocuments?.map(file => file.originFileObj).filter(Boolean) as File[] || [];
 
       // Fallback nếu originFileObj không có
       if (!auctionAssetFile && values.AuctionAssetFile?.[0]) {
@@ -222,6 +237,7 @@ const AuctionCreateForm = ({
         AuctionAssetFile: auctionAssetFile,
         AuctionRulesFile: auctionRulesFile,
         AuctionPlanningMap: auctionPlanningMap,
+        LegalDocuments: legalDocuments,
         RegisterOpenDate: dayjs(registerOpenDate).format("YYYY-MM-DD HH:00:00"),
         RegisterEndDate: dayjs(registerEndDate).format("YYYY-MM-DD HH:00:00"),
         AuctionStartDate: dayjs(auctionStartDate).format("YYYY-MM-DD HH:00:00"),
@@ -268,30 +284,31 @@ const AuctionCreateForm = ({
     try {
       const templateData = [
         {
-          "Tên nhãn (Tag_Name)": "Máy xúc",
-          "Giá khởi điểm (starting_price)": "100,000,000",
+          "Tên nhãn (Tag_Name)": "Máy cày",
+          "Giá khởi điểm (starting_price)": 24000,
           "Đơn vị (Unit)": "Cái",
-          "Tiền đặt cọc (Deposit)": "10,000,000",
-          "Phí đăng ký (Registration_fee)": "500,000",
-          "Mô tả (Description)": "Máy xúc đã qua sử dụng, còn hoạt động tốt",
+          "Tiền đặt cọc (Deposit)": 5000,
+          "Phí đăng ký (Registration_fee)": 5000,
+          "Mô tả (Description)": "Máy xúc đã qua sử dụng, còn hoạt động tốt"
         },
         {
-          "Tên nhãn (Tag_Name)": "Xe tải",
-          "Giá khởi điểm (starting_price)": "150,000,000",
-          "Đơn vị (Unit)": "Chiếc",
-          "Tiền đặt cọc (Deposit)": "15,000,000",
-          "Phí đăng ký (Registration_fee)": "700,000",
-          "Mô tả (Description)": "Xe tải trọng tải 5 tấn, đời 2018",
+          "Tên nhãn (Tag_Name)": "Lốp xe",
+          "Giá khởi điểm (starting_price)": 30000,
+          "Đơn vị (Unit)": "Cái",
+          "Tiền đặt cọc (Deposit)": 5000,
+          "Phí đăng ký (Registration_fee)": 7000,
+          "Mô tả (Description)": "Xe tải trọng tải 5 tấn, đời 2018"
         },
         {
-          "Tên nhãn (Tag_Name)": "Máy khoan",
-          "Giá khởi điểm (starting_price)": "50,000,000",
-          "Đơn vị (Unit)": "Bộ",
-          "Tiền đặt cọc (Deposit)": "5,000,000",
-          "Phí đăng ký (Registration_fee)": "300,000",
-          "Mô tả (Description)": "Máy khoan điện, đầy đủ phụ kiện",
-        },
+          "Tên nhãn (Tag_Name)": "Oto",
+          "Giá khởi điểm (starting_price)": 25000,
+          "Đơn vị (Unit)": "Cái",
+          "Tiền đặt cọc (Deposit)": 5000,
+          "Phí đăng ký (Registration_fee)": 3000,
+          "Mô tả (Description)": "Máy khoan điện, đầy đủ phụ kiện"
+        }
       ];
+
       const ws = XLSX.utils.json_to_sheet(templateData, {
         header: [
           "Tên nhãn (Tag_Name)",
@@ -299,9 +316,10 @@ const AuctionCreateForm = ({
           "Đơn vị (Unit)",
           "Tiền đặt cọc (Deposit)",
           "Phí đăng ký (Registration_fee)",
-          "Mô tả (Description)",
-        ],
+          "Mô tả (Description)"
+        ]
       });
+
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "AuctionAssets");
       XLSX.writeFile(wb, "Mau_Thong_Tin_Dau_Gia_DinhDang.xlsx");
@@ -695,6 +713,54 @@ const AuctionCreateForm = ({
                   <UploadFile
                     contentName="AuctionRulesFile"
                     accept=".xlsx,.xls,.docx,.pdf"
+                  />
+                </Form.Item>
+              </motion.div>
+            </Col>
+
+            <Col xs={24} lg={12}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.05 }}
+              >
+                <Form.Item
+                  name="LegalDocuments"
+                  valuePropName="fileList"
+                  label={
+                    <span className="!font-medium !text-blue-900 flex items-center">
+                      Tài liệu pháp lý
+                      <Tooltip title="Chấp nhận nhiều file PDF. Có thể tải lên nhiều tài liệu pháp lý cùng lúc" placement="top">
+                        <QuestionCircleOutlined className="ml-2 text-blue-500 cursor-pointer" />
+                      </Tooltip>
+                    </span>
+                  }
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        // Chỉ validate format nếu có file
+                        if (value && Array.isArray(value) && value.length > 0) {
+                          for (const file of value) {
+                            if (file) {
+                              // Kiểm tra định dạng file - chỉ cho phép PDF
+                              const fileName = file.name || file.originFileObj?.name || '';
+                              const fileExtension = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
+
+                              if (fileExtension !== '.pdf') {
+                                return Promise.reject(new Error("Chỉ được phép tải lên file PDF!"));
+                              }
+                            }
+                          }
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
+                >
+                  <UploadMultipleFile
+                    contentName="Tài liệu pháp lý (PDF)"
+                    accept=".pdf"
+                    maxCount={5}
                   />
                 </Form.Item>
               </motion.div>

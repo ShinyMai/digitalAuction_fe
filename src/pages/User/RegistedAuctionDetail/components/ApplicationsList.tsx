@@ -13,6 +13,7 @@ import {
   Input,
   Upload,
   Form,
+  Dropdown,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -26,6 +27,9 @@ import {
   UserOutlined,
   FileProtectOutlined,
   InfoCircleOutlined,
+  DownOutlined,
+  FilePdfOutlined,
+  FileWordOutlined,
 } from "@ant-design/icons";
 import { formatNumber } from "../../../../utils/numberFormat";
 import type {
@@ -36,7 +40,7 @@ import type {
 } from "../types";
 import AuctionServices from "../../../../services/AuctionServices";
 import { toast } from "react-toastify";
-import { exportToDocx } from "../../../../components/Common/ExportDocs/DocumentGenerator";
+import { exportToDocx, exportToPdf } from "../../../../components/Common/ExportDocs/DocumentGenerator";
 import UserServices from "../../../../services/UserServices";
 import { useSelector } from "react-redux";
 import type { RegistrationAuctionModals } from "../../../Anonymous/Modals";
@@ -315,6 +319,12 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
           text: "Đã hoàn cọc",
           icon: <CheckCircleOutlined />,
         };
+      case 4:
+        return {
+          color: "red",
+          text: "Phiếu không hợp lệ",
+          icon: <CheckCircleOutlined />,
+        };
       default:
         return {
           color: "gray",
@@ -336,15 +346,15 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
 
     return isAttended
       ? {
-          color: "green",
-          text: "Đã tham dự",
-          icon: <UserOutlined />,
-        }
+        color: "green",
+        text: "Đã tham dự",
+        icon: <UserOutlined />,
+      }
       : {
-          color: "red",
-          text: "Chưa tham dự",
-          icon: <ExclamationCircleOutlined />,
-        };
+        color: "red",
+        text: "Chưa tham dự",
+        icon: <ExclamationCircleOutlined />,
+      };
   };
 
   const getRefundStatus = (statusRefund?: number) => {
@@ -535,23 +545,50 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
         return (
           <Space size="small">
             <Tooltip title="Xem chi tiết" placement="top">
-              <Button
-                type="text"
-                icon={<InfoCircleOutlined />}
-                className="!text-green-600 !hover:bg-green-50"
-                onClick={() => handleOpenDetailModal(record)}
-              />
+              {
+                record.statusRefund != null || record.statusRefund != undefined ?
+                  <Button
+                    type="text"
+                    icon={<InfoCircleOutlined />}
+                    className="!text-green-600 !hover:bg-green-50"
+                    onClick={() => handleOpenDetailModal(record)}
+                  /> : <></>
+              }
             </Tooltip>
             <Tooltip title="Tải xuống phiếu đăng ký" placement="top">
-              <Button
-                type="text"
-                icon={<DownloadOutlined />}
-                className="!text-blue-600 !hover:bg-blue-50"
-                onClick={() => {
-                  const transformedData = transformDataForExport(record);
-                  exportToDocx(transformedData);
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: 'docx',
+                      label: 'Tải xuống Word (.docx)',
+                      icon: <FileWordOutlined />,
+                      onClick: () => {
+                        const transformedData = transformDataForExport(record);
+                        exportToDocx(transformedData);
+                      },
+                    },
+                    {
+                      key: 'pdf',
+                      label: 'Tải xuống PDF (.pdf)',
+                      icon: <FilePdfOutlined />,
+                      onClick: () => {
+                        const transformedData = transformDataForExport(record);
+                        exportToPdf(transformedData);
+                      },
+                    },
+                  ],
                 }}
-              />
+                trigger={['click']}
+              >
+                <Button
+                  type="text"
+                  icon={<DownloadOutlined />}
+                  className="!text-blue-600 !hover:bg-blue-50"
+                >
+                  <DownOutlined />
+                </Button>
+              </Dropdown>
             </Tooltip>
           </Space>
         );
@@ -843,8 +880,8 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                       style={{
                         marginBottom:
                           index ===
-                          filteredDocuments.filter((a) => a.statusDeposit === 1)
-                            .length -
+                            filteredDocuments.filter((a) => a.statusDeposit === 1)
+                              .length -
                             1
                             ? "0"
                             : "6px",
@@ -922,81 +959,81 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                 {/* Disabled Assets Section */}
                 {filteredDocuments.filter((asset) => asset.statusDeposit !== 1)
                   .length > 0 && (
-                  <div style={{ marginTop: "12px" }}>
-                    <div
-                      style={{
-                        padding: "8px 12px",
-                        background: "#fafafa",
-                        borderRadius: "6px",
-                        border: "1px solid #f0f0f0",
-                        marginBottom: "8px",
-                      }}
-                    >
-                      <Text
+                    <div style={{ marginTop: "12px" }}>
+                      <div
                         style={{
-                          fontSize: "11px",
-                          color: "#8c8c8c",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
+                          padding: "8px 12px",
+                          background: "#fafafa",
+                          borderRadius: "6px",
+                          border: "1px solid #f0f0f0",
+                          marginBottom: "8px",
                         }}
                       >
-                        <CloseCircleOutlined />
-                        Tài sản chưa xác nhận cọc (không thể hủy)
-                      </Text>
-                    </div>
-                    {filteredDocuments
-                      .filter((asset) => asset.statusDeposit !== 1)
-                      .map((asset, index) => (
-                        <div
-                          key={asset.auctionDocumentsId}
+                        <Text
                           style={{
-                            marginBottom:
-                              index ===
-                              filteredDocuments.filter(
-                                (a) => a.statusDeposit !== 1
-                              ).length -
-                                1
-                                ? "0"
-                                : "6px",
-                            padding: "8px 12px",
-                            background: "#f5f5f5",
-                            borderRadius: "4px",
-                            border: "1px solid #e8e8e8",
-                            opacity: 0.7,
+                            fontSize: "11px",
+                            color: "#8c8c8c",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
                           }}
                         >
+                          <CloseCircleOutlined />
+                          Tài sản chưa xác nhận cọc (không thể hủy)
+                        </Text>
+                      </div>
+                      {filteredDocuments
+                        .filter((asset) => asset.statusDeposit !== 1)
+                        .map((asset, index) => (
                           <div
+                            key={asset.auctionDocumentsId}
                             style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "6px",
+                              marginBottom:
+                                index ===
+                                  filteredDocuments.filter(
+                                    (a) => a.statusDeposit !== 1
+                                  ).length -
+                                  1
+                                  ? "0"
+                                  : "6px",
+                              padding: "8px 12px",
+                              background: "#f5f5f5",
+                              borderRadius: "4px",
+                              border: "1px solid #e8e8e8",
+                              opacity: 0.7,
                             }}
                           >
-                            <CloseCircleOutlined
-                              style={{ color: "#bfbfbf", fontSize: "12px" }}
-                            />
-                            <div>
-                              <Text
-                                style={{ color: "#8c8c8c", fontSize: "12px" }}
-                              >
-                                {asset.tagName}
-                              </Text>
-                              <div
-                                style={{
-                                  fontSize: "10px",
-                                  color: "#bfbfbf",
-                                  marginTop: "1px",
-                                }}
-                              >
-                                STT: {asset.numericalOrder} • Chưa xác nhận cọc
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                              }}
+                            >
+                              <CloseCircleOutlined
+                                style={{ color: "#bfbfbf", fontSize: "12px" }}
+                              />
+                              <div>
+                                <Text
+                                  style={{ color: "#8c8c8c", fontSize: "12px" }}
+                                >
+                                  {asset.tagName}
+                                </Text>
+                                <div
+                                  style={{
+                                    fontSize: "10px",
+                                    color: "#bfbfbf",
+                                    marginTop: "1px",
+                                  }}
+                                >
+                                  STT: {asset.numericalOrder} • Chưa xác nhận cọc
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                  </div>
-                )}
+                        ))}
+                    </div>
+                  )}
               </div>
             </div>
           </Form.Item>

@@ -69,7 +69,7 @@ export interface AuctionDocumentResponse {
 }
 
 export type DepositStatus = 0 | 1 | 2; // 0: Pending, 1: Paid, 2: Refunded
-export type TicketStatus = 0 | 1 | 2 | 3; // 0: Pending, 1: Approved, 2: Rejected
+export type TicketStatus = 0 | 1 | 2 | 3 | 4; // 0: Pending, 1: Approved, 2: Rejected
 export type RefundStatus = 0 | 1 | 2; // 0: Pending, 1: Approved, 2: Rejected
 
 export interface StatusInfo {

@@ -52,13 +52,29 @@ const CustomUploadFile = ({ contentName, value, onChange, accept = ".xlsx,.xls,.
       const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
       const isValidExtension = allowedExtensions.includes(fileExtension);
 
-      // Kiểm tra file type
-      const isValidType = allowedTypes.includes(file.type);
+      // Đặc biệt cho PDF - luôn chấp nhận nếu extension là .pdf
+      if (fileExtension === '.pdf') {
+        console.log('PDF file detected and accepted:', file.name);
+        // Tiếp tục kiểm tra size
+      } else {
+        // Kiểm tra file type cho các định dạng khác
+        const isValidType = allowedTypes.includes(file.type);
 
-      if (!isValidExtension && !isValidType) {
-        const extensionList = allowedExtensions.join(', ');
-        message.error(`Chỉ được tải lên file có định dạng: ${extensionList}!`);
-        return Upload.LIST_IGNORE;
+        console.log('File validation:', {
+          fileName: file.name,
+          fileExtension,
+          fileType: file.type,
+          allowedExtensions,
+          allowedTypes,
+          isValidExtension,
+          isValidType
+        });
+
+        if (!isValidExtension && !isValidType) {
+          const extensionList = allowedExtensions.join(', ');
+          message.error(`Chỉ được tải lên file có định dạng: ${extensionList}! (File: ${file.name}, Type: ${file.type})`);
+          return Upload.LIST_IGNORE;
+        }
       }
 
       const isLt10M = file.size < 10 * 1024 * 1024;

@@ -47,6 +47,16 @@ const AuctionDetailAnonymous = () => {
         auctionType === "NODE"
           ? await AuctionServices.getAuctionDetailNode(id)
           : await AuctionServices.getAuctionDetail(id);
+
+      // Parse legalDocumentUrls từ string JSON thành array
+      if (data.legalDocumentUrls && typeof data.legalDocumentUrls === 'string') {
+        try {
+          data.legalDocumentUrls = JSON.parse(data.legalDocumentUrls);
+        } catch (parseError) {
+          console.error("Error parsing legalDocumentUrls:", parseError);
+          data.legalDocumentUrls = [];
+        }
+      }
       setAuctionDetailData(data);
     } catch (error) {
       console.error("Error fetching auction detail:", error);
