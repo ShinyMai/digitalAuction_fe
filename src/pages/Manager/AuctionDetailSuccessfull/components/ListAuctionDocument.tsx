@@ -25,6 +25,7 @@ import {
   DownloadOutlined,
 } from "@ant-design/icons";
 import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal/ParticipantBiddingHistoryModal";
+import CustomModal from "../../../../components/Common/CustomModal";
 
 // Interface cho dữ liệu đã nhóm theo người
 interface GroupedParticipant {
@@ -99,7 +100,8 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
     } | null>(null);
 
   // State cho modal xác nhận không tham gia
-  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState<boolean>(false);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] =
+    useState<boolean>(false);
   const [selectedParticipantToConfirm, setSelectedParticipantToConfirm] =
     useState<GroupedParticipant | null>(null);
 
@@ -373,20 +375,20 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     parseInt(status) === 0
                       ? "gray"
                       : parseInt(status) === 1
-                        ? "blue"
-                        : parseInt(status) === 2
-                          ? "green"
-                          : "orange"
+                      ? "blue"
+                      : parseInt(status) === 2
+                      ? "green"
+                      : "orange"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa chuyển tiền`
                     : parseInt(status) === 1
-                      ? `${count} đã chuyển tiền`
-                      : parseInt(status) === 2
-                        ? `${count} đã nhận phiếu`
-                        : `${count} đã hoàn tiền`}
+                    ? `${count} đã chuyển tiền`
+                    : parseInt(status) === 2
+                    ? `${count} đã nhận phiếu`
+                    : `${count} đã hoàn tiền`}
                 </Tag>
               ))}
             </div>
@@ -488,10 +490,10 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
         {/* Thống kê tổng quan */}
         <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-emerald-800 flex items-center gap-2">
+            <div className="text-lg font-semibold text-emerald-800 flex items-center gap-2">
               <UserOutlined className="text-emerald-600" />
               Tổng quan danh sách đăng ký
-            </h2>
+            </div>
             <Button
               type="default"
               size="large"
@@ -544,9 +546,9 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
         <div className="mb-6">
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-800">
+              <div className="text-lg font-semibold text-gray-800">
                 Tìm kiếm hồ sơ đấu giá
-              </h2>
+              </div>
             </div>
             <div className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -624,29 +626,14 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
               })),
           }}
           scroll={{ x: "max-content" }}
-          className="border border-teal-100 rounded-lg"
           size="middle"
           rowClassName="hover:bg-blue-50"
         />
       </div>
 
       {/* Modal hiển thị danh sách tài sản chi tiết */}
-      <Modal
-        title={
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-              <ShoppingOutlined className="text-white text-sm" />
-            </div>
-            <div>
-              <div className="text-base font-semibold text-gray-800">
-                Tài sản đăng ký
-              </div>
-              <div className="text-xs text-gray-500">
-                {selectedParticipant?.name}
-              </div>
-            </div>
-          </div>
-        }
+      <CustomModal
+        title="Danh sách tài sản đã đăng ký"
         open={isAssetsModalVisible}
         onCancel={handleCloseAssetsModal}
         width={700}
@@ -770,20 +757,20 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                           asset.statusTicket === 0
                             ? "gray"
                             : asset.statusTicket === 1
-                              ? "blue"
-                              : asset.statusTicket === 2
-                                ? "green"
-                                : "orange"
+                            ? "blue"
+                            : asset.statusTicket === 2
+                            ? "green"
+                            : "orange"
                         }
                         className="text-xs"
                       >
                         {asset.statusTicket === 0
                           ? "Chưa chuyển tiền"
                           : asset.statusTicket === 1
-                            ? "Đã chuyển tiền"
-                            : asset.statusTicket === 2
-                              ? "Đã nhận phiếu"
-                              : "Đã hoàn tiền"}
+                          ? "Đã chuyển tiền"
+                          : asset.statusTicket === 2
+                          ? "Đã nhận phiếu"
+                          : "Đã hoàn tiền"}
                       </Tag>
 
                       <Tag
@@ -822,7 +809,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
             </div>
           </div>
         )}
-      </Modal>
+      </CustomModal>
 
       {/* Modal lịch sử đấu giá */}
       <ParticipantBiddingHistoryModal
@@ -831,7 +818,6 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
         participantInfo={selectedParticipantForHistory}
       />
 
-      {/* Modal xác nhận không tham gia */}
       <Modal
         title={
           <div className="flex items-center gap-3">
@@ -878,7 +864,10 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     ⚠️ Lưu ý quan trọng
                   </h4>
                   <p className="text-yellow-700 text-sm leading-relaxed">
-                    <strong>Hãy kiểm tra lại trong danh sách ký tham gia để chắc chắn khách hàng không tham gia.</strong>
+                    <strong>
+                      Hãy kiểm tra lại trong danh sách ký tham gia để chắc chắn
+                      khách hàng không tham gia.
+                    </strong>
                   </p>
                 </div>
               </div>
@@ -893,15 +882,21 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
                   <span className="text-gray-600">Họ tên:</span>
-                  <p className="font-medium text-gray-800">{selectedParticipantToConfirm.name}</p>
+                  <p className="font-medium text-gray-800">
+                    {selectedParticipantToConfirm.name}
+                  </p>
                 </div>
                 <div>
                   <span className="text-gray-600">CMND/CCCD:</span>
-                  <p className="font-medium text-gray-800">{selectedParticipantToConfirm.citizenIdentification}</p>
+                  <p className="font-medium text-gray-800">
+                    {selectedParticipantToConfirm.citizenIdentification}
+                  </p>
                 </div>
                 <div>
                   <span className="text-gray-600">Số tài sản đăng ký:</span>
-                  <p className="font-medium text-blue-600">{selectedParticipantToConfirm.assets.length} tài sản</p>
+                  <p className="font-medium text-blue-600">
+                    {selectedParticipantToConfirm.assets.length} tài sản
+                  </p>
                 </div>
               </div>
             </div>
@@ -912,7 +907,10 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                 <strong>Sau khi xác nhận:</strong>
               </p>
               <ul className="text-blue-700 text-sm space-y-1 ml-4">
-                <li>• Khách hàng sẽ được đánh dấu là <strong>"Không tham gia"</strong></li>
+                <li>
+                  • Khách hàng sẽ được đánh dấu là{" "}
+                  <strong>"Không tham gia"</strong>
+                </li>
                 <li>• Trạng thái sẽ được cập nhật trong hệ thống</li>
                 <li>• Không thể hoàn tác hành động này từ giao diện này</li>
               </ul>

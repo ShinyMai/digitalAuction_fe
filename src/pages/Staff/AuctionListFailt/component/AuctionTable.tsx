@@ -95,7 +95,10 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
   };
 
   const isApprovalDisabled = (record: AuctionDataList): boolean => {
-    return !record.registerEndDate || !dayjs().isBefore(dayjs(record.registerEndDate));
+    return (
+      !record.registerEndDate ||
+      !dayjs().isBefore(dayjs(record.registerEndDate))
+    );
   };
   const columns: TableProps<AuctionDataList>["columns"] = [
     {
@@ -114,20 +117,32 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
     {
       title: "Ngày Mở - Kết thúc ĐK",
       key: "registerDateRange",
-      sorter: (a, b) => dayjs(a.registerOpenDate).unix() - dayjs(b.registerOpenDate).unix(),
+      width: 250,
+      sorter: (a, b) =>
+        dayjs(a.registerOpenDate).unix() - dayjs(b.registerOpenDate).unix(),
       render: (_: any, record: AuctionDataList) => {
-        const start = record.registerOpenDate ? formatDate(record.registerOpenDate) : "-";
-        const end = record.registerEndDate ? formatDate(record.registerEndDate) : "-";
+        const start = record.registerOpenDate
+          ? formatDate(record.registerOpenDate)
+          : "-";
+        const end = record.registerEndDate
+          ? formatDate(record.registerEndDate)
+          : "-";
         return `${start} - ${end}`;
       },
     },
     {
       title: "Ngày Bắt Đầu - Kết Thúc",
       key: "auctionDateRange",
-      sorter: (a, b) => dayjs(a.auctionStartDate).unix() - dayjs(b.auctionStartDate).unix(),
+      width: 250,
+      sorter: (a, b) =>
+        dayjs(a.auctionStartDate).unix() - dayjs(b.auctionStartDate).unix(),
       render: (_: any, record: AuctionDataList) => {
-        const start = record.auctionStartDate ? formatDate(record.auctionStartDate) : "-";
-        const end = record.auctionEndDate ? formatDate(record.auctionEndDate) : "-";
+        const start = record.auctionStartDate
+          ? formatDate(record.auctionStartDate)
+          : "-";
+        const end = record.auctionEndDate
+          ? formatDate(record.auctionEndDate)
+          : "-";
         return `${start} - ${end}`;
       },
     },
@@ -158,7 +173,13 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
       width: 120,
       align: "center" as const,
       render: (_, record: AuctionDataList) => (
-        <Tooltip title={role === "MANAGER" ? "Duyệt thông tin đấu giá" : "Xem chi tiết đấu giá"}>
+        <Tooltip
+          title={
+            role === "MANAGER"
+              ? "Duyệt thông tin đấu giá"
+              : "Xem chi tiết đấu giá"
+          }
+        >
           <Button
             type="primary"
             icon={<CheckCircleOutlined />}

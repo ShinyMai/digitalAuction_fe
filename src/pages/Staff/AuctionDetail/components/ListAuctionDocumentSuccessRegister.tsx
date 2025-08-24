@@ -103,11 +103,6 @@ interface SearchParams {
   StatusDeposit?: number;
 }
 
-interface DocumentAssetStatistic {
-  assetId: string;
-  quantity: number;
-}
-
 interface Props {
   auctionId?: string;
   auctionDateModals?: AuctionDateModal;
@@ -117,7 +112,6 @@ interface Props {
 const ListAuctionDocumentSuccesRegister = ({
   auctionId,
   auctionDateModals,
-  auctionDetailData,
 }: Props) => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
@@ -128,9 +122,6 @@ const ListAuctionDocumentSuccesRegister = ({
     []
   );
   const [loading, setLoading] = useState<boolean>(false);
-  const [documentAssetStatistics, setDocumentAssetStatistics] = useState<
-    DocumentAssetStatistic[]
-  >([]);
 
   // State cho modal lý do không tham gia
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -157,16 +148,6 @@ const ListAuctionDocumentSuccesRegister = ({
       auctionId?: string;
       userId?: string;
     } | null>(null);
-
-  const getAssetName = useCallback(
-    (assetId: string) => {
-      const asset = auctionDetailData?.listAuctionAssets?.find(
-        (asset) => asset.auctionAssetsId === assetId
-      );
-      return asset?.tagName || `Tài sản ID: ${assetId.substring(0, 8)}...`;
-    },
-    [auctionDetailData]
-  );
 
   // Function để thay thế auctionDocumentId bằng tagName trong message
   const replaceDocumentIdWithTagName = useCallback(
@@ -229,8 +210,8 @@ const ListAuctionDocumentSuccesRegister = ({
           userId: doc.userId || "",
           statusRefund:
             doc.statusRefund === 1 ||
-              doc.statusRefund === 2 ||
-              doc.statusRefund === 3
+            doc.statusRefund === 2 ||
+            doc.statusRefund === 3
               ? doc.statusRefund
               : undefined, // Set khi có yêu cầu hoàn cọc hoặc đã xử lý
           isAttended: doc.isAttended,
@@ -277,7 +258,6 @@ const ListAuctionDocumentSuccesRegister = ({
         auctionId
       );
       setAuctionDocuments(response.data.auctionDocuments);
-      setDocumentAssetStatistics(response.data.documentsAssetList || []);
     } catch (error) {
       toast.error("Lỗi khi tải danh sách tài liệu đấu giá!");
       console.error(error);
@@ -369,9 +349,10 @@ const ListAuctionDocumentSuccesRegister = ({
       const response = await AuctionServices.staffReviewRefund(approveData);
       if (response.code == 200) {
         toast.success(
-          `Đã phê duyệt yêu cầu hoàn cọc cho ${selectedParticipant.name} (${selectedParticipant.assets.filter(
-            (asset) => asset.statusRefund === 1
-          ).length
+          `Đã phê duyệt yêu cầu hoàn cọc cho ${selectedParticipant.name} (${
+            selectedParticipant.assets.filter(
+              (asset) => asset.statusRefund === 1
+            ).length
           } tài sản)!`
         );
         handleCloseModal();
@@ -472,10 +453,10 @@ const ListAuctionDocumentSuccesRegister = ({
             participant.statusTicket === 0
               ? "Chưa chuyển tiền"
               : participant.statusTicket === 1
-                ? "Đã chuyển tiền"
-                : participant.statusTicket === 2
-                  ? "Đã ký phiếu"
-                  : "Đã hoàn tiền";
+              ? "Đã chuyển tiền"
+              : participant.statusTicket === 2
+              ? "Đã ký phiếu"
+              : "Đã hoàn tiền";
 
           const row = [
             participant.numericalOrder || "-",
@@ -613,19 +594,19 @@ const ListAuctionDocumentSuccesRegister = ({
                 record.statusTicket === 0
                   ? "red"
                   : record.statusTicket === 1
-                    ? "blue"
-                    : record.statusTicket === 2
-                      ? "cyan"
-                      : "green"
+                  ? "blue"
+                  : record.statusTicket === 2
+                  ? "cyan"
+                  : "green"
               }
             >
               {record.statusTicket === 0
                 ? "Chưa chuyển tiền"
                 : record.statusTicket === 1
-                  ? "Đã chuyển tiền"
-                  : record.statusTicket === 2
-                    ? "Đã ký phiếu"
-                    : "Đã hoàn tiền"}
+                ? "Đã chuyển tiền"
+                : record.statusTicket === 2
+                ? "Đã ký phiếu"
+                : "Đã hoàn tiền"}
             </Tag>
           </div>
           <div>
@@ -634,19 +615,19 @@ const ListAuctionDocumentSuccesRegister = ({
                 record.statusRefund === 1
                   ? "orange"
                   : record.statusRefund === 2
-                    ? "green"
-                    : record.statusRefund === 3
-                      ? "red"
-                      : "gray"
+                  ? "green"
+                  : record.statusRefund === 3
+                  ? "red"
+                  : "gray"
               }
             >
               {record.statusRefund === 1
                 ? "Yêu cầu hoàn cọc"
                 : record.statusRefund === 2
-                  ? "Đã chấp nhận hoàn"
-                  : record.statusRefund === 3
-                    ? "Đã từ chối hoàn"
-                    : "Không yêu cầu"}
+                ? "Đã chấp nhận hoàn"
+                : record.statusRefund === 3
+                ? "Đã từ chối hoàn"
+                : "Không yêu cầu"}
             </Tag>
           </div>
           {record.isAttended !== undefined && (
@@ -695,12 +676,13 @@ const ListAuctionDocumentSuccesRegister = ({
                 size="small"
                 icon={<EyeOutlined />}
                 onClick={() => handleShowDetailModal(record)}
-                className={`w-full ${record.statusRefund === 2
-                  ? "bg-green-500 hover:bg-green-600"
-                  : record.statusRefund === 3
+                className={`w-full ${
+                  record.statusRefund === 2
+                    ? "bg-green-500 hover:bg-green-600"
+                    : record.statusRefund === 3
                     ? "bg-red-500 hover:bg-red-600"
                     : "bg-blue-500 hover:bg-blue-600"
-                  }`}
+                }`}
               >
                 Xem lý do
               </Button>
@@ -730,14 +712,14 @@ const ListAuctionDocumentSuccesRegister = ({
   ];
 
   return (
-    <section className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-teal-50">
-      <div className="w-full mx-auto bg-white shadow-lg rounded-xl p-6">
+    <section className="w-full min-h-screen ">
+      <div className="w-full mx-auto">
         {/* Thống kê tổng quan */}
         <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
-          <h2 className="text-lg font-semibold text-emerald-800 mb-4 flex items-center gap-2">
+          <div className="text-lg font-semibold text-emerald-800 mb-4 flex items-center gap-2">
             <UserOutlined className="text-emerald-600" />
             Tổng quan người tham gia đấu giá
-          </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card className="text-center bg-white border-l-4 border-l-blue-500">
               <div className="text-2xl font-bold text-blue-600">
@@ -764,60 +746,13 @@ const ListAuctionDocumentSuccesRegister = ({
                 Tổng phí đăng ký (VND)
               </div>
             </Card>
-            <Card className="text-center bg-white border-l-4 border-l-purple-500">
-              <div className="text-2xl font-bold text-purple-600">
-                {groupedParticipants.length > 0
-                  ? (
-                    groupedParticipants.reduce(
-                      (sum, p) => sum + p.assets.length,
-                      0
-                    ) / groupedParticipants.length
-                  ).toFixed(1)
-                  : "0"}
-              </div>
-              <div className="text-sm text-gray-600">TB tài sản/người</div>
-            </Card>
           </div>
-
-          {/* Thống kê chi tiết theo tài sản */}
-          {documentAssetStatistics.length > 0 && (
-            <div className="mt-4 p-3 bg-white rounded-lg border border-emerald-100">
-              <h3 className="text-sm font-medium text-emerald-700 mb-3">
-                Chi tiết số lượng đơn đăng ký theo tài sản (
-                {documentAssetStatistics.length} loại)
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                {documentAssetStatistics.map((asset) => (
-                  <div
-                    key={asset.assetId}
-                    className="flex justify-between items-center p-2 bg-gray-50 rounded text-xs"
-                  >
-                    <span
-                      className="font-medium text-gray-700 truncate flex-1"
-                      title={getAssetName(asset.assetId)}
-                    >
-                      {getAssetName(asset.assetId)}
-                    </span>
-                    <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold ml-2">
-                      {asset.quantity} đơn
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-2 text-xs text-gray-500 text-center">
-                Tổng:{" "}
-                {documentAssetStatistics.reduce(
-                  (sum, asset) => sum + asset.quantity,
-                  0
-                )}{" "}
-                đơn đăng ký trên {documentAssetStatistics.length} loại tài sản
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-          <h2 className="text-lg font-semibold text-blue-800 mb-4">Tìm kiếm</h2>
+          <div className="text-lg font-semibold text-blue-800 mb-4">
+            Tìm kiếm
+          </div>
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <Input
               placeholder="Tìm kiếm theo tên"
@@ -879,7 +814,6 @@ const ListAuctionDocumentSuccesRegister = ({
               })),
           }}
           scroll={{ x: "max-content" }}
-          className="border border-teal-100 rounded-lg"
           size="middle"
           rowClassName="hover:bg-blue-50"
         />
@@ -1354,19 +1288,19 @@ const ListAuctionDocumentSuccesRegister = ({
                             asset.statusRefund === 1
                               ? "orange"
                               : asset.statusRefund === 2
-                                ? "green"
-                                : asset.statusRefund === 3
-                                  ? "red"
-                                  : "gray"
+                              ? "green"
+                              : asset.statusRefund === 3
+                              ? "red"
+                              : "gray"
                           }
                         >
                           {asset.statusRefund === 1
                             ? "Yêu cầu hoàn"
                             : asset.statusRefund === 2
-                              ? "Đã chấp nhận"
-                              : asset.statusRefund === 3
-                                ? "Đã từ chối"
-                                : "Không yêu cầu"}
+                            ? "Đã chấp nhận"
+                            : asset.statusRefund === 3
+                            ? "Đã từ chối"
+                            : "Không yêu cầu"}
                         </Tag>
                       </div>
                     </div>
@@ -1377,28 +1311,30 @@ const ListAuctionDocumentSuccesRegister = ({
                         asset.statusRefund === 2 ||
                         asset.statusRefund === 3) && (
                         <div
-                          className={`mt-2 p-2 rounded border ${asset.statusRefund === 1
-                            ? "bg-orange-50 border-orange-200"
-                            : asset.statusRefund === 2
+                          className={`mt-2 p-2 rounded border ${
+                            asset.statusRefund === 1
+                              ? "bg-orange-50 border-orange-200"
+                              : asset.statusRefund === 2
                               ? "bg-green-50 border-green-200"
                               : "bg-red-50 border-red-200"
-                            }`}
+                          }`}
                         >
                           {/* Lý do */}
                           <div className="mb-2">
                             <div
-                              className={`text-xs font-medium mb-1 ${asset.statusRefund === 1
-                                ? "text-orange-800"
-                                : asset.statusRefund === 2
+                              className={`text-xs font-medium mb-1 ${
+                                asset.statusRefund === 1
+                                  ? "text-orange-800"
+                                  : asset.statusRefund === 2
                                   ? "text-green-800"
                                   : "text-red-800"
-                                }`}
+                              }`}
                             >
                               {asset.statusRefund === 1
                                 ? "Lý do yêu cầu:"
                                 : asset.statusRefund === 2
-                                  ? "Lý do chấp nhận:"
-                                  : "Lý do từ chối:"}
+                                ? "Lý do chấp nhận:"
+                                : "Lý do từ chối:"}
                             </div>
                             {asset.refundReason ? (
                               <div className="bg-white p-2 rounded text-xs text-gray-700 border">
@@ -1414,12 +1350,13 @@ const ListAuctionDocumentSuccesRegister = ({
                           {/* File đính kèm */}
                           <div>
                             <div
-                              className={`text-xs font-medium mb-1 ${asset.statusRefund === 1
-                                ? "text-orange-800"
-                                : asset.statusRefund === 2
+                              className={`text-xs font-medium mb-1 ${
+                                asset.statusRefund === 1
+                                  ? "text-orange-800"
+                                  : asset.statusRefund === 2
                                   ? "text-green-800"
                                   : "text-red-800"
-                                }`}
+                              }`}
                             >
                               File đính kèm:
                             </div>
@@ -1428,12 +1365,13 @@ const ListAuctionDocumentSuccesRegister = ({
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-1">
                                     <FileTextOutlined
-                                      className={`text-xs ${asset.statusRefund === 1
-                                        ? "text-orange-500"
-                                        : asset.statusRefund === 2
+                                      className={`text-xs ${
+                                        asset.statusRefund === 1
+                                          ? "text-orange-500"
+                                          : asset.statusRefund === 2
                                           ? "text-green-500"
                                           : "text-red-500"
-                                        }`}
+                                      }`}
                                     />
                                     <span className="text-xs text-gray-700">
                                       Tài liệu hoàn cọc
@@ -1480,16 +1418,18 @@ const ListAuctionDocumentSuccesRegister = ({
 
             {/* Thông tin tóm tắt */}
             <div
-              className={`p-2 rounded-lg border ${selectedDetailParticipant.statusRefund === 2
-                ? "bg-green-50 border-green-200"
-                : "bg-red-50 border-red-200"
-                }`}
+              className={`p-2 rounded-lg border ${
+                selectedDetailParticipant.statusRefund === 2
+                  ? "bg-green-50 border-green-200"
+                  : "bg-red-50 border-red-200"
+              }`}
             >
               <div
-                className={`text-xs ${selectedDetailParticipant.statusRefund === 2
-                  ? "text-green-800"
-                  : "text-red-800"
-                  }`}
+                className={`text-xs ${
+                  selectedDetailParticipant.statusRefund === 2
+                    ? "text-green-800"
+                    : "text-red-800"
+                }`}
               >
                 <strong>
                   {selectedDetailParticipant.statusRefund === 2
@@ -1497,14 +1437,16 @@ const ListAuctionDocumentSuccesRegister = ({
                     : "❌ Trạng thái:"}
                 </strong>
                 {selectedDetailParticipant.statusRefund === 2
-                  ? ` Đã chấp nhận yêu cầu hoàn cọc cho ${selectedDetailParticipant.assets.filter(
-                    (asset) => asset.statusRefund === 2
-                  ).length
-                  } tài sản của ${selectedDetailParticipant.name}.`
-                  : ` Đã từ chối yêu cầu hoàn cọc cho ${selectedDetailParticipant.assets.filter(
-                    (asset) => asset.statusRefund === 3
-                  ).length
-                  } tài sản của ${selectedDetailParticipant.name}.`}
+                  ? ` Đã chấp nhận yêu cầu hoàn cọc cho ${
+                      selectedDetailParticipant.assets.filter(
+                        (asset) => asset.statusRefund === 2
+                      ).length
+                    } tài sản của ${selectedDetailParticipant.name}.`
+                  : ` Đã từ chối yêu cầu hoàn cọc cho ${
+                      selectedDetailParticipant.assets.filter(
+                        (asset) => asset.statusRefund === 3
+                      ).length
+                    } tài sản của ${selectedDetailParticipant.name}.`}
               </div>
             </div>
           </div>

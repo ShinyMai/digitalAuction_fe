@@ -5,44 +5,57 @@ import { getAuctionRoundsColumns } from "./tableColumns";
 import type { AuctionDataDetail } from "../../Modals";
 
 interface AuctionRoundsTableProps {
-    auctionRounds: AuctionRound[];
-    loading: boolean;
-    auction?: AuctionDataDetail;
-    userRole?: string;
-    onViewDetails?: (record: AuctionRound) => void;
-    onInputPrice?: (record: AuctionRound) => void;
+  auctionRounds: AuctionRound[];
+  loading: boolean;
+  auction?: AuctionDataDetail;
+  userRole?: string;
+  onViewDetails?: (record: AuctionRound) => void;
+  onInputPrice?: (record: AuctionRound) => void;
 }
 
-const AuctionRoundsTable = ({ auctionRounds, loading, auction, userRole, onViewDetails, onInputPrice }: AuctionRoundsTableProps) => {
-    const columns = getAuctionRoundsColumns({ onViewDetails, onInputPrice, auction, userRole });
+const AuctionRoundsTable = ({
+  auctionRounds,
+  loading,
+  auction,
+  userRole,
+  onViewDetails,
+  onInputPrice,
+}: AuctionRoundsTableProps) => {
+  const columns = getAuctionRoundsColumns({
+    onViewDetails,
+    onInputPrice,
+    auction,
+    userRole,
+  });
 
-    return (
-        <Card
-            title={
-                <div className="!flex !items-center !gap-2">
-                    <FileTextOutlined className="!text-blue-500" />
-                    <span className="!text-gray-800 !font-semibold">Danh sách vòng đấu giá</span>
-                </div>
-            }
-            className="!shadow-sm"
-        >
-            <Table
-                columns={columns}
-                dataSource={auctionRounds}
-                rowKey="auctionRoundId"
-                loading={loading}
-                pagination={{
-                    pageSize: 10,
-                    showSizeChanger: true,
-                    showQuickJumper: true,
-                    showTotal: (total, range) =>
-                        `${range[0]}-${range[1]} của ${total} vòng đấu giá`,
-                }}
-                className="!overflow-x-auto"
-                scroll={{ x: 1200 }}
-            />
-        </Card>
-    );
+  return (
+    <Card
+      title={
+        <div className="!flex !items-center !gap-2">
+          <FileTextOutlined className="!text-blue-500" />
+          <span className="!text-gray-800 !font-semibold">
+            Danh sách vòng đấu giá
+          </span>
+        </div>
+      }
+      className="!shadow-sm"
+    >
+      <Table
+        columns={columns}
+        dataSource={auctionRounds}
+        rowKey="auctionRoundId"
+        loading={loading}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} của ${total} vòng đấu giá`,
+        }}
+        scroll={{ x: 1200 }}
+      />
+    </Card>
+  );
 };
 
 export default AuctionRoundsTable;

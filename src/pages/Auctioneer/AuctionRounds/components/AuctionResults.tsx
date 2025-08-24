@@ -31,7 +31,6 @@ const AuctionResults = ({
 }: AuctionResultsProps) => {
   const [downloading, setDownloading] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth);
-  console.log("Iniate value:", auctionRoundPriceWinners)
   // Function to handle direct download without file selection
   const handleDirectDownload = useCallback(async () => {
     setDownloading(true);
@@ -78,8 +77,9 @@ const AuctionResults = ({
           const url = window.URL.createObjectURL(response.data);
           const link = document.createElement("a");
           link.href = url;
-          link.download = `So_tay_dau_gia_${new Date().toISOString().split("T")[0]
-            }.pdf`;
+          link.download = `So_tay_dau_gia_${
+            new Date().toISOString().split("T")[0]
+          }.pdf`;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -117,24 +117,32 @@ const AuctionResults = ({
 
     // Sum totalBids from assetStatistic data when available
     const totalBidsFromStats = auctionRoundPriceWinners.reduce(
-      (sum, item) => sum + (item.assetStatistic?.totalBids || 0), 0
+      (sum, item) => sum + (item.assetStatistic?.totalBids || 0),
+      0
     );
 
     return {
       totalAssets: allAssets.size,
       soldAssets: successfulAssets.size,
-      totalBidsCount: totalBidsFromStats > 0 ? totalBidsFromStats : auctionRoundPriceWinners.length,
+      totalBidsCount:
+        totalBidsFromStats > 0
+          ? totalBidsFromStats
+          : auctionRoundPriceWinners.length,
       allAssets,
     };
   }, [auctionRoundPriceWinners]);
 
   // Use enriched data with assetStatistic for detailed statistics - Memoized for performance
   const assetStatsArray = useMemo(() => {
-    return Array.from(statistics.allAssets).map(tagName => {
-      const assetItem = auctionRoundPriceWinners.find(item => item.tagName === tagName);
+    return Array.from(statistics.allAssets).map((tagName) => {
+      const assetItem = auctionRoundPriceWinners.find(
+        (item) => item.tagName === tagName
+      );
       const assetStat = assetItem?.assetStatistic;
 
-      const winner = auctionRoundPriceWinners.find(item => item.tagName === tagName && item.flagWinner);
+      const winner = auctionRoundPriceWinners.find(
+        (item) => item.tagName === tagName && item.flagWinner
+      );
 
       return {
         tagName,
@@ -143,152 +151,157 @@ const AuctionResults = ({
         highestPrice: assetStat?.highestPrice || 0,
         startingPrice: assetStat?.startingPrice || 0,
         isSuccessful: !!winner,
-        winnerInfo: winner ? {
-          name: winner.userName,
-          cccd: winner.citizenIdentification,
-          winningPrice: winner.auctionPrice,
-          time: winner.createdAt,
-        } : null,
+        winnerInfo: winner
+          ? {
+              name: winner.userName,
+              cccd: winner.citizenIdentification,
+              winningPrice: winner.auctionPrice,
+              time: winner.createdAt,
+            }
+          : null,
         // Additional data from assetStatistic
         assetStatistic: assetStat,
       };
     });
   }, [auctionRoundPriceWinners, statistics.allAssets]);
 
-  const assetColumns: ColumnsType<any> = useMemo(() => [
-    {
-      title: "Tài sản",
-      dataIndex: "tagName",
-      key: "tagName",
-      fixed: "left",
-      width: 150,
-      render: (text, record) => (
-        <Tag
-          color={record.isSuccessful ? "green" : "red"}
-          className="text-sm font-medium px-3 py-1"
-        >
-          {text}
-        </Tag>
-      ),
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "isSuccessful",
-      key: "isSuccessful",
-      width: 120,
-      render: (isSuccessful) => (
-        <Tag
-          color={isSuccessful ? "success" : "error"}
-          icon={
-            isSuccessful ? <CheckCircleOutlined /> : <CloseCircleOutlined />
-          }
-          className="font-medium"
-        >
-          {isSuccessful ? "Đã được đấu giá" : "Đấu giá thất bại"}
-        </Tag>
-      ),
-      filters: [
-        { text: "Đã được đấu giá", value: true },
-        { text: "Đấu giá thất bại", value: false },
-      ],
-      onFilter: (value, record) => record.isSuccessful === value,
-    },
-    {
-      title: "Số người tham gia",
-      dataIndex: "totalBidder",
-      key: "totalBidder",
-      width: 130,
-      render: (count) => (
-        <div className="text-center">
-          <div className="text-lg font-bold text-blue-600">{count}</div>
-          <div className="text-xs text-gray-500">người</div>
-        </div>
-      ),
-      sorter: (a, b) => a.totalBidder - b.totalBidder,
-    },
-    {
-      title: "Số lượt trả giá",
-      dataIndex: "totalBids",
-      key: "totalBids",
-      width: 130,
-      render: (count) => (
-        <div className="text-center">
-          <div className="text-lg font-bold text-orange-600">{count}</div>
-          <div className="text-xs text-gray-500">lượt</div>
-        </div>
-      ),
-      sorter: (a, b) => a.totalBids - b.totalBids,
-    },
-    {
-      title: "Giá khởi điểm",
-      dataIndex: "startingPrice",
-      key: "startingPrice",
-      width: 150,
-      render: (price) => (
-        <Text className="text-lg text-blue-600">
-          {formatCurrency(price)}
-        </Text>
-      ),
-      sorter: (a, b) => a.startingPrice - b.startingPrice,
-    },
-    {
-      title: "Giá cao nhất",
-      dataIndex: "highestPrice",
-      key: "highestPrice",
-      width: 150,
-      render: (price) => (
-        <Text strong className="text-lg text-green-600">
-          {formatCurrency(price)}
-        </Text>
-      ),
-      sorter: (a, b) => a.highestPrice - b.highestPrice,
-    },
-    {
-      title: "Người thắng cuộc",
-      key: "winner",
-      width: 200,
-      render: (_, record) =>
-        record.winnerInfo ? (
-          <Space direction="vertical" size="small">
-            <Text strong className="text-sm">
-              {record.winnerInfo.name}
-            </Text>
-            <Text type="secondary" className="text-xs">
-              CCCD: {record.winnerInfo.cccd}
-            </Text>
-            <Text className="text-xs text-green-600 font-medium">
-              {formatCurrency(record.winnerInfo.winningPrice)}
-            </Text>
-          </Space>
-        ) : (
-          <Text type="secondary" className="text-sm">
-            Chưa có người thắng
+  const assetColumns: ColumnsType<any> = useMemo(
+    () => [
+      {
+        title: "Tài sản",
+        dataIndex: "tagName",
+        key: "tagName",
+        fixed: "left",
+        width: 150,
+        render: (text, record) => (
+          <Tag
+            color={record.isSuccessful ? "green" : "error"}
+            className="text-sm font-medium px-3 py-1"
+          >
+            {text}
+          </Tag>
+        ),
+      },
+      {
+        title: "Trạng thái",
+        dataIndex: "isSuccessful",
+        key: "isSuccessful",
+        width: 120,
+        render: (isSuccessful) => (
+          <Tag
+            color={isSuccessful ? "success" : "error"}
+            icon={
+              isSuccessful ? <CheckCircleOutlined /> : <CloseCircleOutlined />
+            }
+            className="font-medium"
+          >
+            {isSuccessful ? "Đã được đấu giá" : "Đấu giá thất bại"}
+          </Tag>
+        ),
+        filters: [
+          { text: "Đã được đấu giá", value: true },
+          { text: "Đấu giá thất bại", value: false },
+        ],
+        onFilter: (value, record) => record.isSuccessful === value,
+      },
+      {
+        title: "Số người tham gia",
+        dataIndex: "totalBidder",
+        key: "totalBidder",
+        width: 130,
+        render: (count) => (
+          <div className="text-center">
+            <div className="text-lg font-bold text-blue-600">{count}</div>
+            <div className="text-xs text-gray-500">người</div>
+          </div>
+        ),
+        sorter: (a, b) => a.totalBidder - b.totalBidder,
+      },
+      {
+        title: "Số lượt trả giá",
+        dataIndex: "totalBids",
+        key: "totalBids",
+        width: 130,
+        render: (count) => (
+          <div className="text-center">
+            <div className="text-lg font-bold text-orange-600">{count}</div>
+            <div className="text-xs text-gray-500">lượt</div>
+          </div>
+        ),
+        sorter: (a, b) => a.totalBids - b.totalBids,
+      },
+      {
+        title: "Giá khởi điểm",
+        dataIndex: "startingPrice",
+        key: "startingPrice",
+        width: 150,
+        render: (price) => (
+          <Text className="text-lg text-blue-600">{formatCurrency(price)}</Text>
+        ),
+        sorter: (a, b) => a.startingPrice - b.startingPrice,
+      },
+      {
+        title: "Giá cao nhất",
+        dataIndex: "highestPrice",
+        key: "highestPrice",
+        width: 150,
+        render: (price) => (
+          <Text strong className="text-lg text-green-600">
+            {formatCurrency(price)}
           </Text>
         ),
-    },
-  ], [formatCurrency]);
+        sorter: (a, b) => a.highestPrice - b.highestPrice,
+      },
+      {
+        title: "Người thắng cuộc",
+        key: "winner",
+        width: 200,
+        render: (_, record) =>
+          record.winnerInfo ? (
+            <Space direction="vertical" size="small">
+              <Text strong className="text-sm">
+                {record.winnerInfo.name}
+              </Text>
+              <Text type="secondary" className="text-xs">
+                CCCD: {record.winnerInfo.cccd}
+              </Text>
+              <Text className="text-xs text-green-600 font-medium">
+                {formatCurrency(record.winnerInfo.winningPrice)}
+              </Text>
+            </Space>
+          ) : (
+            <Text type="secondary" className="text-sm">
+              Chưa có người thắng
+            </Text>
+          ),
+      },
+    ],
+    [formatCurrency]
+  );
 
   // Memoized pagination configuration
-  const paginationConfig = useMemo(() => ({
-    pageSize: 10,
-    showSizeChanger: true,
-    showQuickJumper: true,
-    showTotal: (total: number, range: [number, number]) =>
-      `${range[0]}-${range[1]} của ${total} tài sản`,
-    pageSizeOptions: ["10", "20", "50"],
-  }), []);
+  const paginationConfig = useMemo(
+    () => ({
+      pageSize: 10,
+      showSizeChanger: true,
+      showQuickJumper: true,
+      showTotal: (total: number, range: [number, number]) =>
+        `${range[0]}-${range[1]} của ${total} tài sản`,
+      pageSizeOptions: ["10", "20", "50"],
+    }),
+    []
+  );
 
   // Memoized row class name function
-  const getRowClassName = useCallback((record: any) =>
-    record.isSuccessful
-      ? "bg-green-50 hover:bg-green-100"
-      : "bg-red-50 hover:bg-red-100"
-    , []);
+  const getRowClassName = useCallback(
+    (record: any) => (record.isSuccessful ? "bg-green-50 " : "bg-red-50 "),
+    []
+  );
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className=" min-h-screen">
       {/* Header */}
-      <Card className="!mb-6 shadow-sm border-0 bg-gradient-to-r from-green-50 to-emerald-50">
+      <Card className="!mb-6">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <BarChartOutlined className="text-3xl text-blue-500" />
@@ -302,19 +315,20 @@ const AuctionResults = ({
             </div>
           </div>
           <Space size="middle">
-            {
-              user?.roleName === "Manager" || user?.roleName === "Staff" ?
-                <Button
-                  type="default"
-                  size="large"
-                  icon={<DownloadOutlined />}
-                  onClick={handleDirectDownload}
-                  loading={downloading}
-                  className="!bg-white !border-green-500 !text-green-600 hover:!bg-green-50 hover:!border-green-600 !shadow-md hover:!shadow-lg !transition-all !duration-300 !h-12 !px-6"
-                >
-                  {downloading ? "Đang tải..." : "Tải sổ tay"}
-                </Button> : <></>
-            }
+            {user?.roleName === "Manager" || user?.roleName === "Staff" ? (
+              <Button
+                type="default"
+                size="large"
+                icon={<DownloadOutlined />}
+                onClick={handleDirectDownload}
+                loading={downloading}
+                className="!bg-white !border-green-500 !text-green-600 hover:!bg-green-50 hover:!border-green-600 !shadow-md hover:!shadow-lg !transition-all !duration-300 !h-12 !px-6"
+              >
+                {downloading ? "Đang tải..." : "Tải sổ tay"}
+              </Button>
+            ) : (
+              <></>
+            )}
 
             <Button
               type="primary"
@@ -331,7 +345,7 @@ const AuctionResults = ({
 
       {/* Statistics Overview - Improved with more meaningful metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <Card className="shadow-sm hover:shadow-md transition-shadow border-0">
+        <Card className="hover:shadow-md transition-shadow border-0">
           <Statistic
             title={
               <span className="text-gray-600 font-medium">Tổng tài sản</span>
@@ -388,9 +402,10 @@ const AuctionResults = ({
         <div className="mb-4 p-3 bg-blue-50 rounded-lg">
           <Text className="text-sm text-blue-700">
             <strong>Hướng dẫn:</strong> Bảng này hiển thị thông tin chi tiết về
-            mỗi tài sản bao gồm giá khởi điểm, số người tham gia, số lượt trả giá,
-            giá cao nhất và người thắng cuộc. Dữ liệu được tổng hợp
-            từ thống kê chi tiết của từng tài sản. Bạn có thể lọc theo trạng thái và sắp xếp theo các tiêu chí khác nhau.
+            mỗi tài sản bao gồm giá khởi điểm, số người tham gia, số lượt trả
+            giá, giá cao nhất và người thắng cuộc. Dữ liệu được tổng hợp từ
+            thống kê chi tiết của từng tài sản. Bạn có thể lọc theo trạng thái
+            và sắp xếp theo các tiêu chí khác nhau.
           </Text>
         </div>
         <Table
@@ -406,7 +421,6 @@ const AuctionResults = ({
 
       <style>{`
                 .custom-table .ant-table-thead > tr > th {
-                    background: #f8f9fa;
                     border-bottom: 2px solid #e9ecef;
                     font-weight: 600;
                 }

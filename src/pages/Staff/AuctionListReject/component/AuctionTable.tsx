@@ -38,19 +38,24 @@ const AuctionTable = ({
     const navigationKey = record.auctionId || record._id;
     const auctionType = record.auctionId ? "SQL" : "NODE";
 
-    navigate(`/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_LIST_REJECT}/${STAFF_ROUTES.SUB.AUCTION_DETAIL_REJECT}`, {
-      state: {
-        key: navigationKey,
-        type: auctionType,
-      },
-      replace: true,
-    });
+    navigate(
+      `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_LIST_REJECT}/${STAFF_ROUTES.SUB.AUCTION_DETAIL_REJECT}`,
+      {
+        state: {
+          key: navigationKey,
+          type: auctionType,
+        },
+        replace: true,
+      }
+    );
   };
 
   const columns: TableProps<AuctionDataList>["columns"] = [
     {
       title: "STT",
       key: "index",
+      width: 60,
+      align: "center" as const,
       render: (_: any, __: any, index: number) =>
         ((currentPage || 1) - 1) * (pageSize || 10) + index + 1,
     },
@@ -71,7 +76,8 @@ const AuctionTable = ({
     {
       title: "Ngày Mở - Kết thúc ĐK",
       key: "registerDateRange",
-      sorter: (a, b) => dayjs(a.registerOpenDate).unix() - dayjs(b.registerOpenDate).unix(),
+      sorter: (a, b) =>
+        dayjs(a.registerOpenDate).unix() - dayjs(b.registerOpenDate).unix(),
       render: (_: any, record: AuctionDataList) => {
         const start = record.registerOpenDate
           ? dayjs(record.registerOpenDate).format("DD/MM/YYYY")
@@ -85,12 +91,15 @@ const AuctionTable = ({
     {
       title: "Ngày Bắt Đầu - Kết Thúc",
       key: "auctionDateRange",
-      sorter: (a, b) => dayjs(a.auctionStartDate).unix() - dayjs(b.auctionStartDate).unix(),
+      sorter: (a, b) =>
+        dayjs(a.auctionStartDate).unix() - dayjs(b.auctionStartDate).unix(),
       render: (_: any, record: AuctionDataList) => {
         const start = record.auctionStartDate
           ? dayjs(record.auctionStartDate).format("DD/MM/YYYY")
           : "-";
-        const end = record.auctionEndDate ? dayjs(record.auctionEndDate).format("DD/MM/YYYY") : "-";
+        const end = record.auctionEndDate
+          ? dayjs(record.auctionEndDate).format("DD/MM/YYYY")
+          : "-";
         return `${start} - ${end}`;
       },
     },
@@ -101,7 +110,7 @@ const AuctionTable = ({
       sorter: (a, b) => {
         if (!a.createdBy) return -1;
         if (!b.createdBy) return 1;
-        return (a.createdBy || '').localeCompare(b.createdBy || '');
+        return (a.createdBy || "").localeCompare(b.createdBy || "");
       },
       render: (userId: string, record: AuctionDataList) => (
         <UserNameOrId

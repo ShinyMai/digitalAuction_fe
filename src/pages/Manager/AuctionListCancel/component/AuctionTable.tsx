@@ -85,6 +85,8 @@ const AuctionTable = ({
     {
       title: "STT",
       key: "index",
+      width: 60,
+      align: "center" as const,
       render: (_, __, index: number) => calculateRowIndex(index),
     },
     {
@@ -98,20 +100,32 @@ const AuctionTable = ({
     {
       title: "Ngày Mở - Kết thúc ĐK",
       key: "registerDateRange",
-      sorter: (a, b) => dayjs(a.registerOpenDate).unix() - dayjs(b.registerOpenDate).unix(),
+      width: 250,
+      sorter: (a, b) =>
+        dayjs(a.registerOpenDate).unix() - dayjs(b.registerOpenDate).unix(),
       render: (_: any, record: AuctionDataList) => {
-        const start = record.registerOpenDate ? formatDate(record.registerOpenDate) : "-";
-        const end = record.registerEndDate ? formatDate(record.registerEndDate) : "-";
+        const start = record.registerOpenDate
+          ? formatDate(record.registerOpenDate)
+          : "-";
+        const end = record.registerEndDate
+          ? formatDate(record.registerEndDate)
+          : "-";
         return `${start} - ${end}`;
       },
     },
     {
       title: "Ngày Bắt Đầu - Kết Thúc",
       key: "auctionDateRange",
-      sorter: (a, b) => dayjs(a.auctionStartDate).unix() - dayjs(b.auctionStartDate).unix(),
+      width: 270,
+      sorter: (a, b) =>
+        dayjs(a.auctionStartDate).unix() - dayjs(b.auctionStartDate).unix(),
       render: (_: any, record: AuctionDataList) => {
-        const start = record.auctionStartDate ? formatDate(record.auctionStartDate) : "-";
-        const end = record.auctionEndDate ? formatDate(record.auctionEndDate) : "-";
+        const start = record.auctionStartDate
+          ? formatDate(record.auctionStartDate)
+          : "-";
+        const end = record.auctionEndDate
+          ? formatDate(record.auctionEndDate)
+          : "-";
         return `${start} - ${end}`;
       },
     },
@@ -184,7 +198,7 @@ const AuctionTable = ({
         }}
         loading={loading}
         locale={{ emptyText: "Không có dữ liệu" }}
-        className="w-full border border-white rounded-lg overflow-hidden"
+        scroll={{ x: "max-content" }}
         onRow={(record) => ({
           onClick: () => handleNavigateToDetail(record),
         })}

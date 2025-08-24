@@ -1,9 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type {
-  AuctionRound,
-  AuctionRoundPriceWinner,
-} from "./modalsData";
+import type { AuctionRound, AuctionRoundPriceWinner } from "./modalsData";
 import PageHeader from "./components/PageHeader";
 import StatisticsCards from "./components/StatisticsCards";
 import AuctionRoundsTable from "./components/AuctionRoundsTable";
@@ -47,7 +44,7 @@ const formatCurrency = (value: string) => {
   }).format(parseInt(value));
 };
 
-const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
+const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
   const [auctionRounds, setAuctionRounds] = useState<AuctionRound[]>([]);
   const [auctionRoundPriceWinners, setAuctionRoundPriceWinners] = useState<
     AuctionRoundPriceWinner[]
@@ -59,8 +56,11 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
   const [selectedRound, setSelectedRound] = useState<AuctionRound>();
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
-  const [roundStatistic, setRoundStatistic] = useState<{ totalAssets: number, totalBids: number, totalParticipants: number }>()
-
+  const [roundStatistic, setRoundStatistic] = useState<{
+    totalAssets: number;
+    totalBids: number;
+    totalParticipants: number;
+  }>();
   const getListAuctionRounds = useCallback(async () => {
     try {
       setLoading(true);
@@ -103,39 +103,53 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
         if (response.code === 200) {
           // Bổ sung assetId và thông tin thống kê cho mỗi element từ API response
           const enrichedData = await Promise.all(
-            response.data.auctionRoundPrices.map(async (item: AuctionRoundPriceWinner) => {
-              // Tìm assetId dựa vào tagName
-              const matchedAsset = auctionAsset.find(
-                asset => asset.tagName === item.tagName
-              );
+            response.data.auctionRoundPrices.map(
+              async (item: AuctionRoundPriceWinner) => {
+                // Tìm assetId dựa vào tagName
+                const matchedAsset = auctionAsset.find(
+                  (asset) => asset.tagName === item.tagName
+                );
 
-              let enrichedItem = { ...item };
+                let enrichedItem = { ...item };
 
-              if (matchedAsset) {
-                // Gọi getAuctionAssetStatistic để lấy thêm thông tin
-                try {
-                  const assetStatResponse = await AuctionServices.getAssetInfoStatistic(matchedAsset.auctionAssetsId);
-                  if (assetStatResponse.code === 200) {
-                    // Bổ sung dữ liệu từ asset statistic vào enrichedItem
-                    enrichedItem = {
-                      ...enrichedItem,
-                      assetStatistic: assetStatResponse.data, // Lưu thông tin statistic vào property assetStatistic
-                    };
+                if (matchedAsset) {
+                  // Gọi getAuctionAssetStatistic để lấy thêm thông tin
+                  try {
+                    const assetStatResponse =
+                      await AuctionServices.getAssetInfoStatistic(
+                        matchedAsset.auctionAssetsId
+                      );
+                    if (assetStatResponse.code === 200) {
+                      // Bổ sung dữ liệu từ asset statistic vào enrichedItem
+                      enrichedItem = {
+                        ...enrichedItem,
+                        assetStatistic: assetStatResponse.data, // Lưu thông tin statistic vào property assetStatistic
+                      };
+                    }
+                  } catch (error) {
+                    console.error(
+                      `Error fetching asset statistic for ${matchedAsset.auctionAssetsId}:`,
+                      error
+                    );
                   }
-                } catch (error) {
-                  console.error(`Error fetching asset statistic for ${matchedAsset.auctionAssetsId}:`, error);
                 }
-              }
 
-              return enrichedItem;
-            })
+                return enrichedItem;
+              }
+            )
           );
 
           // Tạo Set chứa tagName của các tài sản đã có trong response
-          const existingTagNames = new Set(response.data.auctionRoundPrices.map((item: AuctionRoundPriceWinner) => item.tagName));
+          const existingTagNames = new Set(
+            response.data.auctionRoundPrices.map(
+              (item: AuctionRoundPriceWinner) => item.tagName
+            )
+          );
 
           // Tìm các tài sản trong auctionAsset nhưng không có trong response
-          const missingAssets = auctionAsset.filter(asset => !existingTagNames.has(asset.tagName));
+          const missingAssets = auctionAsset.filter(
+            (asset) => !existingTagNames.has(asset.tagName)
+          );
 
           // Tạo các entry cho tài sản thiếu với dữ liệu rỗng
           const missingAssetsData = await Promise.all(
@@ -144,12 +158,18 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
 
               // Vẫn gọi API để lấy thông tin thống kê cho tài sản thiếu
               try {
-                const assetStatResponse = await AuctionServices.getAssetInfoStatistic(asset.auctionAssetsId);
+                const assetStatResponse =
+                  await AuctionServices.getAssetInfoStatistic(
+                    asset.auctionAssetsId
+                  );
                 if (assetStatResponse.code === 200) {
                   assetStatistic = assetStatResponse.data;
                 }
               } catch (error) {
-                console.error(`Error fetching asset statistic for missing asset ${asset.auctionAssetsId}:`, error);
+                console.error(
+                  `Error fetching asset statistic for missing asset ${asset.auctionAssetsId}:`,
+                  error
+                );
               }
 
               return {
@@ -235,10 +255,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
   useEffect(() => {
     getListAuctionRounds();
     getListAuctionRoundPriceWinners();
-  }, [
-    getListAuctionRounds,
-    getListAuctionRoundPriceWinners,
-  ]);
+  }, [getListAuctionRounds, getListAuctionRoundPriceWinners]);
 
   const handleEndAuction = async () => {
     try {
@@ -303,7 +320,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
   };
 
   return (
-    <div className="!min-h-screen !bg-gray-50 relative overflow-hidden">
+    <div className="!min-h-screen relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-200/30 to-cyan-200/30 rounded-full animate-float"></div>

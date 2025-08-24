@@ -2,15 +2,16 @@ import { useEffect, useState, useMemo } from "react";
 import { toast } from "react-toastify";
 import AuctionServices from "../../../../services/AuctionServices";
 import type { AuctionDocument, AuctionDateModal } from "../../Modals";
-import { Table, Input, Tag, Select, Button, Card, Modal, Divider } from "antd";
+import { Table, Input, Tag, Select, Button, Card, Divider } from "antd";
 import {
   HistoryOutlined,
   UserOutlined,
   ShoppingOutlined,
   DollarOutlined,
-  SearchOutlined
+  SearchOutlined,
 } from "@ant-design/icons";
 import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal/ParticipantBiddingHistoryModal";
+import CustomModal from "../../../../components/Common/CustomModal";
 
 // Đã xóa import dayjs
 
@@ -71,8 +72,10 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
   }>({});
 
   // State cho modal hiển thị danh sách tài sản
-  const [isAssetsModalVisible, setIsAssetsModalVisible] = useState<boolean>(false);
-  const [selectedParticipant, setSelectedParticipant] = useState<GroupedParticipant | null>(null);
+  const [isAssetsModalVisible, setIsAssetsModalVisible] =
+    useState<boolean>(false);
+  const [selectedParticipant, setSelectedParticipant] =
+    useState<GroupedParticipant | null>(null);
 
   // State cho modal lịch sử đấu giá
   const [isBiddingHistoryModalVisible, setIsBiddingHistoryModalVisible] =
@@ -141,9 +144,11 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
 
       // Filter frontend cho trường hợp "không đủ điều kiện"
       if (searchValues.eligibilityStatus === "ineligible") {
-        filteredDocuments = response.data.auctionDocuments.filter((doc: AuctionDocument) =>
-          (doc.statusTicket === 0 || doc.statusTicket === 1) ||
-          (doc.statusDeposit === 0)
+        filteredDocuments = response.data.auctionDocuments.filter(
+          (doc: AuctionDocument) =>
+            doc.statusTicket === 0 ||
+            doc.statusTicket === 1 ||
+            doc.statusDeposit === 0
         );
       }
 
@@ -232,7 +237,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       key: "participantInfo",
       width: 250,
       render: (record: GroupedParticipant) => (
-        <div className="space-y-1">
+        <div className="p-2">
           <div className="font-semibold text-gray-800 flex items-center gap-2">
             <UserOutlined className="text-blue-500" />
             {record.name}
@@ -248,7 +253,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       key: "assetCount",
       width: 200,
       render: (record: GroupedParticipant) => (
-        <div className="text-center">
+        <div>
           <Button
             type="link"
             onClick={() => handleShowAssetsModal(record)}
@@ -288,24 +293,24 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     parseInt(status) === 0
                       ? "default"
                       : parseInt(status) === 1
-                        ? "processing"
-                        : parseInt(status) === 2
-                          ? "success"
-                          : parseInt(status) === 3
-                            ? "warning"
-                            : "error"
+                      ? "processing"
+                      : parseInt(status) === 2
+                      ? "success"
+                      : parseInt(status) === 3
+                      ? "warning"
+                      : "error"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa chuyển tiền`
                     : parseInt(status) === 1
-                      ? `${count} đã chuyển tiền`
-                      : parseInt(status) === 2
-                        ? `${count} đã nhận phiếu`
-                        : parseInt(status) === 3
-                          ? `${count} đã hoàn tiền`
-                          : `${count} không hợp lệ`}
+                    ? `${count} đã chuyển tiền`
+                    : parseInt(status) === 2
+                    ? `${count} đã nhận phiếu`
+                    : parseInt(status) === 3
+                    ? `${count} đã hoàn tiền`
+                    : `${count} không hợp lệ`}
                 </Tag>
               ))}
             </div>
@@ -354,8 +359,8 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
   ];
 
   return (
-    <section className="w-full h-fit bg-gradient-to-b from-blue-50 to-teal-50">
-      <div className="w-full mx-auto bg-white rounded-xl">
+    <section className="w-full h-fit ">
+      <div className="w-full mx-auto">
         <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
           <h2 className="text-lg font-semibold text-emerald-800 mb-4 flex items-center gap-2">
             <UserOutlined className="text-emerald-600" />
@@ -382,7 +387,9 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                   .reduce((sum, p) => sum + p.totalRegistrationFee, 0)
                   .toLocaleString("vi-VN")}
               </div>
-              <div className="text-sm text-gray-600">Tổng phí đăng ký (VND)</div>
+              <div className="text-sm text-gray-600">
+                Tổng phí đăng ký (VND)
+              </div>
             </Card>
           </div>
         </div>
@@ -486,29 +493,14 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
               })),
           }}
           scroll={{ x: "max-content" }}
-          className="border border-teal-100 rounded-lg"
           size="middle"
-          rowClassName="hover:bg-blue-50"
+          rowClassName="!p-2 hover:bg-blue-50"
         />
       </div>
 
       {/* Modal hiển thị danh sách tài sản chi tiết */}
-      <Modal
-        title={
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-              <ShoppingOutlined className="text-white text-sm" />
-            </div>
-            <div>
-              <div className="text-base font-semibold text-gray-800">
-                Tài sản đăng ký
-              </div>
-              <div className="text-xs text-gray-500">
-                {selectedParticipant?.name}
-              </div>
-            </div>
-          </div>
-        }
+      <CustomModal
+        title="Danh sách tài sản đã đăng ký"
         open={isAssetsModalVisible}
         onCancel={handleCloseAssetsModal}
         width={700}
@@ -591,10 +583,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
               </div>
             </div>
 
-            <Divider
-              orientation="left"
-              className="text-gray-600 text-sm my-3"
-            >
+            <Divider orientation="left" className="text-gray-600 text-sm my-3">
               Danh sách tài sản ({selectedParticipant.assets.length})
             </Divider>
 
@@ -635,24 +624,24 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                           asset.statusTicket === 0
                             ? "default"
                             : asset.statusTicket === 1
-                              ? "processing"
-                              : asset.statusTicket === 2
-                                ? "success"
-                                : asset.statusTicket === 3
-                                  ? "warning"
-                                  : "error"
+                            ? "processing"
+                            : asset.statusTicket === 2
+                            ? "success"
+                            : asset.statusTicket === 3
+                            ? "warning"
+                            : "error"
                         }
                         className="text-xs"
                       >
                         {asset.statusTicket === 0
                           ? "Chưa chuyển tiền"
                           : asset.statusTicket === 1
-                            ? "Đã chuyển tiền"
-                            : asset.statusTicket === 2
-                              ? "Đã nhận phiếu"
-                              : asset.statusTicket === 3
-                                ? "Đã hoàn tiền"
-                                : "Không hợp lệ"}
+                          ? "Đã chuyển tiền"
+                          : asset.statusTicket === 2
+                          ? "Đã nhận phiếu"
+                          : asset.statusTicket === 3
+                          ? "Đã hoàn tiền"
+                          : "Không hợp lệ"}
                       </Tag>
 
                       <Tag
@@ -671,8 +660,8 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
             <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
               <div className="flex justify-between items-center text-xs">
                 <span className="text-gray-600">
-                  <strong>{selectedParticipant.assets.length}</strong> tài sản
-                  • Tổng:{" "}
+                  <strong>{selectedParticipant.assets.length}</strong> tài sản •
+                  Tổng:{" "}
                   <strong className="text-green-600">
                     {selectedParticipant.totalRegistrationFee.toLocaleString(
                       "vi-VN"
@@ -691,7 +680,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
             </div>
           </div>
         )}
-      </Modal>
+      </CustomModal>
 
       {/* Modal lịch sử đấu giá */}
       <ParticipantBiddingHistoryModal

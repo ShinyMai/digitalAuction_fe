@@ -123,7 +123,11 @@ const AuctionDetailSuccesfull = () => {
     }
 
     // Các role khác (AUCTIONEER, DIRECTOR, ADMIN) có thể truy cập
-    return role === USER_ROLES.AUCTIONEER || role === USER_ROLES.DIRECTOR || role === USER_ROLES.ADMIN;
+    return (
+      role === USER_ROLES.AUCTIONEER ||
+      role === USER_ROLES.DIRECTOR ||
+      role === USER_ROLES.ADMIN
+    );
   };
 
   return (
@@ -147,7 +151,7 @@ const AuctionDetailSuccesfull = () => {
             {
               key: "1",
               label: (
-                <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-blue-50 hover:scale-105 hover:shadow-md">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md">
                   <FileTextOutlined className="text-blue-600 text-lg transition-colors duration-300" />
                   <span className="font-semibold text-gray-700 transition-colors duration-300">
                     Thông tin đấu giá
@@ -165,50 +169,54 @@ const AuctionDetailSuccesfull = () => {
               ),
             },
             // Tab 2: Danh sách tham gia đấu giá - Kiểm tra quyền truy cập
-            ...(canAccessTabs() ? [{
-              key: "2",
-              label: (
-                <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-teal-50 hover:scale-105 hover:shadow-md">
-                  <TeamOutlined className="text-teal-600 text-lg transition-colors duration-300" />
-                  <span className="font-semibold text-gray-700 transition-colors duration-300">
-                    Danh sách tham gia đấu giá
-                  </span>
-                </div>
-              ),
-              children: (
-                <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 min-h-[500px] transition-all duration-300 hover:shadow-2xl">
-                  <ListAuctionDocument
-                    auctionId={location.state.key}
-                    auctionDateModals={auctionDateModal}
-                    auctionAssets={auctionAssets}
-                  />
-                </div>
-              ),
-            }] : []),
+            ...(canAccessTabs()
+              ? [
+                  {
+                    key: "2",
+                    label: (
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300">
+                        <TeamOutlined className="!text-teal-600 !text-lg !transition-colors !duration-300" />
+                        <div className="font-semibold text-gray-700 transition-colors duration-300">
+                          Danh sách tham gia đấu giá
+                        </div>
+                      </div>
+                    ),
+                    children: (
+                      <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 min-h-[500px] transition-all duration-300 hover:shadow-2xl">
+                        <ListAuctionDocument
+                          auctionId={location.state.key}
+                          auctionDateModals={auctionDateModal}
+                          auctionAssets={auctionAssets}
+                        />
+                      </div>
+                    ),
+                  },
+                ]
+              : []),
             // Tab 3: Kết quả phiên đấu giá - Kiểm tra quyền truy cập và có auction rounds
             ...(canAccessTabs() && auctionRounds.length > 0
               ? [
-                {
-                  key: "3",
-                  label: (
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-purple-50 hover:scale-105 hover:shadow-md">
-                      <TeamOutlined className="text-purple-600 text-lg transition-colors duration-300" />
-                      <span className="font-semibold text-gray-700 transition-colors duration-300">
-                        Kết quả phiên đấu giá
-                      </span>
-                    </div>
-                  ),
-                  children: (
-                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 min-h-[500px] transition-all duration-300 hover:shadow-2xl">
-                      <AuctionRounds
-                        auctionId={location.state.key}
-                        auction={auctionDetailData}
-                        auctionAsset={auctionAssets}
-                      />
-                    </div>
-                  ),
-                },
-              ]
+                  {
+                    key: "3",
+                    label: (
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-purple-50 hover:scale-105 hover:shadow-md">
+                        <TeamOutlined className="text-purple-600 text-lg transition-colors duration-300" />
+                        <span className="font-semibold text-gray-700 transition-colors duration-300">
+                          Kết quả phiên đấu giá
+                        </span>
+                      </div>
+                    ),
+                    children: (
+                      <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 min-h-[500px] transition-all duration-300 hover:shadow-2xl">
+                        <AuctionRounds
+                          auctionId={location.state.key}
+                          auction={auctionDetailData}
+                          auctionAsset={auctionAssets}
+                        />
+                      </div>
+                    ),
+                  },
+                ]
               : []),
           ]}
         />

@@ -20,6 +20,7 @@ import {
 const { TextArea } = Input;
 import DepositConfirmationPopup from "./DepositConfirmationPopup";
 import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal/ParticipantBiddingHistoryModal";
+import CustomModal from "../../../../components/Common/CustomModal";
 // Interface cho dữ liệu đã nhóm theo người
 interface GroupedParticipant {
   participantId: string;
@@ -54,11 +55,7 @@ interface Props {
   onDataChange?: () => void;
 }
 
-const ListAuctionDocument = ({
-  auctionId,
-  auctionDetailData,
-  onDataChange,
-}: Props) => {
+const ListAuctionDocument = ({ auctionId, onDataChange }: Props) => {
   const { user } = useSelector(
     (state: { auth: { user: { roleName: string } } }) => state.auth
   );
@@ -112,17 +109,6 @@ const ListAuctionDocument = ({
     useState<boolean>(false);
   const [isRejectingTicket, setIsRejectingTicket] = useState<boolean>(false);
   const [loadingActionId, setLoadingActionId] = useState<string | null>(null);
-
-  // Function để lấy tên tài sản từ assetId
-  const getAssetName = useCallback(
-    (assetId: string) => {
-      const asset = auctionDetailData?.listAuctionAssets?.find(
-        (asset) => asset.auctionAssetsId === assetId
-      );
-      return asset?.tagName || `Tài sản ID: ${assetId.substring(0, 8)}...`;
-    },
-    [auctionDetailData]
-  );
 
   // Nhóm dữ liệu theo CMND/CCCD
   const groupedParticipants = useMemo(() => {
@@ -491,14 +477,14 @@ const ListAuctionDocument = ({
   ];
 
   return (
-    <section className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-teal-50">
-      <div className="w-full mx-auto bg-white shadow-lg rounded-xl p-6">
+    <section className="w-full min-h-screen">
+      <div className="w-full mx-auto">
         {/* Thống kê tổng quan */}
         <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
-          <h2 className="text-lg font-semibold text-emerald-800 mb-4 flex items-center gap-2">
+          <div className="text-lg font-semibold text-emerald-800 mb-4 flex items-center gap-2">
             <UserOutlined className="text-emerald-600" />
             Tổng quan danh sách đăng ký
-          </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card className="text-center bg-white border-l-4 border-l-blue-500">
               <div className="text-2xl font-bold text-blue-600">
@@ -523,50 +509,7 @@ const ListAuctionDocument = ({
               </div>
               <div className="text-sm text-gray-600">Tổng số đơn đăng ký</div>
             </Card>
-            <Card className="text-center bg-white border-l-4 border-l-purple-500">
-              <div className="text-2xl font-bold text-purple-600">
-                {groupedParticipants
-                  .reduce((sum, p) => sum + p.totalRegistrationFee, 0)
-                  .toLocaleString("vi-VN")}
-              </div>
-            </Card>
           </div>
-
-          {/* Thống kê chi tiết theo tài sản */}
-          {documentAssetStatistics.length > 0 && (
-            <div className="mt-4 p-3 bg-white rounded-lg border border-emerald-100">
-              <h3 className="text-sm font-medium text-emerald-700 mb-3">
-                Chi tiết số lượng đơn đăng ký theo tài sản (
-                {documentAssetStatistics.length} loại)
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                {documentAssetStatistics.map((asset) => (
-                  <div
-                    key={asset.assetId}
-                    className="flex justify-between items-center p-2 bg-gray-50 rounded text-xs"
-                  >
-                    <span
-                      className="font-medium text-gray-700 truncate flex-1"
-                      title={getAssetName(asset.assetId)}
-                    >
-                      {getAssetName(asset.assetId)}
-                    </span>
-                    <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold ml-2">
-                      {asset.quantity} đơn
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-2 text-xs text-gray-500 text-center">
-                Tổng:{" "}
-                {documentAssetStatistics.reduce(
-                  (sum, asset) => sum + asset.quantity,
-                  0
-                )}{" "}
-                đơn đăng ký trên {documentAssetStatistics.length} loại tài sản
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="mb-6 p-4 bg-blue-50 rounded-lg">
@@ -621,7 +564,6 @@ const ListAuctionDocument = ({
               })),
           }}
           scroll={{ x: "max-content" }}
-          className="border border-teal-100 rounded-lg"
           size="middle"
           rowClassName="hover:bg-blue-50"
         />
@@ -636,22 +578,8 @@ const ListAuctionDocument = ({
         )}
 
         {/* Modal hiển thị danh sách tài sản chi tiết */}
-        <Modal
-          title={
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                <ShoppingOutlined className="text-white text-sm" />
-              </div>
-              <div>
-                <div className="text-base font-semibold text-gray-800">
-                  Tài sản đăng ký
-                </div>
-                <div className="text-xs text-gray-500">
-                  {selectedParticipant?.name}
-                </div>
-              </div>
-            </div>
-          }
+        <CustomModal
+          title="Danh sách tài sản đã đăng ký"
           open={isAssetsModalVisible}
           onCancel={handleCloseAssetsModal}
           width={700}
@@ -919,8 +847,8 @@ const ListAuctionDocument = ({
                 </div>
               </div>
             </div>
-          )}{" "}
-        </Modal>
+          )}
+        </CustomModal>
 
         {/* Modal từ chối nhận phiếu */}
         <Modal

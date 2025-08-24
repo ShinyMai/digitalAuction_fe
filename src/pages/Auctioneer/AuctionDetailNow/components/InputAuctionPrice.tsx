@@ -108,10 +108,7 @@ const InputAuctionPrice = ({
       totalOther,
       totalAll,
     };
-  }, [
-    auctionRoundPriceList,
-    auctionRoundPriceListOther,
-  ]);
+  }, [auctionRoundPriceList, auctionRoundPriceListOther]);
 
   // Memoized filtered data for tabs
   const filteredData = useMemo(() => {
@@ -121,10 +118,7 @@ const InputAuctionPrice = ({
       : [];
 
     return { filterMine, filterOther };
-  }, [
-    auctionRoundPriceList,
-    auctionRoundPriceListOther,
-  ]);
+  }, [auctionRoundPriceList, auctionRoundPriceListOther]);
 
   // API để lấy danh sách giá đấu từ những người khác
   const getListAuctionRoundPrice = useCallback(async () => {
@@ -332,7 +326,7 @@ const InputAuctionPrice = ({
       key: "numericalOrder",
       width: 150,
       render: (text: number) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 p-2">
           <IdcardOutlined className="text-blue-500" />
           <Text className="font-medium">{text || "-"}</Text>
         </div>
@@ -417,12 +411,12 @@ const InputAuctionPrice = ({
     () =>
       statistics.totalMine > FORM_VALIDATION_RULES.PAGINATION_SIZE
         ? {
-          pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total: number, range: [number, number]) =>
-            `${range[0]}-${range[1]} của ${total} mục`,
-        }
+            pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total: number, range: [number, number]) =>
+              `${range[0]}-${range[1]} của ${total} mục`,
+          }
         : false,
     [statistics.totalMine]
   );
@@ -485,22 +479,15 @@ const InputAuctionPrice = ({
   ];
 
   return (
-    <div className="min-h-fit bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-200/30 to-cyan-200/30 rounded-full animate-float"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-purple-200/30 to-pink-200/30 rounded-full animate-float delay-1000"></div>
-        <div className="absolute bottom-32 left-1/4 w-20 h-20 bg-gradient-to-r from-teal-200/30 to-blue-200/30 rounded-full animate-float delay-2000"></div>
-      </div>
-
-      <div className="w-full mx-auto relative z-10">
+    <div className="min-h-fit relative overflow-hidden">
+      <div className="w-full mx-auto relative z-10 pt-4">
         {/* Back Button */}
         {onBackToList && (
           <div className="mb-6">
             <Button
               icon={<ArrowLeftOutlined />}
               onClick={onBackToList}
-              className="bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="!border-0 hover:shadow-xl transition-all duration-300 hover:scale-105"
               size="large"
             >
               Quay lại danh sách
@@ -514,7 +501,7 @@ const InputAuctionPrice = ({
             <Card
               className="shadow-xl bg-gradient-to-br from-white to-blue-50/30 backdrop-blur-sm border-0 transition-shadow duration-300 h-[700px] flex flex-col"
               title={
-                <div className="flex items-center gap-3 text-gray-800 border-b border-blue-100 pb-3">
+                <div className="flex items-center gap-3 text-gray-800 border-b border-blue-100 p-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
                     <IdcardOutlined className="text-white text-lg" />
                   </div>
@@ -546,10 +533,7 @@ const InputAuctionPrice = ({
                   className="flex-1 flex flex-col h-full"
                 >
                   {/* Form fields - scrollable area */}
-                  <div
-                    className="flex-1 overflow-y-auto pr-2 space-y-5"
-                    style={{ maxHeight: "calc(100% - 160px)" }}
-                  >
+                  <div className="mb-4">
                     <Form.Item
                       name="numericalOrder"
                       label={
@@ -671,7 +655,7 @@ const InputAuctionPrice = ({
                   </div>
 
                   {/* Action buttons - fixed at bottom */}
-                  <div className="mt-auto pt-6 border-t border-gray-100 space-y-3 flex-shrink-0">
+                  <div className="mt-auto flex flex-col gap-4">
                     <Button
                       type="primary"
                       htmlType="submit"
@@ -692,7 +676,9 @@ const InputAuctionPrice = ({
                       size="large"
                       className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white border-0 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
                     >
-                      {completingLoading ? "Đang hoàn thành..." : "Hoàn thành nhập phiếu"}
+                      {completingLoading
+                        ? "Đang hoàn thành..."
+                        : "Hoàn thành nhập phiếu"}
                     </Button>
 
                     {/* Status indicator */}
@@ -720,7 +706,7 @@ const InputAuctionPrice = ({
             <Card
               className="shadow-xl bg-gradient-to-br from-white to-indigo-50/30 backdrop-blur-sm border-0 transition-shadow duration-300 h-[700px] flex flex-col"
               title={
-                <div className="flex items-center gap-3 text-gray-800 border-b border-indigo-100 pb-3">
+                <div className="flex items-center gap-3 text-gray-800 border-b border-indigo-100 p-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
                     <TrophyOutlined className="text-white text-lg" />
                   </div>
@@ -747,7 +733,7 @@ const InputAuctionPrice = ({
               <div className="flex-1 overflow-hidden">
                 <Tabs
                   defaultActiveKey="1"
-                  className="h-full flex flex-col"
+                  className="h-full flex flex-col p-0"
                   items={[
                     {
                       key: "1",
@@ -830,18 +816,18 @@ const InputAuctionPrice = ({
                             }}
                             pagination={
                               statistics.totalOther >
-                                FORM_VALIDATION_RULES.PAGINATION_SIZE
+                              FORM_VALIDATION_RULES.PAGINATION_SIZE
                                 ? {
-                                  pageSize:
-                                    FORM_VALIDATION_RULES.PAGINATION_SIZE,
-                                  showSizeChanger: true,
-                                  showQuickJumper: true,
-                                  showTotal: (
-                                    total: number,
-                                    range: [number, number]
-                                  ) =>
-                                    `${range[0]}-${range[1]} của ${total} mục`,
-                                }
+                                    pageSize:
+                                      FORM_VALIDATION_RULES.PAGINATION_SIZE,
+                                    showSizeChanger: true,
+                                    showQuickJumper: true,
+                                    showTotal: (
+                                      total: number,
+                                      range: [number, number]
+                                    ) =>
+                                      `${range[0]}-${range[1]} của ${total} mục`,
+                                  }
                                 : false
                             }
                             className="!rounded-xl !overflow-hidden [&_.ant-table]:!bg-transparent [&_.ant-table-thead>tr>th]:!bg-gradient-to-r [&_.ant-table-thead>tr>th]:!from-emerald-50 [&_.ant-table-thead>tr>th]:!to-teal-50 [&_.ant-table-thead>tr>th]:!border-emerald-200"

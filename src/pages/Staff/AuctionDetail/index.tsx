@@ -132,7 +132,7 @@ const AuctionDetailAnonymous = () => {
               </div>
             ),
             children: (
-              <Card className="!shadow-xl !bg-white/70 !backdrop-blur-sm !border-0 !rounded-2xl">
+              <Card>
                 <ListAuctionDocument
                   key={`auction-docs-${refreshKey}`}
                   auctionId={auctionId}
@@ -153,7 +153,7 @@ const AuctionDetailAnonymous = () => {
               </div>
             ),
             children: (
-              <Card className="shadow-xl bg-white/70 backdrop-blur-sm border-0 rounded-2xl">
+              <Card>
                 <ListAuctionDocumentSuccessRegister
                   key={`success-docs-${refreshKey}`}
                   auctionId={auctionId}
@@ -206,7 +206,6 @@ const AuctionDetailAnonymous = () => {
         .staff-tabs .ant-tabs-tab-active {
           background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
           color: white !important;
-          box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3) !important;
         }
         
         .staff-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {

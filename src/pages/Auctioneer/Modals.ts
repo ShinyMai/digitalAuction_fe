@@ -55,9 +55,9 @@ export type AuctionDataDetail = {
   status: number;
   auctionMap?: string;
   winnerData: string;
-  auctioneer?: string;
-  staffInCharge?: string[],
-  managerInCharge?: string,
+  auctioneerBy?: string;
+  staffInCharge?: string[];
+  managerInCharge?: string;
   listAuctionAssets?: AuctionAsset[];
 };
 

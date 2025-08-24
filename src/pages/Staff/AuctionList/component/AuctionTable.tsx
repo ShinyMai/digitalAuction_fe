@@ -37,6 +37,8 @@ const AuctionTable = ({
     {
       title: "STT",
       key: "index",
+      width: 60,
+      align: "center",
       render: (_: any, __: any, index: number) =>
         ((currentPage || 1) - 1) * (pageSize || 10) + index + 1,
     },
@@ -57,7 +59,8 @@ const AuctionTable = ({
     {
       title: "Ngày Mở - Kết thúc ĐK",
       key: "registerDateRange",
-      sorter: (a, b) => dayjs(a.registerOpenDate).unix() - dayjs(b.registerOpenDate).unix(),
+      sorter: (a, b) =>
+        dayjs(a.registerOpenDate).unix() - dayjs(b.registerOpenDate).unix(),
       render: (_: any, record: AuctionDataList) => {
         const start = record.registerOpenDate
           ? dayjs(record.registerOpenDate).format("DD/MM/YYYY")
@@ -71,12 +74,15 @@ const AuctionTable = ({
     {
       title: "Ngày Bắt Đầu - Kết Thúc",
       key: "auctionDateRange",
-      sorter: (a, b) => dayjs(a.auctionStartDate).unix() - dayjs(b.auctionStartDate).unix(),
+      sorter: (a, b) =>
+        dayjs(a.auctionStartDate).unix() - dayjs(b.auctionStartDate).unix(),
       render: (_: any, record: AuctionDataList) => {
         const start = record.auctionStartDate
           ? dayjs(record.auctionStartDate).format("DD/MM/YYYY")
           : "-";
-        const end = record.auctionEndDate ? dayjs(record.auctionEndDate).format("DD/MM/YYYY") : "-";
+        const end = record.auctionEndDate
+          ? dayjs(record.auctionEndDate).format("DD/MM/YYYY")
+          : "-";
         return `${start} - ${end}`;
       },
     },
@@ -87,7 +93,7 @@ const AuctionTable = ({
       sorter: (a, b) => {
         if (!a.createdBy) return -1;
         if (!b.createdBy) return 1;
-        return (a.createdBy || '').localeCompare(b.createdBy || '');
+        return (a.createdBy || "").localeCompare(b.createdBy || "");
       },
       render: (userId: string, record: AuctionDataList) => (
         <UserNameOrId
@@ -102,16 +108,24 @@ const AuctionTable = ({
       dataIndex: "status",
       key: "status",
       render: (_: any, record: AuctionDataList) => {
-        const regOpenDate = record.registerOpenDate ? dayjs(record.registerOpenDate) : null;
-        const regEndDate = record.registerEndDate ? dayjs(record.registerEndDate) : null;
-        const aucStartDate = record.auctionStartDate ? dayjs(record.auctionStartDate) : null;
-        const aucEndDate = record.auctionEndDate ? dayjs(record.auctionEndDate) : null;
+        const regOpenDate = record.registerOpenDate
+          ? dayjs(record.registerOpenDate)
+          : null;
+        const regEndDate = record.registerEndDate
+          ? dayjs(record.registerEndDate)
+          : null;
+        const aucStartDate = record.auctionStartDate
+          ? dayjs(record.auctionStartDate)
+          : null;
+        const aucEndDate = record.auctionEndDate
+          ? dayjs(record.auctionEndDate)
+          : null;
 
         let statusText = "-";
         let statusClass = "bg-gray-100 text-gray-800";
 
         if (regOpenDate && currentDate.isBefore(regOpenDate)) {
-          statusText = "Chưa bắt đầu thu hồ sơ";
+          statusText = "Chưa thu hồ sơ";
           statusClass = "bg-blue-100 text-blue-800";
         } else if (regEndDate && currentDate.isBefore(regEndDate)) {
           statusText = "Đang thu hồ sơ";
@@ -138,7 +152,9 @@ const AuctionTable = ({
         }
 
         return (
-          <span className={`inline-block px-2 py-1 rounded ${statusClass}`}>{statusText}</span>
+          <span className={`inline-block px-2 py-1 rounded ${statusClass}`}>
+            {statusText}
+          </span>
         );
       },
     },
@@ -166,13 +182,16 @@ const AuctionTable = ({
             const navigationKey = record.auctionId || record._id;
             const auctionType = record.auctionId ? "SQL" : "NODE";
 
-            navigate(`/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_LIST}/${STAFF_ROUTES.SUB.AUCTION_DETAIL}`, {
-              state: {
-                key: navigationKey,
-                type: auctionType,
-              },
-              replace: true,
-            });
+            navigate(
+              `/${rolePath}/${STAFF_ROUTES.SUB.AUCTION_LIST}/${STAFF_ROUTES.SUB.AUCTION_DETAIL}`,
+              {
+                state: {
+                  key: navigationKey,
+                  type: auctionType,
+                },
+                replace: true,
+              }
+            );
           },
         })}
         rowClassName="cursor-pointer hover:bg-blue-50 transition-colors duration-200"
