@@ -525,6 +525,11 @@ const AuctionCreateForm = ({
                 <h3 className="!text-lg !font-semibold !text-blue-800 !mb-4 !border-b !border-blue-200 !pb-2">
                   Thiết lập thời gian
                 </h3>
+                <div className="!mb-4 !p-3 !bg-amber-50 !border-l-4 !border-amber-400 !rounded-md">
+                  <p className="!text-sm !text-amber-700 !mb-0 !font-medium">
+                    ⚠️ Lưu ý: Ngày mở đăng ký phải trước ngày bắt đầu đấu giá ít nhất 7 ngày và ngày kết thúc đăng ký phải trước ngày bắt đầu đấu giá ít nhất 3 ngày.
+                  </p>
+                </div>
               </motion.div>
             </Col>
 

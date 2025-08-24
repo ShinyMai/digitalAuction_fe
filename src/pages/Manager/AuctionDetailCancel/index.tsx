@@ -35,6 +35,17 @@ const AuctionDetailCancel = () => {
         registerOpenDate: data?.registerOpenDate,
         registerEndDate: data?.registerEndDate,
       };
+      if (
+        data.legalDocumentUrls &&
+        typeof data.legalDocumentUrls === "string"
+      ) {
+        try {
+          data.legalDocumentUrls = JSON.parse(data.legalDocumentUrls);
+        } catch (parseError) {
+          console.error("Error parsing legalDocumentUrls:", parseError);
+          data.legalDocumentUrls = [];
+        }
+      }
       setAuctionDateModal(dateModal);
       setAuctionDetailData(data);
     } catch (error) {

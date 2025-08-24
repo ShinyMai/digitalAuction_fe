@@ -49,43 +49,9 @@ const formatCurrency = (value: string) => {
   }).format(parseInt(value));
 };
 
-const calculateStatistics = (
-  auctionRounds: AuctionRound[],
-  auctionRoundPrices: AuctionRoundPrice[]
-) => {
-  const totalRounds = auctionRounds.length;
-  const activeRounds = auctionRounds.filter(
-    (round) => round.status === 1
-  ).length;
-  const completedRounds = auctionRounds.filter(
-    (round) => round.status === 2
-  ).length;
-
-  const totalBids = auctionRoundPrices.length;
-  const totalBidders = new Set(
-    auctionRoundPrices.map((price) => price.CitizenIdentification)
-  ).size;
-
-  const totalBidValue = auctionRoundPrices.reduce(
-    (sum, price) => sum + parseInt(price.AuctionPrice),
-    0
-  );
-  const averageBidValue = totalBids > 0 ? totalBidValue / totalBids : 0;
-
-  return {
-    totalRounds,
-    activeRounds,
-    completedRounds,
-    totalBids,
-    totalBidders,
-    totalBidValue,
-    averageBidValue,
-  };
-};
-
 const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
   const [auctionRounds, setAuctionRounds] = useState<AuctionRound[]>([]);
-  const [auctionRoundPrices, setAuctionRoundPrices] = useState<
+  const [, setAuctionRoundPrices] = useState<
     AuctionRoundPrice[]
   >([]);
   const [auctionRoundPriceWinners, setAuctionRoundPriceWinners] = useState<
@@ -98,7 +64,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
   const [selectedRound, setSelectedRound] = useState<AuctionRound>();
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
-
+  const [roundStatistic, setRoundStatistic] = useState<{ totalAssets: number, totalBids: number, totalParticipants: number }>()
   const getListAuctionRounds = useCallback(async () => {
     try {
       setLoading(true);
@@ -120,6 +86,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
       }
       const response = await AuctionServices.auctionRoundStatistic(auctionId);
       console.log("Auction statistic data:", response);
+      setRoundStatistic(response.data);
     } catch (error) {
       console.error("Error fetching auction statistic:", error);
     }
@@ -272,9 +239,6 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
     setSelectedRound(undefined);
   };
 
-  // Calculate statistics
-  const stats = calculateStatistics(auctionRounds, auctionRoundPrices);
-
   return (
     <div className="!min-h-screen !bg-gray-50 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -316,7 +280,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
                 transition={{ delay: 0.4, duration: 0.4 }}
               >
                 <StatisticsCards
-                  stats={stats}
+                  stats={roundStatistic}
                   formatCurrency={formatCurrency}
                 />
               </motion.div>

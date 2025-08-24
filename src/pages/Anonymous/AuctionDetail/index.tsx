@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import type { AuctionDataDetail, AuctionAsset } from "../Modals";
 import { Button, Image, Tabs, Typography, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import MINPHAPLOGO from "../../../assets/LOGO-MINH-PHAP.jpg";
+import MINPHAPLOGO from "../../../assets/logoNo.png";
 import dayjs from "dayjs";
 import { USER_ROUTERS } from "../../../routers";
 import { useSelector } from "react-redux";
@@ -217,8 +217,8 @@ const AuctionDetailAnonymous = () => {
                               <p className="font-bold text-white">
                                 {auctionDetailData.auctionStartDate
                                   ? dayjs(
-                                      auctionDetailData.auctionStartDate
-                                    ).format("DD/MM/YYYY")
+                                    auctionDetailData.auctionStartDate
+                                  ).format("DD/MM/YYYY")
                                   : "Chưa xác định"}
                               </p>
                             </div>
@@ -237,8 +237,8 @@ const AuctionDetailAnonymous = () => {
                               <p className="font-bold text-white">
                                 {auctionDetailData.registerEndDate
                                   ? dayjs(
-                                      auctionDetailData.registerEndDate
-                                    ).format("DD/MM/YYYY")
+                                    auctionDetailData.registerEndDate
+                                  ).format("DD/MM/YYYY")
                                   : "Chưa xác định"}
                               </p>
                             </div>
@@ -307,8 +307,8 @@ const AuctionDetailAnonymous = () => {
                                   label: "Ngày mở đăng ký",
                                   value: auctionDetailData.registerOpenDate
                                     ? dayjs(
-                                        auctionDetailData.registerOpenDate
-                                      ).format("DD/MM/YYYY")
+                                      auctionDetailData.registerOpenDate
+                                    ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "green",
                                 },
@@ -319,8 +319,8 @@ const AuctionDetailAnonymous = () => {
                                   label: "Hạn đăng ký",
                                   value: auctionDetailData.registerEndDate
                                     ? dayjs(
-                                        auctionDetailData.registerEndDate
-                                      ).format("DD/MM/YYYY")
+                                      auctionDetailData.registerEndDate
+                                    ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "red",
                                 },
@@ -331,8 +331,8 @@ const AuctionDetailAnonymous = () => {
                                   label: "Bắt đầu đấu giá",
                                   value: auctionDetailData.auctionStartDate
                                     ? dayjs(
-                                        auctionDetailData.auctionStartDate
-                                      ).format("DD/MM/YYYY")
+                                      auctionDetailData.auctionStartDate
+                                    ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "blue",
                                 },
@@ -343,8 +343,8 @@ const AuctionDetailAnonymous = () => {
                                   label: "Kết thúc đấu giá",
                                   value: auctionDetailData.auctionEndDate
                                     ? dayjs(
-                                        auctionDetailData.auctionEndDate
-                                      ).format("DD/MM/YYYY")
+                                      auctionDetailData.auctionEndDate
+                                    ).format("DD/MM/YYYY")
                                     : "-",
                                   color: "purple",
                                 },
@@ -514,7 +514,7 @@ const AuctionDetailAnonymous = () => {
                             Danh sách tài sản đấu giá
                           </h3>
                           {auctionDetailData.listAuctionAssets &&
-                          auctionDetailData.listAuctionAssets.length > 0 ? (
+                            auctionDetailData.listAuctionAssets.length > 0 ? (
                             <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
                               <Table
                                 columns={assetColumns}

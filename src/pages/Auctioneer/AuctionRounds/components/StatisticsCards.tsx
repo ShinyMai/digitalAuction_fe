@@ -16,7 +16,7 @@ interface StatisticsData {
 }
 
 interface StatisticsCardsProps {
-    stats: StatisticsData;
+    stats?: { totalAssets: number, totalBids: number, totalParticipants: number };
     formatCurrency: (value: string) => string;
 }
 
@@ -35,10 +35,10 @@ const StatisticsCards = ({ stats }: StatisticsCardsProps) => {
                                 <Statistic
                                     title={
                                         <span className="!text-blue-700 !font-semibold !text-base !mb-2 !block">
-                                            Tổng số vòng
+                                            Tổng số Tài sản
                                         </span>
                                     }
-                                    value={stats.totalRounds}
+                                    value={stats?.totalAssets}
                                     valueStyle={{
                                         color: '#1d4ed8',
                                         fontSize: '2.5rem',
@@ -69,7 +69,7 @@ const StatisticsCards = ({ stats }: StatisticsCardsProps) => {
                                             Người tham gia
                                         </span>
                                     }
-                                    value={stats.totalBidders}
+                                    value={stats?.totalParticipants}
                                     valueStyle={{
                                         color: '#7c3aed',
                                         fontSize: '2.5rem',
@@ -100,7 +100,7 @@ const StatisticsCards = ({ stats }: StatisticsCardsProps) => {
                                             Tổng lượt đấu giá
                                         </span>
                                     }
-                                    value={stats.totalBids}
+                                    value={stats?.totalBids}
                                     valueStyle={{
                                         color: '#ea580c',
                                         fontSize: '2.5rem',

@@ -1,5 +1,5 @@
 import { Button, Image, Typography, Card } from "antd";
-import MINPHAPLOGO from "../../../../assets/LOGO-MINH-PHAP.jpg";
+import MINPHAPLOGO from "../../../../assets/logoNo.png";
 import dayjs from "dayjs";
 import type { AuctionDataDetail } from "../../Modals";
 import { useSelector } from "react-redux";
@@ -67,8 +67,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.registerOpenDate
                         ? dayjs(auctionDetailData.registerOpenDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -79,8 +79,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.registerEndDate
                         ? dayjs(auctionDetailData.registerEndDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -91,8 +91,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.auctionStartDate
                         ? dayjs(auctionDetailData.auctionStartDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -103,8 +103,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.auctionEndDate
                         ? dayjs(auctionDetailData.auctionEndDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -137,19 +137,19 @@ const AuctionDetail = ({
                 </div>
                 {(role === USER_ROLES.MANAGER ||
                   role === USER_ROLES.AUCTIONEER) && (
-                  <div className="flex justify-center gap-4 mt-6">
-                    {role === USER_ROLES.AUCTIONEER && !isHaveAuctionRound && (
-                      <Button
-                        type="primary"
-                        size="large"
-                        className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
-                        onClick={onCreateAuctionRound}
-                      >
-                        Tạo vòng đấu giá
-                      </Button>
-                    )}
-                  </div>
-                )}
+                    <div className="flex justify-center gap-4 mt-6">
+                      {role === USER_ROLES.AUCTIONEER && !isHaveAuctionRound && (
+                        <Button
+                          type="primary"
+                          size="large"
+                          className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
+                          onClick={onCreateAuctionRound}
+                        >
+                          Tạo vòng đấu giá
+                        </Button>
+                      )}
+                    </div>
+                  )}
               </div>
             </div>
 
@@ -166,7 +166,7 @@ const AuctionDetail = ({
                 Danh sách tài sản đấu giá
               </h3>
               {auctionDetailData.listAuctionAssets &&
-              auctionDetailData.listAuctionAssets.length > 0 ? (
+                auctionDetailData.listAuctionAssets.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {auctionDetailData.listAuctionAssets.map((asset) => (
                     <Card
@@ -191,8 +191,8 @@ const AuctionDetail = ({
                           <span className="text-teal-800">
                             {asset.startingPrice
                               ? `${parseFloat(
-                                  asset.startingPrice
-                                ).toLocaleString("vi-VN")} VND`
+                                asset.startingPrice
+                              ).toLocaleString("vi-VN")} VND`
                               : "-"}
                           </span>
                         </div>
@@ -203,8 +203,8 @@ const AuctionDetail = ({
                           <span className="text-teal-800">
                             {asset.deposit
                               ? `${parseFloat(asset.deposit).toLocaleString(
-                                  "vi-VN"
-                                )} VND`
+                                "vi-VN"
+                              )} VND`
                               : "-"}
                           </span>
                         </div>
@@ -215,8 +215,8 @@ const AuctionDetail = ({
                           <span className="text-teal-800">
                             {asset.registrationFee
                               ? `${parseFloat(
-                                  asset.registrationFee
-                                ).toLocaleString("vi-VN")} VND`
+                                asset.registrationFee
+                              ).toLocaleString("vi-VN")} VND`
                               : "-"}
                           </span>
                         </div>
@@ -270,7 +270,7 @@ const AuctionDetail = ({
             </div>
             {/* Thông tin bản đồ */}
             {auctionDetailData.auctionMap ||
-            auctionDetailData.auctionPlanningMap ? (
+              auctionDetailData.auctionPlanningMap ? (
               <div className="mt-8">
                 <h3 className="text-lg font-semibold text-blue-800 mb-4">
                   Thông tin bản đồ tài sản
@@ -279,17 +279,17 @@ const AuctionDetail = ({
                   <div>
                     {auctionDetailData.auctionPlanningMap !==
                       "No file uploaded" && (
-                      <div className="flex items-center bg-blue-50 pt-4 pl-4 rounded-lg">
-                        <EnvironmentOutlined className="text-teal-600 mr-2" />
-                        <Typography.Link
-                          href={auctionDetailData.auctionPlanningMap}
-                          target="_blank"
-                          className="text-teal-600 font-medium hover:text-teal-800 "
-                        >
-                          Xem bản đồ tài sản
-                        </Typography.Link>
-                      </div>
-                    )}
+                        <div className="flex items-center bg-blue-50 pt-4 pl-4 rounded-lg">
+                          <EnvironmentOutlined className="text-teal-600 mr-2" />
+                          <Typography.Link
+                            href={auctionDetailData.auctionPlanningMap}
+                            target="_blank"
+                            className="text-teal-600 font-medium hover:text-teal-800 "
+                          >
+                            Xem bản đồ tài sản
+                          </Typography.Link>
+                        </div>
+                      )}
                     {auctionDetailData.auctionMap && (
                       <div className="flex items-center bg-blue-50 p-4 rounded-lg">
                         <EnvironmentOutlined className="text-teal-600 mr-2" />
@@ -298,8 +298,8 @@ const AuctionDetail = ({
                             auctionType === "SQL"
                               ? auctionDetailData.auctionMap
                               : API_BASE_URL_NODE +
-                                "/" +
-                                auctionDetailData.auctionMap
+                              "/" +
+                              auctionDetailData.auctionMap
                           }
                           target="_blank"
                           className="text-teal-600 font-medium hover:text-teal-800"
