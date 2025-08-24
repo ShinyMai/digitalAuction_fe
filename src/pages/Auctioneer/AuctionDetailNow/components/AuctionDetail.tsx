@@ -134,6 +134,14 @@ const AuctionDetail = ({
                       {auctionDetailData.qrLink ? "500,000 VND" : "-"}
                     </span>
                   </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-blue-900">
+                      Đấu giá viên:
+                    </span>
+                    <span className="text-teal-800">
+                      {auctionDetailData.auctioneerBy ? auctionDetailData.auctioneerBy : "-"}
+                    </span>
+                  </div>
                 </div>
                 {(role === USER_ROLES.MANAGER ||
                   role === USER_ROLES.AUCTIONEER) && (
