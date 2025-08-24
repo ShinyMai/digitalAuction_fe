@@ -230,18 +230,6 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
             ),
         },
         {
-            title: <span className="!font-semibold">Mức cạnh tranh</span>,
-            dataIndex: 'competitionLevel',
-            key: 'competitionLevel',
-            align: 'center' as const,
-            render: (level: string) => (
-                <Tag color={getCompetitionColor(level)} className="!font-medium">
-                    <TrophyOutlined className="!mr-1" />
-                    {level}
-                </Tag>
-            ),
-        },
-        {
             title: <span className="!font-semibold">Thao tác</span>,
             key: 'action',
             align: 'center' as const,
@@ -283,27 +271,6 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
                                 value={assetAnalyses.reduce((sum, asset) => sum + asset.totalBids, 0)}
                                 prefix={<TeamOutlined />}
                                 valueStyle={{ color: '#52c41a' }}
-                            />
-                        </Card>
-                    </Col>
-                    <Col span={6}>
-                        <Card className="!text-center !bg-yellow-50">
-                            <Statistic
-                                title="Tổng người tham gia"
-                                value={assetAnalyses.reduce((sum, asset) => sum + asset.uniqueBidders, 0)}
-                                prefix={<UserOutlined />}
-                                valueStyle={{ color: '#faad14' }}
-                            />
-                        </Card>
-                    </Col>
-                    <Col span={6}>
-                        <Card className="!text-center !bg-red-50">
-                            <Statistic
-                                title="Giá trị cao nhất"
-                                value={assetAnalyses.length > 0 ? Math.max(...assetAnalyses.map(a => a.highestPrice)) : 0}
-                                prefix={<CrownOutlined />}
-                                valueStyle={{ color: '#f5222d' }}
-                                formatter={(value) => formatPrice(Number(value))}
                             />
                         </Card>
                     </Col>

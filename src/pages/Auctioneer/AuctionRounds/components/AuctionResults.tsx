@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, Table, Typography, Statistic, Tag, Space, Button } from "antd";
 import {
-  UserOutlined,
-  DollarOutlined,
   HomeOutlined,
   ArrowLeftOutlined,
   DownloadOutlined,
@@ -14,7 +12,7 @@ import type { AuctionRoundPriceWinner } from "../modalsData";
 import type { ColumnsType } from "antd/es/table";
 import { toast } from "react-toastify";
 import AuctionServices from "../../../../services/AuctionServices";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 
@@ -33,9 +31,9 @@ const AuctionResults = ({
 }: AuctionResultsProps) => {
   const [downloading, setDownloading] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth);
-
+  console.log("Iniate value:", auctionRoundPriceWinners)
   // Function to handle direct download without file selection
-  const handleDirectDownload = async () => {
+  const handleDirectDownload = useCallback(async () => {
     setDownloading(true);
     try {
       // Create FormData and append auctionId
@@ -98,108 +96,77 @@ const AuctionResults = ({
     } finally {
       setDownloading(false);
     }
-  };
+  }, [auctionID]);
 
-  const formatCurrency = (value: number) => {
+  const formatCurrency = useCallback((value: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
     }).format(value);
-  };
+  }, []);
 
-  // Calculate comprehensive and accurate statistics
-  const allParticipants = new Set(
-    auctionRoundPriceWinners.map((item) => item.citizenIdentification)
-  );
-  const allAssets = new Set(
-    auctionRoundPriceWinners.map((item) => item.tagName)
-  );
-  const winnersData = auctionRoundPriceWinners.filter(
-    (item) => item.flagWinner
-  );
-  const successfulAssets = new Set(winnersData.map((item) => item.tagName));
+  // Calculate comprehensive and accurate statistics using enriched data - Memoized for performance
+  const statistics = useMemo(() => {
+    const allAssets = new Set(
+      auctionRoundPriceWinners.map((item) => item.tagName)
+    );
+    const winnersData = auctionRoundPriceWinners.filter(
+      (item) => item.flagWinner
+    );
+    const successfulAssets = new Set(winnersData.map((item) => item.tagName));
 
-  const totalParticipants = allParticipants.size;
-  const totalAssets = allAssets.size;
-  const soldAssets = successfulAssets.size;
+    // Sum totalBids from assetStatistic data when available
+    const totalBidsFromStats = auctionRoundPriceWinners.reduce(
+      (sum, item) => sum + (item.assetStatistic?.totalBids || 0), 0
+    );
 
-  const totalRevenue = winnersData.reduce(
-    (sum, item) => sum + item.auctionPrice,
-    0
-  );
-  const totalBidsCount = auctionRoundPriceWinners.length;
+    return {
+      totalAssets: allAssets.size,
+      soldAssets: successfulAssets.size,
+      totalBidsCount: totalBidsFromStats > 0 ? totalBidsFromStats : auctionRoundPriceWinners.length,
+      allAssets,
+    };
+  }, [auctionRoundPriceWinners]);
 
-  // Calculate detailed asset statistics with accurate bid counts
-  const assetDetailedStats = new Map();
+  // Use enriched data with assetStatistic for detailed statistics - Memoized for performance
+  const assetStatsArray = useMemo(() => {
+    return Array.from(statistics.allAssets).map(tagName => {
+      const assetItem = auctionRoundPriceWinners.find(item => item.tagName === tagName);
+      const assetStat = assetItem?.assetStatistic;
 
-  // First pass: collect all bid data for each asset
-  auctionRoundPriceWinners.forEach((item) => {
-    const assetKey = item.tagName;
-
-    if (!assetDetailedStats.has(assetKey)) {
-      assetDetailedStats.set(assetKey, {
-        tagName: item.tagName,
-        bids: [],
-        isSuccessful: false,
-        winnerInfo: null,
-      });
-    }
-
-    const assetData = assetDetailedStats.get(assetKey);
-    assetData.bids.push({
-      price: item.auctionPrice,
-      bidder: item.userName,
-      cccd: item.citizenIdentification,
-      time: item.createdAt,
-      isWinner: item.flagWinner,
-    });
-
-    if (item.flagWinner) {
-      assetData.isSuccessful = true;
-      assetData.winnerInfo = {
-        name: item.userName,
-        cccd: item.citizenIdentification,
-        winningPrice: item.auctionPrice,
-        time: item.createdAt,
-      };
-    }
-  });
-
-  // Second pass: calculate statistics for each asset
-  const assetStatsArray = Array.from(assetDetailedStats.values()).map(
-    (asset) => {
-      // Sort bids by price descending to get accurate highest price
-      const sortedBids = asset.bids.sort((a: any, b: any) => b.price - a.price);
-      const uniqueBidders = new Set(asset.bids.map((bid: any) => bid.cccd))
-        .size;
+      const winner = auctionRoundPriceWinners.find(item => item.tagName === tagName && item.flagWinner);
 
       return {
-        tagName: asset.tagName,
-        totalBids: asset.bids.length,
-        uniqueBidders: uniqueBidders,
-        highestPrice: sortedBids[0]?.price || 0,
-        lowestPrice: sortedBids[sortedBids.length - 1]?.price || 0,
-        priceRange:
-          sortedBids[0]?.price - sortedBids[sortedBids.length - 1]?.price || 0,
-        isSuccessful: asset.isSuccessful,
-        winnerInfo: asset.winnerInfo,
-        competitionLevel:
-          uniqueBidders > 5 ? "Cao" : uniqueBidders > 2 ? "Trung bình" : "Thấp",
+        tagName,
+        totalBids: assetStat?.totalBids || 0,
+        totalBidder: assetStat?.totalParticipants || 0,
+        highestPrice: assetStat?.highestPrice || 0,
+        startingPrice: assetStat?.startingPrice || 0,
+        isSuccessful: !!winner,
+        winnerInfo: winner ? {
+          name: winner.userName,
+          cccd: winner.citizenIdentification,
+          winningPrice: winner.auctionPrice,
+          time: winner.createdAt,
+        } : null,
+        // Additional data from assetStatistic
+        assetStatistic: assetStat,
       };
-    }
-  );
+    });
+  }, [auctionRoundPriceWinners, statistics.allAssets]);
 
-  // Asset statistics table columns - Enhanced with more meaningful data
-  // Asset statistics table columns - Enhanced with more meaningful data
-  const assetColumns: ColumnsType<any> = [
+  const assetColumns: ColumnsType<any> = useMemo(() => [
     {
       title: "Tài sản",
       dataIndex: "tagName",
       key: "tagName",
       fixed: "left",
       width: 150,
-      render: (text) => (
-        <Tag color="blue" className="text-sm font-medium px-3 py-1">
+      render: (text, record) => (
+        <Tag
+          color={record.isSuccessful ? "green" : "red"}
+          className="text-sm font-medium px-3 py-1"
+        >
           {text}
         </Tag>
       ),
@@ -217,19 +184,19 @@ const AuctionResults = ({
           }
           className="font-medium"
         >
-          {isSuccessful ? "Đã bán" : "Chưa bán"}
+          {isSuccessful ? "Đã được đấu giá" : "Đấu giá thất bại"}
         </Tag>
       ),
       filters: [
-        { text: "Đã bán", value: true },
-        { text: "Chưa bán", value: false },
+        { text: "Đã được đấu giá", value: true },
+        { text: "Đấu giá thất bại", value: false },
       ],
       onFilter: (value, record) => record.isSuccessful === value,
     },
     {
       title: "Số người tham gia",
-      dataIndex: "uniqueBidders",
-      key: "uniqueBidders",
+      dataIndex: "totalBidder",
+      key: "totalBidder",
       width: 130,
       render: (count) => (
         <div className="text-center">
@@ -237,7 +204,7 @@ const AuctionResults = ({
           <div className="text-xs text-gray-500">người</div>
         </div>
       ),
-      sorter: (a, b) => a.uniqueBidders - b.uniqueBidders,
+      sorter: (a, b) => a.totalBidder - b.totalBidder,
     },
     {
       title: "Số lượt trả giá",
@@ -251,6 +218,18 @@ const AuctionResults = ({
         </div>
       ),
       sorter: (a, b) => a.totalBids - b.totalBids,
+    },
+    {
+      title: "Giá khởi điểm",
+      dataIndex: "startingPrice",
+      key: "startingPrice",
+      width: 150,
+      render: (price) => (
+        <Text className="text-lg text-blue-600">
+          {formatCurrency(price)}
+        </Text>
+      ),
+      sorter: (a, b) => a.startingPrice - b.startingPrice,
     },
     {
       title: "Giá cao nhất",
@@ -287,7 +266,24 @@ const AuctionResults = ({
           </Text>
         ),
     },
-  ];
+  ], [formatCurrency]);
+
+  // Memoized pagination configuration
+  const paginationConfig = useMemo(() => ({
+    pageSize: 10,
+    showSizeChanger: true,
+    showQuickJumper: true,
+    showTotal: (total: number, range: [number, number]) =>
+      `${range[0]}-${range[1]} của ${total} tài sản`,
+    pageSizeOptions: ["10", "20", "50"],
+  }), []);
+
+  // Memoized row class name function
+  const getRowClassName = useCallback((record: any) =>
+    record.isSuccessful
+      ? "bg-green-50 hover:bg-green-100"
+      : "bg-red-50 hover:bg-red-100"
+    , []);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -334,27 +330,13 @@ const AuctionResults = ({
       </Card>
 
       {/* Statistics Overview - Improved with more meaningful metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        <Card className="shadow-sm hover:shadow-md transition-shadow border-0">
-          <Statistic
-            title={
-              <span className="text-gray-600 font-medium">Người tham gia</span>
-            }
-            value={totalParticipants}
-            prefix={<UserOutlined className="text-blue-500" />}
-            valueStyle={{
-              color: "#1890ff",
-              fontSize: "24px",
-              fontWeight: "bold",
-            }}
-          />
-        </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <Card className="shadow-sm hover:shadow-md transition-shadow border-0">
           <Statistic
             title={
               <span className="text-gray-600 font-medium">Tổng tài sản</span>
             }
-            value={totalAssets}
+            value={statistics.totalAssets}
             prefix={<HomeOutlined className="text-purple-500" />}
             valueStyle={{
               color: "#722ed1",
@@ -366,8 +348,8 @@ const AuctionResults = ({
         <Card className="shadow-sm hover:shadow-md transition-shadow border-0">
           <Statistic
             title={<span className="text-gray-600 font-medium">Đã bán</span>}
-            value={soldAssets}
-            suffix={`/${totalAssets}`}
+            value={statistics.soldAssets}
+            suffix={`/${statistics.totalAssets}`}
             prefix={<CheckCircleOutlined className="text-green-500" />}
             valueStyle={{
               color: "#52c41a",
@@ -380,26 +362,10 @@ const AuctionResults = ({
           <Statistic
             title={
               <span className="text-gray-600 font-medium">
-                Tổng số tiền thắng đấu giá
-              </span>
-            }
-            value={formatCurrency(totalRevenue)}
-            prefix={<DollarOutlined className="text-orange-500" />}
-            valueStyle={{
-              color: "#fa8c16",
-              fontSize: "18px",
-              fontWeight: "bold",
-            }}
-          />
-        </Card>
-        <Card className="shadow-sm hover:shadow-md transition-shadow border-0">
-          <Statistic
-            title={
-              <span className="text-gray-600 font-medium">
                 Tổng lượt trả giá
               </span>
             }
-            value={totalBidsCount}
+            value={statistics.totalBidsCount}
             prefix={<BarChartOutlined className="text-pink-500" />}
             valueStyle={{
               color: "#eb2f96",
@@ -422,28 +388,18 @@ const AuctionResults = ({
         <div className="mb-4 p-3 bg-blue-50 rounded-lg">
           <Text className="text-sm text-blue-700">
             <strong>Hướng dẫn:</strong> Bảng này hiển thị thông tin chi tiết về
-            mỗi tài sản bao gồm số người tham gia, số lượt trả giá và người
-            thắng cuộc. Bạn có thể lọc theo trạng thái.
+            mỗi tài sản bao gồm giá khởi điểm, số người tham gia, số lượt trả giá,
+            giá cao nhất và người thắng cuộc. Dữ liệu được tổng hợp
+            từ thống kê chi tiết của từng tài sản. Bạn có thể lọc theo trạng thái và sắp xếp theo các tiêu chí khác nhau.
           </Text>
         </div>
         <Table
           columns={assetColumns}
           dataSource={assetStatsArray}
           rowKey="tagName"
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} của ${total} tài sản`,
-            pageSizeOptions: ["10", "20", "50"],
-          }}
+          pagination={paginationConfig}
           className="custom-table"
-          rowClassName={(record) =>
-            record.isSuccessful
-              ? "bg-green-50 hover:bg-green-100"
-              : "bg-red-50 hover:bg-red-100"
-          }
+          rowClassName={getRowClassName}
           size="small"
         />
       </Card>
@@ -454,9 +410,14 @@ const AuctionResults = ({
                     border-bottom: 2px solid #e9ecef;
                     font-weight: 600;
                 }
-                .custom-table .ant-table-tbody > tr:hover > td {
-                    background: #f0f9ff;
+                /* Fixed column background colors */
+                .custom-table .ant-table-tbody > tr.bg-green-50 .ant-table-cell-fix-left {
+                    background: #f0fdf4 !important;
                 }
+                .custom-table .ant-table-tbody > tr.bg-red-50 .ant-table-cell-fix-left {
+                    background: #fef2f2 !important;
+                }
+                
             `}</style>
     </div>
   );

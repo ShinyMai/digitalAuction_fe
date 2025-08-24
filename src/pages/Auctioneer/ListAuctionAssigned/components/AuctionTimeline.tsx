@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Timeline, Card, Typography, Tag, Button, Collapse, Badge, Empty } from "antd";
+import { Timeline, Card, Typography, Tag, Collapse, Badge, Empty } from "antd";
 import {
     CalendarOutlined,
     ClockCircleOutlined,
-    EyeOutlined,
     UserOutlined,
     CheckCircleOutlined,
     PlayCircleOutlined,
@@ -20,10 +19,9 @@ const { Panel } = Collapse;
 interface AuctionTimelineProps {
     auctions: Auctions[];
     loading?: boolean;
-    onNavigate: (path: string) => void;
 }
 
-const AuctionTimeline = ({ auctions, loading = false, onNavigate }: AuctionTimelineProps) => {
+const AuctionTimeline = ({ auctions, loading = false }: AuctionTimelineProps) => {
     const [activeKeys, setActiveKeys] = useState<string[]>([]);
 
     // Đảm bảo auctions luôn là array
@@ -84,10 +82,6 @@ const AuctionTimeline = ({ auctions, loading = false, onNavigate }: AuctionTimel
         acc[date].push(auction);
         return acc;
     }, {} as Record<string, Auctions[]>);
-
-    const handleViewDetails = (auctionId: string) => {
-        onNavigate(`/auctioneer/auction-detail/${auctionId}`);
-    };
 
     const handleCollapseChange = (keys: string | string[]) => {
         setActiveKeys(Array.isArray(keys) ? keys : [keys]);
@@ -178,17 +172,6 @@ const AuctionTimeline = ({ auctions, loading = false, onNavigate }: AuctionTimel
                                 <Card
                                     size="small"
                                     className="!border-0 !shadow-none !bg-gray-50"
-                                    actions={[
-                                        <Button
-                                            key="view"
-                                            type="primary"
-                                            icon={<EyeOutlined />}
-                                            onClick={() => handleViewDetails(auction.AuctionId)}
-                                            className="!bg-blue-500 !border-blue-500"
-                                        >
-                                            Xem chi tiết
-                                        </Button>
-                                    ]}
                                 >
                                     <div className="!space-y-3">
                                         <Text className="!text-gray-600 !block">

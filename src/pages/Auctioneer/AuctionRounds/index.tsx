@@ -2,10 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type {
   AuctionRound,
-  AuctionRoundPrice,
   AuctionRoundPriceWinner,
 } from "./modalsData";
-import { fakeAuctionRoundPrices } from "./fakeData";
 import PageHeader from "./components/PageHeader";
 import StatisticsCards from "./components/StatisticsCards";
 import AuctionRoundsTable from "./components/AuctionRoundsTable";
@@ -51,9 +49,6 @@ const formatCurrency = (value: string) => {
 
 const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
   const [auctionRounds, setAuctionRounds] = useState<AuctionRound[]>([]);
-  const [, setAuctionRoundPrices] = useState<
-    AuctionRoundPrice[]
-  >([]);
   const [auctionRoundPriceWinners, setAuctionRoundPriceWinners] = useState<
     AuctionRoundPriceWinner[]
   >([]);
@@ -65,6 +60,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
   const [roundStatistic, setRoundStatistic] = useState<{ totalAssets: number, totalBids: number, totalParticipants: number }>()
+
   const getListAuctionRounds = useCallback(async () => {
     try {
       setLoading(true);
@@ -85,7 +81,6 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
         return;
       }
       const response = await AuctionServices.auctionRoundStatistic(auctionId);
-      console.log("Auction statistic data:", response);
       setRoundStatistic(response.data);
     } catch (error) {
       console.error("Error fetching auction statistic:", error);
@@ -97,14 +92,6 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getAuctionRoundPrices = useCallback(() => {
-    try {
-      setAuctionRoundPrices(fakeAuctionRoundPrices);
-    } catch (error) {
-      console.error("Error fetching auction round prices:", error);
-    }
-  }, []);
-
   const getListAuctionRoundPriceWinners = useCallback(async () => {
     try {
       setLoading(true);
@@ -114,7 +101,85 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
             auctionId
           );
         if (response.code === 200) {
-          setAuctionRoundPriceWinners(response.data.auctionRoundPrices);
+          // Bổ sung assetId và thông tin thống kê cho mỗi element từ API response
+          const enrichedData = await Promise.all(
+            response.data.auctionRoundPrices.map(async (item: AuctionRoundPriceWinner) => {
+              // Tìm assetId dựa vào tagName
+              const matchedAsset = auctionAsset.find(
+                asset => asset.tagName === item.tagName
+              );
+
+              let enrichedItem = { ...item };
+
+              if (matchedAsset) {
+                // Gọi getAuctionAssetStatistic để lấy thêm thông tin
+                try {
+                  const assetStatResponse = await AuctionServices.getAssetInfoStatistic(matchedAsset.auctionAssetsId);
+                  if (assetStatResponse.code === 200) {
+                    // Bổ sung dữ liệu từ asset statistic vào enrichedItem
+                    enrichedItem = {
+                      ...enrichedItem,
+                      assetStatistic: assetStatResponse.data, // Lưu thông tin statistic vào property assetStatistic
+                    };
+                  }
+                } catch (error) {
+                  console.error(`Error fetching asset statistic for ${matchedAsset.auctionAssetsId}:`, error);
+                }
+              }
+
+              return enrichedItem;
+            })
+          );
+
+          // Tạo Set chứa tagName của các tài sản đã có trong response
+          const existingTagNames = new Set(response.data.auctionRoundPrices.map((item: AuctionRoundPriceWinner) => item.tagName));
+
+          // Tìm các tài sản trong auctionAsset nhưng không có trong response
+          const missingAssets = auctionAsset.filter(asset => !existingTagNames.has(asset.tagName));
+
+          // Tạo các entry cho tài sản thiếu với dữ liệu rỗng
+          const missingAssetsData = await Promise.all(
+            missingAssets.map(async (asset) => {
+              let assetStatistic = null;
+
+              // Vẫn gọi API để lấy thông tin thống kê cho tài sản thiếu
+              try {
+                const assetStatResponse = await AuctionServices.getAssetInfoStatistic(asset.auctionAssetsId);
+                if (assetStatResponse.code === 200) {
+                  assetStatistic = assetStatResponse.data;
+                }
+              } catch (error) {
+                console.error(`Error fetching asset statistic for missing asset ${asset.auctionAssetsId}:`, error);
+              }
+
+              return {
+                auctionRoundPriceId: asset.auctionAssetsId,
+                auctionRound: {
+                  auctionRoundId: "",
+                  auctionId: auctionId,
+                  roundNumber: 0,
+                  status: 0,
+                  createdAt: "",
+                  createdBy: "",
+                },
+                userName: "",
+                citizenIdentification: "",
+                recentLocation: "",
+                tagName: asset.tagName,
+                auctionPrice: 0,
+                createdAt: "",
+                createdBy: "",
+                flagWinner: false,
+                assetStatistic: assetStatistic,
+              } as AuctionRoundPriceWinner;
+            })
+          );
+          console.log("Asset no data", missingAssetsData);
+          // Kết hợp dữ liệu từ API và tài sản thiếu
+          const completeData = [...enrichedData, ...missingAssetsData];
+
+          setAuctionRoundPriceWinners(completeData);
+          console.log("Complete auction round price winners:", completeData);
         }
       }
     } catch (error) {
@@ -122,7 +187,7 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
     } finally {
       setLoading(false);
     }
-  }, [auctionId, auction?.status]);
+  }, [auctionId, auction?.status, auctionAsset]);
 
   const handleCreateRound = useCallback(async () => {
     try {
@@ -169,11 +234,9 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
 
   useEffect(() => {
     getListAuctionRounds();
-    getAuctionRoundPrices();
     getListAuctionRoundPriceWinners();
   }, [
     getListAuctionRounds,
-    getAuctionRoundPrices,
     getListAuctionRoundPriceWinners,
   ]);
 
@@ -350,7 +413,6 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
                 auctionId={auctionId}
                 roundData={selectedRound}
                 auctionRoundIdBefore={getPreviousRoundId(selectedRound)}
-                auctionAssetsToStatistic={auctionAsset}
                 onBackToList={handleBackToList}
               />
             </motion.div>
