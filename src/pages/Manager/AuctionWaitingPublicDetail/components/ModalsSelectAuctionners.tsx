@@ -23,10 +23,20 @@ interface Props {
   listStaff: Staff[];
   onClose: () => void;
   onSelect: (auctionerId: string, selectedStaffIds: string[]) => void;
+  isLoadingStaff: boolean;
 }
 
-const ModalsSelectAuctioners = ({ isOpen, listAuctioners, listStaff, onClose, onSelect }: Props) => {
-  const [selectedAuctionerId, setSelectedAuctionerId] = useState<string | null>(null);
+const ModalsSelectAuctioners = ({
+  isOpen,
+  listAuctioners,
+  listStaff,
+  onClose,
+  onSelect,
+  isLoadingStaff,
+}: Props) => {
+  const [selectedAuctionerId, setSelectedAuctionerId] = useState<string | null>(
+    null
+  );
   const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
 
   const handleConfirm = () => {
@@ -52,6 +62,7 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, listStaff, onClose, on
           boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
         },
       }}
+      loading={isLoadingStaff}
     >
       <div className="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         {/* Background decorative elements */}
@@ -88,9 +99,10 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, listStaff, onClose, on
                     Hướng dẫn chọn đấu giá viên và nhân viên
                   </Text>
                   <Text className="text-slate-600 leading-relaxed">
-                    Vui lòng chọn một đấu giá viên và danh sách nhân viên tham gia phiên đấu giá.
-                    Đảm bảo đấu giá viên được chọn có đủ kinh nghiệm và thời gian để điều hành phiên
-                    đấu giá. Nhân viên được chọn sẽ hỗ trợ trong quá trình đấu giá.
+                    Vui lòng chọn một đấu giá viên và danh sách nhân viên tham
+                    gia phiên đấu giá. Đảm bảo đấu giá viên được chọn có đủ kinh
+                    nghiệm và thời gian để điều hành phiên đấu giá. Nhân viên
+                    được chọn sẽ hỗ trợ trong quá trình đấu giá.
                   </Text>
                 </div>
               </div>
@@ -111,7 +123,9 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, listStaff, onClose, on
                 notFoundContent={
                   <div className="text-center py-8">
                     <UserOutlined className="text-slate-400 text-3xl mb-2" />
-                    <Text className="text-slate-500 block">Không tìm thấy đấu giá viên</Text>
+                    <Text className="text-slate-500 block">
+                      Không tìm thấy đấu giá viên
+                    </Text>
                   </div>
                 }
                 options={listAuctioners.map((auctioner) => ({
@@ -124,7 +138,9 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, listStaff, onClose, on
                         className="bg-gradient-to-r from-blue-500 to-indigo-500 border-2 border-white shadow-sm"
                       />
                       <div className="flex-1">
-                        <Text className="font-semibold text-slate-800 block">{auctioner.name}</Text>
+                        <Text className="font-semibold text-slate-800 block">
+                          {auctioner.name}
+                        </Text>
                       </div>
                       <CheckCircleOutlined className="text-green-500 text-lg" />
                     </div>
@@ -172,7 +188,9 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, listStaff, onClose, on
                 )}
                 tagRender={(props) => {
                   const { label, closable, onClose } = props;
-                  const staffName = listStaff.find(staff => staff.staffId === props.value)?.staffName || label;
+                  const staffName =
+                    listStaff.find((staff) => staff.staffId === props.value)
+                      ?.staffName || label;
 
                   return (
                     <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200 rounded-lg px-2 py-1 m-0.5 text-xs font-medium text-green-800 shadow-sm hover:shadow-md transition-all duration-200 max-w-[180px]">
@@ -196,7 +214,9 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, listStaff, onClose, on
                 notFoundContent={
                   <div className="text-center py-8">
                     <UserOutlined className="text-slate-400 text-3xl mb-2" />
-                    <Text className="text-slate-500 block">Không tìm thấy nhân viên</Text>
+                    <Text className="text-slate-500 block">
+                      Không tìm thấy nhân viên
+                    </Text>
                   </div>
                 }
                 options={listStaff.map((staff) => ({
@@ -209,7 +229,9 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, listStaff, onClose, on
                         className="bg-gradient-to-r from-green-500 to-teal-500 border-2 border-white shadow-sm"
                       />
                       <div className="flex-1">
-                        <Text className="font-semibold text-slate-800 block">{staff.staffName}</Text>
+                        <Text className="font-semibold text-slate-800 block">
+                          {staff.staffName}
+                        </Text>
                       </div>
                       <CheckCircleOutlined className="text-green-500 text-lg" />
                     </div>
@@ -229,12 +251,16 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, listStaff, onClose, on
             {/* Warning Alert */}
             <Alert
               icon={<ExclamationCircleOutlined className="text-amber-600" />}
-              message={<Text className="font-semibold text-amber-800">Lưu ý quan trọng</Text>}
+              message={
+                <Text className="font-semibold text-amber-800">
+                  Lưu ý quan trọng
+                </Text>
+              }
               description={
                 <Text className="text-amber-700">
-                  Vui lòng kiểm tra kỹ thông tin và đảm bảo đấu giá viên được chọn có thời gian rảnh
-                  để điều hành phiên đấu giá. Việc thay đổi sau khi xác nhận sẽ cần quy trình phê
-                  duyệt.
+                  Vui lòng kiểm tra kỹ thông tin và đảm bảo đấu giá viên được
+                  chọn có thời gian rảnh để điều hành phiên đấu giá. Việc thay
+                  đổi sau khi xác nhận sẽ cần quy trình phê duyệt.
                 </Text>
               }
               type="warning"

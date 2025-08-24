@@ -8,20 +8,15 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 
-// Import types
-
-// Import components
 import AuctionListTable from "./components/AuctionListTable";
 import DocumentDetailTable from "./components/DocumentDetailTable";
 import DetailStatistics from "./components/DetailStatistics";
 import OverallStatistics from "./components/OverallStatistics";
 import EmptyState from "./components/EmptyState";
 
-// Import custom hook
 import { useParticipantBiddingHistory } from "./hooks/useParticipantBiddingHistory";
 import type { ParticipantBiddingHistoryModalProps } from "./types";
 
-// Custom styles for modal
 const modalStyles = `
 .participant-bidding-history-modal .ant-modal-content {
   border-radius: 16px;
@@ -79,7 +74,6 @@ const modalStyles = `
 }
 `;
 
-// Inject styles
 if (typeof document !== "undefined") {
   const existingStyle = document.getElementById("participant-modal-styles");
   if (!existingStyle) {
@@ -94,7 +88,6 @@ const ParticipantBiddingHistoryModal: React.FC<
   ParticipantBiddingHistoryModalProps
 > = ({ visible, onClose, participantInfo }) => {
   const {
-    // State
     loading,
     registeredAuctions,
     documents,
@@ -102,7 +95,6 @@ const ParticipantBiddingHistoryModal: React.FC<
     viewMode,
     overallStatistics,
 
-    // Actions
     fetchRegisteredAuctions,
     fetchParticipantData,
     calculateOverallStatistics,
@@ -110,7 +102,6 @@ const ParticipantBiddingHistoryModal: React.FC<
     handleBackToList,
   } = useParticipantBiddingHistory(participantInfo);
 
-  // Effects
   useEffect(() => {
     if (visible && participantInfo) {
       if (viewMode === "list") {
@@ -134,7 +125,6 @@ const ParticipantBiddingHistoryModal: React.FC<
     }
   }, [registeredAuctions, participantInfo, calculateOverallStatistics]);
 
-  // Tab items configuration
   const tabItems = [
     {
       key: "1",

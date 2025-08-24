@@ -337,7 +337,7 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
   };
 
   return (
-    <div className="!min-h-screen relative overflow-hidden">
+    <div className="!min-h-fit relative overflow-hidden bg-white rounded-2xl">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-200/30 to-cyan-200/30 rounded-full animate-float"></div>

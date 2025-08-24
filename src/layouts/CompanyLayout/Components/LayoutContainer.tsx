@@ -43,7 +43,8 @@ const LayoutContainer = ({ children }: Props) => {
         className="bg-slate-100 transition-all duration-300"
       >
         <SiderRouteOption collapsed={collapsed} onCollapse={setCollapsed} />
-      </Sider>      <Layout
+      </Sider>
+      <Layout
         style={{
           marginLeft: siderWidth,
           marginTop: 64,
@@ -51,8 +52,8 @@ const LayoutContainer = ({ children }: Props) => {
           transition: "margin-left 0.3s ease",
           minHeight: "100vh",
         }}
-      >        
-      <Header
+      >
+        <Header
           style={{
             position: "fixed",
             top: 0,
@@ -65,14 +66,17 @@ const LayoutContainer = ({ children }: Props) => {
           }}
         >
           <HeaderCompany />
-        </Header>        <Content
+        </Header>{" "}
+        <Content
           style={{
             minHeight: "calc(100vh - 94px)",
             boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
             marginTop: "30px",
           }}
         >
-          <div className="min-h-full bg-gradient-to-b from-blue-50 to-teal-50">{children}</div>
+          <div className="min-h-full bg-gradient-to-b from-blue-50 to-teal-50">
+            {children}
+          </div>
         </Content>
       </Layout>
     </Layout>

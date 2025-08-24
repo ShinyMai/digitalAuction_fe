@@ -37,6 +37,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
       title: "STT",
       key: "index",
       width: 60,
+      align: "center" as const,
       render: (_, __, index) => (
         <span className="font-medium text-gray-600">
           {(searchParams.PageNumber - 1) * searchParams.PageSize + index + 1}
@@ -53,6 +54,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
       dataIndex: "tagName",
       key: "tagName",
       sorter: true,
+      width: 250,
       render: (text: string, record: AuctionAsset) => (
         <div className="space-y-1">
           <div
@@ -78,6 +80,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
       key: "startingPrice",
       sorter: true,
       align: "right",
+      width: 180,
       render: (price: number) => {
         const priceCategory = getPriceCategory(price);
         return (
@@ -107,6 +110,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
       key: "deposit",
       sorter: true,
       align: "right",
+      width: 180,
       render: (deposit: number) => (
         <div className="font-semibold text-blue-600">{formatVND(deposit)}</div>
       ),
@@ -200,7 +204,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
       dataSource={assets}
       rowKey="auctionAssetsId"
       pagination={false}
-      scroll={{ x: 1200 }}
+      scroll={{ x: "max-content" }}
       onChange={(_, __, sorter) => {
         if (sorter && !Array.isArray(sorter) && sorter.order) {
           onSort(sorter.field as string, sorter.order === "ascend");
