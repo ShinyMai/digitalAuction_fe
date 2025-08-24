@@ -151,10 +151,48 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, listStaff, onClose, on
               <Select
                 mode="multiple"
                 size="large"
-                className="w-full max-h-full"
+                className="w-full 
+                  [&_.ant-select-selector]:!min-h-[48px] 
+                  [&_.ant-select-selector]:!h-auto 
+                  [&_.ant-select-selector]:!py-2
+                  [&_.ant-select-selection-overflow]:!flex-wrap
+                  [&_.ant-select-selection-overflow]:!max-h-[120px]
+                  [&_.ant-select-selection-overflow]:!overflow-y-auto
+                  [&_.ant-select-selection-item]:!m-1
+                  [&_.ant-select-selection-item]:!max-w-[200px]
+                  staff-multi-select"
                 placeholder="Chọn nhân viên tham gia phiên đấu giá..."
                 showSearch
                 optionFilterProp="label"
+                maxTagCount="responsive"
+                maxTagPlaceholder={(omittedValues) => (
+                  <span className="text-blue-600 bg-blue-100 px-2 py-1 rounded-lg text-sm">
+                    +{omittedValues.length} nhân viên khác
+                  </span>
+                )}
+                tagRender={(props) => {
+                  const { label, closable, onClose } = props;
+                  const staffName = listStaff.find(staff => staff.staffId === props.value)?.staffName || label;
+
+                  return (
+                    <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200 rounded-lg px-2 py-1 m-0.5 text-xs font-medium text-green-800 shadow-sm hover:shadow-md transition-all duration-200 max-w-[180px]">
+                      <Avatar
+                        size={16}
+                        icon={<UserOutlined />}
+                        className="bg-gradient-to-r from-green-500 to-emerald-500 flex-shrink-0"
+                      />
+                      <span className="truncate text-xs">{staffName}</span>
+                      {closable && (
+                        <button
+                          onClick={onClose}
+                          className="ml-1 hover:bg-green-200 rounded-full w-4 h-4 flex items-center justify-center text-green-600 hover:text-green-800 transition-colors duration-200 flex-shrink-0"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  );
+                }}
                 notFoundContent={
                   <div className="text-center py-8">
                     <UserOutlined className="text-slate-400 text-3xl mb-2" />
