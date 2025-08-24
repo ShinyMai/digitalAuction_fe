@@ -15,6 +15,8 @@ import type { ColumnsType } from "antd/es/table";
 import { toast } from "react-toastify";
 import AuctionServices from "../../../../services/AuctionServices";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../store/store";
 
 const { Title, Text } = Typography;
 
@@ -30,52 +32,15 @@ const AuctionResults = ({
   onBack,
 }: AuctionResultsProps) => {
   const [downloading, setDownloading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<any>();
+  const { user } = useSelector((state: RootState) => state.auth);
 
-  // Function to handle file selection and auto download
-  const handleFileSelect = (file: File) => {
-    setSelectedFile(file);
-
-    // Auto process download after file selection
-    processDownload(file);
-  };
-
-  // Function to handle download handbook with file picker
-  const handleDownloadHandbook = () => {
-    // Create a hidden file input
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".pdf,.docx,.doc,.xlsx,.xls";
-    input.style.display = "none";
-
-    input.onchange = (event: any) => {
-      const file = event.target.files?.[0];
-      if (file) {
-        handleFileSelect(file);
-      }
-    };
-
-    // Trigger file picker
-    document.body.appendChild(input);
-    input.click();
-    document.body.removeChild(input);
-  };
-
-  // Function to process the download
-  const processDownload = async (fileToProcess?: File) => {
-    const fileToUse = fileToProcess || selectedFile;
-
-    if (!fileToUse) {
-      toast.error("Vui lòng chọn file template");
-      return;
-    }
-
+  // Function to handle direct download without file selection
+  const handleDirectDownload = async () => {
     setDownloading(true);
     try {
-      // Create FormData
+      // Create FormData and append auctionId
       const formData = new FormData();
       formData.append("auctionId", auctionID);
-      formData.append("TemplateFile", fileToUse);
 
       const response = await AuctionServices.exportHandbook(formData);
 
@@ -341,16 +306,20 @@ const AuctionResults = ({
             </div>
           </div>
           <Space size="middle">
-            <Button
-              type="default"
-              size="large"
-              icon={<DownloadOutlined />}
-              onClick={handleDownloadHandbook}
-              loading={downloading}
-              className="!bg-white !border-green-500 !text-green-600 hover:!bg-green-50 hover:!border-green-600 !shadow-md hover:!shadow-lg !transition-all !duration-300 !h-12 !px-6"
-            >
-              {downloading ? "Đang xử lý..." : "Chọn template và tải sổ tay"}
-            </Button>
+            {
+              user?.roleName === "Manager" || user?.roleName === "Staff" ?
+                <Button
+                  type="default"
+                  size="large"
+                  icon={<DownloadOutlined />}
+                  onClick={handleDirectDownload}
+                  loading={downloading}
+                  className="!bg-white !border-green-500 !text-green-600 hover:!bg-green-50 hover:!border-green-600 !shadow-md hover:!shadow-lg !transition-all !duration-300 !h-12 !px-6"
+                >
+                  {downloading ? "Đang tải..." : "Tải sổ tay"}
+                </Button> : <></>
+            }
+
             <Button
               type="primary"
               size="large"
