@@ -45,6 +45,13 @@ const AuctionDetailAnonymous = () => {
     }
   };
 
+  const handleTabChange = async () => {
+    try {
+      await getAuctionDetailById(location.state.key);
+    } catch (error) {
+      console.error("Error refreshing data on tab change:", error);
+    }
+  };
   const assetColumns: ColumnsType<AuctionAsset> = [
     {
       title: (
@@ -269,6 +276,7 @@ const AuctionDetailAnonymous = () => {
               <Tabs
                 defaultActiveKey="1"
                 className="w-full enhanced-tabs"
+                onChange={handleTabChange}
                 tabBarStyle={{
                   background:
                     "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",

@@ -90,6 +90,14 @@ const AuctionRoundDetail = ({
 
   const endAuction = async () => {
     try {
+      // Validate: Kiểm tra xem có dữ liệu giá đấu không
+      if (!auctionRoundPrice || auctionRoundPrice.length === 0) {
+        toast.warning(
+          "Không thể kết thúc vòng đấu giá. Vòng đấu giá chưa có dữ liệu giá đấu nào."
+        );
+        return;
+      }
+
       const response = await AuctionServices.updateStatusAuctionRound({
         auctionRoundId: auctionRound?.auctionRoundId,
         status: 2,
@@ -112,6 +120,15 @@ const AuctionRoundDetail = ({
   const refreshAllData = async () => {
     await loadAllData();
     toast.success("Dữ liệu đã được làm mới");
+  };
+
+  // Hàm để refresh tất cả data khi chuyển tab
+  const handleTabChange = async () => {
+    try {
+      await loadAllData();
+    } catch (error) {
+      console.error("Error refreshing data on tab change:", error);
+    }
   };
 
   // ---- 🔹 Derived data ----
@@ -200,6 +217,7 @@ const AuctionRoundDetail = ({
           <Tabs
             activeKey={activeTab}
             onChange={setActiveTab}
+            onTabClick={handleTabChange}
             items={tabItems}
             size="large"
             className="custom-tabs"
