@@ -20,7 +20,6 @@ import dayjs, { Dayjs } from "dayjs";
 import AuctionServices from "../../../../services/AuctionServices/index.tsx";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import * as XLSX from "xlsx";
 import { QuestionCircleOutlined, SaveOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -276,57 +275,6 @@ const AuctionCreateForm = ({
       toast.error(`Tạo đấu giá thất bại: ${errorMessage}`);
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Hàm tải file mẫu định dạng tài sản
-  const handleDownloadTemplate = () => {
-    try {
-      const templateData = [
-        {
-          "Tên nhãn (Tag_Name)": "Máy cày",
-          "Giá khởi điểm (starting_price)": 24000,
-          "Đơn vị (Unit)": "Cái",
-          "Tiền đặt cọc (Deposit)": 5000,
-          "Phí đăng ký (Registration_fee)": 5000,
-          "Mô tả (Description)": "Máy xúc đã qua sử dụng, còn hoạt động tốt"
-        },
-        {
-          "Tên nhãn (Tag_Name)": "Lốp xe",
-          "Giá khởi điểm (starting_price)": 30000,
-          "Đơn vị (Unit)": "Cái",
-          "Tiền đặt cọc (Deposit)": 5000,
-          "Phí đăng ký (Registration_fee)": 7000,
-          "Mô tả (Description)": "Xe tải trọng tải 5 tấn, đời 2018"
-        },
-        {
-          "Tên nhãn (Tag_Name)": "Oto",
-          "Giá khởi điểm (starting_price)": 25000,
-          "Đơn vị (Unit)": "Cái",
-          "Tiền đặt cọc (Deposit)": 5000,
-          "Phí đăng ký (Registration_fee)": 3000,
-          "Mô tả (Description)": "Máy khoan điện, đầy đủ phụ kiện"
-        }
-      ];
-
-      const ws = XLSX.utils.json_to_sheet(templateData, {
-        header: [
-          "Tên nhãn (Tag_Name)",
-          "Giá khởi điểm (starting_price)",
-          "Đơn vị (Unit)",
-          "Tiền đặt cọc (Deposit)",
-          "Phí đăng ký (Registration_fee)",
-          "Mô tả (Description)"
-        ]
-      });
-
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "AuctionAssets");
-      XLSX.writeFile(wb, "Mau_Thong_Tin_Dau_Gia_DinhDang.xlsx");
-      toast.success("Tải file mẫu thành công!");
-    } catch (error) {
-      toast.error("Lỗi khi tải file mẫu!");
-      console.error(error);
     }
   };
 
@@ -663,12 +611,12 @@ const AuctionCreateForm = ({
                 </Form.Item>
 
                 {/* Download Template */}
-                <div
+                <a
                   className="cursor-pointer text-blue-500 hover:text-blue-700 underline text-sm mt-2"
-                  onClick={handleDownloadTemplate}
+                  href="https://s3.cloudfly.vn/file-tuanlinh/Mau_Thong_Tin_Dau_Gia.xlsm?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ZJ8WP1BLOUMBXA2C1U5A%2F20250824%2FHN%2Fs3%2Faws4_request&X-Amz-Date=20250824T075642Z&X-Amz-Expires=1800&X-Amz-Signature=0cbd5c93e35bbec1e05187cd444414f97bf826744da140ed21202705a31ac4b9&X-Amz-SignedHeaders=host&x-id=GetObject"
                 >
                   📁 Tải mẫu danh sách tài sản
-                </div>
+                </a>
               </motion.div>
             </Col>
 
