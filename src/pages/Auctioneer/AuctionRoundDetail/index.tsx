@@ -14,7 +14,6 @@ import "./styles.css";
 import AuctionServices from "../../../services/AuctionServices";
 import { toast } from "react-toastify";
 import type { AuctionDataDetail } from "../Modals";
-import connection from "../../../signalRConnection";
 
 interface AuctionRoundDetailProps {
   auctionRound?: AuctionRound;
@@ -34,7 +33,6 @@ const AuctionRoundDetail = ({
   const [activeTab, setActiveTab] = useState<string>("history");
   const [loading, setLoading] = useState<boolean>(false);
 
-  // ---- 🔹 Load initial data ----
   const getListOfAuctionRoundPrices = async () => {
     try {
       if (auctionRound) {
@@ -61,53 +59,9 @@ const AuctionRoundDetail = ({
   };
 
   useEffect(() => {
-    if (!auctionRound?.auctionRoundId) return;
-
-    let isMounted = true;
-
-    async function startConnection() {
-      if (connection.state === "Disconnected") {
-        try {
-          await connection.start();
-          console.log("✅ SignalR connected");
-        } catch (err) {
-          console.error("❌ SignalR connect error:", err);
-        }
-      }
-
-      // Join group theo auctionRoundId
-      await connection.invoke(
-        "JoinGroup",
-        auctionRound?.auctionRoundId?.toString()
-      );
-
-      // Khi có sự kiện giá mới -> gọi lại API
-      const handler = async () => {
-        if (isMounted) {
-          console.log("📡 ReceiveLatestPrices -> reload API data");
-          await getListOfAuctionRoundPrices(); // gọi lại API
-        }
-      };
-
-      connection.on("ReceiveLatestPrices", handler);
-
-      // Cleanup
-      return () => {
-        isMounted = false;
-        connection.off("ReceiveLatestPrices", handler);
-        connection
-          .invoke("LeaveGroup", auctionRound?.auctionRoundId.toString())
-          .catch(() => { });
-      };
-    }
-
-    const cleanupPromise = startConnection();
-
-    return () => {
-      cleanupPromise.then((cleanup) => cleanup && cleanup());
-    };
+    loadAllData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auctionRound?.auctionRoundId]);
+  }, [auctionRound]);
 
   const onUpdateWinnerFlag = async (
     auctionRoundPriceId: string,
