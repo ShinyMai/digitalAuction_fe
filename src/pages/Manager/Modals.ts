@@ -57,6 +57,8 @@ export type AuctionDataDetail = {
   auctionMap?: string;
   winnerData: string;
   auctioneer?: string;
+  staffInCharge?: string[];
+  managerInCharge?: string;
   cancelReason?: string;
   cancelReasonFile?: string;
   legalDocumentUrls?: string[];

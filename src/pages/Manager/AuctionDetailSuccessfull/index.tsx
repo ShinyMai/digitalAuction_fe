@@ -21,6 +21,17 @@ interface AuctionAsset {
   startingPrice: number; // Thêm trường startingPrice
 }
 
+const USER_ROLES = {
+  USER: "Customer",
+  ADMIN: "Admin",
+  STAFF: "Staff",
+  AUCTIONEER: "Auctioneer",
+  MANAGER: "Manager",
+  DIRECTOR: "Director",
+} as const;
+
+type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
+
 const AuctionDetailSuccesfull = () => {
   const location = useLocation();
   const [auctionDetailData, setAuctionDetailData] =
@@ -28,6 +39,7 @@ const AuctionDetailSuccesfull = () => {
   const [auctionDateModal, setAuctionDateModal] = useState<AuctionDateModal>();
   const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
   const { user } = useSelector((state: RootState) => state.auth);
+  const role = user?.roleName as UserRole | undefined;
   const [auctionRounds, setAuctionRounds] = useState<AuctionRoundModals[]>([]);
   const [isHaveAucationRound, setIsHaveAuctionRound] = useState(false);
   useEffect(() => {
@@ -98,6 +110,22 @@ const AuctionDetailSuccesfull = () => {
     }
   };
 
+  // Kiểm tra quyền truy cập tab 2 và 3
+  const canAccessTabs = () => {
+    if (!user?.id || !auctionDetailData) return false;
+
+    if (role === USER_ROLES.STAFF) {
+      return auctionDetailData.staffInCharge?.includes(user.id) || false;
+    }
+
+    if (role === USER_ROLES.MANAGER) {
+      return auctionDetailData.managerInCharge === user.id;
+    }
+
+    // Các role khác (AUCTIONEER, DIRECTOR, ADMIN) có thể truy cập
+    return role === USER_ROLES.AUCTIONEER || role === USER_ROLES.DIRECTOR || role === USER_ROLES.ADMIN;
+  };
+
   return (
     <section className="p-4 sm:p-6 h-full min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -136,7 +164,8 @@ const AuctionDetailSuccesfull = () => {
                 </div>
               ),
             },
-            {
+            // Tab 2: Danh sách tham gia đấu giá - Kiểm tra quyền truy cập
+            ...(canAccessTabs() ? [{
               key: "2",
               label: (
                 <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-teal-50 hover:scale-105 hover:shadow-md">
@@ -155,8 +184,9 @@ const AuctionDetailSuccesfull = () => {
                   />
                 </div>
               ),
-            },
-            ...(auctionRounds.length > 0
+            }] : []),
+            // Tab 3: Kết quả phiên đấu giá - Kiểm tra quyền truy cập và có auction rounds
+            ...(canAccessTabs() && auctionRounds.length > 0
               ? [
                 {
                   key: "3",
