@@ -2,10 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type {
   AuctionRound,
-  AuctionRoundPrice,
   AuctionRoundPriceWinner,
 } from "./modalsData";
-import { fakeAuctionRoundPrices } from "./fakeData";
 import PageHeader from "./components/PageHeader";
 import StatisticsCards from "./components/StatisticsCards";
 import AuctionRoundsTable from "./components/AuctionRoundsTable";
@@ -51,9 +49,6 @@ const formatCurrency = (value: string) => {
 
 const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
   const [auctionRounds, setAuctionRounds] = useState<AuctionRound[]>([]);
-  const [, setAuctionRoundPrices] = useState<
-    AuctionRoundPrice[]
-  >([]);
   const [auctionRoundPriceWinners, setAuctionRoundPriceWinners] = useState<
     AuctionRoundPriceWinner[]
   >([]);
@@ -95,14 +90,6 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
   useEffect(() => {
     getAuctionStatistic();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const getAuctionRoundPrices = useCallback(() => {
-    try {
-      setAuctionRoundPrices(fakeAuctionRoundPrices);
-    } catch (error) {
-      console.error("Error fetching auction round prices:", error);
-    }
   }, []);
 
   const getListAuctionRoundPriceWinners = useCallback(async () => {
@@ -247,11 +234,9 @@ const AuctionRounds = ({ auctionId, auctionAsset, auction }: props) => {
 
   useEffect(() => {
     getListAuctionRounds();
-    getAuctionRoundPrices();
     getListAuctionRoundPriceWinners();
   }, [
     getListAuctionRounds,
-    getAuctionRoundPrices,
     getListAuctionRoundPriceWinners,
   ]);
 

@@ -131,16 +131,13 @@ const AuctionResults = ({
   // Use enriched data with assetStatistic for detailed statistics - Memoized for performance
   const assetStatsArray = useMemo(() => {
     return Array.from(statistics.allAssets).map(tagName => {
-      // Find the first item for this asset (should contain assetStatistic)
       const assetItem = auctionRoundPriceWinners.find(item => item.tagName === tagName);
       const assetStat = assetItem?.assetStatistic;
 
-      // Find winner info
       const winner = auctionRoundPriceWinners.find(item => item.tagName === tagName && item.flagWinner);
 
       return {
         tagName,
-        // Use data directly from assetStatistic - no calculations
         totalBids: assetStat?.totalBids || 0,
         totalBidder: assetStat?.totalParticipants || 0,
         highestPrice: assetStat?.highestPrice || 0,
@@ -165,8 +162,11 @@ const AuctionResults = ({
       key: "tagName",
       fixed: "left",
       width: 150,
-      render: (text) => (
-        <Tag color="blue" className="text-sm font-medium px-3 py-1">
+      render: (text, record) => (
+        <Tag
+          color={record.isSuccessful ? "green" : "red"}
+          className="text-sm font-medium px-3 py-1"
+        >
           {text}
         </Tag>
       ),
@@ -184,12 +184,12 @@ const AuctionResults = ({
           }
           className="font-medium"
         >
-          {isSuccessful ? "Đã được đấu giá" : "Chưa được đấu giá"}
+          {isSuccessful ? "Đã được đấu giá" : "Đấu giá thất bại"}
         </Tag>
       ),
       filters: [
         { text: "Đã được đấu giá", value: true },
-        { text: "Chưa được đấu giá", value: false },
+        { text: "Đấu giá thất bại", value: false },
       ],
       onFilter: (value, record) => record.isSuccessful === value,
     },
@@ -410,9 +410,14 @@ const AuctionResults = ({
                     border-bottom: 2px solid #e9ecef;
                     font-weight: 600;
                 }
-                .custom-table .ant-table-tbody > tr:hover > td {
-                    background: #f0f9ff;
+                /* Fixed column background colors */
+                .custom-table .ant-table-tbody > tr.bg-green-50 .ant-table-cell-fix-left {
+                    background: #f0fdf4 !important;
                 }
+                .custom-table .ant-table-tbody > tr.bg-red-50 .ant-table-cell-fix-left {
+                    background: #fef2f2 !important;
+                }
+                
             `}</style>
     </div>
   );
