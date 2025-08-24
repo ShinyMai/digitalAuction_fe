@@ -12,6 +12,8 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store";
 import { toast } from "react-toastify";
 import type { AuctionDataDetail } from "../Modals";
+import { useNavigate } from "react-router-dom";
+import { STAFF_ROUTES } from "../../../routers";
 
 interface AuctionAsset {
   auctionAssetsId: string;
@@ -56,11 +58,14 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
   const [selectedRound, setSelectedRound] = useState<AuctionRound>();
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
+  console.log("Role check", role);
   const [roundStatistic, setRoundStatistic] = useState<{
     totalAssets: number;
     totalBids: number;
     totalParticipants: number;
   }>();
+  const navigate = useNavigate()
+
   const getListAuctionRounds = useCallback(async () => {
     try {
       setLoading(true);
@@ -259,12 +264,22 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
 
   const handleEndAuction = async () => {
     try {
+      // Kiểm tra xem có vòng đấu giá nào đang diễn ra không (status = 1)
+      const activeRounds = auctionRounds.filter(round => round.status === 1);
+
+      if (activeRounds.length > 0) {
+        toast.warning(
+          `Không thể kết thúc phiên đấu giá. Hiện có ${activeRounds.length} vòng đấu giá đang diễn ra. Vui lòng kết thúc tất cả các vòng đấu giá trước khi kết thúc phiên.`
+        );
+        return;
+      }
+
       const response = await AuctionServices.updateAuctionSuccessfull({
         auctionId: auctionId,
       });
       if (response.code === 200) {
         toast.success("Phiên đấu giá đã kết thúc thành công");
-        // Cập nhật lại danh sách vòng đấu giá sau khi kết thúc
+        navigate(`${role?.toLocaleLowerCase()}/${STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL}`)
       } else {
         toast.error("Lỗi khi kết thúc phiên đấu giá");
       }
@@ -317,6 +332,8 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
     setShowResults(false);
     setShowInputPrice(false);
     setSelectedRound(undefined);
+    // Gọi lại getListAuctionRounds để cập nhật dữ liệu
+    getListAuctionRounds();
   };
 
   return (

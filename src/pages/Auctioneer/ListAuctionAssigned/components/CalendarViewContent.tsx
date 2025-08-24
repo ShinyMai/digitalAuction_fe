@@ -2,20 +2,17 @@ import { Typography, Space } from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import type { Auctions } from "../../ModalsDatabase";
 import AuctionTimeline from "./AuctionTimeline";
-import CalendarStats from "./CalendarStats";
 
 const { Title } = Typography;
 
 interface CalendarViewContentProps {
     loading?: boolean;
     auctions: Auctions[];
-    onNavigate: (path: string) => void;
 }
 
 const CalendarViewContent = ({
     loading = false,
     auctions,
-    onNavigate,
 }: CalendarViewContentProps) => {
     return (
         <div className="!min-h-screen !bg-gray-50 !p-6">
@@ -30,14 +27,10 @@ const CalendarViewContent = ({
                     </Space>
                 </div>
 
-                {/* Statistics */}
-                <CalendarStats auctions={auctions} />
-
                 {/* Timeline */}
                 <AuctionTimeline
                     auctions={auctions}
                     loading={loading}
-                    onNavigate={onNavigate}
                 />
             </div>
         </div>

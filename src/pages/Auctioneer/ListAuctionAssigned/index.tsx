@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import type { Auctions } from "../../Auctioneer/ModalsDatabase";
 import CalendarViewContent from "./components/CalendarViewContent";
 import "../../../styles/auction-tabs.css";
@@ -39,7 +38,6 @@ interface ApiAuction {
 const ListAuctionAssigned: React.FC<ListAuctionAssignedProps> = ({
   loading = false,
 }) => {
-  const navigate = useNavigate();
   const [assignedAuctions, setAssignedAuctions] = useState<Auctions[]>([]);
   const [searchParams] = useState<SearchParams>({
     PageNumber: 1,
@@ -121,7 +119,6 @@ const ListAuctionAssigned: React.FC<ListAuctionAssignedProps> = ({
     <CalendarViewContent
       loading={loading}
       auctions={assignedAuctions}
-      onNavigate={navigate}
     />
   );
 };
