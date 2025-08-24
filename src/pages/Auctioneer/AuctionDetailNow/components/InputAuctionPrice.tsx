@@ -257,6 +257,12 @@ const InputAuctionPrice = ({
       // Thêm dữ liệu vào danh sách
       setAuctionRoundPriceList([...auctionRoundPriceList, formattedValues]);
 
+      // Loại bỏ tài sản đã chọn khỏi danh sách auctionAssets
+      const updatedAssets = auctionAssets.filter(
+        (asset) => asset.auctionAssetsId !== formattedValues.auctionAssetId
+      );
+      setAuctionAssets(updatedAssets);
+
       // Lưu lại số thứ tự để giữ lại sau khi submit
       const currentNumericalOrder = values.numericalOrder;
 
@@ -269,9 +275,6 @@ const InputAuctionPrice = ({
       // Reset selected asset khi submit thành công
       setSelectedAsset(null);
 
-      // Không clear auctionAssets và userInfo để có thể tiếp tục chọn tài sản khác
-      // setAuctionAssets([]);
-      // setUserInfo(null);
       setErrorMessage(null);
     } catch (error) {
       console.error("Error:", error);
@@ -313,9 +316,31 @@ const InputAuctionPrice = ({
 
   // Xử lý xóa hàng
   const handleDelete = (index: number) => {
+    const deletedItem = auctionRoundPriceList[index];
+
+    // Loại bỏ item khỏi danh sách giá đấu
     setAuctionRoundPriceList(
       auctionRoundPriceList.filter((_, i) => i !== index)
     );
+
+    // Thêm lại tài sản vào danh sách auctionAssets nếu userInfo hiện tại khớp với item bị xóa
+    if (deletedItem && userInfo && deletedItem.userName === userInfo.UserName) {
+      // Tìm thông tin tài sản từ tagName/auctionAssetName
+      const assetToRestore = {
+        auctionAssetsId: deletedItem.auctionAssetId || "",
+        tagName: deletedItem.auctionAssetName || "",
+        startingPrice: selectedAsset?.startingPrice || 0,
+      };
+
+      // Kiểm tra xem tài sản đã có trong danh sách chưa để tránh trùng lặp
+      const assetExists = auctionAssets.some(
+        (asset) => asset.auctionAssetsId === assetToRestore.auctionAssetsId
+      );
+
+      if (!assetExists && assetToRestore.auctionAssetsId) {
+        setAuctionAssets([...auctionAssets, assetToRestore]);
+      }
+    }
   };
 
   // Cấu hình cột cho Table của antd
@@ -411,12 +436,12 @@ const InputAuctionPrice = ({
     () =>
       statistics.totalMine > FORM_VALIDATION_RULES.PAGINATION_SIZE
         ? {
-            pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total: number, range: [number, number]) =>
-              `${range[0]}-${range[1]} của ${total} mục`,
-          }
+          pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total: number, range: [number, number]) =>
+            `${range[0]}-${range[1]} của ${total} mục`,
+        }
         : false,
     [statistics.totalMine]
   );
@@ -816,18 +841,18 @@ const InputAuctionPrice = ({
                             }}
                             pagination={
                               statistics.totalOther >
-                              FORM_VALIDATION_RULES.PAGINATION_SIZE
+                                FORM_VALIDATION_RULES.PAGINATION_SIZE
                                 ? {
-                                    pageSize:
-                                      FORM_VALIDATION_RULES.PAGINATION_SIZE,
-                                    showSizeChanger: true,
-                                    showQuickJumper: true,
-                                    showTotal: (
-                                      total: number,
-                                      range: [number, number]
-                                    ) =>
-                                      `${range[0]}-${range[1]} của ${total} mục`,
-                                  }
+                                  pageSize:
+                                    FORM_VALIDATION_RULES.PAGINATION_SIZE,
+                                  showSizeChanger: true,
+                                  showQuickJumper: true,
+                                  showTotal: (
+                                    total: number,
+                                    range: [number, number]
+                                  ) =>
+                                    `${range[0]}-${range[1]} của ${total} mục`,
+                                }
                                 : false
                             }
                             className="!rounded-xl !overflow-hidden [&_.ant-table]:!bg-transparent [&_.ant-table-thead>tr>th]:!bg-gradient-to-r [&_.ant-table-thead>tr>th]:!from-emerald-50 [&_.ant-table-thead>tr>th]:!to-teal-50 [&_.ant-table-thead>tr>th]:!border-emerald-200"
