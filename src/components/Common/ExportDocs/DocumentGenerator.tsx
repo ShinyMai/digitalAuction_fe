@@ -453,162 +453,218 @@ export const exportToPdf = async (
   data?: Partial<RegistrationAuctionModals>
 ) => {
   try {
-    // Create a temporary div to hold our content
-    const tempDiv = document.createElement('div');
-    tempDiv.style.cssText = `
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
-      width: 794px;
-      background: white;
-      font-family: 'Times New Roman', serif;
-      font-size: 14px;
-      line-height: 1.5;
-      padding: 40px;
-      color: black;
-    `;
-
-    tempDiv.innerHTML = `
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="font-size: 16px; font-weight: bold; margin: 0;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h1>
-        <h2 style="font-size: 16px; font-weight: bold; margin: 10px 0;">Độc lập - Tự do - Hạnh phúc</h2>
-        <div style="border-top: 3px solid black; width: 200px; margin: 20px auto;"></div>
-      </div>
-
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="font-size: 18px; font-weight: bold; margin: 0;">PHIẾU ĐĂNG KÝ THAM GIA ĐẤU GIÁ</h1>
-        <p style="font-style: italic; margin: 10px 0;">Kính gửi: Tổ chức bán đấu giá tài sản</p>
-      </div>
-
-      <div style="margin-bottom: 20px;">
-        <p><strong>I. THÔNG TIN NGƯỜI ĐĂNG KÝ:</strong></p>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-          <tr>
-            <td style="padding: 8px 0; width: 200px;">1. Họ và tên:</td>
-            <td style="padding: 8px 0; border-bottom: 1px dotted black;">${getValueOrDots(data?.fullName)}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0;">2. Ngày sinh:</td>
-            <td style="padding: 8px 0; border-bottom: 1px dotted black;">${getValueOrDots(data?.dob ? dayjs(data.dob).format("DD/MM/YYYY") : "")}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0;">3. CCCD/CMND số:</td>
-            <td style="padding: 8px 0; border-bottom: 1px dotted black;">${getValueOrDots(data?.idNumber)}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0;">4. Ngày cấp:</td>
-            <td style="padding: 8px 0; border-bottom: 1px dotted black;">${getValueOrDots(data?.idDate ? dayjs(data.idDate).format("DD/MM/YYYY") : "")}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0;">5. Nơi cấp:</td>
-            <td style="padding: 8px 0; border-bottom: 1px dotted black;">${getValueOrDots(data?.place)}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0;">6. Địa chỉ thường trú:</td>
-            <td style="padding: 8px 0; border-bottom: 1px dotted black;">${getValueOrDots(data?.address)}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0;">7. Số điện thoại:</td>
-            <td style="padding: 8px 0; border-bottom: 1px dotted black;">${getValueOrDots(data?.phone)}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0;">8. Email:</td>
-            <td style="padding: 8px 0; border-bottom: 1px dotted black;">.................................................</td>
-          </tr>
-        </table>
-      </div>
-
-      <div style="margin-bottom: 20px;">
-        <p><strong>II. THÔNG TIN TÀI SẢN ĐĂNG KÝ ĐẤU GIÁ:</strong></p>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-          <tr>
-            <td style="padding: 8px 0; width: 200px;">1. Tên tài sản:</td>
-            <td style="padding: 8px 0; border-bottom: 1px dotted black;">${getValueOrDots(data?.assetsInfo)}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0;">2. Giá khởi điểm:</td>
-            <td style="padding: 8px 0; border-bottom: 1px dotted black;">${getValueOrDots(data?.priceStart ? Number(data.priceStart).toLocaleString("vi-VN") + " VND" : "")}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0;">3. Số tiền đặt cọc:</td>
-            <td style="padding: 8px 0; border-bottom: 1px dotted black;">.................................................</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0;">4. Phí tham gia:</td>
-            <td style="padding: 8px 0; border-bottom: 1px dotted black;">.................................................</td>
-          </tr>
-        </table>
-      </div>
-
-      <div style="margin-bottom: 20px;">
-        <p><strong>III. CAM KẾT:</strong></p>
-        <p style="text-align: justify; margin-bottom: 10px;">
-          Tôi cam kết thực hiện đúng các quy định của pháp luật về đấu giá tài sản và quy chế đấu giá của tổ chức bán đấu giá.
-          Nếu trúng đấu giá, tôi sẽ thực hiện đầy đủ các nghĩa vụ theo quy định.
-        </p>
-      </div>
-
-      <div style="display: flex; justify-content: space-between; margin-top: 40px;">
-        <div style="text-align: center;">
-          <p><strong>TỔ CHỨC BÁN ĐẤU GIÁ</strong></p>
-          <p style="font-style: italic;">(Ký tên, đóng dấu)</p>
-          <div style="height: 80px;"></div>
-        </div>
-        <div style="text-align: center;">
-          <p><strong>NGƯỜI ĐĂNG KÝ</strong></p>
-          <p style="font-style: italic;">(Ký, ghi rõ họ tên)</p>
-          <div style="height: 80px;"></div>
-          <p>${getValueOrDots(data?.fullName)}</p>
-        </div>
-      </div>
-
-      <div style="text-align: center; margin-top: 20px;">
-        <p><em>Ngày ${new Date().getDate()} tháng ${new Date().getMonth() + 1} năm ${new Date().getFullYear()}</em></p>
-      </div>
-    `;
-
-    document.body.appendChild(tempDiv);
-
-    // Use browser's print functionality to generate PDF
-    const printContent = tempDiv.innerHTML;
-    const printWindow = window.open('', '_blank');
-
-    if (printWindow) {
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
+    // Create HTML content for PDF
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
         <head>
+          <meta charset="utf-8">
           <title>Phiếu Đăng Ký Đấu Giá</title>
           <style>
-            @media print {
-              body { margin: 0; }
-              @page { size: A4; margin: 20mm; }
+            @page { 
+              size: A4; 
+              margin: 20mm;
             }
             body {
               font-family: 'Times New Roman', serif;
               font-size: 14px;
-              line-height: 1.5;
+              line-height: 1.6;
               color: black;
               background: white;
+              margin: 0;
+              padding: 20px;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+            }
+            .header h1 {
+              font-size: 16px;
+              font-weight: bold;
+              margin: 5px 0;
+            }
+            .header .separator {
+              border-top: 3px solid black;
+              width: 200px;
+              margin: 20px auto;
+            }
+            .title {
+              text-align: center;
+              margin-bottom: 30px;
+            }
+            .title h1 {
+              font-size: 18px;
+              font-weight: bold;
+              margin: 0;
+            }
+            .title p {
+              font-style: italic;
+              margin: 10px 0;
+            }
+            .section {
+              margin-bottom: 25px;
+            }
+            .section-title {
+              font-weight: bold;
+              margin-bottom: 15px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            td {
+              padding: 8px 0;
+              vertical-align: top;
+            }
+            .label {
+              width: 200px;
+            }
+            .value {
+              border-bottom: 1px dotted black;
+              min-height: 20px;
+            }
+            .signature-section {
+              display: flex;
+              justify-content: space-between;
+              margin-top: 40px;
+            }
+            .signature-box {
+              text-align: center;
+              width: 45%;
+            }
+            .signature-space {
+              height: 80px;
+              margin: 20px 0;
+            }
+            .date-section {
+              text-align: center;
+              margin-top: 30px;
+              font-style: italic;
+            }
+            .commitment {
+              text-align: justify;
+              margin: 15px 0;
             }
           </style>
         </head>
-        <body>${printContent}</body>
-        </html>
-      `);
+        <body>
+          <div class="header">
+            <h1>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h1>
+            <h1>Độc lập - Tự do - Hạnh phúc</h1>
+            <div class="separator"></div>
+          </div>
 
-      printWindow.document.close();
+          <div class="title">
+            <h1>PHIẾU ĐĂNG KÝ THAM GIA ĐẤU GIÁ</h1>
+            <p>Kính gửi: Tổ chức bán đấu giá tài sản</p>
+          </div>
 
-      // Wait for content to load then trigger print
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-      }, 500);
-    }
+          <div class="section">
+            <div class="section-title">I. THÔNG TIN NGƯỜI ĐĂNG KÝ:</div>
+            <table>
+              <tr>
+                <td class="label">1. Họ và tên:</td>
+                <td class="value">${getValueOrDots(data?.fullName)}</td>
+              </tr>
+              <tr>
+                <td class="label">2. Ngày sinh:</td>
+                <td class="value">${getValueOrDots(data?.dob ? dayjs(data.dob).format("DD/MM/YYYY") : "")}</td>
+              </tr>
+              <tr>
+                <td class="label">3. CCCD/CMND số:</td>
+                <td class="value">${getValueOrDots(data?.idNumber)}</td>
+              </tr>
+              <tr>
+                <td class="label">4. Ngày cấp:</td>
+                <td class="value">${getValueOrDots(data?.idDate ? dayjs(data.idDate).format("DD/MM/YYYY") : "")}</td>
+              </tr>
+              <tr>
+                <td class="label">5. Nơi cấp:</td>
+                <td class="value">${getValueOrDots(data?.place)}</td>
+              </tr>
+              <tr>
+                <td class="label">6. Địa chỉ thường trú:</td>
+                <td class="value">${getValueOrDots(data?.address)}</td>
+              </tr>
+              <tr>
+                <td class="label">7. Số điện thoại:</td>
+                <td class="value">${getValueOrDots(data?.phone)}</td>
+              </tr>
+              <tr>
+                <td class="label">8. Email:</td>
+                <td class="value">.................................................</td>
+              </tr>
+            </table>
+          </div>
 
-    // Clean up
-    document.body.removeChild(tempDiv);
-    toast.success("Đã mở cửa sổ in PDF. Vui lòng chọn 'Save as PDF' trong dialog in!");
+          <div class="section">
+            <div class="section-title">II. THÔNG TIN TÀI SẢN ĐĂNG KÝ ĐẤU GIÁ:</div>
+            <table>
+              <tr>
+                <td class="label">1. Tên tài sản:</td>
+                <td class="value">${getValueOrDots(data?.assetsInfo)}</td>
+              </tr>
+              <tr>
+                <td class="label">2. Giá khởi điểm:</td>
+                <td class="value">${getValueOrDots(data?.priceStart ? Number(data.priceStart).toLocaleString("vi-VN") + " VND" : "")}</td>
+              </tr>
+              <tr>
+                <td class="label">3. Số tiền đặt cọc:</td>
+                <td class="value">.................................................</td>
+              </tr>
+              <tr>
+                <td class="label">4. Phí tham gia:</td>
+                <td class="value">.................................................</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="section">
+            <div class="section-title">III. CAM KẾT:</div>
+            <div class="commitment">
+              Tôi cam kết thực hiện đúng các quy định của pháp luật về đấu giá tài sản và quy chế đấu giá của tổ chức bán đấu giá.
+              Nếu trúng đấu giá, tôi sẽ thực hiện đầy đủ các nghĩa vụ theo quy định.
+            </div>
+          </div>
+
+          <div class="signature-section">
+            <div class="signature-box">
+              <div><strong>TỔ CHỨC BÁN ĐẤU GIÁ</strong></div>
+              <div style="font-style: italic;">(Ký tên, đóng dấu)</div>
+              <div class="signature-space"></div>
+            </div>
+            <div class="signature-box">
+              <div><strong>NGƯỜI ĐĂNG KÝ</strong></div>
+              <div style="font-style: italic;">(Ký, ghi rõ họ tên)</div>
+              <div class="signature-space"></div>
+              <div>${getValueOrDots(data?.fullName)}</div>
+            </div>
+          </div>
+
+          <div class="date-section">
+            Ngày ${new Date().getDate()} tháng ${new Date().getMonth() + 1} năm ${new Date().getFullYear()}
+          </div>
+        </body>
+      </html>
+    `;
+
+    // Create a blob and download link
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create temporary link and click it to download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Phieu_Dang_Ky_Dau_Gia_${getValueOrDots(data?.fullName).replace(/\./g, '')}_${new Date().toISOString().split('T')[0]}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    // Inform user about next steps
+    toast.success("Đã tải xuống file HTML! Mở file và in ra PDF từ trình duyệt.", {
+      autoClose: 5000,
+    });
 
   } catch (error) {
     console.error("Error exporting to PDF:", error);
