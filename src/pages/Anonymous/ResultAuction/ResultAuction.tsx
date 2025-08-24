@@ -15,10 +15,7 @@ interface SearchParams {
   PageNumber?: number;
   PageSize?: number;
   Status: number;
-  ConditionAuction: number;
   AuctionName?: string;
-  SortBy: "register_open_date";
-  IsAscending: false;
 }
 
 const AuctionListAnonyMous = () => {
@@ -33,9 +30,6 @@ const AuctionListAnonyMous = () => {
     PageSize: 8,
     CategoryId: location.state?.key,
     Status: 2,
-    SortBy: "register_open_date",
-    IsAscending: false,
-    ConditionAuction: 0,
   });
   const [totalData, setTotalData] = useState<number>(0);
   const [auctionList, setAuctionList] = useState<AuctionDataList[]>([]);
@@ -52,9 +46,6 @@ const AuctionListAnonyMous = () => {
         PageSize: searchParams.PageSize || 8,
         CategoryId: location.state?.key,
         Status: searchParams.Status,
-        SortBy: searchParams.SortBy,
-        IsAscending: searchParams.IsAscending,
-        ConditionAuction: searchParams.ConditionAuction,
       };
       if (searchParams.AuctionName) {
         params.AuctionName = searchParams.AuctionName;
