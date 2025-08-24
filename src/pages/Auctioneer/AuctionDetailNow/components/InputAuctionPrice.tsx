@@ -95,6 +95,7 @@ const InputAuctionPrice = ({
     InputAuctionPriceModals[]
   >([]);
   const [loading, setLoading] = useState(false);
+  const [completingLoading, setCompletingLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [auctionAssets, setAuctionAssets] = useState<AuctionAsset[]>([]);
@@ -120,8 +121,8 @@ const InputAuctionPrice = ({
 
         const assetCountOther = Array.isArray(auctionRoundPriceListOther)
           ? auctionRoundPriceListOther.filter(
-              (item) => item.tagName === asset.tagName
-            ).length
+            (item) => item.tagName === asset.tagName
+          ).length
           : 0;
 
         return {
@@ -149,21 +150,21 @@ const InputAuctionPrice = ({
   const filteredData = useMemo(() => {
     const filterMine = selectedAssetId
       ? auctionRoundPriceList.filter(
-          (item) => item.auctionAssetId === selectedAssetId
-        )
+        (item) => item.auctionAssetId === selectedAssetId
+      )
       : auctionRoundPriceList;
 
     const filterOther =
       selectedAssetId && Array.isArray(auctionRoundPriceListOther)
         ? auctionRoundPriceListOther.filter((item) => {
-            const selectedAsset = auctionAssetsToStatistic?.find(
-              (asset) => asset.auctionAssetsId === selectedAssetId
-            );
-            return selectedAsset && item.tagName === selectedAsset.tagName;
-          })
+          const selectedAsset = auctionAssetsToStatistic?.find(
+            (asset) => asset.auctionAssetsId === selectedAssetId
+          );
+          return selectedAsset && item.tagName === selectedAsset.tagName;
+        })
         : Array.isArray(auctionRoundPriceListOther)
-        ? auctionRoundPriceListOther
-        : [];
+          ? auctionRoundPriceListOther
+          : [];
 
     return { filterMine, filterOther };
   }, [
@@ -348,15 +349,19 @@ const InputAuctionPrice = ({
       })),
     };
     try {
+      setCompletingLoading(true);
       const response = await AuctionServices.saveListAuctionRoundPrice(
         dataSubmit
       );
       if (response.code === 200) {
         toast.success(response.message || "Lưu danh sách giá đấu thành công");
+        if (onBackToList) onBackToList();
       }
     } catch (error: any) {
       console.error(error);
       toast.error("Lưu danh sách giá đấu thất bại");
+    } finally {
+      setCompletingLoading(false);
     }
   };
 
@@ -460,12 +465,12 @@ const InputAuctionPrice = ({
     () =>
       statistics.totalMine > FORM_VALIDATION_RULES.PAGINATION_SIZE
         ? {
-            pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total: number, range: [number, number]) =>
-              `${range[0]}-${range[1]} của ${total} mục`,
-          }
+          pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total: number, range: [number, number]) =>
+            `${range[0]}-${range[1]} của ${total} mục`,
+        }
         : false,
     [statistics.totalMine]
   );
@@ -557,9 +562,8 @@ const InputAuctionPrice = ({
             {/* Tổng số phiếu */}
             <Col xs={24} sm={12} lg={6}>
               <Card
-                className={`!bg-gradient-to-br !from-violet-500 !via-purple-500 !to-purple-600 !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${
-                  !selectedAssetId ? "!ring-4 !ring-blue-400" : ""
-                }`}
+                className={`!bg-gradient-to-br !from-violet-500 !via-purple-500 !to-purple-600 !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${!selectedAssetId ? "!ring-4 !ring-blue-400" : ""
+                  }`}
                 onClick={() => setSelectedAssetId(null)}
               >
                 <div className="!flex !flex-col !items-center">
@@ -584,13 +588,11 @@ const InputAuctionPrice = ({
             {statistics.assetStats.map((assetStat) => (
               <Col xs={24} sm={12} lg={6} key={assetStat.auctionAssetsId}>
                 <Card
-                  className={`${
-                    assetStat.gradientStyle
-                  } !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${
-                    selectedAssetId === assetStat.auctionAssetsId
+                  className={`${assetStat.gradientStyle
+                    } !text-white !shadow-lg hover:!shadow-xl !transition-all !duration-300 !transform hover:!-translate-y-1 !rounded-lg !border-0 cursor-pointer ${selectedAssetId === assetStat.auctionAssetsId
                       ? "!ring-4 !ring-blue-400"
                       : ""
-                  }`}
+                    }`}
                   onClick={() => setSelectedAssetId(assetStat.auctionAssetsId)}
                 >
                   <div className="!flex !flex-col !items-center">
@@ -796,10 +798,12 @@ const InputAuctionPrice = ({
                       type="default"
                       icon={<CheckOutlined />}
                       onClick={handleComplete}
+                      loading={completingLoading}
+                      disabled={completingLoading}
                       size="large"
                       className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white border-0 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
                     >
-                      Hoàn thành nhập phiếu
+                      {completingLoading ? "Đang hoàn thành..." : "Hoàn thành nhập phiếu"}
                     </Button>
 
                     {/* Status indicator */}
@@ -937,18 +941,18 @@ const InputAuctionPrice = ({
                             }}
                             pagination={
                               statistics.totalOther >
-                              FORM_VALIDATION_RULES.PAGINATION_SIZE
+                                FORM_VALIDATION_RULES.PAGINATION_SIZE
                                 ? {
-                                    pageSize:
-                                      FORM_VALIDATION_RULES.PAGINATION_SIZE,
-                                    showSizeChanger: true,
-                                    showQuickJumper: true,
-                                    showTotal: (
-                                      total: number,
-                                      range: [number, number]
-                                    ) =>
-                                      `${range[0]}-${range[1]} của ${total} mục`,
-                                  }
+                                  pageSize:
+                                    FORM_VALIDATION_RULES.PAGINATION_SIZE,
+                                  showSizeChanger: true,
+                                  showQuickJumper: true,
+                                  showTotal: (
+                                    total: number,
+                                    range: [number, number]
+                                  ) =>
+                                    `${range[0]}-${range[1]} của ${total} mục`,
+                                }
                                 : false
                             }
                             className="!rounded-xl !overflow-hidden [&_.ant-table]:!bg-transparent [&_.ant-table-thead>tr>th]:!bg-gradient-to-r [&_.ant-table-thead>tr>th]:!from-emerald-50 [&_.ant-table-thead>tr>th]:!to-teal-50 [&_.ant-table-thead>tr>th]:!border-emerald-200"
