@@ -1,4 +1,8 @@
-import { FieldTimeOutlined, CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import {
+  FieldTimeOutlined,
+  CalendarOutlined,
+  ClockCircleOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
@@ -54,13 +58,15 @@ const AuctionCard = ({ dataCard }: Props) => {
   return (
     <div className="group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden hover-lift animate-slide-in-up">
       {/* Status Badge */}
-      <div className="absolute top-4 right-4 z-10">
+      <div className="absolute top-2 right-4 z-10">
         <div
           className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
-            isExpired ? "bg-red-500/90 text-white" : "bg-green-500/90 text-white animate-pulse-glow"
+            isExpired
+              ? "bg-red-500/90 text-white"
+              : "bg-green-500/90 text-white animate-pulse-glow"
           }`}
         >
-          {isExpired ? "📛 Hết hạn" : "✅ Đang mở"}
+          {isExpired ? "Hết hạn" : "Đang mở"}
         </div>
       </div>
 
@@ -85,7 +91,7 @@ const AuctionCard = ({ dataCard }: Props) => {
       </div>
 
       {/* Content Section */}
-      <div className="p-6 space-y-4">
+      <div className="p-8 space-y-4">
         {/* Title */}
         <h3 className="text-xl font-bold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
           {dataCard.auctionName}
@@ -131,8 +137,14 @@ const AuctionCard = ({ dataCard }: Props) => {
               <ClockCircleOutlined className="text-white text-sm" />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-gray-500 font-medium">Thời gian còn lại</p>
-              <p className={`text-sm font-bold ${isExpired ? "text-red-500" : "text-purple-600"}`}>
+              <p className="text-xs text-gray-500 font-medium">
+                Thời gian còn lại
+              </p>
+              <p
+                className={`text-sm font-bold ${
+                  isExpired ? "text-red-500" : "text-purple-600"
+                }`}
+              >
                 {timeLeft}
               </p>
             </div>

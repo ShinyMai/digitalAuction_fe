@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Input, Pagination } from "antd";
-import { SearchOutlined, ReadOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  ReadOutlined,
+  ClockCircleOutlined,
+} from "@ant-design/icons";
 import NewsServices from "../../../services/NewsService";
 import RegularNewsSection from "./components/RegularNewsSection";
 import BlogDetailView from "./components/BlogDetailView";
@@ -128,7 +132,9 @@ const News = () => {
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <ReadOutlined className="text-white text-sm" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800">Tin Tức Mới Nhất</h2>
+            <div className="text-2xl font-bold text-gray-800">
+              Tin Tức Mới Nhất
+            </div>
             <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
               <ClockCircleOutlined />
               <span>Cập nhật</span>
@@ -165,7 +171,9 @@ const News = () => {
                     showSizeChanger={false}
                     className="custom-pagination"
                     showQuickJumper
-                    showTotal={(total, range) => `${range[0]}-${range[1]} của ${total} tin tức`}
+                    showTotal={(total, range) =>
+                      `${range[0]}-${range[1]} của ${total} tin tức`
+                    }
                   />
                 </div>
               )}
@@ -174,7 +182,10 @@ const News = () => {
             {selectedBlog && (
               <div className="lg:w-2/3 w-full transition-all duration-500">
                 <div className="lg:sticky lg:top-8 lg:h-[calc(100vh-4rem)] h-auto">
-                  <BlogDetailView blog={selectedBlog} onClose={handleCloseDetail} />
+                  <BlogDetailView
+                    blog={selectedBlog}
+                    onClose={handleCloseDetail}
+                  />
                 </div>
               </div>
             )}

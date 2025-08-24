@@ -219,7 +219,6 @@ export const useParticipantBiddingHistory = (
       }
     } catch (error) {
       console.error("Error fetching registered auctions:", error);
-      message.error("Không thể tải danh sách phiên đấu giá đã đăng ký");
       setRegisteredAuctions([]);
     } finally {
       setLoading(false);

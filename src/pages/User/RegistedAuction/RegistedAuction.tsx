@@ -17,7 +17,6 @@ import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 dayjs.extend(isBetween);
 import { FilterOutlined } from "@ant-design/icons";
-import { toast } from "react-toastify";
 import AuctionServices from "../../../services/AuctionServices";
 import { StatsCards, AuctionCard, getStatusString } from "./components";
 import type { RegisteredAuction } from "./components";
@@ -89,12 +88,9 @@ const RegistedAuction = () => {
           const auctionData = res.data?.auctionResponse || [];
           setRegisteredAuctions(Array.isArray(auctionData) ? auctionData : []);
           setTotalAuctions(res.data?.totalAuctionRegisted || 0);
-        } else {
-          toast.error("Không thể tải danh sách đấu giá đã đăng ký!");
         }
       } catch (error) {
         console.error("Error fetching registered auctions:", error);
-        toast.error("Lỗi khi tải danh sách đấu giá đã đăng ký!");
       } finally {
         setLoading(false);
       }

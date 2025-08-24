@@ -1,12 +1,21 @@
 import { useState } from "react";
-import { Card, Typography, Steps, Button, Row, Col, Collapse, Timeline, Space } from "antd";
+import {
+  Card,
+  Typography,
+  Steps,
+  Button,
+  Row,
+  Col,
+  Collapse,
+  Timeline,
+  Space,
+} from "antd";
 import {
   UserOutlined,
   SearchOutlined,
   FileTextOutlined,
   DollarOutlined,
   SafetyOutlined,
-  PlayCircleOutlined,
   QuestionCircleOutlined,
   RightOutlined,
   CheckCircleOutlined,
@@ -65,17 +74,20 @@ const Guidance = () => {
     {
       icon: <TrophyOutlined className="text-blue-500 text-2xl" />,
       title: "Đấu giá minh bạch",
-      description: "Hệ thống đấu giá công khai, minh bạch với quy trình được giám sát chặt chẽ",
+      description:
+        "Hệ thống đấu giá công khai, minh bạch với quy trình được giám sát chặt chẽ",
     },
     {
       icon: <SafetyOutlined className="text-green-500 text-2xl" />,
       title: "Bảo mật tuyệt đối",
-      description: "Thông tin cá nhân và giao dịch được bảo mật với công nghệ hiện đại",
+      description:
+        "Thông tin cá nhân và giao dịch được bảo mật với công nghệ hiện đại",
     },
     {
       icon: <ClockCircleOutlined className="text-orange-500 text-2xl" />,
       title: "Thời gian thực",
-      description: "Cập nhật giá đấu theo thời gian thực, không bỏ lỡ cơ hội nào",
+      description:
+        "Cập nhật giá đấu theo thời gian thực, không bỏ lỡ cơ hội nào",
     },
     {
       icon: <TeamOutlined className="text-purple-500 text-2xl" />,
@@ -118,7 +130,8 @@ const Guidance = () => {
           <Paragraph>Phí tham gia đấu giá bao gồm:</Paragraph>
           <ul className="list-disc pl-6 space-y-2">
             <li>
-              <Text strong>Phí đăng ký:</Text> 500.000 VNĐ - 2.000.000 VNĐ tùy loại tài sản
+              <Text strong>Phí đăng ký:</Text> 500.000 VNĐ - 2.000.000 VNĐ tùy
+              loại tài sản
             </li>
             <li>
               <Text strong>Tiền đặt cọc:</Text> 10% - 20% giá khởi điểm
@@ -135,8 +148,9 @@ const Guidance = () => {
       label: "Thời gian đấu giá kéo dài bao lâu?",
       children: (
         <Paragraph>
-          Thời gian đấu giá thường kéo dài từ 2-4 giờ tùy vào loại tài sản. Hệ thống sẽ tự động gia
-          hạn thêm 5 phút nếu có người đưa ra giá mới trong 2 phút cuối.
+          Thời gian đấu giá thường kéo dài từ 2-4 giờ tùy vào loại tài sản. Hệ
+          thống sẽ tự động gia hạn thêm 5 phút nếu có người đưa ra giá mới trong
+          2 phút cuối.
         </Paragraph>
       ),
     },
@@ -166,7 +180,6 @@ const Guidance = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 py-20">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 overflow-hidden">
@@ -175,24 +188,17 @@ const Guidance = () => {
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
-          <Title level={1} className="!text-white !mb-4 font-bold text-4xl md:text-6xl">
+          <Title
+            level={1}
+            className="!text-white !mb-4 font-bold text-4xl md:text-6xl"
+          >
             <BookOutlined className="mr-4" />
             Hướng dẫn sử dụng
           </Title>
           <Text className="!text-white !text-xl !leading-relaxed block max-w-3xl mx-auto">
-            Khám phá cách sử dụng hệ thống đấu giá trực tuyến một cách dễ dàng và hiệu quả. Chúng
-            tôi sẽ đồng hành cùng bạn từ những bước đầu tiên.
+            Khám phá cách sử dụng hệ thống đấu giá trực tuyến một cách dễ dàng
+            và hiệu quả. Chúng tôi sẽ đồng hành cùng bạn từ những bước đầu tiên.
           </Text>
-          <div className="mt-8">
-            <Button
-              type="primary"
-              size="large"
-              className="bg-white text-blue-600 hover:bg-blue-50 border-0 rounded-xl px-8 py-3 h-auto font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-              icon={<PlayCircleOutlined />}
-            >
-              Bắt đầu học
-            </Button>
-          </div>
         </div>
       </section>
 
@@ -211,7 +217,7 @@ const Guidance = () => {
             </Text>
           </div>
 
-          <Card className="!bg-white/80 !backdrop-blur-sm !border-0 !shadow-2xl !rounded-3xl !p-8">
+          <Card className="!bg-white/80 !backdrop-blur-sm !border-0 !shadow-2xl !rounded-3xl">
             <Steps
               current={currentStep}
               onChange={setCurrentStep}
@@ -222,7 +228,12 @@ const Guidance = () => {
                 title: step.title,
                 description: step.description,
                 icon: step.icon,
-                status: index === currentStep ? "process" : index < currentStep ? "finish" : "wait",
+                status:
+                  index === currentStep
+                    ? "process"
+                    : index < currentStep
+                    ? "finish"
+                    : "wait",
               }))}
             />
 
@@ -285,7 +296,9 @@ const Guidance = () => {
                     <Title level={4} className="!mb-3">
                       {feature.title}
                     </Title>
-                    <Text className="!text-slate-600 !leading-relaxed">{feature.description}</Text>
+                    <Text className="!text-slate-600 !leading-relaxed">
+                      {feature.description}
+                    </Text>
                   </div>
                 </Card>
               </Col>
@@ -339,7 +352,9 @@ const Guidance = () => {
                         <div>
                           <Text strong>Công bố kết quả</Text>
                           <br />
-                          <Text className="text-slate-600">Xác định người thắng đấu giá</Text>
+                          <Text className="text-slate-600">
+                            Xác định người thắng đấu giá
+                          </Text>
                         </div>
                       ),
                     },
@@ -405,7 +420,9 @@ const Guidance = () => {
                         Xác minh danh tính
                       </Text>
                       <br />
-                      <Text className="text-blue-600">Bắt buộc trước khi tham gia đấu giá</Text>
+                      <Text className="text-blue-600">
+                        Bắt buộc trước khi tham gia đấu giá
+                      </Text>
                     </div>
                   </div>
                 </div>
@@ -434,7 +451,9 @@ const Guidance = () => {
               activeKey={activeKey}
               onChange={setActiveKey}
               ghost
-              expandIcon={({ isActive }) => <RightOutlined rotate={isActive ? 90 : 0} />}
+              expandIcon={({ isActive }) => (
+                <RightOutlined rotate={isActive ? 90 : 0} />
+              )}
               items={faqData}
               className="[&_.ant-collapse-item]:border-0 [&_.ant-collapse-header]:!bg-slate-50 [&_.ant-collapse-header]:!rounded-xl [&_.ant-collapse-header]:!mb-3 [&_.ant-collapse-header]:!font-semibold [&_.ant-collapse-content-box]:!px-4"
             />
@@ -451,8 +470,8 @@ const Guidance = () => {
                     Cần hỗ trợ thêm?
                   </Title>
                   <Paragraph className="!text-blue-100 !text-lg !leading-relaxed">
-                    Đội ngũ chuyên viên của chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7. Liên hệ ngay để
-                    được tư vấn chi tiết.
+                    Đội ngũ chuyên viên của chúng tôi luôn sẵn sàng hỗ trợ bạn
+                    24/7. Liên hệ ngay để được tư vấn chi tiết.
                   </Paragraph>
 
                   <div className="space-y-3 mt-6">
@@ -462,11 +481,15 @@ const Guidance = () => {
                     </div>
                     <div className="flex items-center gap-3">
                       <MailOutlined className="!text-white !text-lg" />
-                      <Text className="!text-white">Email: support@digitalauction.vn</Text>
+                      <Text className="!text-white">
+                        Email: support@digitalauction.vn
+                      </Text>
                     </div>
                     <div className="flex items-center gap-3">
                       <GlobalOutlined className="!text-white !text-lg" />
-                      <Text className="!text-white">Website: www.digitalauction.vn</Text>
+                      <Text className="!text-white">
+                        Website: www.digitalauction.vn
+                      </Text>
                     </div>
                   </div>
                 </Col>

@@ -6,7 +6,11 @@ import AuctionDetail from "./components/AuctionDetail";
 import ListAuctionDocument from "./components/ListAuctionDocument";
 import ListAuctionDocumentSuccessRegister from "./components/ListAuctionDocumentSuccessRegister";
 import type { AuctionDataDetail, AuctionDateModal } from "../Modals";
-import { FileTextOutlined, TeamOutlined, CheckCircleOutlined } from "@ant-design/icons";
+import {
+  FileTextOutlined,
+  TeamOutlined,
+  CheckCircleOutlined,
+} from "@ant-design/icons";
 import type { RootState } from "../../../store/store";
 import { useSelector } from "react-redux";
 
@@ -15,7 +19,8 @@ const AuctionDetailAnonymous = () => {
   const auctionId = state?.key;
   const auctionType = state?.type;
   const { user } = useSelector((state: RootState) => state.auth);
-  const [auctionDetailData, setAuctionDetailData] = useState<AuctionDataDetail>();
+  const [auctionDetailData, setAuctionDetailData] =
+    useState<AuctionDataDetail>();
   const [auctionDateModal, setAuctionDateModal] = useState<AuctionDateModal>();
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -42,11 +47,14 @@ const AuctionDetailAnonymous = () => {
       // Xử lý staffIncharge từ chuỗi thành array
       if (data && data.staffInCharge) {
         data.staffInCharge = data.staffInCharge
-          .split(',')
+          .split(",")
           .map((id: string) => id.trim())
-          .filter((id: string) => id !== '');
+          .filter((id: string) => id !== "");
       }
-      if (data.legalDocumentUrls && typeof data.legalDocumentUrls === 'string') {
+      if (
+        data.legalDocumentUrls &&
+        typeof data.legalDocumentUrls === "string"
+      ) {
         try {
           data.legalDocumentUrls = JSON.parse(data.legalDocumentUrls);
         } catch (parseError) {
@@ -62,7 +70,7 @@ const AuctionDetailAnonymous = () => {
 
   // Callback để refresh data khi có thay đổi từ các component con
   const handleDataChange = () => {
-    setRefreshKey(prev => prev + 1);
+    setRefreshKey((prev) => prev + 1);
   };
 
   // Hàm kiểm tra quyền truy cập tab 2 và tab 3
@@ -73,15 +81,17 @@ const AuctionDetailAnonymous = () => {
     const userId = user.id;
 
     // Trường hợp 1: Manager
-    if (userRole === 'manager') {
+    if (userRole === "manager") {
       return userId === auctionDetailData.managerInCharge;
     }
 
     // Trường hợp 2: Staff
-    if (userRole === 'staff') {
-      return auctionDetailData.staffInCharge &&
+    if (userRole === "staff") {
+      return (
+        auctionDetailData.staffInCharge &&
         Array.isArray(auctionDetailData.staffInCharge) &&
-        auctionDetailData.staffInCharge.includes(userId);
+        auctionDetailData.staffInCharge.includes(userId)
+      );
     }
 
     return false;
@@ -95,12 +105,12 @@ const AuctionDetailAnonymous = () => {
       key: "1",
       label: (
         <div className="flex items-center gap-2 px-4 py-2">
-          <FileTextOutlined className="text-blue-600" />
+          <FileTextOutlined className="!text-blue-600" />
           <span className="font-semibold text-gray-700">Thông tin đấu giá</span>
         </div>
       ),
       children: (
-        <Card className="shadow-xl bg-white/70 backdrop-blur-sm border-0 rounded-2xl">
+        <Card className="!shadow-xl !bg-white/70 !backdrop-blur-sm !border-0 !rounded-2xl">
           <AuctionDetail
             auctionDetailData={auctionDetailData}
             auctionType={auctionType}
@@ -109,46 +119,52 @@ const AuctionDetailAnonymous = () => {
         </Card>
       ),
     },
-    ...(canAccessRegistrationTabs ? [
-      {
-        key: "2",
-        label: (
-          <div className="flex items-center gap-2 px-4 py-2">
-            <TeamOutlined className="text-teal-600" />
-            <span className="font-semibold text-gray-700">Danh sách đăng ký</span>
-          </div>
-        ),
-        children: (
-          <Card className="shadow-xl bg-white/70 backdrop-blur-sm border-0 rounded-2xl">
-            <ListAuctionDocument
-              key={`auction-docs-${refreshKey}`}
-              auctionId={auctionId}
-              auctionDetailData={auctionDetailData}
-              onDataChange={handleDataChange}
-            />
-          </Card>
-        ),
-      },
-      {
-        key: "3",
-        label: (
-          <div className="flex items-center gap-2 px-4 py-2">
-            <CheckCircleOutlined className="text-green-600" />
-            <span className="font-semibold text-gray-700">Đăng ký thành công</span>
-          </div>
-        ),
-        children: (
-          <Card className="shadow-xl bg-white/70 backdrop-blur-sm border-0 rounded-2xl">
-            <ListAuctionDocumentSuccessRegister
-              key={`success-docs-${refreshKey}`}
-              auctionId={auctionId}
-              auctionDateModals={auctionDateModal}
-              auctionDetailData={auctionDetailData}
-            />
-          </Card>
-        ),
-      },
-    ] : []),
+    ...(canAccessRegistrationTabs
+      ? [
+          {
+            key: "2",
+            label: (
+              <div className="flex items-center gap-2 px-4 py-2">
+                <TeamOutlined className="!text-teal-600" />
+                <span className="font-semibold text-gray-700">
+                  Danh sách đăng ký
+                </span>
+              </div>
+            ),
+            children: (
+              <Card className="!shadow-xl !bg-white/70 !backdrop-blur-sm !border-0 !rounded-2xl">
+                <ListAuctionDocument
+                  key={`auction-docs-${refreshKey}`}
+                  auctionId={auctionId}
+                  auctionDetailData={auctionDetailData}
+                  onDataChange={handleDataChange}
+                />
+              </Card>
+            ),
+          },
+          {
+            key: "3",
+            label: (
+              <div className="flex items-center gap-2 px-4 py-2">
+                <CheckCircleOutlined className="!text-green-600" />
+                <span className="font-semibold text-gray-700">
+                  Đăng ký thành công
+                </span>
+              </div>
+            ),
+            children: (
+              <Card className="shadow-xl bg-white/70 backdrop-blur-sm border-0 rounded-2xl">
+                <ListAuctionDocumentSuccessRegister
+                  key={`success-docs-${refreshKey}`}
+                  auctionId={auctionId}
+                  auctionDateModals={auctionDateModal}
+                  auctionDetailData={auctionDetailData}
+                />
+              </Card>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -182,12 +198,11 @@ const AuctionDetailAnonymous = () => {
           transition: all 0.3s ease !important;
           margin: 0 4px !important;
         }
-        
+
         .staff-tabs .ant-tabs-tab:hover {
-          background: rgba(59, 130, 246, 0.1) !important;
           transform: translateY(-2px) !important;
         }
-        
+
         .staff-tabs .ant-tabs-tab-active {
           background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
           color: white !important;
