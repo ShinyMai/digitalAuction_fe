@@ -58,6 +58,8 @@ export type AuctionDataDetail = {
   rejectReason?: string;
   cancelReason?: string;
   cancelReasonFile?: string;
+  staffInCharge?: string[];
+  managerInCharge?: string;
   listAuctionAssets?: AuctionAsset[];
 };
 

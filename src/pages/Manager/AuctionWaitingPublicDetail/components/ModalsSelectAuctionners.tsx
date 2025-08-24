@@ -5,25 +5,33 @@ import {
   TeamOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
+  UsergroupAddOutlined,
 } from "@ant-design/icons";
 import type { ModalAuctioners } from "../../../Staff/Modals";
 import CustomModal from "../../../../components/Common/CustomModal";
 
 const { Title, Text } = Typography;
 
+interface Staff {
+  staffId: string;
+  staffName: string;
+}
+
 interface Props {
   isOpen: boolean;
   listAuctioners: ModalAuctioners[];
+  listStaff: Staff[];
   onClose: () => void;
-  onSelect: (value: string) => void;
+  onSelect: (auctionerId: string, selectedStaffIds: string[]) => void;
 }
 
-const ModalsSelectAuctioners = ({ isOpen, listAuctioners, onClose, onSelect }: Props) => {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+const ModalsSelectAuctioners = ({ isOpen, listAuctioners, listStaff, onClose, onSelect }: Props) => {
+  const [selectedAuctionerId, setSelectedAuctionerId] = useState<string | null>(null);
+  const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
 
   const handleConfirm = () => {
-    if (selectedId) {
-      onSelect(selectedId);
+    if (selectedAuctionerId) {
+      onSelect(selectedAuctionerId, selectedStaffIds);
       onClose(); // Đóng modal sau khi xác nhận
     }
   };
@@ -63,7 +71,7 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, onClose, onSelect }: P
             </div>
 
             <Title level={3} className="!mb-2 !text-white font-bold">
-              Chỉ định Đấu giá viên
+              Chỉ định Đấu giá viên & Nhân viên
             </Title>
           </div>
 
@@ -77,12 +85,12 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, onClose, onSelect }: P
                 </div>
                 <div>
                   <Text className="font-semibold text-slate-800 text-lg block mb-2">
-                    Hướng dẫn chọn đấu giá viên
+                    Hướng dẫn chọn đấu giá viên và nhân viên
                   </Text>
                   <Text className="text-slate-600 leading-relaxed">
-                    Vui lòng chọn một đấu giá viên từ danh sách bên dưới để gán cho phiên đấu giá.
+                    Vui lòng chọn một đấu giá viên và danh sách nhân viên tham gia phiên đấu giá.
                     Đảm bảo đấu giá viên được chọn có đủ kinh nghiệm và thời gian để điều hành phiên
-                    đấu giá.
+                    đấu giá. Nhân viên được chọn sẽ hỗ trợ trong quá trình đấu giá.
                   </Text>
                 </div>
               </div>
@@ -122,8 +130,55 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, onClose, onSelect }: P
                     </div>
                   ),
                 }))}
-                onChange={(value) => setSelectedId(value)}
-                value={selectedId ?? undefined}
+                onChange={(value) => setSelectedAuctionerId(value)}
+                value={selectedAuctionerId ?? undefined}
+                dropdownStyle={{
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                  boxShadow:
+                    "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                }}
+              />
+            </div>
+
+            {/* Staff Selection */}
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg">
+              <Text className="font-semibold text-slate-800 text-lg block mb-4">
+                <UsergroupAddOutlined className="mr-2 text-blue-600" />
+                Danh sách nhân viên tham gia
+              </Text>
+
+              <Select
+                mode="multiple"
+                size="large"
+                className="w-full max-h-full"
+                placeholder="Chọn nhân viên tham gia phiên đấu giá..."
+                showSearch
+                optionFilterProp="label"
+                notFoundContent={
+                  <div className="text-center py-8">
+                    <UserOutlined className="text-slate-400 text-3xl mb-2" />
+                    <Text className="text-slate-500 block">Không tìm thấy nhân viên</Text>
+                  </div>
+                }
+                options={listStaff.map((staff) => ({
+                  value: staff.staffId,
+                  label: (
+                    <div className="flex items-center gap-3 py-2">
+                      <Avatar
+                        size={30}
+                        icon={<UserOutlined />}
+                        className="bg-gradient-to-r from-green-500 to-teal-500 border-2 border-white shadow-sm"
+                      />
+                      <div className="flex-1">
+                        <Text className="font-semibold text-slate-800 block">{staff.staffName}</Text>
+                      </div>
+                      <CheckCircleOutlined className="text-green-500 text-lg" />
+                    </div>
+                  ),
+                }))}
+                onChange={(values) => setSelectedStaffIds(values)}
+                value={selectedStaffIds}
                 dropdownStyle={{
                   borderRadius: "16px",
                   overflow: "hidden",
@@ -162,7 +217,7 @@ const ModalsSelectAuctioners = ({ isOpen, listAuctioners, onClose, onSelect }: P
 
               <Button
                 type="primary"
-                disabled={!selectedId}
+                disabled={!selectedAuctionerId}
                 onClick={handleConfirm}
                 size="large"
                 className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 border-0 rounded-xl px-8 py-3 h-auto font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:transform-none"
