@@ -60,9 +60,6 @@ const UserDropdown: React.FC<Props> = ({
         onClick={() => setOpen((prev) => !prev)}
       >
         <UserOutlined className="text-lg text-white" />
-
-        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
-        <div className="absolute inset-0 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
 
       <div
@@ -94,9 +91,9 @@ const UserDropdown: React.FC<Props> = ({
                 {user?.name || "Người dùng"}
               </div>
               {user?.email && (
-                <p className="text-white/70 text-xs mt-1 truncate">
+                <div className="text-white/70 text-xs mt-1 truncate">
                   {user.email}
-                </p>
+                </div>
               )}
             </div>
           </div>

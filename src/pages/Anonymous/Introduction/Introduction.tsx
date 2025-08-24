@@ -151,45 +151,6 @@ const Introduction = () => {
           </div>
         </div>
       </section>{" "}
-      {/* Statistics Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-sky-600 to-sky-400 text-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            <div className="text-center">
-              <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 text-yellow-400">
-                10,000+
-              </h3>
-              <p className="text-sm sm:text-base lg:text-lg opacity-90">
-                Người dùng tin tưởng
-              </p>
-            </div>
-            <div className="text-center">
-              <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 text-yellow-400">
-                50,000+
-              </h3>
-              <p className="text-sm sm:text-base lg:text-lg opacity-90">
-                Lượt đăng ký thành công
-              </p>
-            </div>
-            <div className="text-center">
-              <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 text-yellow-400">
-                99.9%
-              </h3>
-              <p className="text-sm sm:text-base lg:text-lg opacity-90">
-                Tỷ lệ hài lòng
-              </p>
-            </div>
-            <div className="text-center">
-              <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 text-yellow-400">
-                24/7
-              </h3>
-              <p className="text-sm sm:text-base lg:text-lg opacity-90">
-                Hỗ trợ khách hàng
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>{" "}
       {/* CTA Section */}
       <section className="py-12 sm:py-16 lg:py-20 bg-gray-900 text-white text-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">

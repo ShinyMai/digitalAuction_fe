@@ -28,15 +28,19 @@ const AuctionDetailAnonymous = () => {
   const [auctionDetailData, setAuctionDetailData] =
     useState<AuctionDataDetail>();
   const [isEditMode, setIsEditMode] = useState(false);
-  const [listManager, setListManager] = useState<{ managerId: string, managerName: string }[]>([]);
+  const [listManager, setListManager] = useState<
+    { managerId: string; managerName: string }[]
+  >([]);
   const [showManagerModal, setShowManagerModal] = useState(false);
-  const [selectedManagerId, setSelectedManagerId] = useState<string | null>(null);
+  const [selectedManagerId, setSelectedManagerId] = useState<string | null>(
+    null
+  );
   const [form] = Form.useForm();
 
   useEffect(() => {
     if (auctionId) {
       fetchAuctionDetail(auctionId);
-      onGetListManager()
+      onGetListManager();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auctionId]);
@@ -68,14 +72,16 @@ const AuctionDetailAnonymous = () => {
       const params = {
         RoleId: 6,
         PageNumber: 1,
-        PageSize: 10,
-      }
+        PageSize: 1000,
+      };
       const response = await AuthServices.getListAccount(params);
       if (response.code === 200) {
-        const valResponse = response.data.employeeAccounts.map((manager: any) => ({
-          managerId: manager.userId,
-          managerName: manager.name
-        }));
+        const valResponse = response.data.employeeAccounts.map(
+          (manager: any) => ({
+            managerId: manager.userId,
+            managerName: manager.name,
+          })
+        );
         setListManager(valResponse);
       } else {
         toast.error(response.message);
@@ -118,13 +124,21 @@ const AuctionDetailAnonymous = () => {
     }
 
     try {
-      const response = await AuctionServices.waitingPublicAuction({ auctionId: auctionId, managerInCharge: selectedManagerId });
+      const response = await AuctionServices.waitingPublicAuction({
+        auctionId: auctionId,
+        managerInCharge: selectedManagerId,
+      });
       if (response.code === 200) {
         toast.success(response.message);
         setShowManagerModal(false);
         setSelectedManagerId(null);
         form.resetFields();
-        navigate(`/${role.toLowerCase()}/${STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC}`, { replace: true });
+        navigate(
+          `/${role.toLowerCase()}/${
+            STAFF_ROUTES.SUB.AUCTION_LIST_WAITING_PUBLIC
+          }`,
+          { replace: true }
+        );
       } else {
         toast.error(response.message);
       }
@@ -170,10 +184,11 @@ const AuctionDetailAnonymous = () => {
                 icon={<SendOutlined />}
                 onClick={handleSendToManager}
                 disabled={isEditMode}
-                className={`${isEditMode
-                  ? "bg-gray-300 border-0 text-gray-500 cursor-not-allowed opacity-50"
-                  : "bg-gradient-to-r from-emerald-500 to-teal-500 border-0 hover:from-emerald-600 hover:to-teal-600 text-white"
-                  } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[160px] group`}
+                className={`${
+                  isEditMode
+                    ? "bg-gray-300 border-0 text-gray-500 cursor-not-allowed opacity-50"
+                    : "bg-gradient-to-r from-emerald-500 to-teal-500 border-0 hover:from-emerald-600 hover:to-teal-600 text-white"
+                } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[160px] group`}
                 size="large"
               >
                 <span className="ml-1">Gửi cho quản lý</span>
@@ -183,10 +198,11 @@ const AuctionDetailAnonymous = () => {
                 type={isEditMode ? "default" : "primary"}
                 icon={<EditOutlined />}
                 onClick={handleEditToggle}
-                className={`${isEditMode
-                  ? "bg-gradient-to-r from-slate-500 to-gray-500 border-0 text-white hover:from-slate-600 hover:to-gray-600"
-                  : "bg-gradient-to-r from-blue-500 to-indigo-500 border-0 hover:from-blue-600 hover:to-indigo-600 text-white"
-                  } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[140px] group`}
+                className={`${
+                  isEditMode
+                    ? "bg-gradient-to-r from-slate-500 to-gray-500 border-0 text-white hover:from-slate-600 hover:to-gray-600"
+                    : "bg-gradient-to-r from-blue-500 to-indigo-500 border-0 hover:from-blue-600 hover:to-indigo-600 text-white"
+                } shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-medium min-w-[140px] group`}
                 size="large"
               >
                 <span className="ml-1">
@@ -240,7 +256,9 @@ const AuctionDetailAnonymous = () => {
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
               <UserOutlined className="text-white" />
             </div>
-            <span className="text-gray-600">Chọn quản lý để gửi phiên đấu giá</span>
+            <span className="text-gray-600">
+              Chọn quản lý để gửi phiên đấu giá
+            </span>
           </div>
         }
         open={showManagerModal}
@@ -252,7 +270,8 @@ const AuctionDetailAnonymous = () => {
         centered
         okButtonProps={{
           disabled: !selectedManagerId,
-          className: "bg-gradient-to-r from-blue-500 to-indigo-600 border-0 hover:from-blue-600 hover:to-indigo-700",
+          className:
+            "bg-gradient-to-r from-blue-500 to-indigo-600 border-0 hover:from-blue-600 hover:to-indigo-700",
           size: "large",
         }}
         cancelButtonProps={{
@@ -303,7 +322,10 @@ const AuctionDetailAnonymous = () => {
                 )}
               >
                 {listManager.map((manager) => (
-                  <Select.Option key={manager.managerId} value={manager.managerId}>
+                  <Select.Option
+                    key={manager.managerId}
+                    value={manager.managerId}
+                  >
                     {manager.managerName}
                   </Select.Option>
                 ))}
@@ -322,7 +344,10 @@ const AuctionDetailAnonymous = () => {
                     Quản lý được chọn:
                   </div>
                   <div className="text-lg font-bold text-blue-800">
-                    {listManager.find(m => m.managerId === selectedManagerId)?.managerName}
+                    {
+                      listManager.find((m) => m.managerId === selectedManagerId)
+                        ?.managerName
+                    }
                   </div>
                 </div>
               </div>
