@@ -288,7 +288,7 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
       });
       if (response.code === 200) {
         toast.success("Phiên đấu giá đã kết thúc thành công");
-        navigate(`${role?.toLocaleLowerCase()}/${STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL}`)
+        navigate(`${role?.toLocaleLowerCase()}/${STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL}`, { replace: true })
       } else {
         toast.error("Lỗi khi kết thúc phiên đấu giá");
       }

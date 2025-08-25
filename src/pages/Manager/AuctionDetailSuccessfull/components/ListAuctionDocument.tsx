@@ -514,11 +514,12 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     }
                     className="text-xs"
                   >
-                    {parseInt(status) === 1
-                      ? `${count} đang xử lý hoàn cọc`
-                      : parseInt(status) === 2
-                        ? `${count} xác nhận đồng ý hoàn cọc`
-                        : `${count} đã hoàn cọc`}
+                    {parseInt(status) === 0 ? <></> :
+                      parseInt(status) === 1
+                        ? `${count} đang xử lý hoàn cọc`
+                        : parseInt(status) === 2
+                          ? `${count} xác nhận đồng ý hoàn cọc`
+                          : `${count} từ chối hoàn cọc`}
                   </Tag>
                 ))}
               </div>
@@ -977,7 +978,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                             ? "Đang xử lý hoàn cọc"
                             : asset.statusRefund === 2
                               ? "Xác nhận đồng ý hoàn cọc"
-                              : "Đã hoàn cọc"}
+                              : "Từ chối hoàn cọc"}
                         </Tag>
                       )}
                     </div>
