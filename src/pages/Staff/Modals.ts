@@ -61,6 +61,8 @@ export type AuctionDataDetail = {
   staffInCharge?: string[];
   managerInCharge?: string;
   legalDocumentUrls?: string[];
+  PriceMin?: number;
+  PriceMax?: number;
   listAuctionAssets?: AuctionAsset[];
 };
 

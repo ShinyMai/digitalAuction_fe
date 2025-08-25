@@ -420,14 +420,7 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
               exit={{ opacity: 0, x: 50 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              {role === USER_ROLES.AUCTIONEER && (
-                <AuctionRoundDetail
-                  auctionRound={selectedRound}
-                  auction={auction}
-                  onBackToList={handleBackToList}
-                />
-              )}
-              {role === USER_ROLES.STAFF && (
+              {(role === USER_ROLES.AUCTIONEER || role === USER_ROLES.STAFF || role === USER_ROLES.MANAGER) && (
                 <AuctionRoundDetail
                   auctionRound={selectedRound}
                   auction={auction}

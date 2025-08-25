@@ -62,6 +62,8 @@ export type AuctionDataDetail = {
   cancelReason?: string;
   cancelReasonFile?: string;
   legalDocumentUrls?: string[];
+  PriceMin?: number;
+  PriceMax?: number;
   listAuctionAssets?: AuctionAsset[];
 };
 

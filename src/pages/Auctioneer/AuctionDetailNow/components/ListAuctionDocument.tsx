@@ -25,6 +25,7 @@ interface GroupedParticipant {
   participantId: string;
   name: string;
   citizenIdentification: string;
+  numericalOrder?: number;
   userId?: string;
   totalRegistrationFee: number;
   assets: AuctionDocument[];
@@ -102,6 +103,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
         grouped.set(key, {
           participantId: doc.citizenIdentification,
           name: doc.name,
+          numericalOrder: doc.numericalOrder,
           citizenIdentification: doc.citizenIdentification,
           userId: doc.userId,
           totalRegistrationFee: doc.registrationFee,
@@ -192,6 +194,15 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
   };
 
   const columns = [
+    {
+      title: "Số báo danh",
+      dataIndex: "numericalOrder",
+      key: "numericalOrder",
+      width: 120,
+      render: (numericalOrder: number | null) => (
+        <div className="text-center font-medium">{numericalOrder || "-"}</div>
+      ),
+    },
     {
       title: "Thông tin người tham gia",
       key: "participantInfo",
