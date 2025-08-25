@@ -115,7 +115,7 @@ const ListAuctionDocumentSuccesRegister = ({
 }: Props) => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
-    PageSize: 8,
+    PageSize: 100,
     StatusDeposit: 1,
   });
   const [auctionDocuments, setAuctionDocuments] = useState<AuctionDocument[]>(
@@ -676,10 +676,10 @@ const ListAuctionDocumentSuccesRegister = ({
                 icon={<EyeOutlined />}
                 onClick={() => handleShowDetailModal(record)}
                 className={`w-full ${record.statusRefund === 2
-                    ? "bg-green-500 hover:bg-green-600"
-                    : record.statusRefund === 3
-                      ? "bg-red-500 hover:bg-red-600"
-                      : "bg-blue-500 hover:bg-blue-600"
+                  ? "bg-green-500 hover:bg-green-600"
+                  : record.statusRefund === 3
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-blue-500 hover:bg-blue-600"
                   }`}
               >
                 Xem lý do
@@ -1310,20 +1310,20 @@ const ListAuctionDocumentSuccesRegister = ({
                         asset.statusRefund === 3) && (
                         <div
                           className={`mt-2 p-2 rounded border ${asset.statusRefund === 1
-                              ? "bg-orange-50 border-orange-200"
-                              : asset.statusRefund === 2
-                                ? "bg-green-50 border-green-200"
-                                : "bg-red-50 border-red-200"
+                            ? "bg-orange-50 border-orange-200"
+                            : asset.statusRefund === 2
+                              ? "bg-green-50 border-green-200"
+                              : "bg-red-50 border-red-200"
                             }`}
                         >
                           {/* Lý do */}
                           <div className="mb-2">
                             <div
                               className={`text-xs font-medium mb-1 ${asset.statusRefund === 1
-                                  ? "text-orange-800"
-                                  : asset.statusRefund === 2
-                                    ? "text-green-800"
-                                    : "text-red-800"
+                                ? "text-orange-800"
+                                : asset.statusRefund === 2
+                                  ? "text-green-800"
+                                  : "text-red-800"
                                 }`}
                             >
                               {asset.statusRefund === 1
@@ -1347,10 +1347,10 @@ const ListAuctionDocumentSuccesRegister = ({
                           <div>
                             <div
                               className={`text-xs font-medium mb-1 ${asset.statusRefund === 1
-                                  ? "text-orange-800"
-                                  : asset.statusRefund === 2
-                                    ? "text-green-800"
-                                    : "text-red-800"
+                                ? "text-orange-800"
+                                : asset.statusRefund === 2
+                                  ? "text-green-800"
+                                  : "text-red-800"
                                 }`}
                             >
                               File đính kèm:
@@ -1361,10 +1361,10 @@ const ListAuctionDocumentSuccesRegister = ({
                                   <div className="flex items-center gap-1">
                                     <FileTextOutlined
                                       className={`text-xs ${asset.statusRefund === 1
-                                          ? "text-orange-500"
-                                          : asset.statusRefund === 2
-                                            ? "text-green-500"
-                                            : "text-red-500"
+                                        ? "text-orange-500"
+                                        : asset.statusRefund === 2
+                                          ? "text-green-500"
+                                          : "text-red-500"
                                         }`}
                                     />
                                     <span className="text-xs text-gray-700">
@@ -1413,14 +1413,14 @@ const ListAuctionDocumentSuccesRegister = ({
             {/* Thông tin tóm tắt */}
             <div
               className={`p-2 rounded-lg border ${selectedDetailParticipant.statusRefund === 2
-                  ? "bg-green-50 border-green-200"
-                  : "bg-red-50 border-red-200"
+                ? "bg-green-50 border-green-200"
+                : "bg-red-50 border-red-200"
                 }`}
             >
               <div
                 className={`text-xs ${selectedDetailParticipant.statusRefund === 2
-                    ? "text-green-800"
-                    : "text-red-800"
+                  ? "text-green-800"
+                  : "text-red-800"
                   }`}
               >
                 <strong>

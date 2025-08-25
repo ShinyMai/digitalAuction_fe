@@ -63,7 +63,7 @@ const ListAuctionDocument = ({ auctionId, onDataChange }: Props) => {
 
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
-    PageSize: 15,
+    PageSize: 100,
     StatusDeposit: 0,
     SortBy: "numericalOrder",
     IsAscending: true,
