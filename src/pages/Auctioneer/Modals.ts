@@ -88,6 +88,10 @@ export type AuctionDocument = {
   statusDeposit: number;
   statusRefundDeposit: boolean;
   statusTicket: number;
+  refundProof?: string;
+  refundReason?: string;
+  isAttended?: boolean;
+  statusRefund?: number;
   tagName: string;
   userId?: string;
 };

@@ -109,7 +109,7 @@ interface Props {
   auctionDetailData?: AuctionDataDetail;
 }
 
-const ListAuctionDocumentSuccesRegister = ({
+const ListAuctionDocumentSucces = ({
   auctionId,
   auctionDateModals,
 }: Props) => {
@@ -1459,4 +1459,4 @@ const ListAuctionDocumentSuccesRegister = ({
   );
 };
 
-export default ListAuctionDocumentSuccesRegister;
+export default ListAuctionDocumentSucces;

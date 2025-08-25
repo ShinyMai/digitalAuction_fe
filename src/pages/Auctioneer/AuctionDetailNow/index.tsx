@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/store";
 import AuctionRounds from "../AuctionRounds";
 import { toast } from "react-toastify";
+import ListAuctionDocumentSuccess from "./components/ListAuctionDocumentSuccess";
 
 // Thêm interface cho auction asset
 interface AuctionAsset {
@@ -193,7 +194,7 @@ const AuctionDetailAuctioneer = () => {
                     <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-teal-50 hover:scale-105 hover:shadow-md">
                       <TeamOutlined className="text-teal-600 text-lg transition-colors duration-300" />
                       <span className="font-semibold text-gray-700 transition-colors duration-300">
-                        Danh sách tham gia đấu giá
+                        Danh sách đăng ký
                       </span>
                     </div>
                   ),
@@ -209,11 +210,36 @@ const AuctionDetailAuctioneer = () => {
                 },
               ]
               : []),
+            // Tab 3: Danh sách tham gia đấu giá - Kiểm tra quyền truy cập
+            ...(canAccessTabs()
+              ? [
+                {
+                  key: "3",
+                  label: (
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-teal-50 hover:scale-105 hover:shadow-md">
+                      <TeamOutlined className="text-teal-600 text-lg transition-colors duration-300" />
+                      <span className="font-semibold text-gray-700 transition-colors duration-300">
+                        Danh sách tham gia đấu giá
+                      </span>
+                    </div>
+                  ),
+                  children: (
+                    <div>
+                      <ListAuctionDocumentSuccess
+                        auctionId={location.state.key}
+                        auctionDateModals={auctionDateModal}
+
+                      />
+                    </div>
+                  ),
+                },
+              ]
+              : []),
             // Tab 3: Quản lý phiên đấu giá - Kiểm tra quyền truy cập và có auction rounds
             ...(canAccessTabs() && auctionRounds.length > 0
               ? [
                 {
-                  key: "3",
+                  key: "4",
                   label: (
                     <div className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 hover:bg-purple-50 hover:scale-105 hover:shadow-md">
                       <TeamOutlined className="text-purple-600 text-lg transition-colors duration-300" />

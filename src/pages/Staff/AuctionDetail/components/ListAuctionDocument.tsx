@@ -64,7 +64,8 @@ const ListAuctionDocument = ({ auctionId, onDataChange }: Props) => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
     PageSize: 100,
-    StatusDeposit: 0,
+    // StatusDeposit: 0,
+    // StatusTicket: 4,
     SortBy: "numericalOrder",
     IsAscending: true,
   });
@@ -148,6 +149,7 @@ const ListAuctionDocument = ({ auctionId, onDataChange }: Props) => {
         TagName: searchParams.TagName,
         IsAscending: searchParams.IsAscending,
         StatusDeposit: searchParams.StatusDeposit,
+        StatusTicket: searchParams.StatusTicket,
       };
       const response = await AuctionServices.getListAuctionDocument(
         params,
@@ -798,7 +800,7 @@ const ListAuctionDocument = ({ auctionId, onDataChange }: Props) => {
                                 type="primary"
                                 size="small"
                                 disabled={
-                                  asset.statusTicket !== 2 ||
+                                  (asset.statusTicket !== 2 && asset.statusTicket !== 4) ||
                                   asset.statusDeposit !== 0 ||
                                   (loadingActionId !== null &&
                                     loadingActionId !==

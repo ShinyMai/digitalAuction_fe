@@ -379,7 +379,11 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       key: "numericalOrder",
       width: 120,
       render: (numericalOrder: number | null) => (
-        <div className="text-center font-medium">{numericalOrder || "-"}</div>
+        <div className="flex justify-center items-center">
+          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-sky-400 font-semibold text-white">
+            {numericalOrder}
+          </div>
+        </div>
       ),
     },
     {
