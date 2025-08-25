@@ -51,6 +51,7 @@ export interface InputAuctionPriceModals {
   id: string;
   createdBy?: string; // từ API
   numericalOrder?: number; // số thứ tự
+  startingPrice?: number;
 }
 
 interface AuctionAsset {
@@ -324,6 +325,10 @@ const InputAuctionPrice = ({
         }
       }
 
+      const assetObj = auctionAssets.find(
+        (a) => a.auctionAssetsId === values.auctionAssetId
+      );
+
       const formattedValues: InputAuctionPriceModals = {
         ...values,
         price: values.price,
@@ -333,6 +338,7 @@ const InputAuctionPrice = ({
           auctionAssets.find(
             (asset) => asset.auctionAssetsId === values.auctionAssetId
           )?.tagName || "-",
+        startingPrice: assetObj?.startingPrice || 0,
         id: uuidv4(),
       };
 
@@ -401,6 +407,7 @@ const InputAuctionPrice = ({
 
   const handleDelete = (index: number) => {
     const deletedItem = auctionRoundPriceList[index];
+
     setAuctionRoundPriceList(
       auctionRoundPriceList.filter((_, i) => i !== index)
     );
@@ -409,8 +416,9 @@ const InputAuctionPrice = ({
       const assetToRestore: AuctionAsset = {
         auctionAssetsId: deletedItem.auctionAssetId || "",
         tagName: deletedItem.auctionAssetName || "",
-        startingPrice: selectedAsset?.startingPrice || 0,
+        startingPrice: deletedItem.startingPrice || 0, // ✅ dùng giá gốc theo dòng
       };
+
       const assetExists = auctionAssets.some(
         (asset) => asset.auctionAssetsId === assetToRestore.auctionAssetsId
       );
