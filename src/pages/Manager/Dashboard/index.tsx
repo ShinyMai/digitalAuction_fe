@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState, useEffect, useCallback } from 'react';
 import { Row, Col, Typography, DatePicker, Select, Card } from 'antd';
 import {
     BarChartOutlined,
@@ -9,46 +10,110 @@ import BusinessOverview from './components/BusinessOverview';
 import RevenueChart from './components/RevenueChart';
 import ApprovalManagement from './components/ApprovalManagement';
 import type { RangePickerProps } from 'antd/es/date-picker';
+import AuctionServices from '../../../services/AuctionServices';
+import type { AuctionCategory } from '../Modals';
+import { toast } from 'react-toastify';
 
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
 interface DateRange {
-    startDate: string;
-    endDate: string;
+    AuctionStartDate: string;
+    AuctionEndDate: string;
+}
+
+interface DataBusinessOverview {
+    totalAuctions: number;
+    totalCancelledAuctions: number;
+    totalParticipants: number;
+    totalSuccessfulAuctions: number;
 }
 
 const ManagerDashboard: React.FC = () => {
     const [dateRange, setDateRange] = useState<DateRange | null>(null);
-    const [selectedDepartment, setSelectedDepartment] = useState<string>('all');
+    const [selectedDepartment, setSelectedDepartment] = useState<AuctionCategory>();
     const [loading, setLoading] = useState(false);
+    const [listAuctionCategory, setListAuctionCategory] = useState<
+        AuctionCategory[]
+    >([]);
 
-    // TODO: Fetch data from APIs
-    useEffect(() => {
-        fetchDashboardData();
+    const [businessOverview, setBusinessOverview] = useState<DataBusinessOverview>();
+
+    const getListAuctionCategory = useCallback(async () => {
+        try {
+            const res = await AuctionServices.getListAuctionCategory();
+            if (res.data.length === 0) {
+                toast.error("Không có dữ liệu danh mục tài sản!");
+            } else {
+                setListAuctionCategory(res.data);
+            }
+        } catch (error: any) {
+            console.error("Lỗi khi tải danh mục tài sản!", error);
+            toast.error("Lỗi kết nối mạng !");
+        }
+    }, []);
+
+    const getManagerStatistics = useCallback(async () => {
+        try {
+            // Prepare request parameters
+            const requestParams: any = {};
+
+            // Add category ID if available (using CategoryId with capital C)
+            if (selectedDepartment?.categoryId) {
+                requestParams.CategoryId = selectedDepartment.categoryId;
+            }
+
+            // Add date range if available 
+            if (dateRange) {
+                requestParams.AuctionStartDate = dateRange.AuctionStartDate;
+                requestParams.AuctionEndDate = dateRange.AuctionEndDate;
+            }
+
+            console.log('🚀 Calling getManagerStatistics with params:', requestParams);
+
+            const response = await AuctionServices.getBusinessOverview(requestParams);
+
+            if (response.code === 200) {
+                setBusinessOverview(response.data);
+            } else {
+                toast.warning(response.message);
+            }
+
+        } catch (error) {
+            console.error('❌ Error fetching manager statistics:', error);
+            toast.error('Lỗi khi tải dữ liệu thống kê!');
+        }
     }, [dateRange, selectedDepartment]);
 
-    const fetchDashboardData = async () => {
+    const fetchDashboardData = useCallback(async () => {
         setLoading(true);
         try {
-            // Call APIs here
-            // await Promise.all([
-            //     getManagerStatistics(),
-            //     getApprovalMetrics(),
-            //     getPerformanceData()
-            // ]);
+            await Promise.all([
+                getListAuctionCategory(),
+                getManagerStatistics()
+            ]);
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
+            toast.error('Lỗi khi tải dữ liệu dashboard!');
         } finally {
             setLoading(false);
         }
-    };
+    }, [getListAuctionCategory, getManagerStatistics]);
+
+    useEffect(() => {
+        fetchDashboardData();
+    }, [fetchDashboardData]);
+
+    const dataAuctionCategoryList = listAuctionCategory?.map((val) => ({
+        value: val.categoryId,
+        label: val.categoryName,
+    }));
 
     const handleDateRangeChange: RangePickerProps['onChange'] = (dates, dateStrings) => {
         if (dates && dateStrings[0] && dateStrings[1]) {
             setDateRange({
-                startDate: dateStrings[0],
-                endDate: dateStrings[1]
+                AuctionStartDate: dateStrings[0],
+                AuctionEndDate: dateStrings[1]
             });
         } else {
             setDateRange(null);
@@ -94,16 +159,21 @@ const ManagerDashboard: React.FC = () => {
                                     <div className="relative">
                                         <TeamOutlined className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10" />
                                         <Select
-                                            value={selectedDepartment}
-                                            onChange={setSelectedDepartment}
+                                            allowClear
+                                            onChange={(value) => {
+                                                if (value) {
+                                                    const selected = listAuctionCategory.find(cat => cat.categoryId === value);
+                                                    setSelectedDepartment(selected);
+                                                    console.log('🏢 Selected Department:', selected);
+                                                } else {
+                                                    setSelectedDepartment(undefined);
+                                                    console.log('🏢 Department cleared');
+                                                }
+                                            }}
+                                            placeholder="Chọn danh mục"
                                             className="!w-full sm:!w-[220px] custom-select"
                                             size="large"
-                                            options={[
-                                                { label: 'Tất cả phòng ban', value: 'all' },
-                                                { label: 'Phòng Đấu giá', value: 'auction' },
-                                                { label: 'Phòng Tài chính', value: 'finance' },
-                                                { label: 'Phòng Pháp chế', value: 'legal' }
-                                            ]}
+                                            options={dataAuctionCategoryList}
                                             style={{
                                                 height: '48px',
                                             }}
@@ -123,7 +193,10 @@ const ManagerDashboard: React.FC = () => {
                         {/* Business Overview Cards */}
                         <Col xs={24}>
                             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                                <BusinessOverview loading={loading} />
+                                <BusinessOverview
+                                    loading={loading}
+                                    businessOverview={businessOverview}
+                                />
                             </div>
                         </Col>
 
