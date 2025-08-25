@@ -67,7 +67,7 @@ const HomePage = () => {
         <div className="container mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           <div className="flex-1 max-w-2xl text-center lg:text-left order-2 lg:order-1">
             <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-              HỆ THỐNG ĐĂNG KÝ THAM GIA
+              HỆ THỐNG ĐĂNG KÝ THAM GIA{" "}
               <span className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent font-extrabold">
                 ĐẤU GIÁ TUẤN LINH
               </span>

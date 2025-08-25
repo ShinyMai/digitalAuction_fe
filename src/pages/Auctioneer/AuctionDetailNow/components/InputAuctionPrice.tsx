@@ -110,17 +110,43 @@ const InputAuctionPrice = ({
     return { filterMine, filterOther };
   }, [auctionRoundPriceList, auctionRoundPriceListOther]);
 
+  const currentNumericalOrder = Form.useWatch("numericalOrder", form);
+
   const availableAssets = useMemo(() => {
-    if (!userInfo || !Array.isArray(auctionRoundPriceListOther))
-      return auctionAssets;
-    const userExistingBids = auctionRoundPriceListOther.filter(
-      (bid) => bid.citizenIdentification === userInfo.CitizenIdentification
+    if (!userInfo) return auctionAssets;
+
+    // Các tài sản mà chính người này đã có giá (từ server - người khác nhập)
+    const userExistingBids = Array.isArray(auctionRoundPriceListOther)
+      ? auctionRoundPriceListOther.filter(
+          (bid) => bid.citizenIdentification === userInfo.CitizenIdentification
+        )
+      : [];
+
+    const otherBiddenTagNames = new Set(
+      userExistingBids.map((bid) => bid.tagName)
     );
-    const biddenAssetNames = userExistingBids.map((bid) => bid.tagName);
+
+    // Các tài sản mà chính bạn đã thêm vào "Phiếu của tôi" CHO SỐ THỨ TỰ HIỆN TẠI
+    const myBiddenAssetIdsForCurrentNo = new Set(
+      auctionRoundPriceList
+        .filter((bid) => bid.numericalOrder === currentNumericalOrder)
+        .map((bid) => bid.auctionAssetId) // ưu tiên so theo ID cho chắc
+        .filter(Boolean) as string[]
+    );
+
+    // Lọc: loại (1) đã có trong "người khác" của chính user này, (2) đã có trong list cục bộ cho số TT hiện tại
     return auctionAssets.filter(
-      (asset) => !biddenAssetNames.includes(asset.tagName)
+      (asset) =>
+        !otherBiddenTagNames.has(asset.tagName) &&
+        !myBiddenAssetIdsForCurrentNo.has(asset.auctionAssetsId)
     );
-  }, [auctionAssets, auctionRoundPriceListOther, userInfo]);
+  }, [
+    auctionAssets,
+    auctionRoundPriceListOther,
+    auctionRoundPriceList, // thêm dependency này
+    userInfo,
+    currentNumericalOrder, // và dependency này
+  ]);
 
   const getListAuctionRoundPrice = useCallback(async () => {
     try {
@@ -298,30 +324,11 @@ const InputAuctionPrice = ({
         }
       }
 
-      if (selectedAssetName && Array.isArray(auctionRoundPriceList)) {
-        const myBidsForSameAsset = auctionRoundPriceList.filter(
-          (bid) => bid.auctionAssetName === selectedAssetName
-        );
-        if (myBidsForSameAsset.length > 0) {
-          const highestMyBid = Math.max(
-            ...myBidsForSameAsset.map((bid) => bid.price || 0)
-          );
-          if (values.price <= highestMyBid) {
-            setErrorMessage(
-              `Giá đấu phải cao hơn giá đấu trước đó của bạn: ${highestMyBid.toLocaleString(
-                "vi-VN"
-              )} VND cho tài sản "${selectedAssetName}"`
-            );
-            setLoading(false);
-            return;
-          }
-        }
-      }
-
       const formattedValues: InputAuctionPriceModals = {
         ...values,
         price: values.price,
         userName: userInfo?.UserName || "-",
+        citizenIdentification: userInfo?.CitizenIdentification || "-",
         auctionAssetName:
           auctionAssets.find(
             (asset) => asset.auctionAssetsId === values.auctionAssetId
@@ -366,13 +373,15 @@ const InputAuctionPrice = ({
       auctionRoundId: roundData?.auctionRoundId,
       resultDTOs: auctionRoundPriceList.map((item) => ({
         userName: item.userName || "-",
-        citizenIdentification: userInfo?.CitizenIdentification,
+        citizenIdentification:
+          item.citizenIdentification || userInfo?.CitizenIdentification || "-", // ✅ lấy CCCD theo dòng
         recentLocation: item.recentLocation || "",
         tagName: item.auctionAssetName || "-",
         auctionPrice: item.price,
         createdBy: user?.id,
       })),
     };
+
     try {
       setCompletingLoading(true);
       const response = await AuctionServices.saveListAuctionRoundPrice(
@@ -455,6 +464,18 @@ const InputAuctionPrice = ({
           <Text className="font-bold text-green-600">
             {text?.toLocaleString("vi-VN")}
           </Text>
+        </div>
+      ),
+    },
+    {
+      title: "CMND/CCCD",
+      dataIndex: "citizenIdentification",
+      key: "citizenIdentification",
+      width: 180,
+      render: (text: string) => (
+        <div className="flex items-center gap-2">
+          <IdcardOutlined className="text-blue-500" />
+          <Text className="font-medium">{text || "-"}</Text>
         </div>
       ),
     },
@@ -556,15 +577,6 @@ const InputAuctionPrice = ({
             {text?.toLocaleString("vi-VN")}
           </Text>
         </div>
-      ),
-    },
-    {
-      title: "Người nhập",
-      dataIndex: "createdBy",
-      key: "createdBy",
-      width: 150,
-      render: (text: string) => (
-        <Text className="font-medium text-blue-600">{text || "Khác"}</Text>
       ),
     },
   ];
@@ -792,7 +804,7 @@ const InputAuctionPrice = ({
                       <Form.Item
                         name="price"
                         label={
-                          <span className="text-gray-700 font-semibold flex items-center gap-2 text-base">
+                          <span className="text-gray-700 font-semibold flex items-center gap-2 text-base mt-4">
                             <DollarOutlined className="text-amber-500" />
                             Giá Đấu (VND)
                           </span>
