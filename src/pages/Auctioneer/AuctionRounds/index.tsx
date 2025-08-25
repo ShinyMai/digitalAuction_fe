@@ -13,7 +13,6 @@ import type { RootState } from "../../../store/store";
 import { toast } from "react-toastify";
 import type { AuctionDataDetail } from "../Modals";
 import { useNavigate } from "react-router-dom";
-import { STAFF_ROUTES } from "../../../routers";
 
 interface AuctionAsset {
   auctionAssetsId: string;
@@ -63,7 +62,7 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
     totalBids: number;
     totalParticipants: number;
   }>();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const getListAuctionRounds = useCallback(async () => {
     try {
@@ -221,7 +220,7 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
       }
 
       // Kiểm tra xem có vòng đấu giá nào đang diễn ra không (status = 1)
-      const activeRounds = auctionRounds.filter(round => round.status === 1);
+      const activeRounds = auctionRounds.filter((round) => round.status === 1);
 
       if (activeRounds.length > 0) {
         toast.warning(
@@ -274,7 +273,7 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
   const handleEndAuction = async () => {
     try {
       // Kiểm tra xem có vòng đấu giá nào đang diễn ra không (status = 1)
-      const activeRounds = auctionRounds.filter(round => round.status === 1);
+      const activeRounds = auctionRounds.filter((round) => round.status === 1);
 
       if (activeRounds.length > 0) {
         toast.warning(
@@ -288,7 +287,7 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
       });
       if (response.code === 200) {
         toast.success("Phiên đấu giá đã kết thúc thành công");
-        navigate(`${role?.toLocaleLowerCase()}/${STAFF_ROUTES.SUB.AUCTION_LIST_SUCCESSFULL}`)
+        navigate(`/${role?.toLowerCase()}/auction-list-successfull`);
       } else {
         toast.error("Lỗi khi kết thúc phiên đấu giá");
       }
@@ -429,7 +428,9 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
               exit={{ opacity: 0, x: 50 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              {(role === USER_ROLES.AUCTIONEER || role === USER_ROLES.STAFF || role === USER_ROLES.MANAGER) && (
+              {(role === USER_ROLES.AUCTIONEER ||
+                role === USER_ROLES.STAFF ||
+                role === USER_ROLES.MANAGER) && (
                 <AuctionRoundDetail
                   auctionRound={selectedRound}
                   auction={auction}

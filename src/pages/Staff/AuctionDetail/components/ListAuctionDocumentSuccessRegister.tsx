@@ -211,8 +211,8 @@ const ListAuctionDocumentSuccesRegister = ({
           userId: doc.userId || "",
           statusRefund:
             doc.statusRefund === 1 ||
-              doc.statusRefund === 2 ||
-              doc.statusRefund === 3
+            doc.statusRefund === 2 ||
+            doc.statusRefund === 3
               ? doc.statusRefund
               : undefined, // Set khi có yêu cầu hoàn cọc hoặc đã xử lý
           isAttended: doc.isAttended,
@@ -351,9 +351,10 @@ const ListAuctionDocumentSuccesRegister = ({
       const response = await AuctionServices.staffReviewRefund(approveData);
       if (response.code == 200) {
         toast.success(
-          `Đã phê duyệt yêu cầu hoàn cọc cho ${selectedParticipant.name} (${selectedParticipant.assets.filter(
-            (asset) => asset.statusRefund === 1
-          ).length
+          `Đã phê duyệt yêu cầu hoàn cọc cho ${selectedParticipant.name} (${
+            selectedParticipant.assets.filter(
+              (asset) => asset.statusRefund === 1
+            ).length
           } tài sản)!`
         );
         handleCloseModal();
@@ -454,10 +455,10 @@ const ListAuctionDocumentSuccesRegister = ({
             participant.statusTicket === 0
               ? "Chưa chuyển tiền"
               : participant.statusTicket === 1
-                ? "Đã chuyển tiền"
-                : participant.statusTicket === 2
-                  ? "Đã ký phiếu"
-                  : "Đã hoàn tiền";
+              ? "Đã chuyển tiền"
+              : participant.statusTicket === 2
+              ? "Đã ký phiếu"
+              : "Đã hoàn tiền";
 
           const row = [
             participant.numericalOrder || "-",
@@ -599,19 +600,19 @@ const ListAuctionDocumentSuccesRegister = ({
                 record.statusTicket === 0
                   ? "red"
                   : record.statusTicket === 1
-                    ? "blue"
-                    : record.statusTicket === 2
-                      ? "cyan"
-                      : "green"
+                  ? "blue"
+                  : record.statusTicket === 2
+                  ? "cyan"
+                  : "green"
               }
             >
               {record.statusTicket === 0
                 ? "Chưa chuyển tiền"
                 : record.statusTicket === 1
-                  ? "Đã chuyển tiền"
-                  : record.statusTicket === 2
-                    ? "Đã ký phiếu"
-                    : "Đã hoàn tiền"}
+                ? "Đã chuyển tiền"
+                : record.statusTicket === 2
+                ? "Đã ký phiếu"
+                : "Đã hoàn tiền"}
             </Tag>
           </div>
           <div>
@@ -620,19 +621,19 @@ const ListAuctionDocumentSuccesRegister = ({
                 record.statusRefund === 1
                   ? "orange"
                   : record.statusRefund === 2
-                    ? "green"
-                    : record.statusRefund === 3
-                      ? "red"
-                      : "gray"
+                  ? "green"
+                  : record.statusRefund === 3
+                  ? "red"
+                  : "gray"
               }
             >
               {record.statusRefund === 1
                 ? "Yêu cầu hoàn cọc"
                 : record.statusRefund === 2
-                  ? "Đã chấp nhận hoàn"
-                  : record.statusRefund === 3
-                    ? "Đã từ chối hoàn"
-                    : "Không yêu cầu"}
+                ? "Đã chấp nhận hoàn"
+                : record.statusRefund === 3
+                ? "Đã từ chối hoàn"
+                : "Không yêu cầu"}
             </Tag>
           </div>
           {record.isAttended !== undefined && (
@@ -681,12 +682,13 @@ const ListAuctionDocumentSuccesRegister = ({
                 size="small"
                 icon={<EyeOutlined />}
                 onClick={() => handleShowDetailModal(record)}
-                className={`w-full ${record.statusRefund === 2
-                  ? "bg-green-500 hover:bg-green-600"
-                  : record.statusRefund === 3
+                className={`w-full ${
+                  record.statusRefund === 2
+                    ? "bg-green-500 hover:bg-green-600"
+                    : record.statusRefund === 3
                     ? "bg-red-500 hover:bg-red-600"
                     : "bg-blue-500 hover:bg-blue-600"
-                  }`}
+                }`}
               >
                 Xem lý do
               </Button>
@@ -826,7 +828,7 @@ const ListAuctionDocumentSuccesRegister = ({
       {/* Modal xử lý yêu cầu hoàn cọc (chỉ cho yêu cầu chờ phê duyệt) */}
       <Modal
         title={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-black font-semibold">
             <FileTextOutlined className="text-orange-500" />
             <span>Xử lý yêu cầu hoàn cọc</span>
           </div>
@@ -1292,19 +1294,19 @@ const ListAuctionDocumentSuccesRegister = ({
                             asset.statusRefund === 1
                               ? "orange"
                               : asset.statusRefund === 2
-                                ? "green"
-                                : asset.statusRefund === 3
-                                  ? "red"
-                                  : "gray"
+                              ? "green"
+                              : asset.statusRefund === 3
+                              ? "red"
+                              : "gray"
                           }
                         >
                           {asset.statusRefund === 1
                             ? "Yêu cầu hoàn"
                             : asset.statusRefund === 2
-                              ? "Đã chấp nhận"
-                              : asset.statusRefund === 3
-                                ? "Đã từ chối"
-                                : "Không yêu cầu"}
+                            ? "Đã chấp nhận"
+                            : asset.statusRefund === 3
+                            ? "Đã từ chối"
+                            : "Không yêu cầu"}
                         </Tag>
                       </div>
                     </div>
@@ -1315,28 +1317,30 @@ const ListAuctionDocumentSuccesRegister = ({
                         asset.statusRefund === 2 ||
                         asset.statusRefund === 3) && (
                         <div
-                          className={`mt-2 p-2 rounded border ${asset.statusRefund === 1
-                            ? "bg-orange-50 border-orange-200"
-                            : asset.statusRefund === 2
+                          className={`mt-2 p-2 rounded border ${
+                            asset.statusRefund === 1
+                              ? "bg-orange-50 border-orange-200"
+                              : asset.statusRefund === 2
                               ? "bg-green-50 border-green-200"
                               : "bg-red-50 border-red-200"
-                            }`}
+                          }`}
                         >
                           {/* Lý do */}
                           <div className="mb-2">
                             <div
-                              className={`text-xs font-medium mb-1 ${asset.statusRefund === 1
-                                ? "text-orange-800"
-                                : asset.statusRefund === 2
+                              className={`text-xs font-medium mb-1 ${
+                                asset.statusRefund === 1
+                                  ? "text-orange-800"
+                                  : asset.statusRefund === 2
                                   ? "text-green-800"
                                   : "text-red-800"
-                                }`}
+                              }`}
                             >
                               {asset.statusRefund === 1
                                 ? "Lý do yêu cầu:"
                                 : asset.statusRefund === 2
-                                  ? "Lý do chấp nhận:"
-                                  : "Lý do từ chối:"}
+                                ? "Lý do chấp nhận:"
+                                : "Lý do từ chối:"}
                             </div>
                             {asset.refundReason ? (
                               <div className="bg-white p-2 rounded text-xs text-gray-700 border">
@@ -1352,12 +1356,13 @@ const ListAuctionDocumentSuccesRegister = ({
                           {/* File đính kèm */}
                           <div>
                             <div
-                              className={`text-xs font-medium mb-1 ${asset.statusRefund === 1
-                                ? "text-orange-800"
-                                : asset.statusRefund === 2
+                              className={`text-xs font-medium mb-1 ${
+                                asset.statusRefund === 1
+                                  ? "text-orange-800"
+                                  : asset.statusRefund === 2
                                   ? "text-green-800"
                                   : "text-red-800"
-                                }`}
+                              }`}
                             >
                               File đính kèm:
                             </div>
@@ -1366,12 +1371,13 @@ const ListAuctionDocumentSuccesRegister = ({
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-1">
                                     <FileTextOutlined
-                                      className={`text-xs ${asset.statusRefund === 1
-                                        ? "text-orange-500"
-                                        : asset.statusRefund === 2
+                                      className={`text-xs ${
+                                        asset.statusRefund === 1
+                                          ? "text-orange-500"
+                                          : asset.statusRefund === 2
                                           ? "text-green-500"
                                           : "text-red-500"
-                                        }`}
+                                      }`}
                                     />
                                     <span className="text-xs text-gray-700">
                                       Tài liệu hoàn cọc
@@ -1418,16 +1424,18 @@ const ListAuctionDocumentSuccesRegister = ({
 
             {/* Thông tin tóm tắt */}
             <div
-              className={`p-2 rounded-lg border ${selectedDetailParticipant.statusRefund === 2
-                ? "bg-green-50 border-green-200"
-                : "bg-red-50 border-red-200"
-                }`}
+              className={`p-2 rounded-lg border ${
+                selectedDetailParticipant.statusRefund === 2
+                  ? "bg-green-50 border-green-200"
+                  : "bg-red-50 border-red-200"
+              }`}
             >
               <div
-                className={`text-xs ${selectedDetailParticipant.statusRefund === 2
-                  ? "text-green-800"
-                  : "text-red-800"
-                  }`}
+                className={`text-xs ${
+                  selectedDetailParticipant.statusRefund === 2
+                    ? "text-green-800"
+                    : "text-red-800"
+                }`}
               >
                 <strong>
                   {selectedDetailParticipant.statusRefund === 2
@@ -1435,14 +1443,16 @@ const ListAuctionDocumentSuccesRegister = ({
                     : "❌ Trạng thái:"}
                 </strong>
                 {selectedDetailParticipant.statusRefund === 2
-                  ? ` Đã chấp nhận yêu cầu hoàn cọc cho ${selectedDetailParticipant.assets.filter(
-                    (asset) => asset.statusRefund === 2
-                  ).length
-                  } tài sản của ${selectedDetailParticipant.name}.`
-                  : ` Đã từ chối yêu cầu hoàn cọc cho ${selectedDetailParticipant.assets.filter(
-                    (asset) => asset.statusRefund === 3
-                  ).length
-                  } tài sản của ${selectedDetailParticipant.name}.`}
+                  ? ` Đã chấp nhận yêu cầu hoàn cọc cho ${
+                      selectedDetailParticipant.assets.filter(
+                        (asset) => asset.statusRefund === 2
+                      ).length
+                    } tài sản của ${selectedDetailParticipant.name}.`
+                  : ` Đã từ chối yêu cầu hoàn cọc cho ${
+                      selectedDetailParticipant.assets.filter(
+                        (asset) => asset.statusRefund === 3
+                      ).length
+                    } tài sản của ${selectedDetailParticipant.name}.`}
               </div>
             </div>
           </div>
