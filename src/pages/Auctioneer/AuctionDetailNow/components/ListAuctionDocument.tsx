@@ -56,7 +56,7 @@ interface Props {
 const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
-    PageSize: 8,
+    PageSize: 100,
     SortBy: "numericalorder",
     IsAscending: true,
   });
@@ -68,7 +68,6 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
     name?: string;
     CitizenIdentification?: string;
     TagName?: string;
-    eligibilityStatus?: string;
   }>({});
 
   // State cho modal hiển thị danh sách tài sản
@@ -132,25 +131,13 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
         TagName: searchParams.TagName,
         SortBy: searchParams.SortBy,
         IsAscending: searchParams.IsAscending,
-        StatusTicket: searchParams.StatusTicket,
-        StatusDeposit: searchParams.StatusDeposit,
       };
       const response = await AuctionServices.getListAuctionDocument(
         params,
         auctionId
       );
 
-      let filteredDocuments = response.data.auctionDocuments;
-
-      // Filter frontend cho trường hợp "không đủ điều kiện"
-      if (searchValues.eligibilityStatus === "ineligible") {
-        filteredDocuments = response.data.auctionDocuments.filter(
-          (doc: AuctionDocument) =>
-            doc.statusTicket === 0 ||
-            doc.statusTicket === 1 ||
-            doc.statusDeposit === 0
-        );
-      }
+      const filteredDocuments = response.data.auctionDocuments;
 
       setAuctionDocuments(filteredDocuments);
     } catch (error) {
@@ -172,33 +159,6 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       [key]: newValue,
       PageNumber: 1, // Reset về trang 1 khi tìm kiếm
     }));
-  };
-
-  // Xử lý filter theo điều kiện tham gia đấu giá
-  const handleEligibilityFilter = (value: string) => {
-    setSearchValues((prev) => ({
-      ...prev,
-      eligibilityStatus: value || undefined,
-    }));
-
-    if (value === "eligible") {
-      // Đủ điều kiện: StatusTicket = 2 và StatusDeposit = 1 (true)
-      // Sử dụng API filter cho trường hợp đủ điều kiện
-      setSearchParams((prev) => ({
-        ...prev,
-        StatusTicket: 2,
-        StatusDeposit: 1,
-        PageNumber: 1,
-      }));
-    } else {
-      // Tất cả hoặc không đủ điều kiện: lấy tất cả dữ liệu và filter ở frontend
-      setSearchParams((prev) => ({
-        ...prev,
-        StatusTicket: undefined,
-        StatusDeposit: undefined,
-        PageNumber: 1,
-      }));
-    }
   };
   // Đã xóa handleAction
 
@@ -293,24 +253,24 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     parseInt(status) === 0
                       ? "default"
                       : parseInt(status) === 1
-                      ? "processing"
-                      : parseInt(status) === 2
-                      ? "success"
-                      : parseInt(status) === 3
-                      ? "warning"
-                      : "error"
+                        ? "processing"
+                        : parseInt(status) === 2
+                          ? "success"
+                          : parseInt(status) === 3
+                            ? "warning"
+                            : "error"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa chuyển tiền`
                     : parseInt(status) === 1
-                    ? `${count} đã chuyển tiền`
-                    : parseInt(status) === 2
-                    ? `${count} đã nhận phiếu`
-                    : parseInt(status) === 3
-                    ? `${count} đã hoàn tiền`
-                    : `${count} không hợp lệ`}
+                      ? `${count} đã chuyển tiền`
+                      : parseInt(status) === 2
+                        ? `${count} đã nhận phiếu`
+                        : parseInt(status) === 3
+                          ? `${count} đã hoàn tiền`
+                          : `${count} không hợp lệ`}
                 </Tag>
               ))}
             </div>
@@ -402,23 +362,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
               </h2>
             </div>
             <div className="p-6 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Điều kiện tham gia đấu giá
-                  </label>
-                  <Select
-                    placeholder="Chọn trạng thái..."
-                    allowClear
-                    value={searchValues.eligibilityStatus}
-                    onChange={handleEligibilityFilter}
-                    options={[
-                      { value: "eligible", label: "Đủ điều kiện" },
-                      { value: "ineligible", label: "Không đủ điều kiện" },
-                    ]}
-                    className="w-full [&>.ant-select-selector]:!rounded-md [&>.ant-select-selector]:!h-[40px] [&>.ant-select-selector]:!py-1 [&>.ant-select-selector]:!px-3 [&>.ant-select-selector]:!border-gray-300 [&>.ant-select-selector]:!hover:border-teal-500 [&>.ant-select-selector]:!focus:border-teal-500"
-                  />
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
                     Tên người đăng ký
@@ -624,24 +568,24 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                           asset.statusTicket === 0
                             ? "default"
                             : asset.statusTicket === 1
-                            ? "processing"
-                            : asset.statusTicket === 2
-                            ? "success"
-                            : asset.statusTicket === 3
-                            ? "warning"
-                            : "error"
+                              ? "processing"
+                              : asset.statusTicket === 2
+                                ? "success"
+                                : asset.statusTicket === 3
+                                  ? "warning"
+                                  : "error"
                         }
                         className="text-xs"
                       >
                         {asset.statusTicket === 0
                           ? "Chưa chuyển tiền"
                           : asset.statusTicket === 1
-                          ? "Đã chuyển tiền"
-                          : asset.statusTicket === 2
-                          ? "Đã nhận phiếu"
-                          : asset.statusTicket === 3
-                          ? "Đã hoàn tiền"
-                          : "Không hợp lệ"}
+                            ? "Đã chuyển tiền"
+                            : asset.statusTicket === 2
+                              ? "Đã nhận phiếu"
+                              : asset.statusTicket === 3
+                                ? "Đã hoàn tiền"
+                                : "Không hợp lệ"}
                       </Tag>
 
                       <Tag

@@ -6,6 +6,7 @@ import {
   DatePicker,
   Form,
   Input,
+  InputNumber,
   message,
   Row,
   Select,
@@ -50,6 +51,8 @@ interface AuctionFormValues {
   }[];
   AuctionDescription?: string;
   AuctionMap?: string;
+  PriceMin?: number;
+  PriceMax?: number;
 }
 
 interface Props {
@@ -112,6 +115,8 @@ const AuctionCreateForm = ({
     AuctionPlanningMap?: File;
     LegalDocuments?: File[];
     AuctionMap?: any;
+    PriceMin?: number;
+    PriceMax?: number;
   }): FormData => {
     const formData = new FormData();
 
@@ -126,6 +131,8 @@ const AuctionCreateForm = ({
       NumberRoundMax: formValues.NumberRoundMax,
       AuctionDescription: formValues.AuctionDescription,
       Auction_Map: formValues.AuctionMap,
+      PriceMin: formValues.PriceMin,
+      PriceMax: formValues.PriceMax,
     };
 
     // Append non-file fields to FormData
@@ -196,12 +203,6 @@ const AuctionCreateForm = ({
       }
 
       if (!auctionAssetFile || !auctionRulesFile) {
-        console.error("File validation failed:", {
-          hasAuctionAssetFile: !!auctionAssetFile,
-          hasAuctionRulesFile: !!auctionRulesFile,
-          AuctionAssetFileArray: values.AuctionAssetFile,
-          AuctionRulesFileArray: values.AuctionRulesFile,
-        });
         toast.error("Vui lòng tải lên đầy đủ các tệp bắt buộc!");
         setLoading(false);
         return;
@@ -440,11 +441,109 @@ const AuctionCreateForm = ({
               </motion.div>
             </Col>
 
+            <Col xs={24} lg={12}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.36 }}
+              >
+                <Form.Item
+                  name="PriceMin"
+                  label={
+                    <span className="!font-medium !text-blue-900">
+                      Bước giá tối thiểu (VND)
+                    </span>
+                  }
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập giá khởi điểm!",
+                    },
+                    {
+                      validator: (_, value) => {
+                        const num = Number(value);
+                        if (isNaN(num) || num <= 0) {
+                          return Promise.reject(
+                            new Error("Bước giá tối thiểu phải là số dương!")
+                          );
+                        }
+                        const maxPrice = form.getFieldValue("PriceMax");
+                        if (maxPrice && num >= maxPrice) {
+                          return Promise.reject(
+                            new Error("Bước giá tối thiểu phải nhỏ hơn bước giá tối đa!")
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
+                >
+                  <InputNumber
+                    placeholder="Nhập giá khởi điểm"
+                    className="!w-full !rounded-lg !border-blue-200 hover:!border-blue-400 focus:!border-blue-500"
+                    size="large"
+                    min={0}
+                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as any}
+                  />
+                </Form.Item>
+              </motion.div>
+            </Col>
+
+            <Col xs={24} lg={12}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.37 }}
+              >
+                <Form.Item
+                  name="PriceMax"
+                  label={
+                    <span className="!font-medium !text-blue-900">
+                      Bước giá tối đa (VND)
+                    </span>
+                  }
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập giá tối đa!",
+                    },
+                    {
+                      validator: (_, value) => {
+                        const num = Number(value);
+                        if (isNaN(num) || num <= 0) {
+                          return Promise.reject(
+                            new Error("Bước giá tối đa phải là số dương!")
+                          );
+                        }
+                        const minPrice = form.getFieldValue("PriceMin");
+                        if (minPrice && num <= minPrice) {
+                          return Promise.reject(
+                            new Error("Bước giá tối đa phải lớn hơn bước giá khởi điểm!")
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
+                >
+                  <InputNumber
+                    placeholder="Nhập giá tối đa"
+                    className="!w-full !rounded-lg !border-blue-200 hover:!border-blue-400 focus:!border-blue-500"
+                    size="large"
+                    min={0}
+                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as any}
+                  />
+                </Form.Item>
+              </motion.div>
+            </Col>
+
             <Col span={24}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 0.38 }}
               >
                 <Form.Item
                   name="AuctionDescription"

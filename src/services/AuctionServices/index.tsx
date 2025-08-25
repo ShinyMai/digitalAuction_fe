@@ -120,6 +120,8 @@ const getBusinessOverview = (body: any): Promise<ApiResponse<any>> =>
   http.get(AuctionAPI.BUSINESS_OVER_VIEW, body);
 const getAssetInfoStatistic = (params: any): Promise<ApiResponse<any>> =>
   http.get(`${AuctionAPI.ASSET_INFO_STATISTIC}/${params}`);
+const getStatisticOverview = (params: any): Promise<ApiResponse<any>> =>
+  http.get(AuctionAPI.STATISTIC_OVER_VIEW, { params });
 const AuctionServices = {
   addAuction,
   getListAuctionCategory,
@@ -160,7 +162,8 @@ const AuctionServices = {
   confirmAttendance,
   auctionRoundStatistic,
   getBusinessOverview,
-  getAssetInfoStatistic
+  getAssetInfoStatistic,
+  getStatisticOverview
 };
 
 export default AuctionServices;

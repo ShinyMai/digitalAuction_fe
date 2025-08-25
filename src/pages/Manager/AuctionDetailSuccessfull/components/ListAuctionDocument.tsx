@@ -57,7 +57,8 @@ interface SearchParams {
   TagName?: string;
   SortBy?: string;
   IsAscending?: boolean;
-  statusTicket?: number;
+  StatusTicket?: number;
+  StatusDeposit?: number
 }
 
 interface Props {
@@ -68,7 +69,7 @@ interface Props {
 const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
-    PageSize: auctionAssets.length * 4,
+    PageSize: 100,
     SortBy: "numericalOrder",
     IsAscending: true,
   });
@@ -108,11 +109,42 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
   // State cho tải danh sách hoàn tiền
   const [downloadingRefund, setDownloadingRefund] = useState<boolean>(false);
 
-  // Nhóm dữ liệu theo CMND/CCCD
-  const groupedParticipants = useMemo(() => {
-    const grouped = new Map<string, GroupedParticipant>();
+  // State để kiểm soát hiển thị danh sách nào
+  const [showEligibleList, setShowEligibleList] = useState<boolean>(true);
+
+  // Helper function để kiểm tra điều kiện đủ tư cách tham gia đấu giá
+  const isEligibleForAuction = (doc: AuctionDocument): boolean => {
+    return (
+      doc.statusTicket === 2 &&
+      doc.statusDeposit === 1 &&
+      (doc.statusRefund === 3 || doc.statusRefund === 0)
+    );
+  };
+
+  // Tách auctionDocuments thành 2 danh sách
+  const { eligibleDocuments, ineligibleDocuments } = useMemo(() => {
+    const eligible: AuctionDocument[] = [];
+    const ineligible: AuctionDocument[] = [];
 
     auctionDocuments.forEach((doc) => {
+      if (isEligibleForAuction(doc)) {
+        eligible.push(doc);
+      } else {
+        ineligible.push(doc);
+      }
+    });
+
+    return {
+      eligibleDocuments: eligible,
+      ineligibleDocuments: ineligible
+    };
+  }, [auctionDocuments]);
+  console.log({ eligibleDocuments, ineligibleDocuments });
+  // Nhóm dữ liệu theo CMND/CCCD cho từng danh sách
+  const eligibleGroupedParticipants = useMemo(() => {
+    const grouped = new Map<string, GroupedParticipant>();
+
+    eligibleDocuments.forEach((doc) => {
       const key = doc.citizenIdentification;
 
       if (grouped.has(key)) {
@@ -127,13 +159,39 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
           userId: doc.userId,
           totalRegistrationFee: doc.registrationFee,
           assets: [doc],
-          isAttended: doc.isAttended !== false, // Mặc định true nếu undefined, false nếu đã set false
+          isAttended: doc.isAttended !== false,
         });
       }
     });
 
     return Array.from(grouped.values());
-  }, [auctionDocuments]);
+  }, [eligibleDocuments]);
+
+  const ineligibleGroupedParticipants = useMemo(() => {
+    const grouped = new Map<string, GroupedParticipant>();
+
+    ineligibleDocuments.forEach((doc) => {
+      const key = doc.citizenIdentification;
+
+      if (grouped.has(key)) {
+        const existing = grouped.get(key)!;
+        existing.assets.push(doc);
+        existing.totalRegistrationFee += doc.registrationFee;
+      } else {
+        grouped.set(key, {
+          participantId: doc.citizenIdentification,
+          name: doc.name,
+          citizenIdentification: doc.citizenIdentification,
+          userId: doc.userId,
+          totalRegistrationFee: doc.registrationFee,
+          assets: [doc],
+          isAttended: doc.isAttended !== false,
+        });
+      }
+    });
+
+    return Array.from(grouped.values());
+  }, [ineligibleDocuments]);
 
   useEffect(() => {
     getListAuctionDocument();
@@ -151,7 +209,6 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
         TagName: searchParams.TagName,
         SortBy: searchParams.SortBy,
         IsAscending: searchParams.IsAscending,
-        statusTicket: searchParams.statusTicket,
       };
       const response = await AuctionServices.getListAuctionDocument(
         params,
@@ -361,12 +418,23 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
           return acc;
         }, {} as Record<number, number>);
 
-        const depositCount = record.assets.filter(
-          (asset) => asset.statusDeposit === true
-        ).length;
+        const depositCounts = record.assets.reduce((acc, asset) => {
+          const depositKey = asset.statusDeposit;
+          acc[depositKey] = (acc[depositKey] || 0) + 1;
+          return acc;
+        }, {} as Record<number, number>);
+
+        const refundCounts = record.assets.reduce((acc, asset) => {
+          if (asset.statusRefund !== null && asset.statusRefund !== undefined) {
+            const refundKey = asset.statusRefund.toString();
+            acc[refundKey] = (acc[refundKey] || 0) + 1;
+          }
+          return acc;
+        }, {} as Record<string, number>);
 
         return (
           <div className="space-y-2">
+            {/* Status Ticket */}
             <div className="flex flex-wrap gap-1">
               {Object.entries(statusCounts).map(([status, count]) => (
                 <Tag
@@ -375,27 +443,70 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     parseInt(status) === 0
                       ? "gray"
                       : parseInt(status) === 1
-                      ? "blue"
-                      : parseInt(status) === 2
-                      ? "green"
-                      : "orange"
+                        ? "blue"
+                        : parseInt(status) === 2
+                          ? "green"
+                          : "orange"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa chuyển tiền`
                     : parseInt(status) === 1
-                    ? `${count} đã chuyển tiền`
-                    : parseInt(status) === 2
-                    ? `${count} đã nhận phiếu`
-                    : `${count} đã hoàn tiền`}
+                      ? `${count} đã chuyển tiền`
+                      : parseInt(status) === 2
+                        ? `${count} đã nhận phiếu`
+                        : `${count} đã hoàn tiền`}
                 </Tag>
               ))}
             </div>
-            {depositCount > 0 && (
-              <Tag color="green" className="text-xs">
-                {depositCount} đã cọc
-              </Tag>
+
+            {/* Status Deposit */}
+            <div className="flex flex-wrap gap-1">
+              {Object.entries(depositCounts).map(([status, count]) => (
+                <Tag
+                  key={`deposit-${status}`}
+                  color={
+                    parseInt(status) === 0
+                      ? "gray"
+                      : parseInt(status) === 1
+                        ? "green"
+                        : "orange"
+                  }
+                  className="text-xs"
+                >
+                  {parseInt(status) === 0
+                    ? `${count} chưa cọc`
+                    : parseInt(status) === 1
+                      ? `${count} đã cọc`
+                      : `${count} đã hoàn cọc`}
+                </Tag>
+              ))}
+            </div>
+
+            {/* Status Refund */}
+            {Object.keys(refundCounts).length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {Object.entries(refundCounts).map(([status, count]) => (
+                  <Tag
+                    key={`refund-${status}`}
+                    color={
+                      parseInt(status) === 1
+                        ? "blue"
+                        : parseInt(status) === 2
+                          ? "green"
+                          : "orange"
+                    }
+                    className="text-xs"
+                  >
+                    {parseInt(status) === 1
+                      ? `${count} đang xử lý hoàn cọc`
+                      : parseInt(status) === 2
+                        ? `${count} xác nhận đồng ý hoàn cọc`
+                        : `${count} đã hoàn cọc`}
+                  </Tag>
+                ))}
+              </div>
             )}
           </div>
         );
@@ -494,45 +605,64 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
               <UserOutlined className="text-emerald-600" />
               Tổng quan danh sách đăng ký
             </div>
-            <Button
-              type="default"
-              size="large"
-              icon={<DownloadOutlined />}
-              onClick={handleDownloadRefundList}
-              loading={downloadingRefund}
-              className="!bg-white !border-orange-500 !text-orange-600 hover:!bg-orange-50 hover:!border-orange-600 !shadow-md hover:!shadow-lg !transition-all !duration-300"
-            >
-              {downloadingRefund ? "Đang tải..." : "Tải danh sách hoàn tiền"}
-            </Button>
+            <div className="flex gap-3">
+              <Space>
+                <Button
+                  type={showEligibleList ? "primary" : "default"}
+                  onClick={() => setShowEligibleList(true)}
+                  className={showEligibleList ? "!bg-green-500 hover:!bg-green-600" : ""}
+                >
+                  Đủ điều kiện ({eligibleGroupedParticipants.length})
+                </Button>
+                <Button
+                  type={!showEligibleList ? "primary" : "default"}
+                  onClick={() => setShowEligibleList(false)}
+                  className={!showEligibleList ? "!bg-red-500 hover:!bg-red-600" : ""}
+                >
+                  Không đủ điều kiện ({ineligibleGroupedParticipants.length})
+                </Button>
+              </Space>
+              <Button
+                type="default"
+                size="large"
+                icon={<DownloadOutlined />}
+                onClick={handleDownloadRefundList}
+                loading={downloadingRefund}
+                className="!bg-white !border-orange-500 !text-orange-600 hover:!bg-orange-50 hover:!border-orange-600 !shadow-md hover:!shadow-lg !transition-all !duration-300"
+              >
+                {downloadingRefund ? "Đang tải..." : "Tải danh sách hoàn tiền"}
+              </Button>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card className="text-center bg-white border-l-4 border-l-blue-500">
               <div className="text-2xl font-bold text-blue-600">
-                {groupedParticipants.length}
+                {showEligibleList ? eligibleGroupedParticipants.length : ineligibleGroupedParticipants.length}
               </div>
               <div className="text-sm text-gray-600">
-                Tổng số người tham gia
+                {showEligibleList ? "Người đủ điều kiện" : "Người không đủ điều kiện"}
               </div>
             </Card>
             <Card className="text-center bg-white border-l-4 border-l-green-500">
               <div className="text-2xl font-bold text-green-600">
-                {auctionDocuments.length}
+                {showEligibleList ? eligibleDocuments.length : ineligibleDocuments.length}
               </div>
-              <div className="text-sm text-gray-600">Tổng số đơn đăng ký</div>
+              <div className="text-sm text-gray-600">
+                {showEligibleList ? "Đơn đủ điều kiện" : "Đơn không đủ điều kiện"}
+              </div>
             </Card>
             <Card className="text-center bg-white border-l-4 border-l-orange-500">
               <div className="text-2xl font-bold text-orange-600">
-                {
-                  groupedParticipants
-                    .flatMap((p) => p.assets)
-                    .filter((asset) => asset.statusDeposit === true).length
+                {showEligibleList
+                  ? eligibleDocuments.filter((doc) => doc.statusDeposit === 1).length
+                  : ineligibleDocuments.filter((doc) => doc.statusDeposit === 1).length
                 }
               </div>
               <div className="text-sm text-gray-600">Đã cọc</div>
             </Card>
             <Card className="text-center bg-white border-l-4 border-l-purple-500">
               <div className="text-2xl font-bold text-purple-600">
-                {groupedParticipants
+                {(showEligibleList ? eligibleGroupedParticipants : ineligibleGroupedParticipants)
                   .reduce((sum, p) => sum + p.totalRegistrationFee, 0)
                   .toLocaleString("vi-VN")}
               </div>
@@ -551,7 +681,34 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
               </div>
             </div>
             <div className="p-6 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Điều kiện tham gia đấu giá
+                  </label>
+                  <Select
+                    placeholder="Chọn điều kiện..."
+                    allowClear
+                    value={showEligibleList ? "eligible" : "ineligible"}
+                    onChange={(value) => {
+                      if (value === "eligible") {
+                        setShowEligibleList(true);
+                      } else if (value === "ineligible") {
+                        setShowEligibleList(false);
+                      }
+                      // Reset về trang 1 khi thay đổi filter
+                      setSearchParams((prev) => ({
+                        ...prev,
+                        PageNumber: 1,
+                      }));
+                    }}
+                    options={[
+                      { value: "eligible", label: "Đủ điều kiện" },
+                      { value: "ineligible", label: "Không đủ điều kiện" },
+                    ]}
+                    className="w-full [&>.ant-select-selector]:!rounded-md [&>.ant-select-selector]:!h-[40px] [&>.ant-select-selector]:!py-1 [&>.ant-select-selector]:!px-3 [&>.ant-select-selector]:!border-gray-300 [&>.ant-select-selector]:!hover:border-teal-500 [&>.ant-select-selector]:!focus:border-teal-500"
+                  />
+                </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
                     Tên người đăng ký
@@ -608,16 +765,16 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
         </div>
         <Table
           columns={columns}
-          dataSource={groupedParticipants}
+          dataSource={showEligibleList ? eligibleGroupedParticipants : ineligibleGroupedParticipants}
           rowKey="participantId"
           loading={loading}
           pagination={{
             current: searchParams.PageNumber,
             pageSize: 8,
-            total: groupedParticipants.length,
+            total: showEligibleList ? eligibleGroupedParticipants.length : ineligibleGroupedParticipants.length,
             showSizeChanger: false,
             showTotal: (total, range) =>
-              `${range[0]}-${range[1]} của ${total} người tham gia`,
+              `${range[0]}-${range[1]} của ${total} người ${showEligibleList ? 'đủ điều kiện' : 'không đủ điều kiện'}`,
             onChange: (page) =>
               setSearchParams((prev) => ({
                 ...prev,
@@ -751,34 +908,63 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
 
                   {/* Status and Actions compact */}
                   <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <Tag
                         color={
                           asset.statusTicket === 0
                             ? "gray"
                             : asset.statusTicket === 1
-                            ? "blue"
-                            : asset.statusTicket === 2
-                            ? "green"
-                            : "orange"
+                              ? "blue"
+                              : asset.statusTicket === 2
+                                ? "green"
+                                : "orange"
                         }
                         className="text-xs"
                       >
                         {asset.statusTicket === 0
                           ? "Chưa chuyển tiền"
                           : asset.statusTicket === 1
-                          ? "Đã chuyển tiền"
-                          : asset.statusTicket === 2
-                          ? "Đã nhận phiếu"
-                          : "Đã hoàn tiền"}
+                            ? "Đã chuyển tiền"
+                            : asset.statusTicket === 2
+                              ? "Đã nhận phiếu"
+                              : "Đã hoàn tiền"}
                       </Tag>
 
                       <Tag
-                        color={asset.statusDeposit ? "green" : "orange"}
+                        color={
+                          asset.statusDeposit === 0
+                            ? "gray"
+                            : asset.statusDeposit === 1
+                              ? "green"
+                              : "orange"
+                        }
                         className="text-xs"
                       >
-                        {asset.statusDeposit ? "Đã cọc" : "Chưa cọc"}
+                        {asset.statusDeposit === 0
+                          ? "Chưa cọc"
+                          : asset.statusDeposit === 1
+                            ? "Đã cọc"
+                            : "Đã hoàn cọc"}
                       </Tag>
+
+                      {asset.statusRefund !== null && (
+                        <Tag
+                          color={
+                            asset.statusRefund === 1
+                              ? "blue"
+                              : asset.statusRefund === 2
+                                ? "green"
+                                : "orange"
+                          }
+                          className="text-xs"
+                        >
+                          {asset.statusRefund === 1
+                            ? "Đang xử lý hoàn cọc"
+                            : asset.statusRefund === 2
+                              ? "Xác nhận đồng ý hoàn cọc"
+                              : "Đã hoàn cọc"}
+                        </Tag>
+                      )}
                     </div>
                   </div>
                 </div>
