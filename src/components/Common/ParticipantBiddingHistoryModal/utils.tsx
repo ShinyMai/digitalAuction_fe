@@ -7,7 +7,6 @@ import {
 } from "@ant-design/icons";
 import type { RegisteredAuction } from "./types";
 
-// Format currency utility
 export const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
@@ -15,7 +14,6 @@ export const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-// Format date utility
 export const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("vi-VN", {
     year: "numeric",
@@ -26,7 +24,6 @@ export const formatDate = (dateString: string) => {
   });
 };
 
-// Get auction status with better styling
 export const getAuctionStatus = (auction: RegisteredAuction) => {
   const now = new Date();
   const registerEnd = new Date(auction.registerEndDate);

@@ -26,7 +26,6 @@ const ExportDocxRegistration: React.FC<Props> = ({
 }) => {
   const handleExportClick = () => {
     exportToDocx(data);
-    // Chờ 3 giây trước khi thực hiện onBackStep
     setTimeout(() => {
       if (onBackStep) onBackStep();
     }, 3000);

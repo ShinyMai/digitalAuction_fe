@@ -14,7 +14,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
   );
 
   return (
-    <Card className="!border-0 !shadow-md !rounded-xl">
+    <Card className="!border-0 !shadow-lg !rounded-xl">
       <div className="flex items-center gap-2 mb-4">
         <InfoCircleOutlined className="!text-blue-500" />
         <span className="font-semibold text-gray-700">

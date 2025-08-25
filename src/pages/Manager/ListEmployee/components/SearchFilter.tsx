@@ -36,7 +36,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             prefix={<SearchOutlined className="text-gray-400" />}
-            className="h-12 rounded-lg"
+            className="h-10 rounded-lg"
             onPressEnter={onSearch}
           />
         </div>

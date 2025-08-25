@@ -26,6 +26,7 @@ const AccountTable: React.FC<AccountTableProps> = ({
     {
       title: "STT",
       key: "index",
+      align: "center" as const,
       render: (_: unknown, __: unknown, index: number) => (
         <span className="font-medium text-gray-700">
           {(pageNumber - 1) * pageSize + index + 1}
@@ -34,7 +35,7 @@ const AccountTable: React.FC<AccountTableProps> = ({
       width: 60,
     },
     {
-      title: "Tên nhân viên",
+      title: "Tên khách hàng",
       dataIndex: "name",
       key: "name",
       render: (text: string) => (
@@ -121,7 +122,7 @@ const AccountTable: React.FC<AccountTableProps> = ({
           total: totalCount,
           showQuickJumper: true,
           showTotal: (total, range) =>
-            `${range[0]}-${range[1]} của ${total} nhân viên`,
+            `${range[0]}-${range[1]} của ${total} khách hàng`,
           onChange: onPageChange,
           onShowSizeChange: onPageChange,
           className: "px-6 pb-4",

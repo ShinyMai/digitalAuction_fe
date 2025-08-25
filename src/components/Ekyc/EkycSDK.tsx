@@ -1,4 +1,3 @@
-// src/components/EkycSDK.tsx
 import React, { useEffect, useState } from "react";
 import { loadEkycScripts } from "./loadEkycScripts";
 import { toast } from "react-toastify";

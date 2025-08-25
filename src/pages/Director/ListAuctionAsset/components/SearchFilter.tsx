@@ -36,7 +36,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
   onReset,
 }) => {
   return (
-    <Card className="!border-0 !shadow-md !rounded-xl">
+    <Card className="!border-0 !shadow-lg !rounded-xl">
       <div className="space-y-4">
         {/* Main Search and View Controls */}
         <div className="flex flex-col lg:flex-row gap-4">

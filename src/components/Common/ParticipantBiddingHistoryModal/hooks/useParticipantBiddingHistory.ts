@@ -50,7 +50,6 @@ export const useParticipantBiddingHistory = (
       totalAmountSpent: 0,
     }
   );
-  // Calculate statistics from documents
   const calculateStatistics = useCallback((docs: AuctionDocument[]) => {
     const stats: Statistics = {
       totalRegistrations: docs.length,
@@ -59,20 +58,18 @@ export const useParticipantBiddingHistory = (
         (sum, doc) => sum + (doc.registrationFee || 0),
         0
       ),
-      // statusTicket: 0-Chưa chuyển tiền, 1-Đã chuyển tiền, 2-Đã nhận phiếu, 3-Đã hoàn tiền
       approvedTickets: docs.filter((doc) => doc.statusTicket === 2).length,
       pendingTickets: docs.filter(
         (doc) => doc.statusTicket === 0 || doc.statusTicket === 1
       ).length,
-      // statusDeposit: 0-Chưa cọc, 1-Đã cọc, 2-Đã hoàn tiền cọc
-      paidDeposits: docs.filter((doc) => doc.statusDeposit === 1).length, // Đã cọc
-      pendingDeposits: docs.filter((doc) => doc.statusDeposit === 0).length, // Chưa cọc
-      refundedDeposits: docs.filter((doc) => doc.statusDeposit === 2).length, // Đã hoàn tiền cọc
+
+      paidDeposits: docs.filter((doc) => doc.statusDeposit === 1).length,
+      pendingDeposits: docs.filter((doc) => doc.statusDeposit === 0).length,
+      refundedDeposits: docs.filter((doc) => doc.statusDeposit === 2).length,
     };
     setStatistics(stats);
   }, []);
 
-  // Calculate overall statistics
   const calculateOverallStatistics = useCallback(async () => {
     if (!participantInfo?.citizenIdentification) return;
 
@@ -80,7 +77,6 @@ export const useParticipantBiddingHistory = (
       setLoading(true);
       let allDocuments: AuctionDocument[] = [];
 
-      // Fetch documents from all registered auctions
       for (const auction of registeredAuctions) {
         try {
           const response = await AuctionServices.getListAuctionDocumentRegisted(
@@ -105,7 +101,7 @@ export const useParticipantBiddingHistory = (
             error
           );
         }
-      } // Calculate overall statistics
+      }
       const totalRegistrations = allDocuments.length;
       const totalDeposit = allDocuments.reduce(
         (sum, doc) => sum + (doc.deposit || 0),
@@ -169,7 +165,6 @@ export const useParticipantBiddingHistory = (
     }
   }, [participantInfo, registeredAuctions]);
 
-  // Reset statistics
   const resetStatistics = useCallback(() => {
     setStatistics({
       totalRegistrations: 0,
@@ -183,7 +178,6 @@ export const useParticipantBiddingHistory = (
     });
   }, []);
 
-  // Fetch registered auctions
   const fetchRegisteredAuctions = useCallback(async () => {
     if (!participantInfo?.userId) {
       console.warn("No userId found in participantInfo:", participantInfo);
@@ -268,13 +262,11 @@ export const useParticipantBiddingHistory = (
     resetStatistics,
   ]);
 
-  // Handle auction selection
   const handleSelectAuction = useCallback((auctionId: string) => {
     setSelectedAuctionId(auctionId);
     setViewMode("detail");
   }, []);
 
-  // Handle back to list
   const handleBackToList = useCallback(() => {
     setViewMode("list");
     setSelectedAuctionId(null);
@@ -283,7 +275,6 @@ export const useParticipantBiddingHistory = (
   }, [resetStatistics]);
 
   return {
-    // State
     loading,
     registeredAuctions,
     documents,
@@ -292,7 +283,6 @@ export const useParticipantBiddingHistory = (
     viewMode,
     overallStatistics,
 
-    // Actions
     fetchRegisteredAuctions,
     fetchParticipantData,
     calculateOverallStatistics,

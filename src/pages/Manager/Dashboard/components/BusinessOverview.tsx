@@ -9,15 +9,24 @@ import {
 
 interface BusinessOverviewProps {
     loading?: boolean;
+    businessOverview?: {
+        totalAuctions: number;
+        totalCancelledAuctions: number;
+        totalSuccessfulAuctions: number;
+        totalParticipants: number;
+    };
 }
 
-const BusinessOverview: React.FC<BusinessOverviewProps> = ({ loading = false }) => {
-    // Business metrics data matching your requirements
+const BusinessOverview: React.FC<BusinessOverviewProps> = ({
+    loading = false,
+    businessOverview
+}) => {
+    // Default values if no data provided
     const businessMetrics = {
-        totalAuctions: 156,        // Tổng số phiên đấu giá
-        successfulAuctions: 136,   // Tổng số phiên thành công
-        canceledAuctions: 20,      // Tổng số phiên bị hủy
-        totalParticipants: 1240    // Tổng số người tham gia
+        totalAuctions: businessOverview?.totalAuctions || 0,
+        successfulAuctions: businessOverview?.totalSuccessfulAuctions || 0,
+        canceledAuctions: businessOverview?.totalCancelledAuctions || 0,
+        totalParticipants: businessOverview?.totalParticipants || 0
     };
 
     return (

@@ -58,7 +58,6 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
   const [selectedRound, setSelectedRound] = useState<AuctionRound>();
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
-  console.log("Role check", role);
   const [roundStatistic, setRoundStatistic] = useState<{
     totalAssets: number;
     totalBids: number;
@@ -221,6 +220,16 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
         return;
       }
 
+      // Kiểm tra xem có vòng đấu giá nào đang diễn ra không (status = 1)
+      const activeRounds = auctionRounds.filter(round => round.status === 1);
+
+      if (activeRounds.length > 0) {
+        toast.warning(
+          `Không thể tạo vòng đấu giá mới. Hiện có ${activeRounds.length} vòng đấu giá đang diễn ra. Vui lòng kết thúc tất cả các vòng đấu giá hiện tại trước khi tạo vòng mới.`
+        );
+        return;
+      }
+
       // Kiểm tra giới hạn số vòng đấu giá
       if (
         auction?.numberRoundMax &&
@@ -254,7 +263,7 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
     user?.id,
     getListAuctionRounds,
     auction?.numberRoundMax,
-    auctionRounds.length,
+    auctionRounds,
   ]);
 
   useEffect(() => {
@@ -337,7 +346,7 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
   };
 
   return (
-    <div className="!min-h-screen relative overflow-hidden">
+    <div className="!min-h-fit relative overflow-hidden bg-white rounded-2xl">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-200/30 to-cyan-200/30 rounded-full animate-float"></div>

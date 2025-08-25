@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useCallback } from "react";
-import { Card, Spin, Empty, Pagination, Typography, Button, Form } from "antd";
+import { Spin, Empty, Pagination, Typography, Button, Form } from "antd";
 import { ReloadOutlined, ExportOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -216,71 +216,67 @@ const ListAuctionAsset: React.FC = () => {
           </div>
         </div>
 
-        <Card className="!shadow-sm">
-          <div className="!space-y-4">
-            <CategoryFilter
-              categoryCounts={categoryCounts}
-              selectedCategory={searchParams.Search?.CategoryId}
-              onCategoryChange={handleCategoryFilter}
+        <div className="!space-y-4">
+          <CategoryFilter
+            categoryCounts={categoryCounts}
+            selectedCategory={searchParams.Search?.CategoryId}
+            onCategoryChange={handleCategoryFilter}
+          />
+
+          <SearchFilter
+            form={form}
+            showFilters={showFilters}
+            onShowFiltersChange={setShowFilters}
+            onSearch={handleSearch}
+            onAdvancedFilter={handleAdvancedFilter}
+            onReset={handleReset}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+          />
+        </div>
+
+        <Spin spinning={loading}>
+          {assets.length === 0 && !loading ? (
+            <Empty
+              description="Không có tài sản nào"
+              className="py-16"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
+          ) : (
+            <div className="!space-y-4">
+              {viewMode === "table" && (
+                <AssetsTable
+                  assets={assets}
+                  searchParams={searchParams}
+                  onSort={handleSort}
+                  onAssetClick={showAssetDetail}
+                />
+              )}
+              {viewMode === "grid" && (
+                <AssetsGrid assets={assets} onAssetClick={showAssetDetail} />
+              )}
+              {viewMode === "list" && (
+                <AssetsList assets={assets} onAssetClick={showAssetDetail} />
+              )}
 
-            <SearchFilter
-              form={form}
-              showFilters={showFilters}
-              onShowFiltersChange={setShowFilters}
-              onSearch={handleSearch}
-              onAdvancedFilter={handleAdvancedFilter}
-              onReset={handleReset}
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-            />
-          </div>
-        </Card>
-
-        <Card className="!shadow-sm !border !border-gray-200">
-          <Spin spinning={loading}>
-            {assets.length === 0 && !loading ? (
-              <Empty
-                description="Không có tài sản nào"
-                className="py-16"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              />
-            ) : (
-              <div className="!space-y-4">
-                {viewMode === "table" && (
-                  <AssetsTable
-                    assets={assets}
-                    searchParams={searchParams}
-                    onSort={handleSort}
-                    onAssetClick={showAssetDetail}
-                  />
-                )}
-                {viewMode === "grid" && (
-                  <AssetsGrid assets={assets} onAssetClick={showAssetDetail} />
-                )}
-                {viewMode === "list" && (
-                  <AssetsList assets={assets} onAssetClick={showAssetDetail} />
-                )}
-
-                <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                  <div className="text-sm text-gray-600">
-                    Hiển thị {assets.length} trong tổng số {totalAssets} tài sản
-                  </div>
-                  <Pagination
-                    current={searchParams.PageNumber}
-                    pageSize={searchParams.PageSize}
-                    total={totalAssets}
-                    onChange={handlePagination}
-                    showQuickJumper
-                    showTotal={(total, range) =>
-                      `${range[0]}-${range[1]} của ${total} mục`
-                    }
-                  />
+              <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                <div className="text-sm text-gray-600">
+                  Hiển thị {assets.length} trong tổng số {totalAssets} tài sản
                 </div>
+                <Pagination
+                  current={searchParams.PageNumber}
+                  pageSize={searchParams.PageSize}
+                  total={totalAssets}
+                  onChange={handlePagination}
+                  showQuickJumper
+                  showTotal={(total, range) =>
+                    `${range[0]}-${range[1]} của ${total} mục`
+                  }
+                />
               </div>
-            )}
-          </Spin>
-        </Card>
+            </div>
+          )}
+        </Spin>
       </div>
       <style>{`
     /* Custom styles for ListAuctionAsset component */

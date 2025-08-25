@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import type { RegistrationAuctionModals } from "../../../pages/Anonymous/Modals";
 
-// Utility function to replace empty values with dots
 export const getValueOrDots = (value: string | number | undefined): string => {
   if (value === undefined || value === "" || value === null) {
     return "..................................................";
@@ -12,7 +11,6 @@ export const getValueOrDots = (value: string | number | undefined): string => {
   return typeof value === "number" ? value.toLocaleString("vi-VN") : value;
 };
 
-// Document generation function
 export const exportToDocx = async (
   data?: Partial<RegistrationAuctionModals>
 ) => {
@@ -23,10 +21,10 @@ export const exportToDocx = async (
           properties: {
             page: {
               margin: {
-                left: 1440, // 2.54 cm (1440 twips)
-                right: 1440, // 2.54 cm
-                top: 1440, // 2.54 cm
-                bottom: 1440, // 2.54 cm
+                left: 1440,
+                right: 1440,
+                top: 1440,
+                bottom: 1440,
               },
             },
           },
@@ -448,12 +446,10 @@ export const exportToDocx = async (
   }
 };
 
-// PDF export function
 export const exportToPdf = async (
   data?: Partial<RegistrationAuctionModals>
 ) => {
   try {
-    // Create HTML content for PDF
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -568,7 +564,9 @@ export const exportToPdf = async (
               </tr>
               <tr>
                 <td class="label">2. Ngày sinh:</td>
-                <td class="value">${getValueOrDots(data?.dob ? dayjs(data.dob).format("DD/MM/YYYY") : "")}</td>
+                <td class="value">${getValueOrDots(
+                  data?.dob ? dayjs(data.dob).format("DD/MM/YYYY") : ""
+                )}</td>
               </tr>
               <tr>
                 <td class="label">3. CCCD/CMND số:</td>
@@ -576,7 +574,9 @@ export const exportToPdf = async (
               </tr>
               <tr>
                 <td class="label">4. Ngày cấp:</td>
-                <td class="value">${getValueOrDots(data?.idDate ? dayjs(data.idDate).format("DD/MM/YYYY") : "")}</td>
+                <td class="value">${getValueOrDots(
+                  data?.idDate ? dayjs(data.idDate).format("DD/MM/YYYY") : ""
+                )}</td>
               </tr>
               <tr>
                 <td class="label">5. Nơi cấp:</td>
@@ -606,7 +606,11 @@ export const exportToPdf = async (
               </tr>
               <tr>
                 <td class="label">2. Giá khởi điểm:</td>
-                <td class="value">${getValueOrDots(data?.priceStart ? Number(data.priceStart).toLocaleString("vi-VN") + " VND" : "")}</td>
+                <td class="value">${getValueOrDots(
+                  data?.priceStart
+                    ? Number(data.priceStart).toLocaleString("vi-VN") + " VND"
+                    : ""
+                )}</td>
               </tr>
               <tr>
                 <td class="label">3. Số tiền đặt cọc:</td>
@@ -642,30 +646,33 @@ export const exportToPdf = async (
           </div>
 
           <div class="date-section">
-            Ngày ${new Date().getDate()} tháng ${new Date().getMonth() + 1} năm ${new Date().getFullYear()}
+            Ngày ${new Date().getDate()} tháng ${
+      new Date().getMonth() + 1
+    } năm ${new Date().getFullYear()}
           </div>
         </body>
       </html>
     `;
 
-    // Create a blob and download link
-    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const blob = new Blob([htmlContent], { type: "text/html" });
     const url = URL.createObjectURL(blob);
-    
-    // Create temporary link and click it to download
-    const a = document.createElement('a');
+
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `Phieu_Dang_Ky_Dau_Gia_${getValueOrDots(data?.fullName).replace(/\./g, '')}_${new Date().toISOString().split('T')[0]}.html`;
+    a.download = `Phieu_Dang_Ky_Dau_Gia_${getValueOrDots(
+      data?.fullName
+    ).replace(/\./g, "")}_${new Date().toISOString().split("T")[0]}.html`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    // Inform user about next steps
-    toast.success("Đã tải xuống file HTML! Mở file và in ra PDF từ trình duyệt.", {
-      autoClose: 5000,
-    });
-
+    toast.success(
+      "Đã tải xuống file HTML! Mở file và in ra PDF từ trình duyệt.",
+      {
+        autoClose: 5000,
+      }
+    );
   } catch (error) {
     console.error("Error exporting to PDF:", error);
     toast.error("Xuất file PDF thất bại!");

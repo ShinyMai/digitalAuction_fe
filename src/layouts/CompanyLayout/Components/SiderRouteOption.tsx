@@ -264,12 +264,10 @@ const SiderRouteOption = ({
       return menuItems
         .map((item) => {
           if (item.children) {
-            // Filter children based on role
             const filteredChildren = item.children.filter(
               (child) => role && child.roleView.includes(role)
             );
 
-            // Only include parent if it has visible children or if user has permission
             if (
               filteredChildren.length > 0 &&
               item.roleView.includes(role || "")
@@ -281,7 +279,6 @@ const SiderRouteOption = ({
             }
             return null;
           } else {
-            // For items without children, check role permission
             return role && item.roleView.includes(role) ? item : null;
           }
         })
@@ -301,7 +298,6 @@ const SiderRouteOption = ({
     const rolePath = role?.toLowerCase();
     const routeWithoutRole = pathname.replace(`/${rolePath}/`, "");
 
-    // Find current key in nested structure
     let currentKey = "";
     let exactMatch = "";
     let bestPartialMatch = "";
@@ -312,12 +308,9 @@ const SiderRouteOption = ({
         if (item.children) {
           for (const child of item.children) {
             if (child.url) {
-              // Exact match has highest priority
               if (routeWithoutRole === child.url) {
                 exactMatch = child.key;
-              }
-              // For partial match, prioritize longer URL paths (more specific)
-              else if (
+              } else if (
                 routeWithoutRole.startsWith(child.url + "/") &&
                 child.url.length > bestPartialMatchLength
               ) {
@@ -327,12 +320,9 @@ const SiderRouteOption = ({
             }
           }
         } else if (item.url) {
-          // Exact match has highest priority
           if (routeWithoutRole === item.url) {
             exactMatch = item.key;
-          }
-          // For partial match, prioritize longer URL paths (more specific)
-          else if (
+          } else if (
             routeWithoutRole.startsWith(item.url + "/") &&
             item.url.length > bestPartialMatchLength
           ) {
@@ -346,7 +336,6 @@ const SiderRouteOption = ({
 
     currentKey = findKeyInItems(filteredItems);
 
-    // Fallback to first available item
     if (!currentKey) {
       const firstItem = filteredItems[0];
       if (firstItem?.children && firstItem.children.length > 0) {
@@ -360,7 +349,6 @@ const SiderRouteOption = ({
   };
 
   const onClick: MenuProps["onClick"] = (e) => {
-    // Find the clicked item in nested structure
     const findItemByKey = (
       menuItems: MenuItem[],
       key: string
@@ -391,22 +379,22 @@ const SiderRouteOption = ({
   };
   return (
     <div
-      className={`h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm transition-all duration-300 flex flex-col ${collapsed ? "w-20" : "w-full"
-        } `}
+      className={`h-full bg-gradient-to-b from-sky-50 to-sky-100 border-r border-sky-200 shadow-sm transition-all duration-300 flex flex-col ${
+        collapsed ? "w-20" : "w-full"
+      } `}
     >
-      {/* Header with Logo and Collapse Button */}
       <div
-        className={`flex items-center justify-between bg-gradient-to-r from-sky-100 to-sky-50 border-b border-sky-200 transition-all duration-300 ${collapsed ? "h-20 px-2" : "h-24 px-4"
-          }`}
+        className={`flex items-center justify-between bg-gradient-to-r from-sky-100 to-sky-50 border-b border-sky-200 transition-all duration-300 ${
+          collapsed ? "h-20 px-2" : "h-24 px-4"
+        }`}
       >
         {!collapsed && (
           <img
-            src={assets.logo}
+            src={assets.logoNo}
             alt="Logo"
             className="h-auto max-h-16 object-contain border-2 border-sky-300 rounded-xl shadow-md"
           />
         )}
-        {/* Collapse/Expand Button */}
         <Tooltip
           title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
           placement="right"
@@ -415,8 +403,9 @@ const SiderRouteOption = ({
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={handleCollapse}
-            className={`flex items-center justify-center text-sky-600 hover:text-sky-800 hover:bg-sky-100 border-sky-300 transition-all duration-300 ${collapsed ? "w-12 h-12 rounded-xl" : "w-10 h-10 rounded-lg ml-2"
-              }`}
+            className={`flex items-center justify-center text-sky-600 hover:text-sky-800 hover:bg-sky-100 border-sky-300 transition-all duration-300 ${
+              collapsed ? "w-12 h-12 rounded-xl" : "w-10 h-10 rounded-lg ml-2"
+            }`}
             style={{
               boxShadow: collapsed
                 ? "0 4px 12px rgba(0, 0, 0, 0.1)"
@@ -425,7 +414,6 @@ const SiderRouteOption = ({
           />
         </Tooltip>
       </div>
-      {/* User Role Badge - only show when not collapsed */}
       {!collapsed && role && (
         <div className="px-4 py-3 border-b border-sky-200 flex-shrink-0">
           <div className="bg-gradient-to-r from-sky-100 to-blue-100 rounded-lg p-3 text-center shadow-sm">
@@ -458,17 +446,18 @@ const SiderRouteOption = ({
             title: collapsed ? item.label : undefined,
             children: item.children
               ? item.children.map((child) => ({
-                key: child.key,
-                icon: child.icon,
-                label: child.label,
-                title: collapsed ? child.label : undefined,
-              }))
+                  key: child.key,
+                  icon: child.icon,
+                  label: child.label,
+                  title: collapsed ? child.label : undefined,
+                }))
               : undefined,
           }))}
-          className={`w-full bg-transparent border-none transition-all duration-300 ${collapsed
-            ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
-            : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
-            } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900 [&_.ant-menu-submenu-title]:text-sky-800 [&_.ant-menu-submenu-title]:font-semibold [&_.ant-menu-submenu-title:hover]:bg-sky-50 [&_.ant-menu-submenu-title:hover]:text-sky-900`}
+          className={`w-full bg-transparent border-none transition-all duration-300 ${
+            collapsed
+              ? "[&_.ant-menu-item]:mx-1 [&_.ant-menu-item]:my-2 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item]:px-3 [&_.ant-menu-item]:py-4"
+              : "[&_.ant-menu-item]:mx-2 [&_.ant-menu-item]:my-1 [&_.ant-menu-item]:rounded-lg [&_.ant-menu-item]:px-4 [&_.ant-menu-item]:py-3"
+          } [&_.ant-menu-item]:text-sky-700 [&_.ant-menu-item]:font-medium [&_.ant-menu-item-selected]:bg-sky-100 [&_.ant-menu-item-selected]:text-sky-900 [&_.ant-menu-item-selected]:font-semibold [&_.ant-menu-item:hover]:bg-sky-50 [&_.ant-menu-item:hover]:text-sky-900 [&_.ant-menu-submenu-title]:text-sky-800 [&_.ant-menu-submenu-title]:font-semibold [&_.ant-menu-submenu-title:hover]:bg-sky-50 [&_.ant-menu-submenu-title:hover]:text-sky-900`}
           style={{
             backgroundColor: "transparent",
             border: "none",
@@ -482,7 +471,7 @@ const SiderRouteOption = ({
             <span className="text-xs text-sky-600 font-medium block">
               Phiên bản
             </span>
-            <span className="font-semibold text-sky-800 text-sm">v1.0.0</span>
+            <span className="font-semibold text-sky-800 text-sm">v2.0.0</span>
           </div>
         </div>
       )}

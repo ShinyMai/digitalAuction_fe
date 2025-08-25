@@ -53,7 +53,6 @@ const NotificationDropdown = () => {
     }
   };
 
-  // Hàm kết nối và lắng nghe sự kiện từ SignalR
   useEffect(() => {
     const startConnection = async () => {
       try {
@@ -79,7 +78,7 @@ const NotificationDropdown = () => {
       setHasNewNotification(true);
     };
 
-    connection.off("ReceiveNotification"); // đảm bảo không bị duplicate
+    connection.off("ReceiveNotification");
     connection.on("ReceiveNotification", handleNotification);
 
     connection.onreconnecting((error) => {
