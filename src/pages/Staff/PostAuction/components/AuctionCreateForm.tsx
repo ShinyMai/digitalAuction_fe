@@ -456,10 +456,6 @@ const AuctionCreateForm = ({
                   }
                   rules={[
                     {
-                      required: true,
-                      message: "Vui lòng nhập giá khởi điểm!",
-                    },
-                    {
                       validator: (_, value) => {
                         const num = Number(value);
                         if (isNaN(num) || num <= 0) {
@@ -504,10 +500,6 @@ const AuctionCreateForm = ({
                     </span>
                   }
                   rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng nhập giá tối đa!",
-                    },
                     {
                       validator: (_, value) => {
                         const num = Number(value);
