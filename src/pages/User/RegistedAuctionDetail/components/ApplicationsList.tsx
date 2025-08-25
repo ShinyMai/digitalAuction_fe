@@ -28,7 +28,6 @@ import {
   FileProtectOutlined,
   InfoCircleOutlined,
   DownOutlined,
-  FilePdfOutlined,
   FileWordOutlined,
 } from "@ant-design/icons";
 import { formatNumber } from "../../../../utils/numberFormat";
@@ -40,7 +39,7 @@ import type {
 } from "../types";
 import AuctionServices from "../../../../services/AuctionServices";
 import { toast } from "react-toastify";
-import { exportToDocx, exportToPdf } from "../../../../components/Common/ExportDocs/DocumentGenerator";
+import { exportToDocx } from "../../../../components/Common/ExportDocs/DocumentGenerator";
 import UserServices from "../../../../services/UserServices";
 import { useSelector } from "react-redux";
 import type { RegistrationAuctionModals } from "../../../Anonymous/Modals";
@@ -555,41 +554,34 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                   /> : <></>
               }
             </Tooltip>
-            <Tooltip title="Tải xuống phiếu đăng ký" placement="top">
-              <Dropdown
-                menu={{
-                  items: [
-                    {
-                      key: 'docx',
-                      label: 'Tải xuống Word (.docx)',
-                      icon: <FileWordOutlined />,
-                      onClick: () => {
-                        const transformedData = transformDataForExport(record);
-                        exportToDocx(transformedData);
+            {record.statusRefund == null && (
+              <Tooltip title="Tải xuống phiếu đăng ký" placement="top">
+                <Dropdown
+                  menu={{
+                    items: [
+                      {
+                        key: 'docx',
+                        label: 'Tải xuống Word (.docx)',
+                        icon: <FileWordOutlined />,
+                        onClick: () => {
+                          const transformedData = transformDataForExport(record);
+                          exportToDocx(transformedData);
+                        },
                       },
-                    },
-                    {
-                      key: 'pdf',
-                      label: 'Tải xuống PDF (.pdf)',
-                      icon: <FilePdfOutlined />,
-                      onClick: () => {
-                        const transformedData = transformDataForExport(record);
-                        exportToPdf(transformedData);
-                      },
-                    },
-                  ],
-                }}
-                trigger={['click']}
-              >
-                <Button
-                  type="text"
-                  icon={<DownloadOutlined />}
-                  className="!text-blue-600 !hover:bg-blue-50"
+                    ],
+                  }}
+                  trigger={['click']}
                 >
-                  <DownOutlined />
-                </Button>
-              </Dropdown>
-            </Tooltip>
+                  <Button
+                    type="text"
+                    icon={<DownloadOutlined />}
+                    className="!text-blue-600 !hover:bg-blue-50"
+                  >
+                    <DownOutlined />
+                  </Button>
+                </Dropdown>
+              </Tooltip>
+            )}
           </Space>
         );
       },
