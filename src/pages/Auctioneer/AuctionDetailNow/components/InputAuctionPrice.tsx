@@ -31,6 +31,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
+import useAuctionRoundAnalysis from "../../../../hooks/useAuctionRoundAnalysis";
 
 const { Text } = Typography;
 
@@ -157,8 +158,8 @@ const InputAuctionPrice = ({
           roundData.auctionRoundId
         );
         if (response.code === 200) {
-          const dataArray = Array.isArray(response.data.listAuctionRoundPrices)
-            ? response.data.listAuctionRoundPrices
+          const dataArray = Array.isArray(response.data.items)
+            ? response.data.items
             : [];
           setAuctionRoundPriceListOther(dataArray);
         } else {
@@ -392,73 +393,14 @@ const InputAuctionPrice = ({
     }
   };
 
-  const computeStepValidity = (row: InputAuctionPriceModals) => {
-    const reasons: string[] = [];
-
-    const stepMin = Number((roundData as any)?.priceMin) || 0; // bước giá 1
-    const stepMax = Number((roundData as any)?.priceMax) || 0; // bước giá 2
-    const limitMax = Number((roundData as any)?.totalPriceMax) || Infinity; // trần giá tuyệt đối
-    const price = Number(row.price) || 0;
-    const start = Number(row.startingPrice) || 0;
-
-    // 0) Không vượt quá trần
-    if (price > limitMax) {
-      reasons.push(`Vượt giá tối đa ${limitMax.toLocaleString("vi-VN")} VND`);
-    }
-
-    // 1) < giá khởi điểm
-    if (price < start) {
-      reasons.push("Nhỏ hơn giá khởi điểm");
-    }
-
-    // 2) Phải cao hơn giá cao nhất của người khác (nếu có)
-    const assetName =
-      row.auctionAssetName ||
-      auctionAssets.find((a) => a.auctionAssetsId === row.auctionAssetId)
-        ?.tagName;
-
-    if (assetName && Array.isArray(auctionRoundPriceListOther)) {
-      const otherBidsForSameAsset = auctionRoundPriceListOther.filter(
-        (b) => b.tagName === assetName || b.auctionAssetName === assetName
-      );
-      if (otherBidsForSameAsset.length > 0) {
-        const highestOtherBid = Math.max(
-          ...otherBidsForSameAsset.map((b) => b.auctionPrice || b.price || 0)
-        );
-        if (price <= highestOtherBid) {
-          reasons.push(
-            `Không vượt giá cao nhất của người khác (${highestOtherBid.toLocaleString(
-              "vi-VN"
-            )} VND)`
-          );
-        }
-      }
-    }
-
-    // 3) Quy tắc bước giá:
-    if (price > start) {
-      const delta = price - start;
-
-      if (!(stepMin <= 0 && stepMax <= 0)) {
-        let divisibleOK = false;
-        if (stepMin > 0 && delta % stepMin === 0) divisibleOK = true;
-        if (stepMax > 0 && delta % stepMax === 0) divisibleOK = true;
-
-        if (!divisibleOK) {
-          const parts: string[] = [];
-          if (stepMin > 0) parts.push(stepMin.toLocaleString("vi-VN"));
-          if (stepMax > 0) parts.push(stepMax.toLocaleString("vi-VN"));
-          reasons.push(`Sai bước giá`);
-        }
-      }
-    }
-
-    return {
-      valid: reasons.length === 0,
-      reasons,
-      reason: reasons[0],
-    };
-  };
+  const { computeValidity } = useAuctionRoundAnalysis<
+    InputAuctionPriceModals,
+    AuctionAsset
+  >({
+    auctionRound: roundData,
+    assets: auctionAssets, // để suy ra startingPrice theo tagName
+    otherBids: auctionRoundPriceListOther, // để so "cao hơn người khác" khi là phiếu của tôi
+  });
 
   const columns = [
     {
@@ -524,18 +466,18 @@ const InputAuctionPrice = ({
       key: "validity",
       width: 160,
       render: (_: any, record: InputAuctionPriceModals) => {
-        const { valid, reasons } = computeStepValidity(record);
+        const { valid, reasons } = computeValidity(record, { isMine: true });
         return (
           <div className="flex flex-col">
             <Tag color={valid ? "green" : "red"}>
               {valid ? "Hợp lệ" : "Không hợp lệ"}
             </Tag>
             {!valid && reasons?.length ? (
-              <ul className="text-xs text-gray-500 list-disc pl-4 mt-1">
+              <div className="text-xs text-gray-500 list-disc mt-1">
                 {reasons.map((r, i) => (
-                  <li key={i}>{r}</li>
+                  <div key={i}>{r}</div>
                 ))}
-              </ul>
+              </div>
             ) : null}
           </div>
         );
@@ -646,18 +588,18 @@ const InputAuctionPrice = ({
       key: "validity",
       width: 160,
       render: (_: any, record: InputAuctionPriceModals) => {
-        const { valid, reasons } = computeStepValidity(record);
+        const { valid, reasons } = computeValidity(record, { isMine: false });
         return (
           <div className="flex flex-col">
             <Tag color={valid ? "green" : "red"}>
               {valid ? "Hợp lệ" : "Không hợp lệ"}
             </Tag>
             {!valid && reasons?.length ? (
-              <ul className="text-xs text-gray-500 list-disc pl-4 mt-1">
+              <div className="text-xs text-gray-500 list-disc mt-1">
                 {reasons.map((r, i) => (
-                  <li key={i}>{r}</li>
+                  <div key={i}>{r}</div>
                 ))}
-              </ul>
+              </div>
             ) : null}
           </div>
         );
@@ -1080,7 +1022,9 @@ const InputAuctionPrice = ({
                               rowClassName={(
                                 record: InputAuctionPriceModals
                               ) => {
-                                const { valid } = computeStepValidity(record);
+                                const { valid } = computeValidity(record, {
+                                  isMine: true,
+                                });
                                 return `group transition-colors duration-200 ${
                                   valid ? "hover:bg-blue-50/50" : "bg-pink-50"
                                 }`;
@@ -1148,7 +1092,9 @@ const InputAuctionPrice = ({
                               rowClassName={(
                                 record: InputAuctionPriceModals
                               ) => {
-                                const { valid } = computeStepValidity(record);
+                                const { valid } = computeValidity(record, {
+                                  isMine: false,
+                                });
                                 return `group transition-colors duration-200 ${
                                   valid ? "hover:bg-blue-50/50" : "bg-pink-50"
                                 }`;

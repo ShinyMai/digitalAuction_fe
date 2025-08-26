@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState } from "react";
 import {
   Table,
@@ -31,12 +32,7 @@ import {
 import type { AuctionRound, AuctionRoundPrice } from "../modalsData";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
-
-import {
-  useAuctionRoundAnalysis,
-  type AssetAnalysis as AssetAnalysisType,
-} from "../../../../hooks/useAuctionRoundAnalysis";
-
+import useAuctionRoundAnalysis from "../../../../hooks/useAuctionRoundAnalysis";
 const { Title, Text } = Typography;
 
 interface AssetAnalysisTableProps {
@@ -77,10 +73,12 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
     }).format(price);
   };
 
-  const { getHighestBiddersForAsset, assetAnalyses } = useAuctionRoundAnalysis({
-    auctionRound,
-    priceHistory,
-  });
+  const {
+    validPriceHistory,
+    getAssetAnalysis,
+    getHighestBiddersForAsset,
+    // computeValidity // nếu cần check từng bid
+  } = useAuctionRoundAnalysis({ auctionRound, priceHistory });
 
   const confirmWinner = async (
     auctionRoundPriceId: string,
@@ -139,9 +137,8 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
         return "default";
     }
   };
-
-  // (đã có sẵn từ hook) vẫn giữ memo cho an tâm re-render
-  const analyses = useMemo(() => assetAnalyses, [assetAnalyses]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const assetAnalyses = useMemo(() => getAssetAnalysis(), [validPriceHistory]);
 
   const columns = [
     {
@@ -197,7 +194,7 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
       title: <span className="!font-semibold">Thao tác</span>,
       key: "action",
       align: "center" as const,
-      render: (_: unknown, record: AssetAnalysisType) => (
+      render: (_: unknown, record: any) => (
         <Button
           type="primary"
           icon={<EyeOutlined />}
@@ -210,7 +207,7 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
     },
   ];
 
-  const selectedAssetAnalysis = analyses.find(
+  const selectedAssetAnalysis = assetAnalyses.find(
     (analysis) => analysis.tagName === selectedAsset
   );
   const highestBidders = selectedAsset
@@ -226,7 +223,7 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
             <Card className="!text-center !bg-blue-50">
               <Statistic
                 title="Tổng số tài sản"
-                value={analyses.length}
+                value={assetAnalyses.length}
                 prefix={<HomeOutlined />}
                 valueStyle={{ color: "#1890ff" }}
               />
@@ -236,7 +233,7 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
             <Card className="!text-center !bg-green-50">
               <Statistic
                 title="Tổng lượt đấu giá"
-                value={analyses.reduce(
+                value={assetAnalyses.reduce(
                   (sum, asset) => sum + asset.totalBids,
                   0
                 )}
@@ -261,7 +258,7 @@ const AssetAnalysisTable: React.FC<AssetAnalysisTableProps> = ({
       >
         <Table
           columns={columns}
-          dataSource={analyses}
+          dataSource={assetAnalyses}
           rowKey="tagName"
           pagination={false}
           className="!mt-4"
