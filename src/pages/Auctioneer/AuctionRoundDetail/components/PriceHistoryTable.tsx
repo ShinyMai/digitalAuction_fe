@@ -10,6 +10,7 @@ import {
 import type { ColumnsType } from "antd/es/table";
 import type { AuctionRoundPrice } from "../../Modals";
 import type { AuctionRound } from "../modalsData";
+import { useAuctionRoundAnalysis } from "../../../../hooks/useAuctionRoundAnalysis";
 
 const { Title } = Typography;
 
@@ -29,92 +30,11 @@ const PriceHistoryTable = ({
     }).format(price);
   };
 
-  // Helpers
-  const toPosNumber = (v: any) => {
-    const n = Number(v);
-    return Number.isFinite(n) && n > 0 ? n : undefined;
-  };
-
-  // Lấy startingPrice cho từng dòng: ưu tiên từ chính row.startingPrice,
-  // fallback tìm trong auctionRound?.auctionAssets nếu có (so theo tagName / name / assetName).
-  const getStartingPrice = (row: any): number | undefined => {
-    const direct = Number(row?.startingPrice);
-    if (Number.isFinite(direct)) return direct;
-
-    const assets: any[] = (auctionRound as any)?.auctionAssets;
-    if (Array.isArray(assets)) {
-      const found =
-        assets.find(
-          (a) =>
-            a?.tagName === row?.tagName ||
-            a?.name === row?.tagName ||
-            a?.assetName === row?.tagName
-        ) || null;
-      const sp = Number(found?.startingPrice);
-      if (Number.isFinite(sp)) return sp;
-    }
-    return undefined;
-  };
-
-  // Gom validate vào đây để dùng cho cột "Tính hợp lệ"
-  const computeValidity = (row: AuctionRoundPrice) => {
-    const reasons: string[] = [];
-
-    const stepMin = toPosNumber((auctionRound as any)?.priceMin);
-    const stepMax = toPosNumber((auctionRound as any)?.priceMax);
-    const totalMax = toPosNumber((auctionRound as any)?.totalPriceMax);
-    const limitMax = Number.isFinite(totalMax as number)
-      ? (totalMax as number)
-      : Infinity;
-
-    const price = Number(row.auctionPrice) || 0;
-    const start = getStartingPrice(row);
-
-    console.log(start);
-    // 1) Không vượt quá trần
-    if (price > limitMax) {
-      reasons.push(`Vượt giá tối đa ${formatPrice(limitMax)}`);
-    }
-
-    // Nếu không có startingPrice -> chỉ check trần, không có bước giá
-    if (start === undefined) {
-      return { valid: reasons.length === 0, reasons };
-    }
-
-    // 2) Cho phép bằng giá khởi điểm
-    if (price === start) {
-      return { valid: reasons.length === 0, reasons };
-    }
-
-    // 3) < giá khởi điểm
-    if (price < start) {
-      reasons.push("Nhỏ hơn giá khởi điểm");
-      return { valid: false, reasons };
-    }
-
-    // 4) Kiểm tra bước giá OR (priceMin hoặc priceMax)
-    const delta = price - start;
-
-    // nếu không cấu hình bước nào → hợp lệ (chỉ cần không vượt trần)
-    if (stepMin === undefined && stepMax === undefined) {
-      return { valid: reasons.length === 0, reasons };
-    }
-
-    let divisibleOK = false;
-    if (stepMin !== undefined && delta % stepMin === 0) divisibleOK = true;
-    if (stepMax !== undefined && delta % stepMax === 0) divisibleOK = true;
-
-    if (!divisibleOK) {
-      const parts: string[] = [];
-      if (stepMin !== undefined) parts.push(stepMin.toLocaleString("vi-VN"));
-      if (stepMax !== undefined) parts.push(stepMax.toLocaleString("vi-VN"));
-      reasons.push(
-        `Sai bước giá (không chia hết cho ${parts.join(" hoặc ")} VND)`
-      );
-    }
-
-    return { valid: reasons.length === 0, reasons };
-  };
+  // ✅ lấy validateBid từ hook
+  const { validateBid } = useAuctionRoundAnalysis({
+    auctionRound,
+    priceHistory,
+  });
 
   type DataType = AuctionRoundPrice & { key: number };
 
@@ -178,7 +98,6 @@ const PriceHistoryTable = ({
       sortDirections: ["ascend", "descend"],
     },
 
-    // 🆕 Cột "Tính hợp lệ"
     {
       title: (
         <span className="flex items-center gap-2">
@@ -188,7 +107,7 @@ const PriceHistoryTable = ({
       ),
       key: "validity",
       render: (_: any, record: DataType) => {
-        const { valid, reasons } = computeValidity(record);
+        const { valid, reasons } = validateBid(record);
         return (
           <div className="flex flex-col">
             <Tag
@@ -198,11 +117,11 @@ const PriceHistoryTable = ({
               {valid ? "Hợp lệ" : "Không hợp lệ"}
             </Tag>
             {!valid && reasons?.length ? (
-              <ul className="text-xs text-gray-500 list-disc pl-4 mt-1">
+              <div className="text-xs text-gray-500 list-disc mt-1">
                 {reasons.map((r, i) => (
-                  <li key={i}>{r}</li>
+                  <div key={i}>{r}</div>
                 ))}
-              </ul>
+              </div>
             ) : null}
           </div>
         );
@@ -212,7 +131,7 @@ const PriceHistoryTable = ({
         { text: "Không hợp lệ", value: "invalid" },
       ],
       onFilter: (value, record) => {
-        const { valid } = computeValidity(record);
+        const { valid } = validateBid(record as AuctionRoundPrice);
         return value === "valid" ? valid : !valid;
       },
     },
