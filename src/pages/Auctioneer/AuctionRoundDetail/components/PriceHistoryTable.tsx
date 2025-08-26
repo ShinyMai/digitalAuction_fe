@@ -7,14 +7,16 @@ import {
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type { AuctionRoundPrice } from "../../Modals";
+import type { AuctionRound } from "../modalsData";
 
 const { Title } = Typography;
 
 interface PriceHistoryTableProps {
   priceHistory: AuctionRoundPrice[];
+  auctionRound?: AuctionRound;
 }
 
-const PriceHistoryTable = ({ priceHistory }: PriceHistoryTableProps) => {
+const PriceHistoryTable = ({ priceHistory, auctionRound }: PriceHistoryTableProps) => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
