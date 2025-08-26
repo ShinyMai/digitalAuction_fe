@@ -41,7 +41,7 @@ const CreateRoundModal = ({ visible, onCancel, onSubmit, auctionId, loading = fa
     return (
         <Modal
             title={
-                <div className="!flex !items-center !gap-2">
+                <div className="!flex !items-center !gap-2 text-black">
                     <PlusOutlined className="!text-green-500" />
                     <span>Tạo vòng đấu giá mới</span>
                 </div>
@@ -74,47 +74,77 @@ const CreateRoundModal = ({ visible, onCancel, onSubmit, auctionId, loading = fa
                         label={<Text strong>Bước giá tối thiểu (VND)</Text>}
                         name="priceMin"
                         rules={[
-                            { type: "number", min: 1000, message: "Bước giá tối thiểu phải ít nhất 1,000 VND" }
+                            { type: "number", min: 1000, message: "Bước giá tối thiểu phải ít nhất 1,000 VND" },
+                            {
+                                validator: (_, value) => {
+                                    if (value && value % 1000 !== 0) {
+                                        return Promise.reject('Giá không được lẻ đến hàng trăm đồng');
+                                    }
+                                    return Promise.resolve();
+                                }
+                            }
                         ]}
                     >
                         <InputNumber
                             placeholder="Nhập bước giá tối thiểu"
                             className="!w-full"
-                            min={1000}
-                            step={1000}
+                            formatter={(value) =>
+                                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                            }
                             addonAfter="VND"
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        label={<Text strong>Giá tối đa (VND)</Text>}
-                        name="priceMax"
-                        rules={[
-                            { type: "number", min: 1000, message: "Giá tối đa phải ít nhất 1,000 VND" }
-                        ]}
-                    >
-                        <InputNumber
-                            placeholder="Nhập giá tối đa"
-                            className="!w-full"
-                            min={1000}
                             step={1000}
-                            addonAfter="VND"
                         />
                     </Form.Item>
 
                     <Form.Item
                         label={<Text strong>Bước giá tối đa (VND)</Text>}
+                        name="priceMax"
+                        rules={[
+                            { type: "number", min: 1000, message: "Không được nhập lẻ đến hàng trăm đồng" },
+                            {
+                                validator: (_, value) => {
+                                    if (value && value % 1000 !== 0) {
+                                        return Promise.reject('Không được nhập lẻ đến hàng trăm đồng');
+                                    }
+                                    return Promise.resolve();
+                                }
+                            }
+                        ]}
+                    >
+                        <InputNumber
+                            placeholder="Nhập giá tối đa"
+                            className="!w-full"
+                            formatter={(value) =>
+                                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                            }
+                            addonAfter="VND"
+                            step={1000}
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        label={<Text strong>Giá tối đa (VND)</Text>}
                         name="totalPriceMax"
                         rules={[
-                            { type: "number", min: 1000, message: "Bước giá tối đa phải ít nhất 1,000 VND" }
+                            { type: "number", min: 1000, message: "Không được nhập lẻ đến hàng trăm đồng" },
+                            {
+                                validator: (_, value) => {
+                                    if (value && value % 1000 !== 0) {
+                                        return Promise.reject('Không được nhập lẻ đến hàng trăm đồng');
+                                    }
+                                    return Promise.resolve();
+                                }
+                            }
                         ]}
                     >
                         <InputNumber
                             placeholder="Nhập bước giá tối đa"
                             className="!w-full"
-                            min={1000}
-                            step={1000}
+                            formatter={(value) =>
+                                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                            }
                             addonAfter="VND"
+                            step={1000}
                         />
                     </Form.Item>
                 </Form>

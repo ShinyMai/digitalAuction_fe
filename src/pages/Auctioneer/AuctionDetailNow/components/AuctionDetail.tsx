@@ -413,9 +413,17 @@ const AuctionDetail = ({
                 { required: true, message: "Vui lòng nhập bước giá tối thiểu!" },
                 {
                   type: "number",
-                  min: 1,
-                  message: "Bước giá tối thiểu phải lớn hơn 0!",
+                  min: 1000,
+                  message: "Bước giá tối thiểu phải ít nhất 1,000 VND",
                 },
+                {
+                  validator: (_, value) => {
+                    if (value && value % 1000 !== 0) {
+                      return Promise.reject('Không được nhập lẻ đến hàng trăm đồng');
+                    }
+                    return Promise.resolve();
+                  }
+                }
               ]}
             >
               <InputNumber
@@ -425,7 +433,8 @@ const AuctionDetail = ({
                 formatter={(value) =>
                   `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }
-                min={1}
+                min={1000}
+                step={1000}
               />
             </Form.Item>
             <Form.Item
@@ -438,8 +447,16 @@ const AuctionDetail = ({
               rules={[
                 {
                   type: "number",
-                  min: 1,
-                  message: "Giá tối đa phải lớn hơn 0!",
+                  min: 1000,
+                  message: "Giá tối đa phải ít nhất 1,000 VND",
+                },
+                {
+                  validator: (_, value) => {
+                    if (value && value % 1000 !== 0) {
+                      return Promise.reject('Không được nhập lẻ đến hàng trăm đồng');
+                    }
+                    return Promise.resolve();
+                  }
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
@@ -461,7 +478,8 @@ const AuctionDetail = ({
                 formatter={(value) =>
                   `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }
-                min={1}
+                min={1000}
+                step={1000}
               />
             </Form.Item>
             <Form.Item
@@ -474,8 +492,16 @@ const AuctionDetail = ({
               rules={[
                 {
                   type: "number",
-                  min: 1,
-                  message: "Bước giá tối đa phải lớn hơn 0!",
+                  min: 1000,
+                  message: "Bước giá tối đa phải ít nhất 1,000 VND",
+                },
+                {
+                  validator: (_, value) => {
+                    if (value && value % 1000 !== 0) {
+                      return Promise.reject('Không được nhập lẻ đến hàng trăm đồng');
+                    }
+                    return Promise.resolve();
+                  }
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
@@ -497,7 +523,8 @@ const AuctionDetail = ({
                 formatter={(value) =>
                   `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }
-                min={1}
+                min={1000}
+                step={1000}
               />
             </Form.Item>
 
