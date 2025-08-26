@@ -10,7 +10,7 @@ import {
 import type { ColumnsType } from "antd/es/table";
 import type { AuctionRoundPrice } from "../../Modals";
 import type { AuctionRound } from "../modalsData";
-import { useAuctionRoundAnalysis } from "../../../../hooks/useAuctionRoundAnalysis";
+import useAuctionRoundAnalysis from "../../../../hooks/useAuctionRoundAnalysis";
 
 const { Title } = Typography;
 
@@ -30,12 +30,10 @@ const PriceHistoryTable = ({
     }).format(price);
   };
 
-  // ✅ lấy validateBid từ hook
-  const { validateBid } = useAuctionRoundAnalysis({
+  const { computeValidity } = useAuctionRoundAnalysis({
     auctionRound,
     priceHistory,
   });
-
   type DataType = AuctionRoundPrice & { key: number };
 
   const columns: ColumnsType<DataType> = [
@@ -107,7 +105,7 @@ const PriceHistoryTable = ({
       ),
       key: "validity",
       render: (_: any, record: DataType) => {
-        const { valid, reasons } = validateBid(record);
+        const { valid, reasons } = computeValidity(record, { isMine: false });
         return (
           <div className="flex flex-col">
             <Tag
@@ -131,7 +129,7 @@ const PriceHistoryTable = ({
         { text: "Không hợp lệ", value: "invalid" },
       ],
       onFilter: (value, record) => {
-        const { valid } = validateBid(record as AuctionRoundPrice);
+        const { valid } = computeValidity(record as AuctionRoundPrice);
         return value === "valid" ? valid : !valid;
       },
     },
