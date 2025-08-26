@@ -429,51 +429,13 @@ const AuctionDetail = ({
               />
             </Form.Item>
             <Form.Item
-              name="totalPriceMax"
+              name="priceMax"
               label={
                 <span className="font-medium text-gray-700">
                   Bước giá tối đa (VND)
                 </span>
               }
               rules={[
-                { required: true, message: "Vui lòng nhập bước giá tối đa!" },
-                {
-                  type: "number",
-                  min: 1,
-                  message: "Bước giá tối đa phải lớn hơn 0!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    const priceMin = getFieldValue("priceMin");
-                    if (!value || !priceMin || value >= priceMin) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error("Bước giá tối đa phải lớn hơn hoặc bằng bước giá tối thiểu!")
-                    );
-                  },
-                }),
-              ]}
-            >
-              <InputNumber
-                placeholder="Nhập bước giá tối đa"
-                size="large"
-                style={{ width: "100%" }}
-                formatter={(value) =>
-                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                }
-                min={1}
-              />
-            </Form.Item>
-            <Form.Item
-              name="priceMax"
-              label={
-                <span className="font-medium text-gray-700">
-                  Giá tối đa (VND)
-                </span>
-              }
-              rules={[
-                { required: true, message: "Vui lòng nhập giá tối đa!" },
                 {
                   type: "number",
                   min: 1,
@@ -502,6 +464,43 @@ const AuctionDetail = ({
                 min={1}
               />
             </Form.Item>
+            <Form.Item
+              name="totalPriceMax"
+              label={
+                <span className="font-medium text-gray-700">
+                  Giá tối đa (VND)
+                </span>
+              }
+              rules={[
+                {
+                  type: "number",
+                  min: 1,
+                  message: "Bước giá tối đa phải lớn hơn 0!",
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const priceMin = getFieldValue("priceMin");
+                    if (!value || !priceMin || value >= priceMin) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("Bước giá tối đa phải lớn hơn hoặc bằng bước giá tối thiểu!")
+                    );
+                  },
+                }),
+              ]}
+            >
+              <InputNumber
+                placeholder="Nhập bước giá tối đa"
+                size="large"
+                style={{ width: "100%" }}
+                formatter={(value) =>
+                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                min={1}
+              />
+            </Form.Item>
+
 
 
           </div>

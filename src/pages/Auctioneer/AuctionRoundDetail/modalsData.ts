@@ -14,6 +14,9 @@ export type AuctionRound = {
     auction: AuctionDataDetail;
     roundNumber: number;
     status: number;
+    priceMax?: number;
+    priceMin?: number;
+    totalPriceMax?: number;
 }
 
 export type AuctionDataDetail = {

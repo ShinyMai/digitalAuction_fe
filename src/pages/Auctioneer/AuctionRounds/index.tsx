@@ -6,6 +6,7 @@ import StatisticsCards from "./components/StatisticsCards";
 import AuctionRoundsTable from "./components/AuctionRoundsTable";
 import AuctionResults from "./components/AuctionResults";
 import AuctionRoundDetail from "../AuctionRoundDetail";
+import CreateRoundModal from "./components/CreateRoundModal";
 import AuctionServices from "../../../services/AuctionServices";
 import InputAuctionPrice from "../AuctionDetailNow/components/InputAuctionPrice";
 import { useSelector } from "react-redux";
@@ -54,6 +55,8 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
   const [showDetail, setShowDetail] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [showInputPrice, setShowInputPrice] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
   const [selectedRound, setSelectedRound] = useState<AuctionRound>();
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
@@ -212,58 +215,75 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
     }
   }, [auctionId, auction?.status, auctionAsset]);
 
-  const handleCreateRound = useCallback(async () => {
+  const handleCreateRound = useCallback(() => {
+    // Kiểm tra xem có vòng đấu giá nào đang diễn ra không (status = 1)
+    const activeRounds = auctionRounds.filter((round) => round.status === 1);
+
+    if (activeRounds.length > 0) {
+      toast.warning(
+        `Không thể tạo vòng đấu giá mới. Hiện có ${activeRounds.length} vòng đấu giá đang diễn ra. Vui lòng kết thúc tất cả các vòng đấu giá hiện tại trước khi tạo vòng mới.`
+      );
+      return;
+    }
+
+    // Kiểm tra giới hạn số vòng đấu giá
+    if (
+      auction?.numberRoundMax &&
+      auctionRounds.length >= auction.numberRoundMax
+    ) {
+      toast.warning(
+        `Số lượng vòng đấu giá đã đạt giới hạn tối đa (${auction.numberRoundMax} vòng)`
+      );
+      return;
+    }
+
+    // Mở modal tạo vòng đấu giá
+    setShowCreateModal(true);
+  }, [auctionRounds, auction?.numberRoundMax]);
+
+  const handleCreateRoundSubmit = useCallback(async (data: {
+    auctionId: string;
+    priceMin: number;
+    priceMax: number;
+    totalPriceMax: number;
+  }) => {
     try {
+      setCreateLoading(true);
+
       if (!auctionId) {
         console.error("No auction detail data available");
         return;
       }
 
-      // Kiểm tra xem có vòng đấu giá nào đang diễn ra không (status = 1)
-      const activeRounds = auctionRounds.filter((round) => round.status === 1);
-
-      if (activeRounds.length > 0) {
-        toast.warning(
-          `Không thể tạo vòng đấu giá mới. Hiện có ${activeRounds.length} vòng đấu giá đang diễn ra. Vui lòng kết thúc tất cả các vòng đấu giá hiện tại trước khi tạo vòng mới.`
-        );
-        return;
-      }
-
-      // Kiểm tra giới hạn số vòng đấu giá
-      if (
-        auction?.numberRoundMax &&
-        auctionRounds.length >= auction.numberRoundMax
-      ) {
-        toast.warning(
-          `Số lượng vòng đấu giá đã đạt giới hạn tối đa (${auction.numberRoundMax} vòng)`
-        );
-        return;
-      }
-
       const dataRequest = {
-        auctionId: auctionId,
+        auctionId: data.auctionId,
+        priceMin: data.priceMin,
+        priceMax: data.priceMax,
+        totalPriceMax: data.totalPriceMax,
         createdBy: user?.id,
       };
+      console.log("Data request to create auction round:", dataRequest);
       const response = await AuctionServices.createAuctionRound(dataRequest);
 
       // ✅ Cập nhật lại danh sách auction rounds sau khi tạo thành công
       if (response.code === 200) {
         await getListAuctionRounds();
-        toast.success("Vòng đấu giá mới đã được tạo");
+        toast.success("Vòng đấu giá mới đã được tạo thành công");
+        setShowCreateModal(false);
       } else {
-        toast.error("Lỗi khi tạo danh vòng đấu giá");
+        toast.error("Lỗi khi tạo vòng đấu giá");
       }
     } catch (error) {
       console.error("Error creating auction round:", error);
-      toast.error("Error creating auction round");
+      toast.error("Có lỗi xảy ra khi tạo vòng đấu giá");
+    } finally {
+      setCreateLoading(false);
     }
-  }, [
-    auctionId,
-    user?.id,
-    getListAuctionRounds,
-    auction?.numberRoundMax,
-    auctionRounds,
-  ]);
+  }, [auctionId, user?.id, getListAuctionRounds]);
+
+  const handleCloseCreateModal = useCallback(() => {
+    setShowCreateModal(false);
+  }, []);
 
   useEffect(() => {
     getListAuctionRounds();
@@ -431,12 +451,12 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
               {(role === USER_ROLES.AUCTIONEER ||
                 role === USER_ROLES.STAFF ||
                 role === USER_ROLES.MANAGER) && (
-                <AuctionRoundDetail
-                  auctionRound={selectedRound}
-                  auction={auction}
-                  onBackToList={handleBackToList}
-                />
-              )}
+                  <AuctionRoundDetail
+                    auctionRound={selectedRound}
+                    auction={auction}
+                    onBackToList={handleBackToList}
+                  />
+                )}
             </motion.div>
           ) : showInputPrice ? (
             <motion.div
@@ -456,6 +476,15 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
           ) : null}
         </AnimatePresence>
       </div>
+
+      {/* Create Round Modal */}
+      <CreateRoundModal
+        visible={showCreateModal}
+        onCancel={handleCloseCreateModal}
+        onSubmit={handleCreateRoundSubmit}
+        auctionId={auctionId}
+        loading={createLoading}
+      />
 
       <style>{`
                 @keyframes float {
