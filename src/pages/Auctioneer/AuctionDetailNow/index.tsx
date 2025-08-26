@@ -25,6 +25,13 @@ interface AuctionAsset {
   startingPrice?: number;
 }
 
+interface CreateRoundFormData {
+  priceMin: number;
+  priceMax: number;
+  totalPriceMax: number;
+}
+
+
 const USER_ROLES = {
   USER: "Customer",
   ADMIN: "Admin",
@@ -94,13 +101,15 @@ const AuctionDetailAuctioneer = () => {
     }
   };
 
-  const onCreateAuctionRound = async () => {
+  const onCreateAuctionRound = async (valuePrice: CreateRoundFormData) => {
     // Logic to create a new auction round
     try {
       const dataRequest = {
         auctionId: location.state.key,
         createdBy: user?.id,
+        ...valuePrice
       };
+      console.log("Data request for creating auction round:", dataRequest);
       const response = await AuctionServices.createAuctionRound(dataRequest);
       if (response.code === 200) {
         toast.success(response.data);

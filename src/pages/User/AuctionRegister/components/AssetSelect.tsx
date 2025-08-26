@@ -83,7 +83,7 @@ const removeAccents = (str: string) => {
 const AssetSelect = ({ listAsset, onGetAssetSelect, onNext }: Props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
-  const [viewMode, setViewMode] = useState<"grid" | "list" | "table">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "table">("table");
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -102,9 +102,8 @@ const AssetSelect = ({ listAsset, onGetAssetSelect, onNext }: Props) => {
   }, [listAsset]);
 
   useEffect(() => {
-    if (priceRangeData[0] !== priceRangeData[1]) {
-      setPriceRange(priceRangeData as [number, number]);
-    }
+    const [min, max] = priceRangeData as [number, number];
+    setPriceRange([min, max]);
   }, [priceRangeData]);
 
   // Get unique categories from assets
@@ -217,11 +216,10 @@ const AssetSelect = ({ listAsset, onGetAssetSelect, onNext }: Props) => {
               e.stopPropagation();
               toggleSelection(asset.auctionAssetsId);
             }}
-            className={`!border-0 !shadow-md !hover:scale-110 !transition-transform ${
-              selectedAssets.includes(asset.auctionAssetsId)
-                ? "bg-blue-500 text-white"
-                : "bg-white/80"
-            }`}
+            className={`!border-0 !shadow-md !hover:scale-110 !transition-transform ${selectedAssets.includes(asset.auctionAssetsId)
+              ? "bg-blue-500 text-white"
+              : "bg-white/80"
+              }`}
           />
         </div>
 

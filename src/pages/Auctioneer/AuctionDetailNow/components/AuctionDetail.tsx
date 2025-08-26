@@ -1,16 +1,25 @@
-import { Button, Image, Typography, Card } from "antd";
+import { Button, Image, Typography, Card, Modal, Form, InputNumber } from "antd";
 import MINPHAPLOGO from "../../../../assets/logoNo.png";
 import dayjs from "dayjs";
 import type { AuctionDataDetail } from "../../Modals";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
 import { EnvironmentOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 interface AuctionDetailProps {
   auctionDetailData: AuctionDataDetail | undefined;
   auctionType?: string;
   isHaveAuctionRound?: boolean;
-  onCreateAuctionRound?: () => void;
+  onCreateAuctionRound?: (valuePrice: CreateRoundFormData) => void;
+  auctionId?: string;
+}
+
+interface CreateRoundFormData {
+  priceMin: number;
+  priceMax: number;
+  totalPriceMax: number;
 }
 
 const USER_ROLES = {
@@ -34,6 +43,46 @@ const AuctionDetail = ({
 }: AuctionDetailProps) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const role = user?.roleName as UserRole | undefined;
+
+  // Modal states
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [form] = Form.useForm<CreateRoundFormData>();
+
+  // Handle modal functions
+  const handleOpenModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    form.resetFields();
+  };
+
+  const handleSubmit = async (values: CreateRoundFormData) => {
+
+    setIsSubmitting(true);
+    try {
+      const submitData = {
+        priceMin: values.priceMin,
+        priceMax: values.priceMax,
+        totalPriceMax: values.totalPriceMax,
+      };
+
+      toast.success("Tạo vòng đấu giá thành công!");
+      handleCloseModal();
+
+      // Gọi callback để refresh data
+      if (onCreateAuctionRound) {
+        onCreateAuctionRound(submitData);
+      }
+    } catch (error) {
+      console.error("Error creating auction round:", error);
+      toast.error("Có lỗi xảy ra khi tạo vòng đấu giá!");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <section className="bg-gradient-to-b from-blue-50 to-teal-50 overflow-auto">
       <div className="w-full mx-auto bg-white shadow-lg rounded-xl p-6">
@@ -67,8 +116,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.registerOpenDate
                         ? dayjs(auctionDetailData.registerOpenDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -79,8 +128,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.registerEndDate
                         ? dayjs(auctionDetailData.registerEndDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -91,8 +140,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.auctionStartDate
                         ? dayjs(auctionDetailData.auctionStartDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -103,8 +152,8 @@ const AuctionDetail = ({
                     <span className="text-teal-800">
                       {auctionDetailData.auctionEndDate
                         ? dayjs(auctionDetailData.auctionEndDate).format(
-                            "DD/MM/YYYY"
-                          )
+                          "DD/MM/YYYY"
+                        )
                         : "-"}
                     </span>
                   </div>
@@ -145,19 +194,19 @@ const AuctionDetail = ({
                 </div>
                 {(role === USER_ROLES.MANAGER ||
                   role === USER_ROLES.AUCTIONEER) && (
-                  <div className="flex justify-center gap-4 mt-6">
-                    {role === USER_ROLES.AUCTIONEER && !isHaveAuctionRound && (
-                      <Button
-                        type="primary"
-                        size="large"
-                        className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
-                        onClick={onCreateAuctionRound}
-                      >
-                        Tạo vòng đấu giá
-                      </Button>
-                    )}
-                  </div>
-                )}
+                    <div className="flex justify-center gap-4 mt-6">
+                      {role === USER_ROLES.AUCTIONEER && !isHaveAuctionRound && (
+                        <Button
+                          type="primary"
+                          size="large"
+                          className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
+                          onClick={handleOpenModal}
+                        >
+                          Tạo vòng đấu giá
+                        </Button>
+                      )}
+                    </div>
+                  )}
               </div>
             </div>
 
@@ -174,7 +223,7 @@ const AuctionDetail = ({
                 Danh sách tài sản đấu giá
               </h3>
               {auctionDetailData.listAuctionAssets &&
-              auctionDetailData.listAuctionAssets.length > 0 ? (
+                auctionDetailData.listAuctionAssets.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {auctionDetailData.listAuctionAssets.map((asset) => (
                     <Card
@@ -199,8 +248,8 @@ const AuctionDetail = ({
                           <span className="text-teal-800">
                             {asset.startingPrice
                               ? `${parseFloat(
-                                  asset.startingPrice
-                                ).toLocaleString("vi-VN")} VND`
+                                asset.startingPrice
+                              ).toLocaleString("vi-VN")} VND`
                               : "-"}
                           </span>
                         </div>
@@ -211,8 +260,8 @@ const AuctionDetail = ({
                           <span className="text-teal-800">
                             {asset.deposit
                               ? `${parseFloat(asset.deposit).toLocaleString(
-                                  "vi-VN"
-                                )} VND`
+                                "vi-VN"
+                              )} VND`
                               : "-"}
                           </span>
                         </div>
@@ -223,8 +272,8 @@ const AuctionDetail = ({
                           <span className="text-teal-800">
                             {asset.registrationFee
                               ? `${parseFloat(
-                                  asset.registrationFee
-                                ).toLocaleString("vi-VN")} VND`
+                                asset.registrationFee
+                              ).toLocaleString("vi-VN")} VND`
                               : "-"}
                           </span>
                         </div>
@@ -278,7 +327,7 @@ const AuctionDetail = ({
             </div>
             {/* Thông tin bản đồ */}
             {auctionDetailData.auctionMap ||
-            auctionDetailData.auctionPlanningMap ? (
+              auctionDetailData.auctionPlanningMap ? (
               <div className="mt-8">
                 <h3 className="text-lg font-semibold text-blue-800 mb-4">
                   Thông tin bản đồ tài sản
@@ -287,17 +336,17 @@ const AuctionDetail = ({
                   <div>
                     {auctionDetailData.auctionPlanningMap !==
                       "No file uploaded" && (
-                      <div className="flex items-center bg-blue-50 pt-4 pl-4 rounded-lg">
-                        <EnvironmentOutlined className="text-teal-600 mr-2" />
-                        <Typography.Link
-                          href={auctionDetailData.auctionPlanningMap}
-                          target="_blank"
-                          className="text-teal-600 font-medium hover:text-teal-800 "
-                        >
-                          Xem bản đồ tài sản
-                        </Typography.Link>
-                      </div>
-                    )}
+                        <div className="flex items-center bg-blue-50 pt-4 pl-4 rounded-lg">
+                          <EnvironmentOutlined className="text-teal-600 mr-2" />
+                          <Typography.Link
+                            href={auctionDetailData.auctionPlanningMap}
+                            target="_blank"
+                            className="text-teal-600 font-medium hover:text-teal-800 "
+                          >
+                            Xem bản đồ tài sản
+                          </Typography.Link>
+                        </div>
+                      )}
                     {auctionDetailData.auctionMap && (
                       <div className="flex items-center bg-blue-50 p-4 rounded-lg">
                         <EnvironmentOutlined className="text-teal-600 mr-2" />
@@ -306,8 +355,8 @@ const AuctionDetail = ({
                             auctionType === "SQL"
                               ? auctionDetailData.auctionMap
                               : API_BASE_URL_NODE +
-                                "/" +
-                                auctionDetailData.auctionMap
+                              "/" +
+                              auctionDetailData.auctionMap
                           }
                           target="_blank"
                           className="text-teal-600 font-medium hover:text-teal-800"
@@ -329,6 +378,154 @@ const AuctionDetail = ({
           </div>
         )}
       </div>
+
+      {/* Modal tạo vòng đấu giá */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-semibold text-blue-800">
+              Tạo vòng đấu giá mới
+            </span>
+          </div>
+        }
+        open={isModalVisible}
+        onCancel={handleCloseModal}
+        width={600}
+        footer={null}
+        destroyOnClose
+        className="create-round-modal"
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          className="mt-4"
+        >
+          <div className="space-y-4">
+            <Form.Item
+              name="priceMin"
+              label={
+                <span className="font-medium text-gray-700">
+                  Bước giá tối thiểu (VND)
+                </span>
+              }
+              rules={[
+                { required: true, message: "Vui lòng nhập bước giá tối thiểu!" },
+                {
+                  type: "number",
+                  min: 1,
+                  message: "Bước giá tối thiểu phải lớn hơn 0!",
+                },
+              ]}
+            >
+              <InputNumber
+                placeholder="Nhập bước giá tối thiểu"
+                size="large"
+                style={{ width: "100%" }}
+                formatter={(value) =>
+                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                min={1}
+              />
+            </Form.Item>
+            <Form.Item
+              name="totalPriceMax"
+              label={
+                <span className="font-medium text-gray-700">
+                  Bước giá tối đa (VND)
+                </span>
+              }
+              rules={[
+                { required: true, message: "Vui lòng nhập bước giá tối đa!" },
+                {
+                  type: "number",
+                  min: 1,
+                  message: "Bước giá tối đa phải lớn hơn 0!",
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const priceMin = getFieldValue("priceMin");
+                    if (!value || !priceMin || value >= priceMin) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("Bước giá tối đa phải lớn hơn hoặc bằng bước giá tối thiểu!")
+                    );
+                  },
+                }),
+              ]}
+            >
+              <InputNumber
+                placeholder="Nhập bước giá tối đa"
+                size="large"
+                style={{ width: "100%" }}
+                formatter={(value) =>
+                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                min={1}
+              />
+            </Form.Item>
+            <Form.Item
+              name="priceMax"
+              label={
+                <span className="font-medium text-gray-700">
+                  Giá tối đa (VND)
+                </span>
+              }
+              rules={[
+                { required: true, message: "Vui lòng nhập giá tối đa!" },
+                {
+                  type: "number",
+                  min: 1,
+                  message: "Giá tối đa phải lớn hơn 0!",
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const priceMin = getFieldValue("priceMin");
+                    if (!value || !priceMin || value > priceMin) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("Giá tối đa phải lớn hơn bước giá tối thiểu!")
+                    );
+                  },
+                }),
+              ]}
+            >
+              <InputNumber
+                placeholder="Nhập giá tối đa"
+                size="large"
+                style={{ width: "100%" }}
+                formatter={(value) =>
+                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                min={1}
+              />
+            </Form.Item>
+
+
+          </div>
+
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+            <Button
+              onClick={handleCloseModal}
+              size="large"
+              className="px-6"
+            >
+              Hủy bỏ
+            </Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={isSubmitting}
+              size="large"
+              className="bg-teal-500 hover:bg-teal-600 px-6"
+            >
+              {isSubmitting ? "Đang tạo..." : "Tạo vòng đấu giá"}
+            </Button>
+          </div>
+        </Form>
+      </Modal>
     </section>
   );
 };
