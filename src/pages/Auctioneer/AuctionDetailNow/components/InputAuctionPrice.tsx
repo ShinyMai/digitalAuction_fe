@@ -12,6 +12,7 @@ import {
   Select,
   Tabs,
   Spin,
+  Tag,
 } from "antd";
 import {
   PlusOutlined,
@@ -119,8 +120,8 @@ const InputAuctionPrice = ({
     // Các tài sản mà chính người này đã có giá (từ server - người khác nhập)
     const userExistingBids = Array.isArray(auctionRoundPriceListOther)
       ? auctionRoundPriceListOther.filter(
-        (bid) => bid.citizenIdentification === userInfo.CitizenIdentification
-      )
+          (bid) => bid.citizenIdentification === userInfo.CitizenIdentification
+        )
       : [];
 
     const otherBiddenTagNames = new Set(
@@ -201,10 +202,10 @@ const InputAuctionPrice = ({
       const otherHighest =
         otherBidsForAsset.length > 0
           ? Math.max(
-            ...otherBidsForAsset.map(
-              (bid) => bid.auctionPrice || bid.price || 0
+              ...otherBidsForAsset.map(
+                (bid) => bid.auctionPrice || bid.price || 0
+              )
             )
-          )
           : 0;
       const myHighest =
         myBidsForAsset.length > 0
@@ -284,50 +285,11 @@ const InputAuctionPrice = ({
   const onFinish = async (values: InputAuctionPriceModals) => {
     setLoading(true);
     try {
-      if (
-        selectedAsset?.startingPrice &&
-        values.price < selectedAsset.startingPrice
-      ) {
-        setErrorMessage(
-          `Giá đấu phải lớn hơn hoặc bằng giá khởi điểm ${selectedAsset.startingPrice.toLocaleString(
-            "vi-VN"
-          )} VND`
-        );
-        setLoading(false);
-        return;
-      }
-
-      const selectedAssetName = auctionAssets.find(
-        (asset) => asset.auctionAssetsId === values.auctionAssetId
-      )?.tagName;
-
-      if (selectedAssetName && Array.isArray(auctionRoundPriceListOther)) {
-        const otherBidsForSameAsset = auctionRoundPriceListOther.filter(
-          (bid) =>
-            bid.tagName === selectedAssetName ||
-            bid.auctionAssetName === selectedAssetName
-        );
-        if (otherBidsForSameAsset.length > 0) {
-          const highestOtherBid = Math.max(
-            ...otherBidsForSameAsset.map(
-              (bid) => bid.auctionPrice || bid.price || 0
-            )
-          );
-          if (values.price <= highestOtherBid) {
-            setErrorMessage(
-              `Giá đấu phải cao hơn giá đấu hiện tại của người khác: ${highestOtherBid.toLocaleString(
-                "vi-VN"
-              )} VND cho tài sản "${selectedAssetName}"`
-            );
-            setLoading(false);
-            return;
-          }
-        }
-      }
-
       const assetObj = auctionAssets.find(
         (a) => a.auctionAssetsId === values.auctionAssetId
       );
+      const startingPrice =
+        assetObj?.startingPrice ?? selectedAsset?.startingPrice ?? 0;
 
       const formattedValues: InputAuctionPriceModals = {
         ...values,
@@ -335,13 +297,14 @@ const InputAuctionPrice = ({
         userName: userInfo?.UserName || "-",
         citizenIdentification: userInfo?.CitizenIdentification || "-",
         auctionAssetName:
+          assetObj?.tagName ||
           auctionAssets.find(
             (asset) => asset.auctionAssetsId === values.auctionAssetId
-          )?.tagName || "-",
-        startingPrice: assetObj?.startingPrice || 0,
+          )?.tagName ||
+          "-",
+        startingPrice: startingPrice || 0,
         id: uuidv4(),
       };
-
       const isDuplicate = auctionRoundPriceList.some(
         (item) =>
           item.numericalOrder === formattedValues.numericalOrder &&
@@ -356,6 +319,7 @@ const InputAuctionPrice = ({
       }
 
       setAuctionRoundPriceList([...auctionRoundPriceList, formattedValues]);
+
       const updatedAssets = auctionAssets.filter(
         (asset) => asset.auctionAssetsId !== formattedValues.auctionAssetId
       );
@@ -380,7 +344,7 @@ const InputAuctionPrice = ({
       resultDTOs: auctionRoundPriceList.map((item) => ({
         userName: item.userName || "-",
         citizenIdentification:
-          item.citizenIdentification || userInfo?.CitizenIdentification || "-", // ✅ lấy CCCD theo dòng
+          item.citizenIdentification || userInfo?.CitizenIdentification || "-",
         recentLocation: item.recentLocation || "",
         tagName: item.auctionAssetName || "-",
         auctionPrice: item.price,
@@ -416,7 +380,7 @@ const InputAuctionPrice = ({
       const assetToRestore: AuctionAsset = {
         auctionAssetsId: deletedItem.auctionAssetId || "",
         tagName: deletedItem.auctionAssetName || "",
-        startingPrice: deletedItem.startingPrice || 0, // ✅ dùng giá gốc theo dòng
+        startingPrice: deletedItem.startingPrice || 0,
       };
 
       const assetExists = auctionAssets.some(
@@ -426,6 +390,74 @@ const InputAuctionPrice = ({
         setAuctionAssets([...auctionAssets, assetToRestore]);
       }
     }
+  };
+
+  const computeStepValidity = (row: InputAuctionPriceModals) => {
+    const reasons: string[] = [];
+
+    const stepMin = Number((roundData as any)?.priceMin) || 0; // bước giá 1
+    const stepMax = Number((roundData as any)?.priceMax) || 0; // bước giá 2
+    const limitMax = Number((roundData as any)?.totalPriceMax) || Infinity; // trần giá tuyệt đối
+    const price = Number(row.price) || 0;
+    const start = Number(row.startingPrice) || 0;
+
+    // 0) Không vượt quá trần
+    if (price > limitMax) {
+      reasons.push(`Vượt giá tối đa ${limitMax.toLocaleString("vi-VN")} VND`);
+    }
+
+    // 1) < giá khởi điểm
+    if (price < start) {
+      reasons.push("Nhỏ hơn giá khởi điểm");
+    }
+
+    // 2) Phải cao hơn giá cao nhất của người khác (nếu có)
+    const assetName =
+      row.auctionAssetName ||
+      auctionAssets.find((a) => a.auctionAssetsId === row.auctionAssetId)
+        ?.tagName;
+
+    if (assetName && Array.isArray(auctionRoundPriceListOther)) {
+      const otherBidsForSameAsset = auctionRoundPriceListOther.filter(
+        (b) => b.tagName === assetName || b.auctionAssetName === assetName
+      );
+      if (otherBidsForSameAsset.length > 0) {
+        const highestOtherBid = Math.max(
+          ...otherBidsForSameAsset.map((b) => b.auctionPrice || b.price || 0)
+        );
+        if (price <= highestOtherBid) {
+          reasons.push(
+            `Không vượt giá cao nhất của người khác (${highestOtherBid.toLocaleString(
+              "vi-VN"
+            )} VND)`
+          );
+        }
+      }
+    }
+
+    // 3) Quy tắc bước giá:
+    if (price > start) {
+      const delta = price - start;
+
+      if (!(stepMin <= 0 && stepMax <= 0)) {
+        let divisibleOK = false;
+        if (stepMin > 0 && delta % stepMin === 0) divisibleOK = true;
+        if (stepMax > 0 && delta % stepMax === 0) divisibleOK = true;
+
+        if (!divisibleOK) {
+          const parts: string[] = [];
+          if (stepMin > 0) parts.push(stepMin.toLocaleString("vi-VN"));
+          if (stepMax > 0) parts.push(stepMax.toLocaleString("vi-VN"));
+          reasons.push(`Sai bước giá`);
+        }
+      }
+    }
+
+    return {
+      valid: reasons.length === 0,
+      reasons,
+      reason: reasons[0],
+    };
   };
 
   const columns = [
@@ -488,6 +520,28 @@ const InputAuctionPrice = ({
       ),
     },
     {
+      title: "Trạng thái",
+      key: "validity",
+      width: 160,
+      render: (_: any, record: InputAuctionPriceModals) => {
+        const { valid, reasons } = computeStepValidity(record);
+        return (
+          <div className="flex flex-col">
+            <Tag color={valid ? "green" : "red"}>
+              {valid ? "Hợp lệ" : "Không hợp lệ"}
+            </Tag>
+            {!valid && reasons?.length ? (
+              <ul className="text-xs text-gray-500 list-disc pl-4 mt-1">
+                {reasons.map((r, i) => (
+                  <li key={i}>{r}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        );
+      },
+    },
+    {
       title: "Thao tác",
       key: "action",
       width: 100,
@@ -530,12 +584,12 @@ const InputAuctionPrice = ({
     () =>
       statistics.totalMine > FORM_VALIDATION_RULES.PAGINATION_SIZE
         ? {
-          pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total: number, range: [number, number]) =>
-            `${range[0]}-${range[1]} của ${total} mục`,
-        }
+            pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total: number, range: [number, number]) =>
+              `${range[0]}-${range[1]} của ${total} mục`,
+          }
         : false,
     [statistics.totalMine]
   );
@@ -587,6 +641,28 @@ const InputAuctionPrice = ({
         </div>
       ),
     },
+    {
+      title: "Trạng thái",
+      key: "validity",
+      width: 160,
+      render: (_: any, record: InputAuctionPriceModals) => {
+        const { valid, reasons } = computeStepValidity(record);
+        return (
+          <div className="flex flex-col">
+            <Tag color={valid ? "green" : "red"}>
+              {valid ? "Hợp lệ" : "Không hợp lệ"}
+            </Tag>
+            {!valid && reasons?.length ? (
+              <ul className="text-xs text-gray-500 list-disc pl-4 mt-1">
+                {reasons.map((r, i) => (
+                  <li key={i}>{r}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        );
+      },
+    },
   ];
 
   return (
@@ -637,7 +713,7 @@ const InputAuctionPrice = ({
                   },
                 }}
               >
-                <div className="flex-1 flex flex-col h-full">
+                <div className="flex-1 flex flex-col h-full overflow-y-auto overflow-x-hidden">
                   <Form
                     form={form}
                     layout="vertical"
@@ -752,10 +828,58 @@ const InputAuctionPrice = ({
                               </div>
                             </div>
                           </div>
-                          <div className="text-xs text-emerald-600 mt-2 flex items-center gap-1">
-                            <span className="w-1 h-1 bg-emerald-500 rounded-full" />
-                            Giá đấu phải lớn hơn hoặc bằng giá khởi điểm
-                          </div>
+                          {(() => {
+                            const pm = (roundData as any)?.priceMin;
+                            const px = (roundData as any)?.priceMax;
+                            const tpm = (roundData as any)?.totalPriceMax;
+
+                            const showPM =
+                              typeof pm === "number" &&
+                              Number.isFinite(pm) &&
+                              pm > 0;
+                            const showPX =
+                              typeof px === "number" &&
+                              Number.isFinite(px) &&
+                              px > 0;
+                            const showTPM =
+                              typeof tpm === "number" &&
+                              Number.isFinite(tpm) &&
+                              tpm > 0;
+
+                            return (
+                              <>
+                                {showPM && (
+                                  <div className="text-sm text-emerald-600 mt-2 flex items-center gap-1">
+                                    <span className="w-1 h-1 bg-emerald-500 rounded-full" />
+                                    <span>Bước giá tối thiểu</span>
+                                    <span className="font-semibold">
+                                      {pm.toLocaleString("vi-VN")} VND
+                                    </span>
+                                  </div>
+                                )}
+
+                                {showPX && (
+                                  <div className="text-sm text-emerald-600 mt-2 flex items-center gap-1">
+                                    <span className="w-1 h-1 bg-emerald-500 rounded-full" />
+                                    <span>Bước giá tối đa</span>
+                                    <span className="font-semibold">
+                                      {px.toLocaleString("vi-VN")} VND
+                                    </span>
+                                  </div>
+                                )}
+
+                                {showTPM && (
+                                  <div className="text-sm text-emerald-600 mt-2 flex items-center gap-1">
+                                    <span className="w-1 h-1 bg-emerald-500 rounded-full" />
+                                    <span>Giá tối đa</span>
+                                    <span className="font-semibold">
+                                      {tpm.toLocaleString("vi-VN")} VND
+                                    </span>
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })()}
 
                           {(() => {
                             const bidInfo = getHighestBidForAsset(
@@ -766,19 +890,21 @@ const InputAuctionPrice = ({
                                 <div className="mt-3 pt-3 border-t border-emerald-200">
                                   <div className="flex items-center gap-3">
                                     <div
-                                      className={`w-6 h-6 bg-gradient-to-r ${bidInfo.isMyBid
-                                        ? "from-blue-400 to-indigo-500"
-                                        : "from-red-400 to-pink-500"
-                                        } rounded-full flex items-center justify-center`}
+                                      className={`w-6 h-6 bg-gradient-to-r ${
+                                        bidInfo.isMyBid
+                                          ? "from-blue-400 to-indigo-500"
+                                          : "from-red-400 to-pink-500"
+                                      } rounded-full flex items-center justify-center`}
                                     >
                                       <TrophyOutlined className="text-white text-xs" />
                                     </div>
                                     <div>
                                       <div
-                                        className={`text-xs font-medium ${bidInfo.isMyBid
-                                          ? "text-blue-700"
-                                          : "text-red-700"
-                                          }`}
+                                        className={`text-xs font-medium ${
+                                          bidInfo.isMyBid
+                                            ? "text-blue-700"
+                                            : "text-red-700"
+                                        }`}
                                       >
                                         Giá đấu cao nhất{" "}
                                         {bidInfo.isMyBid
@@ -786,10 +912,11 @@ const InputAuctionPrice = ({
                                           : "(Của người khác)"}
                                       </div>
                                       <div
-                                        className={`text-sm font-bold ${bidInfo.isMyBid
-                                          ? "text-blue-800"
-                                          : "text-red-800"
-                                          }`}
+                                        className={`text-sm font-bold ${
+                                          bidInfo.isMyBid
+                                            ? "text-blue-800"
+                                            : "text-red-800"
+                                        }`}
                                       >
                                         {bidInfo.highest.toLocaleString(
                                           "vi-VN"
@@ -950,7 +1077,14 @@ const InputAuctionPrice = ({
                               }}
                               pagination={paginationConfig}
                               className="!rounded-xl !overflow-hidden [&_.ant-table]:!bg-transparent [&_.ant-table-thead>tr>th]:!bg-gradient-to-r [&_.ant-table-thead>tr>th]:!from-blue-50 [&_.ant-table-thead>tr>th]:!to-indigo-50 [&_.ant-table-thead>tr>th]:!border-blue-200"
-                              rowClassName="group hover:bg-blue-50/50 transition-colors duration-200"
+                              rowClassName={(
+                                record: InputAuctionPriceModals
+                              ) => {
+                                const { valid } = computeStepValidity(record);
+                                return `group transition-colors duration-200 ${
+                                  valid ? "hover:bg-blue-50/50" : "bg-pink-50"
+                                }`;
+                              }}
                               scroll={{ x: 800, y: 400 }}
                               size="middle"
                             />
@@ -996,22 +1130,29 @@ const InputAuctionPrice = ({
                               }}
                               pagination={
                                 statistics.totalOther >
-                                  FORM_VALIDATION_RULES.PAGINATION_SIZE
+                                FORM_VALIDATION_RULES.PAGINATION_SIZE
                                   ? {
-                                    pageSize:
-                                      FORM_VALIDATION_RULES.PAGINATION_SIZE,
-                                    showSizeChanger: true,
-                                    showQuickJumper: true,
-                                    showTotal: (
-                                      total: number,
-                                      range: [number, number]
-                                    ) =>
-                                      `${range[0]}-${range[1]} của ${total} mục`,
-                                  }
+                                      pageSize:
+                                        FORM_VALIDATION_RULES.PAGINATION_SIZE,
+                                      showSizeChanger: true,
+                                      showQuickJumper: true,
+                                      showTotal: (
+                                        total: number,
+                                        range: [number, number]
+                                      ) =>
+                                        `${range[0]}-${range[1]} của ${total} mục`,
+                                    }
                                   : false
                               }
                               className="!rounded-xl !overflow-hidden [&_.ant-table]:!bg-transparent [&_.ant-table-thead>tr>th]:!bg-gradient-to-r [&_.ant-table-thead>tr>th]:!from-emerald-50 [&_.ant-table-thead>tr>th]:!to-teal-50 [&_.ant-table-thead>tr>th]:!border-emerald-200"
-                              rowClassName="group hover:bg-emerald-50/50 transition-colors duration-200"
+                              rowClassName={(
+                                record: InputAuctionPriceModals
+                              ) => {
+                                const { valid } = computeStepValidity(record);
+                                return `group transition-colors duration-200 ${
+                                  valid ? "hover:bg-blue-50/50" : "bg-pink-50"
+                                }`;
+                              }}
                               scroll={{ x: 800, y: 400 }}
                               size="middle"
                             />
@@ -1047,6 +1188,16 @@ const InputAuctionPrice = ({
         .ant-card-head { border-bottom: 2px solid #e5e7eb !important; }
         .ant-input:focus, .ant-input-focused { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important; }
         .ant-input-number:focus, .ant-input-number-focused { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important; }
+
+        .no-scrollbar {
+        -ms-overflow-style: none;     /* IE, Edge cũ */
+        scrollbar-width: none;        /* Firefox */
+        -webkit-overflow-scrolling: touch; /* mượt trên iOS (tuỳ chọn) */
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;                /* Chrome, Safari, Opera */
+        }
       `}</style>
       </div>
     </Spin>
