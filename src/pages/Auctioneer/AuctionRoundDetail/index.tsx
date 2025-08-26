@@ -32,7 +32,6 @@ const AuctionRoundDetail = ({
   >([]);
   const [activeTab, setActiveTab] = useState<string>("history");
   const [loading, setLoading] = useState<boolean>(false);
-
   const getListOfAuctionRoundPrices = async () => {
     try {
       if (auctionRound) {
@@ -103,7 +102,7 @@ const AuctionRoundDetail = ({
         status: 2,
       });
       if (response.data) {
-        toast.success("Phiên đấu giá đã được kết thúc");
+        toast.success("Vòng đấu giá đã được kết thúc");
         if (onBackToList) {
           onBackToList();
         }
@@ -147,7 +146,7 @@ const AuctionRoundDetail = ({
           Lịch sử trả giá
         </span>
       ),
-      children: <PriceHistoryTable priceHistory={auctionRoundPrice} />,
+      children: <PriceHistoryTable priceHistory={auctionRoundPrice} auctionRound={auctionRound} />,
     },
     {
       key: "assets",
