@@ -38,7 +38,7 @@ const AuctionRoundDetail = ({
         const response = await AuctionServices.getListAuctionRoundPrices(
           auctionRound.auctionRoundId
         );
-        setAuctionRoundPrice(response.data.listAuctionRoundPrices);
+        setAuctionRoundPrice(response?.data?.items);
       }
     } catch (error) {
       console.error("Error fetching auction round prices:", error);
@@ -132,7 +132,7 @@ const AuctionRoundDetail = ({
 
   // ---- 🔹 Derived data ----
   const totalParticipants = new Set(
-    auctionRoundPrice.map((item) => item.citizenIdentification)
+    auctionRoundPrice?.map((item) => item.citizenIdentification)
   ).size;
   const totalAssets = new Set(auctionRoundPrice.map((item) => item.tagName))
     .size;
