@@ -2,15 +2,15 @@ import { Card, Statistic, Row, Col, Typography, Space, Divider, Button } from "a
 import { UserOutlined, HomeOutlined, ClockCircleOutlined, StopOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/store";
+import type { AuctionRound } from "../modalsData";
 
 const { Title, Text } = Typography;
 
 interface AuctionHeaderProps {
-    auctionRoundId?: string; // Required - no default value
     totalParticipants: number;
     totalAssets: number;
     auctionName: string;
-    status?: number;
+    auctionRound?: AuctionRound;
     onEndAuction?: () => void; // Callback function for ending auction
 }
 
@@ -29,12 +29,12 @@ type UserRole =
 const AuctionHeader = ({
     totalParticipants,
     totalAssets,
-    status,
     auctionName,
     onEndAuction,
+    auctionRound
 }: AuctionHeaderProps) => {
     const getStatusBadge = () => {
-        switch (status) {
+        switch (auctionRound?.status) {
             case 1:
                 return (
                     <div className="!inline-flex !items-center !gap-2 !px-4 !py-2 !bg-gradient-to-r !from-emerald-50 !to-green-50 !border !border-emerald-200 !rounded-full !shadow-sm">
@@ -95,7 +95,7 @@ const AuctionHeader = ({
                         </Row>
 
                         {/* End Auction Button - Only show when auction is active */}
-                        {status === 1 && onEndAuction && role === USER_ROLES.AUCTIONEER && (
+                        {auctionRound?.status === 1 && onEndAuction && role === USER_ROLES.AUCTIONEER && (
                             <Button
                                 type="primary"
                                 danger

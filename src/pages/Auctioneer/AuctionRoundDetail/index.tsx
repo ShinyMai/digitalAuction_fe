@@ -186,12 +186,11 @@ const AuctionRoundDetail = ({
 
         {/* Header */}
         <AuctionHeader
-          auctionRoundId={auctionRound?.auctionRoundId}
           auctionName={auction?.auctionName || "Phiên đấu giá"}
           totalParticipants={totalParticipants}
           totalAssets={totalAssets}
-          status={auctionRound?.status}
           onEndAuction={endAuction}
+          auctionRound={auctionRound}
         />
 
         {/* Tabs */}
