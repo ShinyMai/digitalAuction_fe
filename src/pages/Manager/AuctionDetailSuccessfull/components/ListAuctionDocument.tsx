@@ -140,7 +140,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       ineligibleDocuments: ineligible
     };
   }, [auctionDocuments]);
-  console.log({ eligibleDocuments, ineligibleDocuments });
+
   // Nhóm dữ liệu theo CMND/CCCD cho từng danh sách
   const eligibleGroupedParticipants = useMemo(() => {
     const grouped = new Map<string, GroupedParticipant>();
@@ -299,7 +299,6 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
 
   // Xử lý hiển thị modal xác nhận không tham gia
   const showNotParticipatingConfirm = (participant: GroupedParticipant) => {
-    console.log("showNotParticipatingConfirm called", participant);
     setSelectedParticipantToConfirm(participant);
     setIsConfirmModalVisible(true);
   };
@@ -461,7 +460,11 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                         ? "blue"
                         : parseInt(status) === 2
                           ? "green"
-                          : "orange"
+                          : parseInt(status) === 3
+                            ? "red"
+                            : parseInt(status) === 4
+                              ? "volcano"
+                              : "orange"
                   }
                   className="text-xs"
                 >
@@ -471,7 +474,11 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                       ? `${count} đã chuyển tiền`
                       : parseInt(status) === 2
                         ? `${count} đã nhận phiếu`
-                        : `${count} đã hoàn tiền`}
+                        : parseInt(status) === 3
+                          ? `${count} không hoàn tiền`
+                          : parseInt(status) === 4
+                            ? `${count} không hợp lệ`
+                            : `${count} đã hoàn tiền`}
                 </Tag>
               ))}
             </div>
@@ -651,14 +658,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="text-center bg-white border-l-4 border-l-blue-500">
-              <div className="text-2xl font-bold text-blue-600">
-                {showEligibleList ? eligibleGroupedParticipants.length : ineligibleGroupedParticipants.length}
-              </div>
-              <div className="text-sm text-gray-600">
-                {showEligibleList ? "Người đủ điều kiện" : "Người không đủ điều kiện"}
-              </div>
-            </Card>
+            {/* Đã bỏ thống kê số người đủ điều kiện/không đủ điều kiện */}
             <Card className="text-center bg-white border-l-4 border-l-green-500">
               <div className="text-2xl font-bold text-green-600">
                 {showEligibleList ? eligibleDocuments.length : ineligibleDocuments.length}
@@ -933,7 +933,11 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                               ? "blue"
                               : asset.statusTicket === 2
                                 ? "green"
-                                : "orange"
+                                : asset.statusTicket === 3
+                                  ? "red"
+                                  : asset.statusTicket === 4
+                                    ? "volcano"
+                                    : "orange"
                         }
                         className="text-xs"
                       >
@@ -943,7 +947,11 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                             ? "Đã chuyển tiền"
                             : asset.statusTicket === 2
                               ? "Đã nhận phiếu"
-                              : "Đã hoàn tiền"}
+                              : asset.statusTicket === 3
+                                ? "Không hoàn tiền"
+                                : asset.statusTicket === 4
+                                  ? "Không hợp lệ"
+                                  : "Đã hoàn tiền"}
                       </Tag>
 
                       <Tag
@@ -963,22 +971,26 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                             : "Đã hoàn cọc"}
                       </Tag>
 
-                      {asset.statusRefund !== null && (
+                      {asset.statusRefund !== null && asset.statusRefund !== 0 && (
                         <Tag
                           color={
                             asset.statusRefund === 1
                               ? "blue"
                               : asset.statusRefund === 2
                                 ? "green"
-                                : "orange"
+                                : asset.statusRefund === 3
+                                  ? "red"
+                                  : "orange"
                           }
                           className="text-xs"
                         >
                           {asset.statusRefund === 1
-                            ? "Đang xử lý hoàn cọc"
+                            ? "Đã yêu cầu hoàn tiền cọc"
                             : asset.statusRefund === 2
-                              ? "Xác nhận đồng ý hoàn cọc"
-                              : "Từ chối hoàn cọc"}
+                              ? "Xác nhận hoàn cọc"
+                              : asset.statusRefund === 3
+                                ? "Từ chối hoàn cọc"
+                                : ""}
                         </Tag>
                       )}
                     </div>
