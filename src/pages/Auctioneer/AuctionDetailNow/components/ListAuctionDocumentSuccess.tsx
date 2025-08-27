@@ -99,8 +99,8 @@ interface GroupedParticipant {
 
 interface SearchParams {
   Name?: string;
-  PageNumber?: number;
-  PageSize?: number;
+  PageNumber?: number; // chỉ dùng UI; API luôn gửi 1
+  PageSize?: number; // chỉ dùng UI; API luôn gửi 100
   CitizenIdentification?: string;
   TagName?: string;
   SortBy?: string;
@@ -117,12 +117,19 @@ interface Props {
 
 const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
   const { user } = useSelector((state: any) => state.auth);
+
+  // ====== FILTER gửi lên API (FE paginate nên Page luôn cố định) ======
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
     PageSize: 100,
     StatusDeposit: 1,
     StatusTicket: 2,
   });
+
+  // ====== Phân trang FE ======
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSizeFe, setPageSizeFe] = useState<number>(8);
+
   const [auctionDocuments, setAuctionDocuments] = useState<AuctionDocument[]>(
     []
   );
@@ -249,6 +256,13 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
     return result;
   }, [auctionDocuments]);
 
+  // ===== Phân trang FE: cắt mảng theo currentPage & pageSizeFe =====
+  const paginatedParticipants = useMemo(() => {
+    const start = (currentPage - 1) * pageSizeFe;
+    const end = start + pageSizeFe;
+    return groupedParticipants.slice(start, end);
+  }, [groupedParticipants, currentPage, pageSizeFe]);
+
   // ===== Kiểm tra nếu ngày hiện tại lớn hơn registerEndDate =====
   const isAfterRegisterEndDate = auctionDateModals?.registerEndDate
     ? dayjs().isAfter(dayjs(auctionDateModals.registerEndDate))
@@ -258,8 +272,9 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
     try {
       setLoading(true);
       const params: SearchParams = {
-        PageNumber: searchParams.PageNumber || 1,
-        PageSize: searchParams.PageSize || 8,
+        // FE paginate => luôn lấy tối đa 100 bản ghi để cắt ở phía client
+        PageNumber: 1,
+        PageSize: 100,
         Name: searchParams.Name,
         CitizenIdentification: searchParams.CitizenIdentification,
         TagName: searchParams.TagName,
@@ -272,13 +287,22 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
         auctionId
       );
       setAuctionDocuments(response.data.auctionDocuments);
+      setCurrentPage(1); // reset trang khi filter thay đổi
     } catch (error) {
       toast.error("Lỗi khi tải danh sách tài liệu đấu giá!");
       console.error(error);
     } finally {
       setLoading(false);
     }
-  }, [searchParams, auctionId]);
+  }, [
+    searchParams.Name,
+    searchParams.CitizenIdentification,
+    searchParams.TagName,
+    searchParams.SortBy,
+    searchParams.StatusTicket,
+    searchParams.StatusDeposit,
+    auctionId,
+  ]);
 
   useEffect(() => {
     getListAuctionDocument();
@@ -289,7 +313,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
     const timeoutId = setTimeout(() => {
       // Trigger search sau 500ms delay nếu cần
     }, 500);
-
     return () => clearTimeout(timeoutId);
   }, [
     searchParams.Name,
@@ -302,7 +325,9 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
       ...prev,
       [key]: value || undefined,
       PageNumber: 1,
+      PageSize: 100,
     }));
+    setCurrentPage(1); // reset FE pagination
   };
 
   // ===== Modal handlers =====
@@ -491,7 +516,7 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
       ];
 
       const csvContent = csvRows.join("\n");
-      const blob = new Blob(["﻿" + csvContent], {
+      const blob = new Blob(["\ufeff" + csvContent], {
         type: "text/csv;charset=utf-8;",
       });
       const url = URL.createObjectURL(blob);
@@ -810,25 +835,28 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
             )}
           </div>
         </div>
+
+        {/* Bảng với phân trang FE */}
         <Table
           columns={columns as any}
-          dataSource={groupedParticipants}
+          dataSource={paginatedParticipants}
           rowKey="participantId"
           loading={loading}
           pagination={{
-            current: searchParams.PageNumber,
-            pageSize: searchParams.PageSize,
+            current: currentPage,
+            pageSize: pageSizeFe,
             total: groupedParticipants.length,
             showSizeChanger: true,
-            pageSizeOptions: ["5", "10", "15", "20"],
+            pageSizeOptions: ["8", "10", "20", "50", "100"],
             showTotal: (total, range) =>
               `${range[0]}-${range[1]} của ${total} người tham gia`,
-            onChange: (page, pageSize) =>
-              setSearchParams((prev) => ({
-                ...prev,
-                PageNumber: page,
-                PageSize: pageSize,
-              })),
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              if (size && size !== pageSizeFe) {
+                setPageSizeFe(size);
+                if (page !== 1) setCurrentPage(1); // tránh out-of-range khi đổi size
+              }
+            },
           }}
           scroll={{ x: "max-content" }}
           size="middle"

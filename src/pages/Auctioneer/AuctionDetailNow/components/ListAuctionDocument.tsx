@@ -13,8 +13,7 @@ import {
 import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal/ParticipantBiddingHistoryModal";
 import CustomModal from "../../../../components/Common/CustomModal";
 
-// Đã xóa import dayjs
-
+// ================= Types =================
 interface AuctionAsset {
   auctionAssetsId: string;
   tagName: string;
@@ -29,12 +28,6 @@ interface GroupedParticipant {
   userId?: string;
   totalRegistrationFee: number;
   assets: AuctionDocument[];
-}
-
-interface Props {
-  auctionId: string;
-  auctionDateModals?: AuctionDateModal;
-  auctionAssets: AuctionAsset[];
 }
 
 interface SearchParams {
@@ -52,15 +45,23 @@ interface SearchParams {
 interface Props {
   auctionId: string;
   auctionDateModals?: AuctionDateModal;
+  auctionAssets: AuctionAsset[];
 }
 
+// ================= Component =================
 const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
+  // Bộ lọc gửi lên API
   const [searchParams, setSearchParams] = useState<SearchParams>({
-    PageNumber: 1,
-    PageSize: 100,
+    PageNumber: 1, // luôn gửi 1 để lấy batch 100 đầu tiên
+    PageSize: 100, // yêu cầu: đặt PageSize=100 khi call API
     SortBy: "numericalorder",
     IsAscending: true,
   });
+
+  // Phân trang FE
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSizeFe, setPageSizeFe] = useState<number>(8);
+
   const [auctionDocuments, setAuctionDocuments] = useState<AuctionDocument[]>(
     []
   );
@@ -88,17 +89,20 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       userId?: string;
     } | null>(null);
 
-  // Nhóm dữ liệu theo CMND/CCCD
+  // ===== Group theo CMND/CCCD =====
   const groupedParticipants = useMemo(() => {
     const grouped = new Map<string, GroupedParticipant>();
 
     auctionDocuments.forEach((doc) => {
-      const key = doc.citizenIdentification; // Dùng CMND/CCCD làm key
-
+      const key = doc.citizenIdentification;
       if (grouped.has(key)) {
         const existing = grouped.get(key)!;
         existing.assets.push(doc);
         existing.totalRegistrationFee += doc.registrationFee;
+        // ưu tiên gán numericalOrder nếu chưa có
+        if (existing.numericalOrder == null && doc.numericalOrder != null) {
+          existing.numericalOrder = doc.numericalOrder;
+        }
       } else {
         grouped.set(key, {
           participantId: doc.citizenIdentification,
@@ -112,71 +116,90 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       }
     });
 
-    return Array.from(grouped.values());
+    // (tuỳ chọn) sắp xếp tăng dần theo Số báo danh để hiển thị ổn định
+    const arr = Array.from(grouped.values());
+    arr.sort((a, b) => {
+      const na = a.numericalOrder ?? Number.MAX_SAFE_INTEGER;
+      const nb = b.numericalOrder ?? Number.MAX_SAFE_INTEGER;
+      if (na !== nb) return na - nb;
+      return (a.name || "").localeCompare(b.name || "", "vi");
+    });
+    return arr;
   }, [auctionDocuments]);
 
-  // Đã xóa kiểm tra thời gian đăng ký
+  // ===== Phân trang FE: cắt mảng theo currentPage & pageSizeFe =====
+  const paginatedParticipants = useMemo(() => {
+    const start = (currentPage - 1) * pageSizeFe;
+    const end = start + pageSizeFe;
+    return groupedParticipants.slice(start, end);
+  }, [groupedParticipants, currentPage, pageSizeFe]);
 
+  // ===== Fetch: luôn dùng PageSize=100 (FE sẽ phân trang) =====
   useEffect(() => {
+    const getListAuctionDocument = async () => {
+      try {
+        setLoading(true);
+        const params: SearchParams = {
+          // Luôn cố định để lấy nhiều bản ghi nhất có thể cho FE paginate
+          PageNumber: 1,
+          PageSize: 100,
+          // filter
+          Name: searchParams.Name,
+          CitizenIdentification: searchParams.CitizenIdentification,
+          TagName: searchParams.TagName,
+          SortBy: searchParams.SortBy,
+          IsAscending: searchParams.IsAscending,
+        };
+        const response = await AuctionServices.getListAuctionDocument(
+          params,
+          auctionId
+        );
+
+        const filteredDocuments = response.data.auctionDocuments;
+        setAuctionDocuments(filteredDocuments);
+        // Reset về trang 1 mỗi khi filter thay đổi
+        setCurrentPage(1);
+      } catch (error) {
+        toast.error("Lỗi khi tải danh sách tài liệu đấu giá!");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     getListAuctionDocument();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, auctionId]);
+  }, [
+    searchParams.Name,
+    searchParams.CitizenIdentification,
+    searchParams.TagName,
+    searchParams.SortBy,
+    searchParams.IsAscending,
+    auctionId,
+  ]);
 
-  const getListAuctionDocument = async () => {
-    try {
-      setLoading(true);
-      const params: SearchParams = {
-        PageNumber: searchParams.PageNumber || 1,
-        PageSize: searchParams.PageSize || 8,
-        Name: searchParams.Name,
-        CitizenIdentification: searchParams.CitizenIdentification,
-        TagName: searchParams.TagName,
-        SortBy: searchParams.SortBy,
-        IsAscending: searchParams.IsAscending,
-      };
-      const response = await AuctionServices.getListAuctionDocument(
-        params,
-        auctionId
-      );
-
-      const filteredDocuments = response.data.auctionDocuments;
-
-      setAuctionDocuments(filteredDocuments);
-    } catch (error) {
-      toast.error("Lỗi khi tải danh sách tài liệu đấu giá!");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // ===== Handlers =====
   const handleInputChange = (key: keyof SearchParams, value: string) => {
     const newValue = value || undefined;
-    setSearchValues((prev) => ({
-      ...prev,
-      [key]: newValue,
-    })); // Thực hiện search ngay khi giá trị thay đổi
+    setSearchValues((prev) => ({ ...prev, [key]: newValue }));
     setSearchParams((prev) => ({
       ...prev,
       [key]: newValue,
-      PageNumber: 1, // Reset về trang 1 khi tìm kiếm
+      PageNumber: 1, // chỉ dùng để hiển thị, call API vẫn 1
+      PageSize: 100,
     }));
+    setCurrentPage(1); // reset FE pagination
   };
-  // Đã xóa handleAction
 
-  // Xử lý mở modal danh sách tài sản
   const handleShowAssetsModal = (participant: GroupedParticipant) => {
     setSelectedParticipant(participant);
     setIsAssetsModalVisible(true);
   };
 
-  // Xử lý đóng modal danh sách tài sản
   const handleCloseAssetsModal = () => {
     setIsAssetsModalVisible(false);
     setSelectedParticipant(null);
   };
 
-  // Xử lý mở modal lịch sử đấu giá - cập nhật để nhận GroupedParticipant
   const handleShowBiddingHistory = (participant: GroupedParticipant) => {
     setSelectedParticipantForHistory({
       name: participant.name,
@@ -187,7 +210,6 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
     setIsBiddingHistoryModalVisible(true);
   };
 
-  // Xử lý đóng modal lịch sử đấu giá
   const handleCloseBiddingHistoryModal = () => {
     setIsBiddingHistoryModalVisible(false);
     setSelectedParticipantForHistory(null);
@@ -336,6 +358,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
   return (
     <section className="w-full h-fit ">
       <div className="w-full mx-auto">
+        {/* Stats */}
         <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border border-emerald-200">
           <h2 className="text-lg font-semibold text-emerald-800 mb-4 flex items-center gap-2">
             <UserOutlined className="text-emerald-600" />
@@ -369,6 +392,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
           </div>
         </div>
 
+        {/* Filters */}
         <div className="mb-6">
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <div className="p-4 bg-gradient-to-r from-teal-500 to-blue-500">
@@ -432,24 +456,29 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
             </div>
           </div>
         </div>
+
+        {/* Table với phân trang FE */}
         <Table
           columns={columns}
-          dataSource={groupedParticipants}
+          dataSource={paginatedParticipants}
           rowKey="participantId"
           loading={loading}
           pagination={{
-            current: searchParams.PageNumber,
-            pageSize: 8, // Cố định 8 bản ghi/trang
+            current: currentPage,
+            pageSize: pageSizeFe,
             total: groupedParticipants.length,
-            showSizeChanger: false, // Ẩn tùy chọn thay đổi số lượng bản ghi/trang
+            showSizeChanger: true,
+            pageSizeOptions: ["8", "10", "20", "50", "100"],
             showTotal: (total, range) =>
               `${range[0]}-${range[1]} của ${total} người tham gia`,
-            onChange: (page) =>
-              setSearchParams((prev) => ({
-                ...prev,
-                PageNumber: page,
-                PageSize: 8,
-              })),
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              if (size && size !== pageSizeFe) {
+                setPageSizeFe(size);
+                // khi đổi pageSize, đưa về trang 1 để tránh out-of-range
+                if (page !== 1) setCurrentPage(1);
+              }
+            },
           }}
           scroll={{ x: "max-content" }}
           size="middle"
@@ -553,7 +582,6 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                   key={asset.auctionDocumentsId}
                   className="bg-white border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all duration-300 relative"
                 >
-                  {/* Compact header */}
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex-1 pr-3">
                       <div className="flex items-center gap-2 mb-1">
@@ -575,7 +603,6 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     </div>
                   </div>
 
-                  {/* Status compact */}
                   <div className="flex justify-between items-center pt-2 border-t border-gray-100">
                     <div className="flex items-center gap-2">
                       <Tag
@@ -615,7 +642,6 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
               ))}
             </div>
 
-            {/* Footer compact */}
             <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
               <div className="flex justify-between items-center text-xs">
                 <span className="text-gray-600">
@@ -647,7 +673,6 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
         onClose={handleCloseBiddingHistoryModal}
         participantInfo={selectedParticipantForHistory}
       />
-      {/* Đã xóa style cho gear icon */}
     </section>
   );
 };

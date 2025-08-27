@@ -35,12 +35,18 @@ import useAuctionRoundAnalysis from "../../../../hooks/useAuctionRoundAnalysis";
 
 const { Text } = Typography;
 
-// Constants
+// ================== CONSTANTS ==================
 const FORM_VALIDATION_RULES = {
   PAGINATION_SIZE: 4,
 } as const;
 
-// Interface definitions
+const TABLE_CONTAINER_HEIGHT = 520; // chiều cao khung bạn mong muốn
+const TABLE_HEAD_HEIGHT = 56; // 48–56px tùy theme
+const TABLE_PAGINATION_HEIGHT = 72; // 60–72px tùy theme/size changer
+const TABLE_BODY_Y =
+  TABLE_CONTAINER_HEIGHT - TABLE_HEAD_HEIGHT - TABLE_PAGINATION_HEIGHT;
+
+// ================== TYPES ==================
 export interface InputAuctionPriceModals {
   citizenIdentification?: string;
   userName?: string;
@@ -75,6 +81,7 @@ interface Props {
   onBackToList?: () => void;
 }
 
+// ================== COMPONENT ==================
 const InputAuctionPrice = ({
   auctionId,
   roundData,
@@ -96,6 +103,23 @@ const InputAuctionPrice = ({
   const [form] = Form.useForm<InputAuctionPriceModals>();
   const { user } = useSelector((state: RootState) => state.auth);
 
+  // ====== Pagination (controlled) cho 2 bảng ======
+  const [minePagination, setMinePagination] = useState<{
+    current: number;
+    pageSize: number;
+  }>({
+    current: 1,
+    pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
+  });
+  const [otherPagination, setOtherPagination] = useState<{
+    current: number;
+    pageSize: number;
+  }>({
+    current: 1,
+    pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
+  });
+
+  // ====== Memoized summary ======
   const statistics = useMemo(() => {
     const totalMine = auctionRoundPriceList.length;
     const totalOther = Array.isArray(auctionRoundPriceListOther)
@@ -113,31 +137,45 @@ const InputAuctionPrice = ({
     return { filterMine, filterOther };
   }, [auctionRoundPriceList, auctionRoundPriceListOther]);
 
+  // Reset trang nếu current vượt maxPage khi data hoặc pageSize đổi
+  useEffect(() => {
+    const total = filteredData.filterMine.length;
+    const maxPage = Math.max(1, Math.ceil(total / minePagination.pageSize));
+    if (minePagination.current > maxPage) {
+      setMinePagination((p) => ({ ...p, current: 1 }));
+    }
+  }, [filteredData.filterMine.length, minePagination.pageSize]);
+
+  useEffect(() => {
+    const total = filteredData.filterOther.length;
+    const maxPage = Math.max(1, Math.ceil(total / otherPagination.pageSize));
+    if (otherPagination.current > maxPage) {
+      setOtherPagination((p) => ({ ...p, current: 1 }));
+    }
+  }, [filteredData.filterOther.length, otherPagination.pageSize]);
+
+  // ====== Derived ======
   const currentNumericalOrder = Form.useWatch("numericalOrder", form);
 
   const availableAssets = useMemo(() => {
     if (!userInfo) return auctionAssets;
 
-    // Các tài sản mà chính người này đã có giá (từ server - người khác nhập)
     const userExistingBids = Array.isArray(auctionRoundPriceListOther)
       ? auctionRoundPriceListOther.filter(
-        (bid) => bid.citizenIdentification === userInfo.CitizenIdentification
-      )
+          (bid) => bid.citizenIdentification === userInfo.CitizenIdentification
+        )
       : [];
-
     const otherBiddenTagNames = new Set(
       userExistingBids.map((bid) => bid.tagName)
     );
 
-    // Các tài sản mà chính bạn đã thêm vào "Phiếu của tôi" CHO SỐ THỨ TỰ HIỆN TẠI
     const myBiddenAssetIdsForCurrentNo = new Set(
       auctionRoundPriceList
         .filter((bid) => bid.numericalOrder === currentNumericalOrder)
-        .map((bid) => bid.auctionAssetId) // ưu tiên so theo ID cho chắc
+        .map((bid) => bid.auctionAssetId)
         .filter(Boolean) as string[]
     );
 
-    // Lọc: loại (1) đã có trong "người khác" của chính user này, (2) đã có trong list cục bộ cho số TT hiện tại
     return auctionAssets.filter(
       (asset) =>
         !otherBiddenTagNames.has(asset.tagName) &&
@@ -146,11 +184,12 @@ const InputAuctionPrice = ({
   }, [
     auctionAssets,
     auctionRoundPriceListOther,
-    auctionRoundPriceList, // thêm dependency này
+    auctionRoundPriceList,
     userInfo,
-    currentNumericalOrder, // và dependency này
+    currentNumericalOrder,
   ]);
 
+  // ====== Data fetching ======
   const getListAuctionRoundPrice = useCallback(async () => {
     try {
       if (roundData?.auctionRoundId) {
@@ -177,6 +216,7 @@ const InputAuctionPrice = ({
   }, [getListAuctionRoundPrice]);
 
   const handleTabChange = async () => {
+    // refresh nhanh khi đổi tab
     try {
       await getListAuctionRoundPrice();
     } catch (error) {
@@ -184,6 +224,7 @@ const InputAuctionPrice = ({
     }
   };
 
+  // ====== Helpers ======
   const getHighestBidForAsset = useCallback(
     (assetId: string) => {
       const selectedAssetName = auctionAssets.find(
@@ -203,10 +244,10 @@ const InputAuctionPrice = ({
       const otherHighest =
         otherBidsForAsset.length > 0
           ? Math.max(
-            ...otherBidsForAsset.map(
-              (bid) => bid.auctionPrice || bid.price || 0
+              ...otherBidsForAsset.map(
+                (bid) => bid.auctionPrice || bid.price || 0
+              )
             )
-          )
           : 0;
       const myHighest =
         myBidsForAsset.length > 0
@@ -233,13 +274,13 @@ const InputAuctionPrice = ({
       }
       const response = await AuctionServices.userRegistedAuction({
         numericalOrder,
-        auctionId: auctionId,
+        auctionId,
         auctionRoundId: auctionRoundIdBefore || null,
       });
+
       if (
         response.data &&
-        response.data.auctionAssets &&
-        response.data.auctionAssets.length > 0 &&
+        response.data.auctionAssets?.length > 0 &&
         response.data.name
       ) {
         setAuctionAssets(response.data.auctionAssets);
@@ -284,6 +325,7 @@ const InputAuctionPrice = ({
     form.setFieldsValue({ auctionAssetId: assetId } as any);
   };
 
+  // ====== Submit local row ======
   const onFinish = async (values: InputAuctionPriceModals) => {
     setLoading(true);
     try {
@@ -307,6 +349,7 @@ const InputAuctionPrice = ({
         startingPrice: startingPrice || 0,
         id: uuidv4(),
       };
+
       const isDuplicate = auctionRoundPriceList.some(
         (item) =>
           item.numericalOrder === formattedValues.numericalOrder &&
@@ -320,16 +363,17 @@ const InputAuctionPrice = ({
         return;
       }
 
-      setAuctionRoundPriceList([...auctionRoundPriceList, formattedValues]);
+      setAuctionRoundPriceList((prev) => [...prev, formattedValues]);
 
+      // trả lại tài sản vào danh sách khả dụng
       const updatedAssets = auctionAssets.filter(
         (asset) => asset.auctionAssetsId !== formattedValues.auctionAssetId
       );
       setAuctionAssets(updatedAssets);
 
-      const currentNumericalOrder = values.numericalOrder;
+      const keepNo = values.numericalOrder;
       form.resetFields();
-      form.setFieldsValue({ numericalOrder: currentNumericalOrder } as any);
+      form.setFieldsValue({ numericalOrder: keepNo } as any);
       setSelectedAsset(null);
       setErrorMessage(null);
     } catch (error) {
@@ -340,6 +384,7 @@ const InputAuctionPrice = ({
     }
   };
 
+  // ====== Save to server ======
   const handleComplete = async () => {
     const dataSubmit = {
       auctionRoundId: roundData?.auctionRoundId,
@@ -371,12 +416,11 @@ const InputAuctionPrice = ({
     }
   };
 
+  // ====== Delete local row ======
   const handleDelete = (index: number) => {
     const deletedItem = auctionRoundPriceList[index];
 
-    setAuctionRoundPriceList(
-      auctionRoundPriceList.filter((_, i) => i !== index)
-    );
+    setAuctionRoundPriceList((prev) => prev.filter((_, i) => i !== index));
 
     if (deletedItem && userInfo && deletedItem.userName === userInfo.UserName) {
       const assetToRestore: AuctionAsset = {
@@ -389,20 +433,21 @@ const InputAuctionPrice = ({
         (asset) => asset.auctionAssetsId === assetToRestore.auctionAssetsId
       );
       if (!assetExists && assetToRestore.auctionAssetsId) {
-        setAuctionAssets([...auctionAssets, assetToRestore]);
+        setAuctionAssets((prev) => [...prev, assetToRestore]);
       }
     }
   };
 
+  // ====== Validate with hook ======
   const { computeValidity } = useAuctionRoundAnalysis<
     InputAuctionPriceModals,
     AuctionAsset
   >({
     auctionRound: roundData,
-    assets: auctionAssets, // để suy ra startingPrice theo tagName
-    otherBids: auctionRoundPriceListOther, // để so "cao hơn người khác" khi là phiếu của tôi
+    assets: auctionAssets,
   });
 
+  // ====== Columns ======
   const columns = [
     {
       title: "Số thứ tự",
@@ -465,9 +510,9 @@ const InputAuctionPrice = ({
     {
       title: "Trạng thái",
       key: "validity",
-      width: 160,
+      width: 200,
       render: (_: any, record: InputAuctionPriceModals) => {
-        const { valid, reasons } = computeValidity(record, { isMine: true });
+        const { valid, reasons } = computeValidity(record);
         return (
           <div className="flex flex-col">
             <Tag color={valid ? "green" : "red"}>
@@ -504,38 +549,6 @@ const InputAuctionPrice = ({
       ),
     },
   ];
-
-  const validationRules = useMemo(
-    () => ({
-      numericalOrder: [
-        { required: true, message: "Vui lòng nhập số thứ tự" },
-        {
-          type: "number" as const,
-          min: 1,
-          message: "Số thứ tự phải lớn hơn 0",
-        },
-      ],
-      auctionAssetId: [
-        { required: true, message: "Vui lòng chọn tài sản đấu giá" },
-      ],
-      price: [{ required: true, message: "Vui lòng nhập giá đấu" }],
-    }),
-    []
-  );
-
-  const paginationConfig = useMemo(
-    () =>
-      statistics.totalMine > FORM_VALIDATION_RULES.PAGINATION_SIZE
-        ? {
-          pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total: number, range: [number, number]) =>
-            `${range[0]}-${range[1]} của ${total} mục`,
-        }
-        : false,
-    [statistics.totalMine]
-  );
 
   const columnsOther = [
     {
@@ -587,9 +600,9 @@ const InputAuctionPrice = ({
     {
       title: "Trạng thái",
       key: "validity",
-      width: 160,
+      width: 200,
       render: (_: any, record: InputAuctionPriceModals) => {
-        const { valid, reasons } = computeValidity(record, { isMine: false });
+        const { valid, reasons } = computeValidity(record);
         return (
           <div className="flex flex-col">
             <Tag color={valid ? "green" : "red"}>
@@ -608,11 +621,23 @@ const InputAuctionPrice = ({
     },
   ];
 
+  // ====== Validation rules ======
+  const validationRules = useMemo(
+    () => ({
+      numericalOrder: [
+        { required: true, message: "Vui lòng nhập số thứ tự" },
+        { type: "number" as const, min: 1, message: "Số thứ tự phải > 0" },
+      ],
+      auctionAssetId: [{ required: true, message: "Vui lòng chọn tài sản" }],
+      price: [{ required: true, message: "Vui lòng nhập giá đấu" }],
+    }),
+    []
+  );
+
   return (
     <Spin spinning={loading || completingLoading} tip="Đang xử lý...">
-      <div className="min-h-fit relative overflow-hidden">
+      <div className="min-h-fit relative">
         <div className="w-full mx-auto relative z-10 pt-4">
-          {/* Back Button */}
           {onBackToList && (
             <div className="mb-6">
               <Button
@@ -627,7 +652,7 @@ const InputAuctionPrice = ({
           )}
 
           <Row gutter={[24, 24]} className="items-stretch">
-            {/* Form bên trái */}
+            {/* ===== Left: FORM ===== */}
             <Col xs={24} lg={8}>
               <Card
                 className="shadow-xl bg-gradient-to-br from-white to-blue-50/30 backdrop-blur-sm border-0 transition-shadow duration-300 h-[700px] flex flex-col"
@@ -748,7 +773,7 @@ const InputAuctionPrice = ({
                             </div>
                             <div className="text-xs text-amber-600 mt-1">
                               {auctionAssets.length - availableAssets.length}{" "}
-                              tài sản đã được loại bỏ khỏi danh sách
+                              tài sản đã được loại khỏi danh sách
                             </div>
                           </div>
                         )}
@@ -800,7 +825,6 @@ const InputAuctionPrice = ({
                                     </span>
                                   </div>
                                 )}
-
                                 {showPX && (
                                   <div className="text-sm text-emerald-600 mt-2 flex items-center gap-1">
                                     <span className="w-1 h-1 bg-emerald-500 rounded-full" />
@@ -810,7 +834,6 @@ const InputAuctionPrice = ({
                                     </span>
                                   </div>
                                 )}
-
                                 {showTPM && (
                                   <div className="text-sm text-emerald-600 mt-2 flex items-center gap-1">
                                     <span className="w-1 h-1 bg-emerald-500 rounded-full" />
@@ -833,19 +856,21 @@ const InputAuctionPrice = ({
                                 <div className="mt-3 pt-3 border-t border-emerald-200">
                                   <div className="flex items-center gap-3">
                                     <div
-                                      className={`w-6 h-6 bg-gradient-to-r ${bidInfo.isMyBid
-                                        ? "from-blue-400 to-indigo-500"
-                                        : "from-red-400 to-pink-500"
-                                        } rounded-full flex items-center justify-center`}
+                                      className={`w-6 h-6 bg-gradient-to-r ${
+                                        bidInfo.isMyBid
+                                          ? "from-blue-400 to-indigo-500"
+                                          : "from-red-400 to-pink-500"
+                                      } rounded-full flex items-center justify-center`}
                                     >
                                       <TrophyOutlined className="text-white text-xs" />
                                     </div>
                                     <div>
                                       <div
-                                        className={`text-xs font-medium ${bidInfo.isMyBid
-                                          ? "text-blue-700"
-                                          : "text-red-700"
-                                          }`}
+                                        className={`text-xs font-medium ${
+                                          bidInfo.isMyBid
+                                            ? "text-blue-700"
+                                            : "text-red-700"
+                                        }`}
                                       >
                                         Giá đấu cao nhất{" "}
                                         {bidInfo.isMyBid
@@ -853,10 +878,11 @@ const InputAuctionPrice = ({
                                           : "(Của người khác)"}
                                       </div>
                                       <div
-                                        className={`text-sm font-bold ${bidInfo.isMyBid
-                                          ? "text-blue-800"
-                                          : "text-red-800"
-                                          }`}
+                                        className={`text-sm font-bold ${
+                                          bidInfo.isMyBid
+                                            ? "text-blue-800"
+                                            : "text-red-800"
+                                        }`}
                                       >
                                         {bidInfo.highest.toLocaleString(
                                           "vi-VN"
@@ -947,7 +973,7 @@ const InputAuctionPrice = ({
               </Card>
             </Col>
 
-            {/* Bảng bên phải */}
+            {/* ===== Right: TABLES ===== */}
             <Col xs={24} lg={16}>
               <Card
                 className="shadow-xl bg-gradient-to-br from-white to-indigo-50/30 backdrop-blur-sm border-0 transition-shadow duration-300 h-[700px] flex flex-col"
@@ -987,18 +1013,18 @@ const InputAuctionPrice = ({
                         label: (
                           <span className="flex items-center gap-2 px-3 py-1">
                             <TrophyOutlined />
-                            <span className="font-medium">Phiếu của tôi</span>
+                            <span className="font-medium">Phiếu đang nhập</span>
                             <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-bold">
                               {statistics.totalMine}
                             </span>
                           </span>
                         ),
                         children: (
-                          <div className="h-[520px] overflow-hidden">
+                          <div className="h-[520px] flex flex-col min-h-0">
                             <Table
                               dataSource={filteredData.filterMine}
                               columns={columns}
-                              rowKey={(_, index) => index?.toString() || ""}
+                              rowKey={(record) => record.id}
                               locale={{
                                 emptyText: (
                                   <div className="text-center py-16">
@@ -1009,24 +1035,50 @@ const InputAuctionPrice = ({
                                       Chưa có dữ liệu giá đấu
                                     </div>
                                     <div className="text-gray-400 text-sm">
-                                      Thêm giá đấu đầu tiên của bạn bằng form
-                                      bên trái
+                                      Thêm giá đấu đầu tiên bằng form bên trái
                                     </div>
                                   </div>
                                 ),
                               }}
-                              pagination={paginationConfig}
+                              scroll={{ x: 800, y: TABLE_BODY_Y }}
+                              pagination={{
+                                current: minePagination.current,
+                                pageSize: minePagination.pageSize,
+                                total: filteredData.filterMine.length,
+                                showSizeChanger: true,
+                                showQuickJumper: true,
+                                pageSizeOptions: [
+                                  "4",
+                                  "8",
+                                  "12",
+                                  "20",
+                                  "50",
+                                  "100",
+                                ],
+                                hideOnSinglePage: false,
+                                onChange: (page, pageSize) =>
+                                  setMinePagination({
+                                    current: page,
+                                    pageSize,
+                                  }),
+                                onShowSizeChange: (_cur, size) =>
+                                  setMinePagination((p) => ({
+                                    ...p,
+                                    pageSize: size,
+                                    current: 1,
+                                  })),
+                                showTotal: (total, range) =>
+                                  `${range[0]}-${range[1]} của ${total} mục`,
+                              }}
                               className="!rounded-xl !overflow-hidden [&_.ant-table]:!bg-transparent [&_.ant-table-thead>tr>th]:!bg-gradient-to-r [&_.ant-table-thead>tr>th]:!from-blue-50 [&_.ant-table-thead>tr>th]:!to-indigo-50 [&_.ant-table-thead>tr>th]:!border-blue-200"
                               rowClassName={(
                                 record: InputAuctionPriceModals
                               ) => {
-                                const { valid } = computeValidity(record, {
-                                  isMine: true,
-                                });
-                                return `group transition-colors duration-200 ${valid ? "hover:bg-blue-50/50" : "bg-pink-50"
-                                  }`;
+                                const { valid } = computeValidity(record);
+                                return `group transition-colors duration-200 ${
+                                  valid ? "hover:bg-blue-50/50" : "bg-pink-50"
+                                }`;
                               }}
-                              scroll={{ x: 800, y: 400 }}
                               size="middle"
                             />
                           </div>
@@ -1037,21 +1089,21 @@ const InputAuctionPrice = ({
                         label: (
                           <span className="flex items-center gap-2 px-3 py-1">
                             <UserOutlined />
-                            <span className="font-medium">
-                              Phiếu của người khác
-                            </span>
+                            <span className="font-medium">Phiếu đã nhập</span>
                             <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-xs font-bold">
                               {statistics.totalOther}
                             </span>
                           </span>
                         ),
                         children: (
-                          <div className="h-[520px] overflow-hidden">
+                          <div className="h-[520px] flex flex-col min-h-0">
                             <Table
                               dataSource={filteredData.filterOther}
                               columns={columnsOther}
                               rowKey={(record, index) =>
-                                record?.id || index?.toString() || ""
+                                (record as any)?.auctionRoundPriceId ||
+                                (record as any)?.id ||
+                                String(index)
                               }
                               locale={{
                                 emptyText: (
@@ -1069,33 +1121,45 @@ const InputAuctionPrice = ({
                                   </div>
                                 ),
                               }}
-                              pagination={
-                                statistics.totalOther >
-                                  FORM_VALIDATION_RULES.PAGINATION_SIZE
-                                  ? {
-                                    pageSize:
-                                      FORM_VALIDATION_RULES.PAGINATION_SIZE,
-                                    showSizeChanger: true,
-                                    showQuickJumper: true,
-                                    showTotal: (
-                                      total: number,
-                                      range: [number, number]
-                                    ) =>
-                                      `${range[0]}-${range[1]} của ${total} mục`,
-                                  }
-                                  : false
-                              }
+                              scroll={{ x: 800, y: TABLE_BODY_Y }}
+                              pagination={{
+                                current: otherPagination.current, // ✅ đúng state
+                                pageSize: otherPagination.pageSize, // ✅ đúng state
+                                total: filteredData.filterOther.length, // ✅ đúng total
+                                showSizeChanger: true,
+                                showQuickJumper: true,
+                                pageSizeOptions: [
+                                  "4",
+                                  "8",
+                                  "12",
+                                  "20",
+                                  "50",
+                                  "100",
+                                ],
+                                hideOnSinglePage: false,
+                                onChange: (page, pageSize) =>
+                                  setOtherPagination({
+                                    current: page,
+                                    pageSize,
+                                  }),
+                                onShowSizeChange: (_cur, size) =>
+                                  setOtherPagination((p) => ({
+                                    ...p,
+                                    pageSize: size,
+                                    current: 1,
+                                  })),
+                                showTotal: (total, range) =>
+                                  `${range[0]}-${range[1]} của ${total} mục`,
+                              }}
                               className="!rounded-xl !overflow-hidden [&_.ant-table]:!bg-transparent [&_.ant-table-thead>tr>th]:!bg-gradient-to-r [&_.ant-table-thead>tr>th]:!from-emerald-50 [&_.ant-table-thead>tr>th]:!to-teal-50 [&_.ant-table-thead>tr>th]:!border-emerald-200"
                               rowClassName={(
                                 record: InputAuctionPriceModals
                               ) => {
-                                const { valid } = computeValidity(record, {
-                                  isMine: false,
-                                });
-                                return `group transition-colors duration-200 ${valid ? "hover:bg-blue-50/50" : "bg-pink-50"
-                                  }`;
+                                const { valid } = computeValidity(record);
+                                return `group transition-colors duration-200 ${
+                                  valid ? "hover:bg-blue-50/50" : "bg-pink-50"
+                                }`;
                               }}
-                              scroll={{ x: 800, y: 400 }}
                               size="middle"
                             />
                           </div>
@@ -1109,38 +1173,38 @@ const InputAuctionPrice = ({
           </Row>
         </div>
 
+        {/* Sticky pagination helper (tùy theme) */}
         <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          33% { transform: translateY(-10px) rotate(120deg); }
-          66% { transform: translateY(5px) rotate(240deg); }
-        }
+          /* Giữ pagination luôn hiện trong khung */
+          .ant-table-wrapper .ant-table-pagination {
+            position: sticky;
+            bottom: 0;
+            background: #fff;
+            z-index: 1;
+            padding-top: 8px;
+          }
 
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        .delay-1000 { animation-delay: 1s; }
-        .delay-2000 { animation-delay: 2s; }
+          .ant-table-thead > tr > th {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+            font-weight: 600 !important;
+            color: #374151 !important;
+            border-bottom: 2px solid #e5e7eb !important;
+          }
+          .ant-table-tbody > tr:hover > td { background: rgba(59, 130, 246, 0.05) !important; }
+          .ant-card-head { border-bottom: 2px solid #e5e7eb !important; }
+          .ant-input:focus, .ant-input-focused { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important; }
+          .ant-input-number:focus, .ant-input-number-focused { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important; }
 
-        .ant-table-thead > tr > th {
-          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
-          font-weight: 600 !important;
-          color: #374151 !important;
-          border-bottom: 2px solid #e5e7eb !important;
-        }
-        .ant-table-tbody > tr:hover > td { background: rgba(59, 130, 246, 0.05) !important; }
-        .ant-card-head { border-bottom: 2px solid #e5e7eb !important; }
-        .ant-input:focus, .ant-input-focused { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important; }
-        .ant-input-number:focus, .ant-input-number-focused { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important; }
-
-        .no-scrollbar {
-        -ms-overflow-style: none;     /* IE, Edge cũ */
-        scrollbar-width: none;        /* Firefox */
-        -webkit-overflow-scrolling: touch; /* mượt trên iOS (tuỳ chọn) */
-        }
-
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;                /* Chrome, Safari, Opera */
-        }
-      `}</style>
+          .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+          }
+          .no-scrollbar::-webkit-scrollbar { display: none; }
+          .ant-card-bordered{
+            height: fit-content !important
+          }
+        `}</style>
       </div>
     </Spin>
   );

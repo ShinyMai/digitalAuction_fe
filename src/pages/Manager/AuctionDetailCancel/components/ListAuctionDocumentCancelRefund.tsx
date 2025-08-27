@@ -187,7 +187,10 @@ const ListAuctionDocumentCancelRefund = ({ auctionId }: Props) => {
       title: "STT",
       dataIndex: "numericalOrder",
       key: "numericalOrder",
-      render: (numericalOrder: number | null) => numericalOrder || "-",
+      render: (_: any, __: any, index: number) =>
+        searchParams.PageNumber && searchParams.PageSize
+          ? (searchParams.PageNumber - 1) * searchParams.PageSize + index + 1
+          : index + 1,
     },
     {
       title: "Tên",
