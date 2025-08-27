@@ -29,12 +29,13 @@ export const AuctionAPI = {
   GET_LIST_AUCTION_ROUND_PRICE: "/ListEnteredPrices",
   UPDATE_WINNER_FLAG: "/UpdateWinnerFlag",
   UPDATE_AUCTION_WAITING_PUBLIC: "/Auctions/waiting-public",
-  UPDATE_STATUS_AUCTION_ROUND: "/ChangeStatusAuctionRound/Change-Status-Auction-Round",
+  UPDATE_STATUS_AUCTION_ROUND:
+    "/ChangeStatusAuctionRound/Change-Status-Auction-Round",
   GET_LIST_AUCTION_ROUND_PRICE_WINNER_BY_AUCTION_ID: "/ListUserWinner",
   UPDATE_AUCTION_REJECTED: "/Auctions/reject-auction",
-  UPDATE_AUCTION: '/Auctions',
-  EXPORT_HANDBOOK: '/AuctionBook/export-book',
-  EXPORT_REFUNDLIST: '/AuctionDocuments/export-refund-excel',
+  UPDATE_AUCTION: "/Auctions",
+  EXPORT_HANDBOOK: "/AuctionBook/export-book",
+  EXPORT_REFUNDLIST: "/AuctionDocuments/export-refund-excel",
   UPDATE_AUCTION_SUCCESSFULL: "/Auctions/mark-successful",
   USER_REQUEST_REFUND: "/AuctionDocuments/request-refund",
   STAFF_REVIEW_REFUND: "/AuctionDocuments/review-refund",
@@ -43,6 +44,7 @@ export const AuctionAPI = {
   ASSET_INFO_STATISTIC: "/AuctionAssetStatistics",
   BUSINESS_OVER_VIEW: "/GetBusinessOverview",
   STATISTIC_OVER_VIEW: "/GetStatisticOverview",
+  GET_LIST_BIDDERS: "/GetListBidders",
 } as const;
 
 export type AuctionAPIKey = keyof typeof AuctionAPI;
