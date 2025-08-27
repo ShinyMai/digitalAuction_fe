@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import AuctionServices from "../../../../services/AuctionServices";
@@ -21,60 +22,64 @@ import ParticipantBiddingHistoryModal from "../../../../components/Common/Partic
 
 const { TextArea } = Input;
 
-// Custom styles cho modal đẹp
+// ===== Custom styles cho modal đẹp =====
 const modalStyles = `
 .reject-modal .ant-modal-content {
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .reject-modal .ant-modal-header {
-    padding: 0;
-    border: none;
+  padding: 0;
+  border: none;
 }
 
 .reject-modal .ant-modal-body {
-    padding: 0 24px 24px 24px;
+  padding: 0 24px 24px 24px;
 }
 
 .reject-modal .ant-modal-close {
-    top: 16px;
-    right: 16px;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(4px);
-    transition: all 0.2s;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  transition: all 0.2s;
 }
 
 .reject-modal .ant-modal-close:hover {
-    background: rgba(255, 255, 255, 1);
-    transform: scale(1.05);
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.05);
 }
 
 .reject-modal .ant-modal-close-x {
-    font-size: 16px;
-    line-height: 32px;
-    color: #ef4444;
+  font-size: 16px;
+  line-height: 32px;
+  color: #ef4444;
 }
 `;
 
-// Inject styles
+// Inject styles (tránh inject trùng)
 if (typeof document !== "undefined") {
-  const styleSheet = document.createElement("style");
-  styleSheet.innerText = modalStyles;
-  document.head.appendChild(styleSheet);
+  const STYLE_ID = "reject-refund-styles";
+  if (!document.getElementById(STYLE_ID)) {
+    const styleSheet = document.createElement("style");
+    styleSheet.id = STYLE_ID;
+    styleSheet.innerText = modalStyles;
+    document.head.appendChild(styleSheet);
+  }
 }
 
-// Interface cho dữ liệu đã nhóm theo người
+// ===== Interface cho dữ liệu đã nhóm theo người =====
 interface GroupedParticipant {
   participantId: string;
   name: string;
   citizenIdentification: string;
   userId: string;
-  numericalOrder?: number;
+  numericalOrder?: number | string | null;
   statusDeposit: number;
   statusTicket: number;
   statusRefund?: number;
@@ -147,14 +152,12 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
       userId?: string;
     } | null>(null);
 
-  // Function để thay thế auctionDocumentId bằng tagName trong message
   const replaceDocumentIdWithTagName = useCallback(
     (message: string) => {
       if (!selectedParticipant) return message;
 
       let updatedMessage = message;
 
-      // Tìm và thay thế tất cả ID trong message
       selectedParticipant.assets.forEach((asset) => {
         const regex = new RegExp(asset.auctionDocumentsId, "g");
         updatedMessage = updatedMessage.replace(regex, `"${asset.tagName}"`);
@@ -165,7 +168,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
     [selectedParticipant]
   );
 
-  // Nhóm dữ liệu theo CMND/CCCD
   const groupedParticipants = useMemo(() => {
     const grouped = new Map<string, GroupedParticipant>();
 
@@ -184,7 +186,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
         });
         existing.totalRegistrationFee += doc.registrationFee;
 
-        // Cập nhật trạng thái chung: ưu tiên trạng thái "yêu cầu hoàn cọc" (1) nếu có
         if (
           doc.statusRefund === 1 ||
           doc.statusRefund === 2 ||
@@ -211,7 +212,7 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
             doc.statusRefund === 2 ||
             doc.statusRefund === 3
               ? doc.statusRefund
-              : undefined, // Set khi có yêu cầu hoàn cọc hoặc đã xử lý
+              : undefined,
           isAttended: doc.isAttended,
           totalRegistrationFee: doc.registrationFee,
           assets: [
@@ -220,8 +221,8 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
               registrationFee: doc.registrationFee,
               auctionDocumentsId: doc.auctionDocumentsId,
               statusRefund: doc.statusRefund,
-              refundReason: doc.refundReason, // Lưu lý do riêng cho từng tài sản
-              refundProof: doc.refundProof, // Lưu file riêng cho từng tài sản
+              refundReason: doc.refundReason,
+              refundProof: doc.refundProof,
             },
           ],
           representativeDocument: doc,
@@ -231,10 +232,22 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
 
     const result = Array.from(grouped.values());
 
+    const norm = (n: any) => {
+      const v = Number(n);
+      return Number.isFinite(v) ? v : Number.MAX_SAFE_INTEGER;
+    };
+
+    result.sort((a, b) => {
+      const na = norm(a.numericalOrder);
+      const nb = norm(b.numericalOrder);
+      if (na !== nb) return na - nb;
+      return (a.name || "").localeCompare(b.name || "", "vi");
+    });
+
     return result;
   }, [auctionDocuments]);
 
-  // Kiểm tra nếu ngày hiện tại lớn hơn registerEndDate
+  // ===== Kiểm tra nếu ngày hiện tại lớn hơn registerEndDate =====
   const isAfterRegisterEndDate = auctionDateModals?.registerEndDate
     ? dayjs().isAfter(dayjs(auctionDateModals.registerEndDate))
     : false;
@@ -269,10 +282,10 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
     getListAuctionDocument();
   }, [getListAuctionDocument]);
 
-  // Debounce effect cho search
+  // Debounce effect cho search (placeholder)
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      // Trigger search sau 500ms delay
+      // Trigger search sau 500ms delay nếu cần
     }, 500);
 
     return () => clearTimeout(timeoutId);
@@ -286,34 +299,31 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
     setSearchParams((prev) => ({
       ...prev,
       [key]: value || undefined,
-      PageNumber: 1, // Reset về trang 1 khi search
+      PageNumber: 1,
     }));
   };
 
-  // Xử lý hiển thị modal lý do không tham gia (cho yêu cầu chờ phê duyệt)
+  // ===== Modal handlers =====
   const handleShowReasonModal = (participant: GroupedParticipant) => {
     setSelectedParticipant(participant);
     setIsModalVisible(true);
   };
 
-  // Xử lý hiển thị modal xem chi tiết (cho yêu cầu đã xử lý)
   const handleShowDetailModal = (participant: GroupedParticipant) => {
     setSelectedDetailParticipant(participant);
     setIsViewDetailModalVisible(true);
   };
 
-  // Xử lý đóng modal yêu cầu chờ phê duyệt
   const handleCloseModal = () => {
     setIsModalVisible(false);
     setSelectedParticipant(null);
   };
-  // Xử lý đóng modal xem chi tiết
+
   const handleCloseDetailModal = () => {
     setIsViewDetailModalVisible(false);
     setSelectedDetailParticipant(null);
   };
 
-  // Xử lý hiển thị modal lịch sử đấu giá
   const handleShowBiddingHistory = (participant: GroupedParticipant) => {
     setSelectedParticipantForHistory({
       name: participant.name,
@@ -324,13 +334,11 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
     setIsBiddingHistoryModalVisible(true);
   };
 
-  // Xử lý đóng modal lịch sử đấu giá
   const handleCloseBiddingHistoryModal = () => {
     setIsBiddingHistoryModalVisible(false);
     setSelectedParticipantForHistory(null);
   };
 
-  // Xử lý đồng ý lý do không tham gia - Cập nhật tất cả tài sản của người này
   const handleApproveReason = async () => {
     if (!selectedParticipant) return;
 
@@ -346,7 +354,7 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
       };
 
       const response = await AuctionServices.staffReviewRefund(approveData);
-      if (response.code == 200) {
+      if (response.code === 200) {
         toast.success(
           `Đã phê duyệt yêu cầu hoàn cọc cho ${selectedParticipant.name} (${
             selectedParticipant.assets.filter(
@@ -355,9 +363,8 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
           } tài sản)!`
         );
         handleCloseModal();
-        getListAuctionDocument(); // Refresh danh sách
+        getListAuctionDocument();
       } else {
-        // Thay thế ID bằng tên tài sản trong message
         const friendlyMessage = replaceDocumentIdWithTagName(response.message);
         toast.error(friendlyMessage);
       }
@@ -369,13 +376,11 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
     }
   };
 
-  // Xử lý từ chối lý do không tham gia - Mở modal để điền lý do từ chối
   const handleRejectReason = () => {
-    setIsModalVisible(false); // Chỉ đóng modal hiện tại, không reset selectedParticipant
-    setIsRejectModalVisible(true); // Mở modal từ chối
+    setIsModalVisible(false);
+    setIsRejectModalVisible(true);
   };
 
-  // Xử lý gửi lý do từ chối
   const handleSubmitRejectReason = async () => {
     if (!selectedParticipant || !rejectReason.trim()) {
       toast.error("Vui lòng điền lý do từ chối!");
@@ -394,14 +399,13 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
       };
 
       const response = await AuctionServices.staffReviewRefund(rejectData);
-      if (response.code == 200) {
+      if (response.code === 200) {
         toast.success(
           `Đã từ chối yêu cầu hoàn cọc cho ${selectedParticipant.name}!`
         );
         handleCloseRejectModal();
-        getListAuctionDocument(); // Refresh danh sách
+        getListAuctionDocument();
       } else {
-        // Thay thế ID bằng tên tài sản trong message
         const friendlyMessage = replaceDocumentIdWithTagName(response.message);
         toast.error(friendlyMessage);
       }
@@ -413,13 +417,13 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
     }
   };
 
-  // Xử lý đóng modal từ chối
   const handleCloseRejectModal = () => {
     setIsRejectModalVisible(false);
     setRejectReason("");
     setSelectedParticipant(null);
   };
 
+  // ===== Export CSV: dùng thẳng groupedParticipants (đã SẮP XẾP) =====
   const handleDownload = () => {
     try {
       const headers = [
@@ -434,9 +438,21 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
         "Chữ ký",
       ];
 
+      // 👉 Lọc bỏ người có statusRefund === 2 (ĐÃ CHẤP NHẬN HOÀN)
+      const exportParticipants = groupedParticipants.filter(
+        (p) => p.statusRefund !== 2
+      );
+
+      if (exportParticipants.length === 0) {
+        toast.info(
+          "Không có dữ liệu để xuất (đã lọc người có trạng thái 'Đã chấp nhận hoàn')."
+        );
+        return;
+      }
+
       const csvRows = [
-        headers.join(","), // Header row
-        ...groupedParticipants.map((participant) => {
+        headers.join(","),
+        ...exportParticipants.map((participant) => {
           const assetsList = participant.assets
             .map(
               (asset) =>
@@ -458,7 +474,7 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
               : "Đã hoàn tiền";
 
           const row = [
-            participant.numericalOrder || "-",
+            participant.numericalOrder ?? "-",
             `"${participant.name}"`,
             participant.citizenIdentification,
             participant.assets.length,
@@ -466,14 +482,14 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
             `${participant.totalRegistrationFee.toLocaleString("vi-VN")} VND`,
             depositStatus,
             ticketStatus,
-            "", // Chữ ký để trống
+            "",
           ];
           return row.join(",");
         }),
       ];
 
       const csvContent = csvRows.join("\n");
-      const blob = new Blob([csvContent], {
+      const blob = new Blob(["﻿" + csvContent], {
         type: "text/csv;charset=utf-8;",
       });
       const url = URL.createObjectURL(blob);
@@ -498,10 +514,10 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
       dataIndex: "numericalOrder",
       key: "numericalOrder",
       width: 120,
-      render: (numericalOrder: number | null) => (
+      render: (numericalOrder: number | string | null | undefined) => (
         <div className="flex justify-center items-center">
           <div className="w-10 h-10 flex items-center justify-center rounded-full bg-sky-400 font-semibold text-white">
-            {numericalOrder}
+            {numericalOrder ?? "-"}
           </div>
         </div>
       ),
@@ -646,20 +662,17 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
     {
       title: "Thao tác",
       key: "actions",
-      width: 200, // Tăng width để chứa thêm nút
+      width: 200,
       render: (record: GroupedParticipant) => {
-        // Kiểm tra có yêu cầu chờ xử lý không
         const hasPendingRequests = record.assets.some(
           (asset) => asset.statusRefund === 1
         );
-        // Kiểm tra có yêu cầu đã xử lý không
         const hasProcessedRequests = record.assets.some(
           (asset) => asset.statusRefund === 2 || asset.statusRefund === 3
         );
 
         return (
           <div className="space-y-1">
-            {/* Button xử lý yêu cầu - chỉ hiển thị khi có yêu cầu chờ xử lý */}
             {hasPendingRequests && (
               <Button
                 type="primary"
@@ -672,7 +685,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
               </Button>
             )}
 
-            {/* Button xem lý do - hiển thị khi có yêu cầu đã xử lý */}
             {hasProcessedRequests && (
               <Button
                 type="primary"
@@ -691,7 +703,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
               </Button>
             )}
 
-            {/* Button lịch sử đấu giá - luôn hiển thị */}
             <Button
               type="default"
               size="small"
@@ -702,7 +713,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
               Lịch sử đấu giá
             </Button>
 
-            {/* Trường hợp không có yêu cầu nào */}
             {!hasPendingRequests && !hasProcessedRequests && (
               <Button size="small" disabled className="w-full">
                 Không có yêu cầu
@@ -797,7 +807,7 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
           </div>
         </div>
         <Table
-          columns={columns}
+          columns={columns as any}
           dataSource={groupedParticipants}
           rowKey="participantId"
           loading={loading}
@@ -822,7 +832,7 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
         />
       </div>
 
-      {/* Modal xử lý yêu cầu hoàn cọc (chỉ cho yêu cầu chờ phê duyệt) */}
+      {/* Modal xử lý yêu cầu hoàn cọc (chờ phê duyệt) */}
       <Modal
         title={
           <div className="flex items-center gap-2 text-black font-semibold">
@@ -879,7 +889,7 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
                 <div>
                   <span className="text-gray-600">Số báo danh:</span>
                   <span className="ml-1 font-medium">
-                    {selectedParticipant.numericalOrder || "Chưa có"}
+                    {selectedParticipant.numericalOrder ?? "Chưa có"}
                   </span>
                 </div>
                 <div>
@@ -932,7 +942,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
                       key={asset.auctionDocumentsId}
                       className="bg-white p-3 rounded-lg border border-orange-200"
                     >
-                      {/* Header tài sản */}
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <span className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
@@ -950,9 +959,7 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
                         </div>
                       </div>
 
-                      {/* Thông tin yêu cầu hoàn cọc */}
                       <div className="mt-2 p-2 rounded border bg-orange-50 border-orange-200">
-                        {/* Lý do */}
                         <div className="mb-2">
                           <div className="text-xs font-medium mb-1 text-orange-800">
                             Lý do yêu cầu hoàn cọc:
@@ -967,8 +974,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
                             </div>
                           )}
                         </div>
-
-                        {/* File đính kèm */}
                         <div>
                           <div className="text-xs font-medium mb-1 text-orange-800">
                             File đính kèm:
@@ -1020,7 +1025,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
               </div>
             </div>
 
-            {/* Cảnh báo */}
             <div className="bg-orange-50 border border-orange-200 p-2 rounded-lg">
               <div className="text-orange-800 text-xs">
                 <strong>⚠️ Lưu ý:</strong> Hành động sẽ áp dụng cho{" "}
@@ -1036,7 +1040,7 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
         )}
       </Modal>
 
-      {/* Modal từ chối yêu cầu hoàn cọc - Thiết kế đơn giản và đẹp */}
+      {/* Modal từ chối yêu cầu hoàn cọc - áp dụng className khớp CSS */}
       <Modal
         title={
           <div className="flex items-center gap-3 p-4 bg-red-50 border-b border-red-100">
@@ -1057,12 +1061,11 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
         onCancel={handleCloseRejectModal}
         width={650}
         footer={null}
-        className="reject-refund-modal"
+        className="reject-modal"
         centered
       >
         {selectedParticipant && (
           <div className="p-6 space-y-6">
-            {/* Thông tin người yêu cầu */}
             <div className="bg-blue-50 p-5 rounded-lg border border-blue-200">
               <h4 className="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
                 <UserOutlined className="text-blue-600" />
@@ -1109,7 +1112,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
               </div>
             </div>
 
-            {/* Form nhập lý do từ chối */}
             <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
               <div className="flex items-center gap-2 mb-4">
                 <FileTextOutlined className="text-gray-600 text-lg" />
@@ -1142,7 +1144,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
               </div>
             </div>
 
-            {/* Cảnh báo quan trọng */}
             <div className="bg-yellow-50 p-5 rounded-lg border border-yellow-200">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -1170,7 +1171,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
               </div>
             </div>
 
-            {/* Buttons */}
             <div className="flex items-center justify-end gap-4 pt-4 border-t border-gray-200">
               <Button
                 size="large"
@@ -1225,7 +1225,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
       >
         {selectedDetailParticipant && (
           <div className="space-y-2">
-            {/* Thông tin người tham gia */}
             <div className="bg-gray-50 p-2 rounded-lg">
               <h3 className="font-medium text-gray-800 mb-1 flex items-center gap-2 text-sm">
                 <UserOutlined className="text-blue-500" />
@@ -1247,7 +1246,7 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
                 <div>
                   <span className="text-gray-600">Số báo danh:</span>
                   <span className="ml-1 font-medium">
-                    {selectedDetailParticipant.numericalOrder || "Chưa có"}
+                    {selectedDetailParticipant.numericalOrder ?? "Chưa có"}
                   </span>
                 </div>
                 <div>
@@ -1259,7 +1258,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
               </div>
             </div>
 
-            {/* Danh sách tài sản với thông tin riêng biệt */}
             <div className="bg-gray-50 p-2 rounded-lg">
               <h3 className="font-medium text-gray-800 mb-2 flex items-center gap-2 text-sm">
                 <ShoppingOutlined className="text-blue-600" />
@@ -1272,7 +1270,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
                     key={asset.auctionDocumentsId}
                     className="bg-white p-3 rounded-lg border border-gray-200"
                   >
-                    {/* Header tài sản */}
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
@@ -1308,7 +1305,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
                       </div>
                     </div>
 
-                    {/* Thông tin chi tiết nếu có yêu cầu hoàn cọc */}
                     {asset.statusRefund &&
                       (asset.statusRefund === 1 ||
                         asset.statusRefund === 2 ||
@@ -1322,7 +1318,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
                               : "bg-red-50 border-red-200"
                           }`}
                         >
-                          {/* Lý do */}
                           <div className="mb-2">
                             <div
                               className={`text-xs font-medium mb-1 ${
@@ -1350,7 +1345,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
                             )}
                           </div>
 
-                          {/* File đính kèm */}
                           <div>
                             <div
                               className={`text-xs font-medium mb-1 ${
@@ -1419,7 +1413,6 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
               </div>
             </div>
 
-            {/* Thông tin tóm tắt */}
             <div
               className={`p-2 rounded-lg border ${
                 selectedDetailParticipant.statusRefund === 2
