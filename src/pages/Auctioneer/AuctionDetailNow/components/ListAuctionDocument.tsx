@@ -268,24 +268,24 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     parseInt(status) === 0
                       ? "default"
                       : parseInt(status) === 1
-                        ? "processing"
-                        : parseInt(status) === 2
-                          ? "success"
-                          : parseInt(status) === 3
-                            ? "warning"
-                            : "error"
+                      ? "processing"
+                      : parseInt(status) === 2
+                      ? "success"
+                      : parseInt(status) === 3
+                      ? "warning"
+                      : "error"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa chuyển tiền`
                     : parseInt(status) === 1
-                      ? `${count} đã chuyển tiền`
-                      : parseInt(status) === 2
-                        ? `${count} đã nhận phiếu`
-                        : parseInt(status) === 3
-                          ? `${count} đã hoàn tiền`
-                          : `${count} không hợp lệ`}
+                    ? `${count} đã chuyển tiền`
+                    : parseInt(status) === 2
+                    ? `${count} đã nhận phiếu`
+                    : parseInt(status) === 3
+                    ? `${count} đã hoàn tiền`
+                    : `${count} không hợp lệ`}
                 </Tag>
               ))}
             </div>
@@ -583,24 +583,24 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                           asset.statusTicket === 0
                             ? "default"
                             : asset.statusTicket === 1
-                              ? "processing"
-                              : asset.statusTicket === 2
-                                ? "success"
-                                : asset.statusTicket === 3
-                                  ? "warning"
-                                  : "error"
+                            ? "processing"
+                            : asset.statusTicket === 2
+                            ? "success"
+                            : asset.statusTicket === 3
+                            ? "warning"
+                            : "error"
                         }
                         className="text-xs"
                       >
                         {asset.statusTicket === 0
                           ? "Chưa chuyển tiền"
                           : asset.statusTicket === 1
-                            ? "Đã chuyển tiền"
-                            : asset.statusTicket === 2
-                              ? "Đã nhận phiếu"
-                              : asset.statusTicket === 3
-                                ? "Đã hoàn tiền"
-                                : "Không hợp lệ"}
+                          ? "Đã chuyển tiền"
+                          : asset.statusTicket === 2
+                          ? "Đã nhận phiếu"
+                          : asset.statusTicket === 3
+                          ? "Đã hoàn tiền"
+                          : "Không hợp lệ"}
                       </Tag>
 
                       <Tag

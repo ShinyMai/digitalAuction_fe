@@ -169,6 +169,8 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
     return Array.from(grouped.values());
   }, [eligibleDocuments]);
 
+  console.log(ineligibleDocuments);
+
   const ineligibleGroupedParticipants = useMemo(() => {
     const grouped = new Map<string, GroupedParticipant>();
 
