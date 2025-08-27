@@ -271,7 +271,7 @@ const AuctionDetail = ({
             </div>
             {/* Thông tin bản đồ */}
             {auctionDetailData.auctionMap ||
-            auctionDetailData.auctionPlanningMap ? (
+            auctionDetailData.auctionPlanningMap !== "No file uploaded" ? (
               <div className="mt-8">
                 <div className="text-lg font-semibold text-blue-800 mb-4">
                   Thông tin bản đồ tài sản

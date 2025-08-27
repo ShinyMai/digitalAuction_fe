@@ -8,7 +8,6 @@ import { useSelector, useDispatch } from "react-redux";
 import AuthServices from "../../../services/AuthServices";
 import UserProfile from "../../../pages/User/UserProfile/UserProfile";
 import ChangePassword from "../../../pages/User/UserProfile/EditAccount/ChangePassword";
-import NotificationDropdown from "../../../components/Notification";
 import UserDropdown from "../../../components/UserDropdown";
 import { logout } from "../../../store/authReduxs/authSlice";
 import type { RootState } from "../../../store/store";
@@ -107,9 +106,9 @@ const Header = memo(() => {
           {user ? (
             <div className="flex items-center gap-4">
               {/* Enhanced Notification */}
-              <div className="relative">
+              {/* <div className="relative">
                 <NotificationDropdown />
-              </div>
+              </div> */}
 
               {/* Enhanced User Dropdown */}
               <div className="relative">
