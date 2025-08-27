@@ -183,18 +183,20 @@ const AuctionDetail = ({
                     </span>
                   </div>
                 </div>
-                {role === USER_ROLES.MANAGER && (
-                  <div className="text-center mt-6">
-                    <Button
-                      type="primary"
-                      size="large"
-                      className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
-                      onClick={handleCancelClick}
-                    >
-                      Hủy buổi đấu giá
-                    </Button>
-                  </div>
-                )}
+                {role === USER_ROLES.MANAGER &&
+                  auctionDetailData.registerOpenDate < DateNow &&
+                  auctionDetailData.registerEndDate > DateNow && (
+                    <div className="text-center mt-6">
+                      <Button
+                        type="primary"
+                        size="large"
+                        className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2 rounded-lg"
+                        onClick={handleCancelClick}
+                      >
+                        Hủy buổi đấu giá
+                      </Button>
+                    </div>
+                  )}
                 {auctionDetailData.registerEndDate < DateNow &&
                   auctionDetailData.auctionStartDate > DateNow && (
                     <div className="text-center mt-6">
