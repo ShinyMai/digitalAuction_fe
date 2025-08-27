@@ -158,6 +158,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
           name: doc.name,
           citizenIdentification: doc.citizenIdentification,
           userId: doc.userId,
+          numericalOrder: doc.numericalOrder,
           totalRegistrationFee: doc.registrationFee,
           assets: [doc],
           isAttended: doc.isAttended !== false,
