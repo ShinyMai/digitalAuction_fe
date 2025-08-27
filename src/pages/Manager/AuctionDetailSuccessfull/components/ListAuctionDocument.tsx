@@ -676,16 +676,17 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                   Không đủ điều kiện ({ineligibleGroupedParticipants.length})
                 </Button>
               </Space>
-              <Button
-                type="default"
-                size="large"
-                icon={<DownloadOutlined />}
-                onClick={handleDownloadRefundList}
-                loading={downloadingRefund}
-                className="!bg-white !border-orange-500 !text-orange-600 hover:!bg-orange-50 hover:!border-orange-600 !shadow-md hover:!shadow-lg !transition-all !duration-300"
-              >
-                {downloadingRefund ? "Đang tải..." : "Tải danh sách hoàn tiền"}
-              </Button>
+              {(user?.roleName === "Staff" || user?.roleName === "Manager") && (
+                <Button
+                  type="default"
+                  icon={<DownloadOutlined />}
+                  onClick={handleDownloadRefundList}
+                  loading={downloadingRefund}
+                  className="!bg-white hover:!bg-emerald-100"
+                >
+                  Tải danh sách hoàn tiền
+                </Button>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

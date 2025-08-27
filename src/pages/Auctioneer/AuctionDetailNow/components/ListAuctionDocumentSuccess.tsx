@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import ParticipantBiddingHistoryModal from "../../../../components/Common/ParticipantBiddingHistoryModal/ParticipantBiddingHistoryModal";
+import { useSelector } from "react-redux";
 
 const { TextArea } = Input;
 
@@ -115,6 +116,7 @@ interface Props {
 }
 
 const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
+  const { user } = useSelector((state: any) => state.auth);
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
     PageSize: 100,
@@ -793,17 +795,19 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
               onChange={(e) => handleInputChange("TagName", e.target.value)}
               className="w-full sm:w-1/5"
             />
-            <Button
-              type="primary"
-              onClick={handleDownload}
-              icon={<DownloadOutlined />}
-              className="bg-green-500 hover:bg-green-600 w-full sm:w-auto"
-              disabled={
-                !isAfterRegisterEndDate || groupedParticipants.length === 0
-              }
-            >
-              Tải danh sách điểm danh
-            </Button>
+            {(user?.roleName === "Staff" || user?.roleName === "Manager") && (
+              <Button
+                type="primary"
+                onClick={handleDownload}
+                icon={<DownloadOutlined />}
+                className="bg-green-500 hover:bg-green-600 w-full sm:w-auto"
+                disabled={
+                  !isAfterRegisterEndDate || groupedParticipants.length === 0
+                }
+              >
+                Tải danh sách điểm danh
+              </Button>
+            )}
           </div>
         </div>
         <Table
