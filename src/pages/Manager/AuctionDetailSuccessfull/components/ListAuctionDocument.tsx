@@ -568,7 +568,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       key: "totalRegistrationFee",
       width: 150,
       render: (totalFee: number) => (
-        <div className="text-right">
+        <div className="text-left">
           <div className="font-bold text-lg text-green-600">
             <DollarOutlined className="mr-1" />
             {totalFee.toLocaleString("vi-VN")}
@@ -581,11 +581,10 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
       title: "Trạng thái tham gia",
       key: "attendanceStatus",
       width: 150,
-      align: "center" as const,
       render: (record: GroupedParticipant) => {
         const isAttended = record.isAttended !== false;
         return (
-          <div className="text-center">
+          <div className="text-left">
             {isAttended ? (
               <Tag
                 color="green"

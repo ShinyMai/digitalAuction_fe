@@ -93,9 +93,9 @@ const AuctionCard = ({ dataCard }: Props) => {
       {/* Content Section */}
       <div className="p-8 space-y-4">
         {/* Title */}
-        <h3 className="text-xl font-bold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
+        <div className="text-xl font-bold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
           {dataCard.auctionName}
-        </h3>
+        </div>
 
         {/* Info Grid */}
         <div className="space-y-3">
@@ -105,10 +105,12 @@ const AuctionCard = ({ dataCard }: Props) => {
               <CalendarOutlined className="text-white text-sm" />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-gray-500 font-medium">Ngày đấu giá</p>
-              <p className="text-sm font-bold text-gray-800">
+              <div className="text-xs text-gray-500 font-medium">
+                Ngày đấu giá
+              </div>
+              <div className="text-sm font-bold text-gray-800">
                 {dayjs(dataCard.auctionStartDate).format("DD/MM/YYYY")}
-              </p>
+              </div>
             </div>
           </div>
 
@@ -118,10 +120,12 @@ const AuctionCard = ({ dataCard }: Props) => {
               <FieldTimeOutlined className="text-white text-sm" />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-gray-500 font-medium">Hạn đăng ký</p>
-              <p className="text-sm font-bold text-gray-800">
+              <div className="text-xs text-gray-500 font-medium">
+                Hạn đăng ký
+              </div>
+              <div className="text-sm font-bold text-gray-800">
                 {dayjs(dataCard.registerEndDate).format("DD/MM/YYYY")}
-              </p>
+              </div>
             </div>
           </div>
 
@@ -137,16 +141,16 @@ const AuctionCard = ({ dataCard }: Props) => {
               <ClockCircleOutlined className="text-white text-sm" />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-gray-500 font-medium">
+              <div className="text-xs text-gray-500 font-medium">
                 Thời gian còn lại
-              </p>
-              <p
+              </div>
+              <div
                 className={`text-sm font-bold ${
                   isExpired ? "text-red-500" : "text-purple-600"
                 }`}
               >
                 {timeLeft}
-              </p>
+              </div>
             </div>
           </div>
         </div>
