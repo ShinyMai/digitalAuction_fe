@@ -117,14 +117,20 @@ export default function useAuctionRoundAnalysis<
       const startMaybe = getStartPriceForRow(row);
       if (startMaybe === undefined) {
         // Không có giá khởi điểm -> chỉ check trần
-        return { valid: reasons.length === 0, reasons, reason: reasons[0] };
+        return {
+          valid: reasons.length === 0,
+          reasons,
+          reason: reasons[0],
+        } as const;
       }
       const start = startMaybe;
 
       if (price < start) {
         reasons.push("Nhỏ hơn giá khởi điểm");
-        return { valid: false, reasons, reason: reasons[0] };
+        return { valid: false, reasons, reason: reasons[0] } as const;
       }
+
+      const delta = price - start; // chênh lệch so với giá khởi điểm
 
       // 2) Chỉ "phiếu của tôi" mới phải > giá cao nhất của người khác
       if (isMine) {
@@ -147,21 +153,56 @@ export default function useAuctionRoundAnalysis<
       }
 
       // 3) Cho phép = đúng giá khởi điểm
-      if (price === start) {
-        return { valid: reasons.length === 0, reasons, reason: reasons[0] };
+      if (delta === 0) {
+        return {
+          valid: reasons.length === 0,
+          reasons,
+          reason: reasons[0],
+        } as const;
       }
 
-      // 4) Bước giá (OR): chia hết MIN hoặc MAX (nếu cấu hình)
-      const delta = price - start;
+      // 4) Quy tắc BƯỚC GIÁ (mới):
+      // - delta phải >= stepMin (nếu có) và <= stepMax (nếu có)
+      // - delta phải là bội số của stepMin HOẶC bội số của stepMax
+      //   (với stepMax, vì delta <= stepMax nên thực tế tương đương delta === stepMax)
       if (stepMin === undefined && stepMax === undefined) {
-        return { valid: reasons.length === 0, reasons, reason: reasons[0] };
+        // Không cấu hình bước giá
+        return {
+          valid: reasons.length === 0,
+          reasons,
+          reason: reasons[0],
+        } as const;
       }
-      const ok =
-        (stepMin !== undefined && delta % stepMin === 0) ||
-        (stepMax !== undefined && delta % stepMax === 0);
-      if (!ok) reasons.push("Sai bước giá");
 
-      return { valid: reasons.length === 0, reasons, reason: reasons[0] };
+      if (stepMin !== undefined && delta < stepMin) {
+        reasons.push(
+          `Nhỏ hơn bước giá tối thiểu (${stepMin.toLocaleString("vi-VN")} VND)`
+        );
+      }
+      if (stepMax !== undefined && delta > stepMax) {
+        reasons.push(
+          `Vượt bước giá tối đa (${stepMax.toLocaleString("vi-VN")} VND)`
+        );
+      }
+
+      let multipleOk = false;
+      if (stepMin !== undefined && delta % stepMin === 0) multipleOk = true;
+      if (!multipleOk && stepMax !== undefined && delta % stepMax === 0)
+        multipleOk = true;
+      if (!multipleOk) {
+        const parts: string[] = [];
+        if (stepMin !== undefined)
+          parts.push(`bội số của ${stepMin.toLocaleString("vi-VN")} VND`);
+        if (stepMax !== undefined)
+          parts.push(`bội số của ${stepMax.toLocaleString("vi-VN")} VND`);
+        reasons.push(`Sai bước giá (${parts.join(" hoặc ")})`);
+      }
+
+      return {
+        valid: reasons.length === 0,
+        reasons,
+        reason: reasons[0],
+      } as const;
     },
     [auctionRound, otherBids, getStartPriceForRow]
   );
@@ -183,13 +224,13 @@ export default function useAuctionRoundAnalysis<
       const list = validPriceHistory.filter(
         (b: any) => getName(b) === assetName
       );
-      if (!list.length) return [];
+      if (!list.length) return [] as Row[];
       const maxPrice = Math.max(
         ...list.map((b: any) => Number(b?.auctionPrice ?? b?.price) || 0)
       );
       return list.filter(
         (b: any) => Number(b?.auctionPrice ?? b?.price) === maxPrice
-      );
+      ) as Row[];
     },
     [validPriceHistory]
   );
@@ -248,5 +289,5 @@ export default function useAuctionRoundAnalysis<
     // phân tích
     getAssetAnalysis,
     getHighestBiddersForAsset,
-  };
+  } as const;
 }
