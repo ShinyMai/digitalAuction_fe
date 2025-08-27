@@ -142,6 +142,24 @@ const SepayAuctionregister: React.FC<Props> = ({
       </div>
 
       <div className="relative z-10 py-8 px-4 md:px-8">
+        {/* Back Button - Tinh tế, nổi bật, đặt ở góc trên bên trái nội dung chính */}
+        <button
+          type="button"
+          onClick={onBackSelectAsset}
+          className="absolute left-6 top-8 md:left-8 md:top-8 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-white shadow hover:bg-blue-100 transition-colors border border-blue-200 focus:outline-none"
+          aria-label="Quay lại chọn tài sản"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="w-6 h-6 text-blue-600"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
         <div className="max-w-6xl mx-auto">
           {/* Enhanced Header */}
           <div className="text-center mb-12 animate-slide-in-up">
@@ -168,13 +186,12 @@ const SepayAuctionregister: React.FC<Props> = ({
           >
             <Card className="text-center bg-white/80 backdrop-blur-sm shadow-2xl border-0 rounded-3xl overflow-hidden">
               <div
-                className={`p-6 ${
-                  isPaid
-                    ? "bg-gradient-to-r from-green-500 to-emerald-600"
-                    : isChecking
+                className={`p-6 ${isPaid
+                  ? "bg-gradient-to-r from-green-500 to-emerald-600"
+                  : isChecking
                     ? "bg-gradient-to-r from-blue-500 to-purple-600"
                     : "bg-gradient-to-r from-orange-500 to-red-600"
-                } text-white relative`}
+                  } text-white relative`}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent"></div>
                 <div className="relative z-10">
