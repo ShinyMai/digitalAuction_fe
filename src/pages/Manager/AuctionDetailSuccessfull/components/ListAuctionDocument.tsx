@@ -483,20 +483,20 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     parseInt(status) === 0
                       ? "gray"
                       : parseInt(status) === 1
-                      ? "blue"
-                      : parseInt(status) === 2
-                      ? "green"
-                      : "orange"
+                        ? "blue"
+                        : parseInt(status) === 2
+                          ? "green"
+                          : "orange"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa chuyển tiền`
                     : parseInt(status) === 1
-                    ? `${count} đã chuyển tiền`
-                    : parseInt(status) === 2
-                    ? `${count} đã nhận phiếu`
-                    : `${count} đã hoàn tiền`}
+                      ? `${count} đã chuyển tiền`
+                      : parseInt(status) === 2
+                        ? `${count} đã nhận phiếu`
+                        : `${count} đã hoàn tiền`}
                 </Tag>
               ))}
             </div>
@@ -510,16 +510,16 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     parseInt(status) === 0
                       ? "gray"
                       : parseInt(status) === 1
-                      ? "green"
-                      : "orange"
+                        ? "green"
+                        : "orange"
                   }
                   className="text-xs"
                 >
                   {parseInt(status) === 0
                     ? `${count} chưa cọc`
                     : parseInt(status) === 1
-                    ? `${count} đã cọc`
-                    : `${count} đã hoàn cọc`}
+                      ? `${count} đã cọc`
+                      : `${count} đã hoàn cọc`}
                 </Tag>
               ))}
             </div>
@@ -534,8 +534,8 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                       parseInt(status) === 1
                         ? "blue"
                         : parseInt(status) === 2
-                        ? "green"
-                        : "orange"
+                          ? "green"
+                          : "orange"
                     }
                     className="text-xs"
                   >
@@ -664,7 +664,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     showEligibleList ? "!bg-green-500 hover:!bg-green-600" : ""
                   }
                 >
-                  Đủ điều kiện ({eligibleGroupedParticipants.length})
+                  Đơn tham gia ({eligibleGroupedParticipants.length})
                 </Button>
                 <Button
                   type={!showEligibleList ? "primary" : "default"}
@@ -673,7 +673,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                     !showEligibleList ? "!bg-red-500 hover:!bg-red-600" : ""
                   }
                 >
-                  Không đủ điều kiện ({ineligibleGroupedParticipants.length})
+                  Đơn không tham gia ({ineligibleGroupedParticipants.length})
                 </Button>
               </Space>
               {(user?.roleName === "Staff" || user?.roleName === "Manager") && (
@@ -718,9 +718,9 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
               <div className="text-2xl font-bold text-orange-600">
                 {showEligibleList
                   ? eligibleDocuments.filter((doc) => doc.statusDeposit === 1)
-                      .length
+                    .length
                   : ineligibleDocuments.filter((doc) => doc.statusDeposit === 1)
-                      .length}
+                    .length}
               </div>
               <div className="text-sm text-gray-600">Đã cọc</div>
             </Card>
@@ -847,8 +847,7 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
               : ineligibleGroupedParticipants.length,
             showSizeChanger: false,
             showTotal: (total, range) =>
-              `${range[0]}-${range[1]} của ${total} người ${
-                showEligibleList ? "đủ điều kiện" : "không đủ điều kiện"
+              `${range[0]}-${range[1]} của ${total} người ${showEligibleList ? "đủ điều kiện" : "không đủ điều kiện"
               }`,
             onChange: (page) =>
               setSearchParams((prev) => ({
@@ -989,20 +988,20 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                           asset.statusTicket === 0
                             ? "gray"
                             : asset.statusTicket === 1
-                            ? "blue"
-                            : asset.statusTicket === 2
-                            ? "green"
-                            : "orange"
+                              ? "blue"
+                              : asset.statusTicket === 2
+                                ? "green"
+                                : "orange"
                         }
                         className="text-xs"
                       >
                         {asset.statusTicket === 0
                           ? "Chưa chuyển tiền"
                           : asset.statusTicket === 1
-                          ? "Đã chuyển tiền"
-                          : asset.statusTicket === 2
-                          ? "Đã nhận phiếu"
-                          : "Đã hoàn tiền"}
+                            ? "Đã chuyển tiền"
+                            : asset.statusTicket === 2
+                              ? "Đã nhận phiếu"
+                              : "Đã hoàn tiền"}
                       </Tag>
 
                       <Tag
@@ -1010,16 +1009,16 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                           asset.statusDeposit === 0
                             ? "gray"
                             : asset.statusDeposit === 1
-                            ? "green"
-                            : "orange"
+                              ? "green"
+                              : "orange"
                         }
                         className="text-xs"
                       >
                         {asset.statusDeposit === 0
                           ? "Chưa cọc"
                           : asset.statusDeposit === 1
-                          ? "Đã cọc"
-                          : "Đã hoàn cọc"}
+                            ? "Đã cọc"
+                            : "Đã hoàn cọc"}
                       </Tag>
 
                       {asset.statusRefund !== null && (
@@ -1028,16 +1027,16 @@ const ListAuctionDocument = ({ auctionId, auctionAssets }: Props) => {
                             asset.statusRefund === 1
                               ? "blue"
                               : asset.statusRefund === 2
-                              ? "green"
-                              : "orange"
+                                ? "green"
+                                : "orange"
                           }
                           className="text-xs"
                         >
                           {asset.statusRefund === 1
                             ? "Đang xử lý hoàn cọc"
                             : asset.statusRefund === 2
-                            ? "Xác nhận đồng ý hoàn cọc"
-                            : "Từ chối hoàn cọc"}
+                              ? "Xác nhận đồng ý hoàn cọc"
+                              : "Từ chối hoàn cọc"}
                         </Tag>
                       )}
                     </div>

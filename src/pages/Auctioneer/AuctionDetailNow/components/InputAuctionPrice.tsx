@@ -95,7 +95,7 @@ const InputAuctionPrice = ({
   const [selectedAsset, setSelectedAsset] = useState<AuctionAsset | null>(null);
   const [form] = Form.useForm<InputAuctionPriceModals>();
   const { user } = useSelector((state: RootState) => state.auth);
-  console.log("Check ", roundData);
+
   const statistics = useMemo(() => {
     const totalMine = auctionRoundPriceList.length;
     const totalOther = Array.isArray(auctionRoundPriceListOther)
@@ -121,8 +121,8 @@ const InputAuctionPrice = ({
     // Các tài sản mà chính người này đã có giá (từ server - người khác nhập)
     const userExistingBids = Array.isArray(auctionRoundPriceListOther)
       ? auctionRoundPriceListOther.filter(
-          (bid) => bid.citizenIdentification === userInfo.CitizenIdentification
-        )
+        (bid) => bid.citizenIdentification === userInfo.CitizenIdentification
+      )
       : [];
 
     const otherBiddenTagNames = new Set(
@@ -203,10 +203,10 @@ const InputAuctionPrice = ({
       const otherHighest =
         otherBidsForAsset.length > 0
           ? Math.max(
-              ...otherBidsForAsset.map(
-                (bid) => bid.auctionPrice || bid.price || 0
-              )
+            ...otherBidsForAsset.map(
+              (bid) => bid.auctionPrice || bid.price || 0
             )
+          )
           : 0;
       const myHighest =
         myBidsForAsset.length > 0
@@ -270,6 +270,7 @@ const InputAuctionPrice = ({
     } else {
       setAuctionAssets([]);
       setUserInfo(null);
+      form.resetFields();
       setSelectedAsset(null);
       setErrorMessage(null);
     }
@@ -526,12 +527,12 @@ const InputAuctionPrice = ({
     () =>
       statistics.totalMine > FORM_VALIDATION_RULES.PAGINATION_SIZE
         ? {
-            pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total: number, range: [number, number]) =>
-              `${range[0]}-${range[1]} của ${total} mục`,
-          }
+          pageSize: FORM_VALIDATION_RULES.PAGINATION_SIZE,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total: number, range: [number, number]) =>
+            `${range[0]}-${range[1]} của ${total} mục`,
+        }
         : false,
     [statistics.totalMine]
   );
@@ -832,21 +833,19 @@ const InputAuctionPrice = ({
                                 <div className="mt-3 pt-3 border-t border-emerald-200">
                                   <div className="flex items-center gap-3">
                                     <div
-                                      className={`w-6 h-6 bg-gradient-to-r ${
-                                        bidInfo.isMyBid
-                                          ? "from-blue-400 to-indigo-500"
-                                          : "from-red-400 to-pink-500"
-                                      } rounded-full flex items-center justify-center`}
+                                      className={`w-6 h-6 bg-gradient-to-r ${bidInfo.isMyBid
+                                        ? "from-blue-400 to-indigo-500"
+                                        : "from-red-400 to-pink-500"
+                                        } rounded-full flex items-center justify-center`}
                                     >
                                       <TrophyOutlined className="text-white text-xs" />
                                     </div>
                                     <div>
                                       <div
-                                        className={`text-xs font-medium ${
-                                          bidInfo.isMyBid
-                                            ? "text-blue-700"
-                                            : "text-red-700"
-                                        }`}
+                                        className={`text-xs font-medium ${bidInfo.isMyBid
+                                          ? "text-blue-700"
+                                          : "text-red-700"
+                                          }`}
                                       >
                                         Giá đấu cao nhất{" "}
                                         {bidInfo.isMyBid
@@ -854,11 +853,10 @@ const InputAuctionPrice = ({
                                           : "(Của người khác)"}
                                       </div>
                                       <div
-                                        className={`text-sm font-bold ${
-                                          bidInfo.isMyBid
-                                            ? "text-blue-800"
-                                            : "text-red-800"
-                                        }`}
+                                        className={`text-sm font-bold ${bidInfo.isMyBid
+                                          ? "text-blue-800"
+                                          : "text-red-800"
+                                          }`}
                                       >
                                         {bidInfo.highest.toLocaleString(
                                           "vi-VN"
@@ -1025,9 +1023,8 @@ const InputAuctionPrice = ({
                                 const { valid } = computeValidity(record, {
                                   isMine: true,
                                 });
-                                return `group transition-colors duration-200 ${
-                                  valid ? "hover:bg-blue-50/50" : "bg-pink-50"
-                                }`;
+                                return `group transition-colors duration-200 ${valid ? "hover:bg-blue-50/50" : "bg-pink-50"
+                                  }`;
                               }}
                               scroll={{ x: 800, y: 400 }}
                               size="middle"
@@ -1074,18 +1071,18 @@ const InputAuctionPrice = ({
                               }}
                               pagination={
                                 statistics.totalOther >
-                                FORM_VALIDATION_RULES.PAGINATION_SIZE
+                                  FORM_VALIDATION_RULES.PAGINATION_SIZE
                                   ? {
-                                      pageSize:
-                                        FORM_VALIDATION_RULES.PAGINATION_SIZE,
-                                      showSizeChanger: true,
-                                      showQuickJumper: true,
-                                      showTotal: (
-                                        total: number,
-                                        range: [number, number]
-                                      ) =>
-                                        `${range[0]}-${range[1]} của ${total} mục`,
-                                    }
+                                    pageSize:
+                                      FORM_VALIDATION_RULES.PAGINATION_SIZE,
+                                    showSizeChanger: true,
+                                    showQuickJumper: true,
+                                    showTotal: (
+                                      total: number,
+                                      range: [number, number]
+                                    ) =>
+                                      `${range[0]}-${range[1]} của ${total} mục`,
+                                  }
                                   : false
                               }
                               className="!rounded-xl !overflow-hidden [&_.ant-table]:!bg-transparent [&_.ant-table-thead>tr>th]:!bg-gradient-to-r [&_.ant-table-thead>tr>th]:!from-emerald-50 [&_.ant-table-thead>tr>th]:!to-teal-50 [&_.ant-table-thead>tr>th]:!border-emerald-200"
@@ -1095,9 +1092,8 @@ const InputAuctionPrice = ({
                                 const { valid } = computeValidity(record, {
                                   isMine: false,
                                 });
-                                return `group transition-colors duration-200 ${
-                                  valid ? "hover:bg-blue-50/50" : "bg-pink-50"
-                                }`;
+                                return `group transition-colors duration-200 ${valid ? "hover:bg-blue-50/50" : "bg-pink-50"
+                                  }`;
                               }}
                               scroll={{ x: 800, y: 400 }}
                               size="middle"
