@@ -429,7 +429,7 @@ const ListAuctionDocumentSucces = ({ auctionId, auctionDateModals }: Props) => {
   const handleDownload = () => {
     try {
       const headers = [
-        "STT",
+        "Mã số điểm danh",
         "Tên",
         "CMND/CCCD",
         "Số tài sản",
