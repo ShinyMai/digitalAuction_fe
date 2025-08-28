@@ -618,7 +618,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
           >
             <span>Danh sách đăng ký tham gia đấu giá</span>
             {/* Chỉ hiển thị button khi có ít nhất 1 tài sản đã xác nhận cọc */}
-            {filteredDocuments.some((doc) => doc.statusDeposit === 1) && (
+            {filteredDocuments.some((doc) => doc.statusDeposit === 1 && doc.statusRefund === null) && (
               <Button
                 type="primary"
                 danger
@@ -1329,7 +1329,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({
                   }}
                 >
                   <Text type="secondary" style={{ fontSize: "12px" }}>
-                    Hoàn cọc:
+                    Phản hồi lý do xin hủy:
                   </Text>
                   {(() => {
                     const refundStatus = getRefundStatus(
