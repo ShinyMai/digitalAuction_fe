@@ -108,15 +108,14 @@ export default function useAuctionRoundAnalysis<
       const rawPrice = (row as any)?.auctionPrice ?? (row as any)?.price;
       const price = Number(rawPrice) || 0;
 
-      // 0) Trần giá
+      // (0) Chỉ giới hạn bởi totalPriceMax
       if (price > limitMax) {
         reasons.push(`Vượt giá tối đa ${limitMax.toLocaleString("vi-VN")} VND`);
       }
 
-      // 1) Starting price
+      // (1) Giá khởi điểm
       const startMaybe = getStartPriceForRow(row);
       if (startMaybe === undefined) {
-        // Không có giá khởi điểm -> chỉ check trần
         return {
           valid: reasons.length === 0,
           reasons,
@@ -130,9 +129,9 @@ export default function useAuctionRoundAnalysis<
         return { valid: false, reasons, reason: reasons[0] } as const;
       }
 
-      const delta = price - start; // chênh lệch so với giá khởi điểm
+      const delta = price - start;
 
-      // 2) Chỉ "phiếu của tôi" mới phải > giá cao nhất của người khác
+      // (2) Khi là phiếu của tôi, phải > giá cao nhất của người khác
       if (isMine) {
         const assetName = getName(row);
         if (assetName && Array.isArray(otherBids)) {
@@ -152,7 +151,7 @@ export default function useAuctionRoundAnalysis<
         }
       }
 
-      // 3) Cho phép = đúng giá khởi điểm
+      // (3) Cho phép = đúng giá khởi điểm
       if (delta === 0) {
         return {
           valid: reasons.length === 0,
@@ -161,12 +160,12 @@ export default function useAuctionRoundAnalysis<
         } as const;
       }
 
-      // 4) Quy tắc BƯỚC GIÁ (mới):
-      // - delta phải >= stepMin (nếu có) và <= stepMax (nếu có)
-      // - delta phải là bội số của stepMin HOẶC bội số của stepMax
-      //   (với stepMax, vì delta <= stepMax nên thực tế tương đương delta === stepMax)
+      // (4) Bước giá:
+      // - KHÔNG giới hạn bởi priceMax (không check delta > priceMax)
+      // - VẪN phải kiểm tra bội số của priceMin
+      // - Đồng thời chấp nhận nếu là bội số của priceMax (nếu có)
       if (stepMin === undefined && stepMax === undefined) {
-        // Không cấu hình bước giá
+        // Không cấu hình bước giá -> chỉ bị ràng buộc bởi totalPriceMax
         return {
           valid: reasons.length === 0,
           reasons,
@@ -174,21 +173,22 @@ export default function useAuctionRoundAnalysis<
         } as const;
       }
 
+      // Nếu có stepMin, delta phải >= stepMin (thông lệ nghiệp vụ)
       if (stepMin !== undefined && delta < stepMin) {
         reasons.push(
           `Nhỏ hơn bước giá tối thiểu (${stepMin.toLocaleString("vi-VN")} VND)`
         );
       }
-      if (stepMax !== undefined && delta > stepMax) {
-        reasons.push(
-          `Vượt bước giá tối đa (${stepMax.toLocaleString("vi-VN")} VND)`
-        );
+
+      // Kiểm tra bội số
+      let multipleOk = false;
+      if (stepMin !== undefined && delta % stepMin === 0) {
+        multipleOk = true; // bội số của priceMin
+      }
+      if (!multipleOk && stepMax !== undefined && delta % stepMax === 0) {
+        multipleOk = true; // hoặc bội số của priceMax
       }
 
-      let multipleOk = false;
-      if (stepMin !== undefined && delta % stepMin === 0) multipleOk = true;
-      if (!multipleOk && stepMax !== undefined && delta % stepMax === 0)
-        multipleOk = true;
       if (!multipleOk) {
         const parts: string[] = [];
         if (stepMin !== undefined)
