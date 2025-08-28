@@ -1,4 +1,3 @@
-// src/hooks/useAuctionRoundAnalysis.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useCallback } from "react";
 
@@ -24,10 +23,9 @@ interface Params<
   Row extends MinimalBid = MinimalBid,
   Asset extends MinimalAsset = MinimalAsset
 > {
-  auctionRound?: any; // có priceMin, priceMax, totalPriceMax, auctionAssets
+  auctionRound?: any; // có priceMin, priceMax, auctionAssets
   priceHistory?: Row[]; // dữ liệu lịch sử (nếu có)
   assets?: Asset[]; // suy ra startingPrice theo tagName
-  // otherBids?: Row[];      // KHÔNG còn dùng, có thể giữ trong interface nếu muốn backward-compatible
 }
 
 const toPosNumber = (v: any) => {
@@ -93,24 +91,16 @@ export default function useAuctionRoundAnalysis<
       const reasons: string[] = [];
 
       const stepMin = toPosNumber((auctionRound as any)?.priceMin);
-      const stepMax = toPosNumber((auctionRound as any)?.priceMax);
-      // const totalMax = toPosNumber((auctionRound as any)?.totalPriceMax);
-      const totalMax = stepMax && row?.startingPrice ? stepMax + row?.startingPrice : 0;
-      const limitMax = Number.isFinite(totalMax as number)
-        ? (totalMax as number)
-        : Infinity;
+      // priceMax chỉ dùng để tính NGƯỠNG TỐI ĐA = startingPrice + priceMax
+      const priceMax = toPosNumber((auctionRound as any)?.priceMax);
 
       const rawPrice = (row as any)?.auctionPrice ?? (row as any)?.price;
       const price = Number(rawPrice) || 0;
 
-      // (0) Chỉ giới hạn bởi totalPriceMax
-      if (price > limitMax) {
-        reasons.push(`Vượt giá tối đa ${limitMax.toLocaleString("vi-VN")} VND`);
-      }
-
       // (1) Giá khởi điểm
       const startMaybe = getStartPriceForRow(row);
       if (startMaybe === undefined) {
+        // Không xác định được startingPrice -> không thể kiểm tra giới hạn tối đa hay bước giá
         return {
           valid: reasons.length === 0,
           reasons,
@@ -119,14 +109,25 @@ export default function useAuctionRoundAnalysis<
       }
       const start = startMaybe;
 
+      // (1.1) Kiểm tra nhỏ hơn giá khởi điểm
       if (price < start) {
         reasons.push("Nhỏ hơn giá khởi điểm");
         return { valid: false, reasons, reason: reasons[0] } as const;
       }
 
+      // (2) Giới hạn tối đa = startingPrice + priceMax (nếu có priceMax)
+      if (priceMax !== undefined) {
+        const limitMax = start + priceMax;
+        if (price > limitMax) {
+          reasons.push(
+            `Vượt giá tối đa ${limitMax.toLocaleString("vi-VN")} VND`
+          );
+        }
+      }
+
       const delta = price - start;
 
-      // (2) Cho phép = đúng giá khởi điểm
+      // (3) Cho phép = đúng giá khởi điểm
       if (delta === 0) {
         return {
           valid: reasons.length === 0,
@@ -135,12 +136,11 @@ export default function useAuctionRoundAnalysis<
         } as const;
       }
 
-      // (3) Bước giá:
-      // - KHÔNG chặn bởi priceMax
-      // - Nếu có stepMin: delta phải ≥ stepMin
-      // - Hợp lệ nếu delta là bội số của stepMin HOẶC bội số của stepMax
-      if (stepMin === undefined && stepMax === undefined) {
-        // Không cấu hình bước giá -> chỉ bị ràng buộc bởi totalPriceMax
+      // (4) Bước giá:
+      // - KHÔNG còn logic kiểm tra theo priceMax
+      // - Nếu có priceMin: delta phải ≥ priceMin và là bội số của priceMin
+      if (stepMin === undefined) {
+        // Không cấu hình priceMin -> không kiểm tra bước giá
         return {
           valid: reasons.length === 0,
           reasons,
@@ -148,25 +148,16 @@ export default function useAuctionRoundAnalysis<
         } as const;
       }
 
-      // Nếu có stepMin, delta phải >= stepMin (thông lệ nghiệp vụ)
-      if (stepMin !== undefined && delta < stepMin) {
+      if (delta < stepMin) {
         reasons.push(
           `Nhỏ hơn bước giá tối thiểu (${stepMin.toLocaleString("vi-VN")} VND)`
         );
       }
 
-      let multipleOk = false;
-      if (stepMin !== undefined && delta % stepMin === 0) multipleOk = true; // bội số priceMin
-      if (!multipleOk && stepMax !== undefined && delta % stepMax === 0)
-        multipleOk = true; // bội số priceMax
-
-      if (!multipleOk) {
-        const parts: string[] = [];
-        if (stepMin !== undefined)
-          parts.push(`bội số của ${stepMin.toLocaleString("vi-VN")} VND`);
-        if (stepMax !== undefined)
-          parts.push(`bội số của ${stepMax.toLocaleString("vi-VN")} VND`);
-        reasons.push(`Sai bước giá (${parts.join(" hoặc ")})`);
+      if (delta % stepMin !== 0) {
+        reasons.push(
+          `Sai bước giá (bội số của ${stepMin.toLocaleString("vi-VN")} VND)`
+        );
       }
 
       return {
