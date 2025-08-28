@@ -28,7 +28,6 @@ interface AuctionAsset {
 interface CreateRoundFormData {
   priceMin: number;
   priceMax: number;
-  totalPriceMax: number;
 }
 
 
