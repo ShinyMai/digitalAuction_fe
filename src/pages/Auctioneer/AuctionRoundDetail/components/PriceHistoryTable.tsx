@@ -103,9 +103,10 @@ const PriceHistoryTable = ({
           Tính hợp lệ
         </span>
       ),
+      width: '200px',
       key: "validity",
       render: (_: any, record: DataType) => {
-        const { valid, reasons } = computeValidity(record, { isMine: false });
+        const { valid, reasons } = computeValidity(record);
         return (
           <div className="flex flex-col">
             <Tag

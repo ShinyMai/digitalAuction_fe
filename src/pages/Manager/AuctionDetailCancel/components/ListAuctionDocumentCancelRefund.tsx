@@ -7,7 +7,6 @@ import { Table, Input, Tag, Button, Modal } from "antd";
 import {
   SearchOutlined,
   DownloadOutlined,
-  CheckOutlined,
   CloseOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
@@ -33,6 +32,8 @@ const ListAuctionDocumentCancelRefund = ({ auctionId }: Props) => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     PageNumber: 1,
     PageSize: 8,
+    SortBy: "name",
+    IsAscending: true,
   });
   const [auctionDocuments, setAuctionDocuments] = useState<AuctionDocument[]>(
     []
@@ -139,18 +140,6 @@ const ListAuctionDocumentCancelRefund = ({ auctionId }: Props) => {
     }
   };
 
-  const handleRefundModeToggle = () => {
-    setIsRefundMode(true);
-  };
-
-  const handleConfirmRefund = () => {
-    if (selectedRowKeys.length === 0) {
-      setIsErrorModalVisible(true);
-    } else {
-      setIsConfirmModalVisible(true);
-    }
-  };
-
   const handleConfirmModalOk = () => {
     setIsRefundMode(false);
     setSelectedRowKeys([]);
@@ -164,22 +153,16 @@ const ListAuctionDocumentCancelRefund = ({ auctionId }: Props) => {
   const handleErrorModalOk = () => {
     setIsErrorModalVisible(false);
   };
-
-  const handleCancelRefund = () => {
-    setIsRefundMode(false);
-    setSelectedRowKeys([]);
-  };
-
   const rowSelection = isRefundMode
     ? {
-        selectedRowKeys,
-        onChange: (newSelectedRowKeys: React.Key[]) => {
-          setSelectedRowKeys(newSelectedRowKeys);
-        },
-        getCheckboxProps: (record: AuctionDocument) => ({
-          disabled: record.statusTicket === 3, // Vô hiệu hóa checkbox cho các bản ghi đã hoàn tiền
-        }),
-      }
+      selectedRowKeys,
+      onChange: (newSelectedRowKeys: React.Key[]) => {
+        setSelectedRowKeys(newSelectedRowKeys);
+      },
+      getCheckboxProps: (record: AuctionDocument) => ({
+        disabled: record.statusTicket === 3, // Vô hiệu hóa checkbox cho các bản ghi đã hoàn tiền
+      }),
+    }
     : undefined;
 
   const columns = [
@@ -236,7 +219,7 @@ const ListAuctionDocumentCancelRefund = ({ auctionId }: Props) => {
           text = "Đã chuyển tiền";
         } else if (statusTicket === 2) {
           color = "cyan";
-          text = "Đã ký phiếu";
+          text = "Đã nhận phiếu";
         } else if (statusTicket === 3) {
           color = "green";
           text = "Đã hoàn tiền";
@@ -293,32 +276,7 @@ const ListAuctionDocumentCancelRefund = ({ auctionId }: Props) => {
             >
               Tải danh sách
             </Button>
-            {isRefundMode ? (
-              <div className="flex w-full sm:w-auto">
-                <Button
-                  type="primary"
-                  onClick={handleConfirmRefund}
-                  icon={<CheckOutlined />}
-                  className="bg-blue-500 hover:bg-blue-600 rounded-r-none border-r-0 flex-1 mr-2"
-                >
-                  Xác nhận
-                </Button>
-                <Button
-                  type="link"
-                  onClick={handleCancelRefund}
-                  icon={<CloseOutlined />}
-                  className="bg-red-500 hover:bg-red-600 rounded-l-none flex-1"
-                />
-              </div>
-            ) : (
-              <Button
-                type="primary"
-                onClick={handleRefundModeToggle}
-                className="bg-yellow-500 hover:bg-yellow-600 w-full sm:w-auto"
-              >
-                Hoàn tiền
-              </Button>
-            )}
+
           </div>
         </div>
         <Table
