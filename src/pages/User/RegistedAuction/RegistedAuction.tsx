@@ -238,16 +238,16 @@ const RegistedAuction = () => {
             <Empty
               description={
                 <div>
-                  <p className="text-lg text-gray-500 mb-2">
+                  <div className="text-lg text-gray-500 mb-2">
                     {(Array.isArray(registeredAuctions)
                       ? registeredAuctions.length
                       : 0) === 0
                       ? "Bạn chưa đăng ký tham gia đấu giá nào"
                       : "Không tìm thấy đấu giá nào phù hợp với bộ lọc"}
-                  </p>
-                  <p className="text-gray-400">
+                  </div>
+                  <div className="text-gray-400">
                     Hãy tham gia các phiên đấu giá để xem thông tin tại đây
-                  </p>
+                  </div>
                 </div>
               }
             />
