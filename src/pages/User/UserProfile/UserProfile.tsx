@@ -286,10 +286,12 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl md:col-span-2">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Nơi cấp</p>
-                    <p className="text-lg font-bold text-gray-800">
+                    <div className="text-sm text-gray-600 font-medium">
+                      Nơi cấp
+                    </div>
+                    <div className="text-lg font-bold text-gray-800">
                       {userInfo?.issueBy || "Chưa cập nhật"}
-                    </p>
+                    </div>
                   </div>
                 </div>
               </div>
