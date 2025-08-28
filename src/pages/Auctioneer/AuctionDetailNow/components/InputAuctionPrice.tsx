@@ -799,7 +799,7 @@ const InputAuctionPrice = ({
                           {(() => {
                             const pm = (roundData as any)?.priceMin;
                             const px = (roundData as any)?.priceMax;
-                            const tpm = (roundData as any)?.totalPriceMax;
+                            const tpm = px + selectedAsset.startingPrice!;
 
                             const showPM =
                               typeof pm === "number" &&
@@ -857,8 +857,8 @@ const InputAuctionPrice = ({
                                   <div className="flex items-center gap-3">
                                     <div
                                       className={`w-6 h-6 bg-gradient-to-r ${bidInfo.isMyBid
-                                          ? "from-blue-400 to-indigo-500"
-                                          : "from-red-400 to-pink-500"
+                                        ? "from-blue-400 to-indigo-500"
+                                        : "from-red-400 to-pink-500"
                                         } rounded-full flex items-center justify-center`}
                                     >
                                       <TrophyOutlined className="text-white text-xs" />
@@ -866,8 +866,8 @@ const InputAuctionPrice = ({
                                     <div>
                                       <div
                                         className={`text-xs font-medium ${bidInfo.isMyBid
-                                            ? "text-blue-700"
-                                            : "text-red-700"
+                                          ? "text-blue-700"
+                                          : "text-red-700"
                                           }`}
                                       >
                                         Giá đấu cao nhất{" "}
@@ -877,8 +877,8 @@ const InputAuctionPrice = ({
                                       </div>
                                       <div
                                         className={`text-sm font-bold ${bidInfo.isMyBid
-                                            ? "text-blue-800"
-                                            : "text-red-800"
+                                          ? "text-blue-800"
+                                          : "text-red-800"
                                           }`}
                                       >
                                         {bidInfo.highest.toLocaleString(

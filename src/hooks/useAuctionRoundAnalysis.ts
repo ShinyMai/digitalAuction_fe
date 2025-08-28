@@ -94,7 +94,8 @@ export default function useAuctionRoundAnalysis<
 
       const stepMin = toPosNumber((auctionRound as any)?.priceMin);
       const stepMax = toPosNumber((auctionRound as any)?.priceMax);
-      const totalMax = toPosNumber((auctionRound as any)?.totalPriceMax);
+      // const totalMax = toPosNumber((auctionRound as any)?.totalPriceMax);
+      const totalMax = stepMax && row?.startingPrice ? stepMax + row?.startingPrice : 0;
       const limitMax = Number.isFinite(totalMax as number)
         ? (totalMax as number)
         : Infinity;
