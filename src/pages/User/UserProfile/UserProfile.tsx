@@ -275,12 +275,12 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
 
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">
+                    <div className="text-sm text-gray-600 font-medium">
                       Quốc tịch
-                    </p>
-                    <p className="text-lg font-bold text-gray-800">
+                    </div>
+                    <div className="text-lg font-bold text-gray-800">
                       {userInfo?.nationality || "Chưa cập nhật"}
-                    </p>
+                    </div>
                   </div>
                 </div>
 
