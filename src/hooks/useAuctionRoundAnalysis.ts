@@ -26,8 +26,8 @@ interface Params<
 > {
   auctionRound?: any; // có priceMin, priceMax, totalPriceMax, auctionAssets
   priceHistory?: Row[]; // dữ liệu lịch sử (nếu có)
-  assets?: Asset[]; // danh sách tài sản hiện tại (để suy ra startingPrice theo tagName)
-  otherBids?: Row[]; // "phiếu của người khác" (để so giá cao nhất khi là phiếu của tôi)
+  assets?: Asset[]; // suy ra startingPrice theo tagName
+  // otherBids?: Row[];      // KHÔNG còn dùng, có thể giữ trong interface nếu muốn backward-compatible
 }
 
 const toPosNumber = (v: any) => {
@@ -40,12 +40,7 @@ const getName = (r: any) => r?.auctionAssetName ?? r?.tagName;
 export default function useAuctionRoundAnalysis<
   Row extends MinimalBid = MinimalBid,
   Asset extends MinimalAsset = MinimalAsset
->({
-  auctionRound,
-  priceHistory = [],
-  assets = [],
-  otherBids = [],
-}: Params<Row, Asset>) {
+>({ auctionRound, priceHistory = [], assets = [] }: Params<Row, Asset>) {
   // Map startingPrice theo tagName (ưu tiên assets trong round)
   const startingPriceByTagName = useMemo(() => {
     const map = new Map<string, number>();
@@ -94,8 +89,7 @@ export default function useAuctionRoundAnalysis<
   );
 
   const computeValidity = useCallback(
-    (row: Row, opts?: { isMine?: boolean }) => {
-      const isMine = !!opts?.isMine;
+    (row: Row) => {
       const reasons: string[] = [];
 
       const stepMin = toPosNumber((auctionRound as any)?.priceMin);
@@ -131,27 +125,7 @@ export default function useAuctionRoundAnalysis<
 
       const delta = price - start;
 
-      // (2) Khi là phiếu của tôi, phải > giá cao nhất của người khác
-      if (isMine) {
-        const assetName = getName(row);
-        if (assetName && Array.isArray(otherBids)) {
-          const bids = otherBids.filter((b: any) => getName(b) === assetName);
-          if (bids.length > 0) {
-            const highestOther = Math.max(
-              ...bids.map((b: any) => Number(b?.auctionPrice ?? b?.price) || 0)
-            );
-            if (price <= highestOther) {
-              reasons.push(
-                `Không vượt giá cao nhất của người khác (${highestOther.toLocaleString(
-                  "vi-VN"
-                )} VND)`
-              );
-            }
-          }
-        }
-      }
-
-      // (3) Cho phép = đúng giá khởi điểm
+      // (2) Cho phép = đúng giá khởi điểm
       if (delta === 0) {
         return {
           valid: reasons.length === 0,
@@ -160,10 +134,10 @@ export default function useAuctionRoundAnalysis<
         } as const;
       }
 
-      // (4) Bước giá:
-      // - KHÔNG giới hạn bởi priceMax (không check delta > priceMax)
-      // - VẪN phải kiểm tra bội số của priceMin
-      // - Đồng thời chấp nhận nếu là bội số của priceMax (nếu có)
+      // (3) Bước giá:
+      // - KHÔNG chặn bởi priceMax
+      // - Nếu có stepMin: delta phải ≥ stepMin
+      // - Hợp lệ nếu delta là bội số của stepMin HOẶC bội số của stepMax
       if (stepMin === undefined && stepMax === undefined) {
         // Không cấu hình bước giá -> chỉ bị ràng buộc bởi totalPriceMax
         return {
@@ -180,14 +154,10 @@ export default function useAuctionRoundAnalysis<
         );
       }
 
-      // Kiểm tra bội số
       let multipleOk = false;
-      if (stepMin !== undefined && delta % stepMin === 0) {
-        multipleOk = true; // bội số của priceMin
-      }
-      if (!multipleOk && stepMax !== undefined && delta % stepMax === 0) {
-        multipleOk = true; // hoặc bội số của priceMax
-      }
+      if (stepMin !== undefined && delta % stepMin === 0) multipleOk = true; // bội số priceMin
+      if (!multipleOk && stepMax !== undefined && delta % stepMax === 0)
+        multipleOk = true; // bội số priceMax
 
       if (!multipleOk) {
         const parts: string[] = [];
@@ -204,17 +174,17 @@ export default function useAuctionRoundAnalysis<
         reason: reasons[0],
       } as const;
     },
-    [auctionRound, otherBids, getStartPriceForRow]
+    [auctionRound, getStartPriceForRow]
   );
 
   const isValidBid = useCallback(
-    (row: Row, opts?: { isMine?: boolean }) => computeValidity(row, opts).valid,
+    (row: Row) => computeValidity(row).valid,
     [computeValidity]
   );
 
   // Lịch sử hợp lệ (dùng cho bảng lịch sử/ phân tích)
   const validPriceHistory = useMemo(
-    () => (priceHistory ?? []).filter((r) => isValidBid(r, { isMine: false })),
+    () => (priceHistory ?? []).filter((r) => isValidBid(r)),
     [priceHistory, isValidBid]
   );
 
