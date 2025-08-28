@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Form, Input, Card, message } from "antd";
 import { IdcardOutlined } from "@ant-design/icons";
 import UserServices from "../../../services/UserServices";
 import CustomModal from "../../../components/Common/CustomModal";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 interface AuctionResponse {
   auctionName: string;
@@ -17,21 +19,31 @@ const FindNumbericalOrder = () => {
   const [isShow, setIsShow] = useState(false);
   const [auctionInfo, setAuctionInfo] = useState<AuctionResponse | null>(null);
 
+  const extractErrMsg = (e: unknown) => {
+    const err = e as any;
+    return (
+      err?.response?.data?.message ?? // axios/fetch error body
+      err?.response?.data?.msg ?? // vài backend dùng "msg"
+      err?.data?.message ?? // trường hợp service bọc lỗi
+      err?.message ?? // fallback message
+      "Đã có lỗi xảy ra. Vui lòng thử lại sau!"
+    );
+  };
+
   const handleSubmit = async (values: { cccd: string }) => {
     try {
       const res = await UserServices.getNumbericalOrder(
         urlParams || "",
         values.cccd
       );
-      if (res.code === 200 && res.data) {
+      if (res.code === 200) {
         setAuctionInfo(res.data as AuctionResponse);
         setIsShow(true);
       } else {
         message.error(res.message || "Không tìm thấy thông tin!");
       }
     } catch (error) {
-      console.error("Error fetching auction info:", error);
-      message.error("Có lỗi xảy ra khi tìm kiếm!");
+      toast.error(extractErrMsg(error));
     }
   };
 
