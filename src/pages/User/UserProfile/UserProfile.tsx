@@ -242,10 +242,12 @@ const UserProfile = ({ open, onCancel }: UserProfileProps) => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="flex items-center space-x-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-600 font-medium">Số CCCD</p>
-                    <p className="text-lg font-bold text-gray-800">
+                    <div className="text-sm text-gray-600 font-medium">
+                      Số CCCD
+                    </div>
+                    <div className="text-lg font-bold text-gray-800">
                       {userInfo?.citizenIdentification || "Chưa cập nhật"}
-                    </p>
+                    </div>
                   </div>
                 </div>
 
