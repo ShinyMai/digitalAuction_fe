@@ -112,32 +112,6 @@ const CreateRoundModal = ({ visible, onCancel, onSubmit, auctionId, loading = fa
                         ]}
                     >
                         <InputNumber
-                            placeholder="Nhập giá tối đa"
-                            className="!w-full"
-                            formatter={(value) =>
-                                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                            }
-                            addonAfter="VND"
-                            step={1000}
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        label={<Text strong>Giá tối đa (VND)</Text>}
-                        name="totalPriceMax"
-                        rules={[
-                            { type: "number", min: 1000, message: "Không được nhập lẻ đến hàng trăm đồng" },
-                            {
-                                validator: (_, value) => {
-                                    if (value && value % 1000 !== 0) {
-                                        return Promise.reject('Không được nhập lẻ đến hàng trăm đồng');
-                                    }
-                                    return Promise.resolve();
-                                }
-                            }
-                        ]}
-                    >
-                        <InputNumber
                             placeholder="Nhập bước giá tối đa"
                             className="!w-full"
                             formatter={(value) =>

@@ -245,7 +245,6 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
     auctionId: string;
     priceMin: number;
     priceMax: number;
-    totalPriceMax: number;
   }) => {
     try {
       setCreateLoading(true);
@@ -259,7 +258,6 @@ const AuctionRounds = ({ auctionId, auction, auctionAsset }: props) => {
         auctionId: data.auctionId,
         priceMin: data.priceMin,
         priceMax: data.priceMax,
-        totalPriceMax: data.totalPriceMax,
         createdBy: user?.id,
       };
       console.log("Data request to create auction round:", dataRequest);
